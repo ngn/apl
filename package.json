@@ -1,0 +1,26 @@
+{
+  "name":         "apl",
+  "description":  "A Programming Language",
+  "keywords":     ["apl", "javascript", "language", "coffeescript", "interpreter"],
+  "author":       "Nikolay G. Nikolov",
+  "version":      "0.1",
+  "licenses":     [{
+    "type":       "MIT",
+    "url":        "http://github.com/ngn/apl/raw/master/LICENSE"
+  }],
+  "engines":      {
+    "node":       ">=0.2.5"
+  },
+  "directories" : {
+    "lib" : "./lib"
+  },
+  "main" : "./lib/apl",
+  "bin":          {
+    "apl":        "./bin/apl",
+  },
+  "homepage":     "http://github.com/ngn/apl/",
+  "repository":   {
+    "type": "git",
+    "url": "git://github.com/ngn/apl.git"
+  }
+}

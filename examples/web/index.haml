@@ -1,0 +1,22 @@
+!!!5
+%html
+  %head
+    %title APL Demo
+    %meta(http-equiv='Content-Type' value='text/html; charset=UTF-8')
+    %link(rel="stylesheet" type="text/css" href="index.css")
+  %body
+
+    #symbols
+    #examples Examples:
+
+    %form
+      %p
+        %textarea#program
+        %input#go(type='submit' value='⍎')
+
+    #result
+
+    %script(src='../../lib/parser.js' type='text/javascript')
+    %script(src='../../lib/apl.js'    type='text/javascript')
+    %script(src='jquery-1.6.1.min.js' type='text/javascript')
+    %script(src='index.js'            type='text/javascript')
