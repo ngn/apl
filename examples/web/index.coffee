@@ -4,13 +4,14 @@ jQuery ($) ->
 
   escT = {'<': 'lt', '>': 'gt', '&': 'amp', "'": 'apos', '"': 'quot'}
   esc = (s) -> s.replace /[<>&'"]/g, (x) -> "&#{escT[x]};"
+  escHard = (s) -> esc(s).replace(' ', '&nbsp;', 'g').replace('\n', '<br/>', 'g')
 
   formatAsHTML = (x) ->
     # Supports arrays of up 4 dimensions
     # Higher-rank arrays are displayed as if 4-dimensional
     try
       if typeof x is 'string'
-        "<span class='character'>#{esc(x).replace /\ /g, '&nbsp;'}</span>"
+        "<span class='character'>#{esc(x).replace(' ', '&nbsp;', 'g')}</span>"
       else if typeof x is 'number'
         "<span class='number'>#{if x < 0 then '¯' + (-x) else '' + x}</span>"
       else if typeof x is 'function'
@@ -57,7 +58,7 @@ jQuery ($) ->
         formatAsHTML exec parser.parse $('#code').val()
       catch e
         console?.error?(e)
-        "<div class='error'>#{esc e.message}</div>"
+        "<div class='error'>#{escHard e.message}</div>"
     )
     false
 

@@ -1,6 +1,6 @@
 (function() {
   jQuery(function($) {
-    var code, esc, escT, examples, formatAsHTML, formatHTMLTable, i, mapping, name, symbol, symbolsHTML, _len, _ref;
+    var code, esc, escHard, escT, examples, formatAsHTML, formatHTMLTable, i, mapping, name, symbol, symbolsHTML, _len, _ref;
     escT = {
       '<': 'lt',
       '>': 'gt',
@@ -13,11 +13,14 @@
         return "&" + escT[x] + ";";
       });
     };
+    escHard = function(s) {
+      return esc(s).replace(' ', '&nbsp;', 'g').replace('\n', '<br/>', 'g');
+    };
     formatAsHTML = function(x) {
       var i, nPlanes, nc, nr, planeSize, planes, rx, sx, y, _ref;
       try {
         if (typeof x === 'string') {
-          return "<span class='character'>" + (esc(x).replace(/\ /g, '&nbsp;')) + "</span>";
+          return "<span class='character'>" + (esc(x).replace(' ', '&nbsp;', 'g')) + "</span>";
         } else if (typeof x === 'number') {
           return "<span class='number'>" + (x < 0 ? '¯' + (-x) : '' + x) + "</span>";
         } else if (typeof x === 'function') {
@@ -88,7 +91,7 @@
               console.error(e);
             }
           }
-          return "<div class='error'>" + (esc(e.message)) + "</div>";
+          return "<div class='error'>" + (escHard(e.message)) + "</div>";
         }
       })());
       return false;
