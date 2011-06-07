@@ -48,3 +48,30 @@ a:hover {
     border: solid #ffdddd 1px;
     background-color: #ffeeee;
     padding: 10px; }
+
+#tooltip {
+  position: absolute;
+  z-index: 3000;
+  border: 1px solid #111111;
+  background-color: khaki;
+  padding: 5px;
+  width: 200px; }
+  #tooltip h3, #tooltip div {
+    margin: 0; }
+  #tooltip .symbol {
+    background-color: white;
+    font-size: 48px;
+    padding: 0 10px;
+    font-family: monospace; }
+  #tooltip .keys {
+    float: right;
+    font-family: monospace;
+    padding: 5px; }
+    #tooltip .keys .key {
+      padding: 3px 5px;
+      background-color: #dddddd;
+      border: outset #dddddd 5px;
+      border-radius: 7px;
+      -moz-border-radius: 7px; }
+  #tooltip .description {
+    clear: both; }

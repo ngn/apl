@@ -64,91 +64,101 @@ jQuery ($) ->
 
 
 
-  # Symbols and key mapping {{{1
+  # Symbols table {{{1
+  symbolDefs = [
+    ['+', '',   'Conjugate, Add']
+    ['−', '`-', 'Negate, Subtract']
+    ['×', '`=', 'Sign of, Multiply']
+    ['÷', '`:', 'Reciprocal, Divide']
+    ['⌈', '`s', 'Ceiling, Greater of']
+    ['⌊', '`d', 'Floor, Lesser of']
+    ['∣', '`m', 'Absolute value, Residue']
+    ['⍳', '`i', 'Index generator, Index of']
+    ['?', '',   'Roll, Deal']
+    ['⋆', '`p', 'Exponential, To the power of']
+    ['⍟', '',   'Natural logarithm, Logarithm to the base']
+    ['○', '`o', 'Pi times, Circular and hyperbolic functions']
+    ['!', '',   'Factorial, Binomial']
+    ['⌹', '',   'Matrix inverse, Matrix divide']
+    ['<', '`3', 'Less than']
+    ['≤', '`4', 'Less than or equal']
+    ['=', '`5', 'Equal']
+    ['≥', '`6', 'Greater than or equal']
+    ['>', '`7', 'Greater than']
+    ['≠', '`/', 'Not equal']
+    ['≡', '',   'Depth, Match']
+    ['≢', '',   'Not match']
+    ['∈', '`e', 'Enlist, Membership']
+    ['⍷', '`f`',   'Find']
+    ['∪', '`v', 'Unique, Union']
+    ['∩', '`c', 'Intersection']
+    ['∼', '`t', 'Not, Without']
+    ['∨', '`9', 'Or']
+    ['∧', '`0', 'And']
+    ['⍱', '',   'Nor']
+    ['⍲', '',   'Nand']
+    ['⍴', '`r', 'Shape of, Reshape']
+    [',', '',   'Ravel, Catenate']
+    ['⍪', '`,', 'First axis catenate']
+    ['⌽', '',   'Reverse, Rotate']
+    ['⊖', '',   'First axis rotate']
+    ['⍉', '',   'Transpose']
+    ['↑', '`y', 'First, Take']
+    ['↓', '`u', 'Drop']
+    ['⊂', '`z', 'Enclose, Partition']
+    ['⊃', '`x', 'Disclose, Pick']
+    ['⌷', '`l', 'Index']
+    ['⍋', '`g', 'Grade up']
+    ['⍒', '`h', 'Grade down']
+    ['⊤', '`b', 'Encode']
+    ['⊥', '`n', 'Decode']
+    ['⍕', '',   'Format, Format by specification']
+    ['⍎', '',   'Execute']
+    ['⊣', '',   'Stop, Left']
+    ['⊢', '',   'Pass, Right']
+    ['⎕', '',   'Evaluated input, Output with a newline']
+    ['⍞', '',   'Character input, Bare output']
+    ['¨', '`1', 'Each']
+    ['∘.','`j', 'Outer product']
+    ['/', '',   'Reduce']
+    ['⌿', '`/', '1st axis reduce']
+    ['\\','',   'Scan']
+    ['⍀.','',   '1st axis scan']
+    ['¯', '`2', 'Negative number sign']
+    ['⍝', '`]', 'Comment']
+    ['←', '`[', 'Assignment']
+    ['⍬', '',   'Zilde']
+    ['◇', '`;', 'Statement separator']
+    ['⍺', '`a', 'Left formal parameter']
+    ['⍵', '`w', 'Right formal parameter']
+  ]
+
+  # Symbols setup {{{1
   mapping = {}
+  hSymbolDefs = {} # indexed by symbol
   symbolsHTML = ''
-  symbol = (ch, key, description) ->
+  for symbolDef in symbolDefs
+    [ch, key, description] = symbolDef
+    hSymbolDefs[ch] = symbolDef
     if key then mapping[key] = ch; description += " (key: #{key})"
-    symbolsHTML += "<a href='#symbol-#{esc ch}' title='#{esc description}'>#{esc ch}</a>"
+    symbolsHTML += "<a href='#' title='#{esc description}'>#{esc ch}</a>"
+  $('#symbols').html "<p>#{symbolsHTML}</p>"
+  $('#symbols a').live 'click', -> $('#code').replaceSelection $(@).text()
 
-  symbol '+', '',   'Conjugate, Add'
-  symbol '−', '`-', 'Negate, Subtract'
-  symbol '×', '`=', 'Sign of, Multiply'
-  symbol '÷', '`:', 'Reciprocal, Divide'
-  symbol '⌈', '`s', 'Ceiling, Greater of'
-  symbol '⌊', '`d', 'Floor, Lesser of'
-  symbol '∣', '`m', 'Absolute value, Residue'
-  symbol '⍳', '`i', 'Index generator, Index of'
-  symbol '?', '',   'Roll, Deal'
-  symbol '⋆', '`p', 'Exponential, To the power of'
-  symbol '⍟', '',   'Natural logarithm, Logarithm to the base'
-  symbol '○', '`o', 'Pi times, Circular and hyperbolic functions'
-  symbol '!', '',   'Factorial, Binomial'
-  symbol '⌹', '',   'Matrix inverse, Matrix divide'
-  symbol '<', '`3', 'Less than'
-  symbol '≤', '`4', 'Less than or equal'
-  symbol '=', '`5', 'Equal'
-  symbol '≥', '`6', 'Greater than or equal'
-  symbol '>', '`7', 'Greater than'
-  symbol '≠', '`/', 'Not equal'
-  symbol '≡', '',   'Depth, Match'
-  symbol '≢', '',   'Not match'
-  symbol '∈', '`e', 'Enlist, Membership'
-  symbol '⍷', '`f`',   'Find'
-  symbol '∪', '`v', 'Unique, Union'
-  symbol '∩', '`c', 'Intersection'
-  symbol '∼', '`t', 'Not, Without'
-  symbol '∨', '`9', 'Or'
-  symbol '∧', '`0', 'And'
-  symbol '⍱', '',   'Nor'
-  symbol '⍲', '',   'Nand'
-  symbol '⍴', '`r', 'Shape of, Reshape'
-  symbol ',', '',   'Ravel, Catenate'
-  symbol '⍪', '`,', 'First axis catenate'
-  symbol '⌽', '',   'Reverse, Rotate'
-  symbol '⊖', '',   'First axis rotate'
-  symbol '⍉', '',   'Transpose'
-  symbol '↑', '`y', 'First, Take'
-  symbol '↓', '`u', 'Drop'
-  symbol '⊂', '`z', 'Enclose, Partition'
-  symbol '⊃', '`x', 'Disclose, Pick'
-  symbol '⌷', '`l', 'Index'
-  symbol '⍋', '`g', 'Grade up'
-  symbol '⍒', '`h', 'Grade down'
-  symbol '⊤', '`b', 'Encode'
-  symbol '⊥', '`n', 'Decode'
-  symbol '⍕', '',   'Format, Format by specification'
-  symbol '⍎', '',   'Execute'
-  symbol '⊣', '',   'Stop, Left'
-  symbol '⊢', '',   'Pass, Right'
-  symbol '⎕', '',   'Evaluated input, Output with a newline'
-  symbol '⍞', '',   'Character input, Bare output'
-  symbol '¨', '`1', 'Each'
-  symbol '∘.','`j', 'Outer product'
-  symbol '/', '',   'Reduce'
-  symbol '⌿', '`/', '1st axis reduce'
-  symbol '\\','',   'Scan'
-  symbol '⍀.','',   '1st axis scan'
-  symbol '¯', '`2', 'Negative number sign'
-  symbol '⍝', '`]', 'Comment'
-  symbol '←', '`[', 'Assignment'
-  symbol '⍬', '',   'Zilde'
-  symbol '◇', '`;', 'Statement separator'
-  symbol '⍺', '`a', 'Left formal parameter'
-  symbol '⍵', '`w', 'Right formal parameter'
+  $('#symbols a').tooltip
+    showURL: false
+    bodyHandler: ->
+      [ch, key, description] = hSymbolDefs[$(@).text()]
+      """
+        <span class='keys' style="float: right">
+          #{(for k in key.split '' then "<span class='key'>#{k}</span>").join(' ')}
+        </span>
+        <span class='symbol'>#{ch}</span>
+        <p class='description'>#{description}</p>
+      """
 
-  $('#symbols').html symbolsHTML
-  $('#symbols a').live 'click', ->
-    $('#code').replaceSelection $(@).text()
-
-  $('#code').keydown (event) ->
-    if event.keyCode is 13 and event.ctrlKey
-      $('#go').click()
-      false
-
+  $('#code').keydown (event) -> if event.keyCode is 13 and event.ctrlKey then $('#go').click(); false
   $('#code').retype 'on', {mapping}
-
-
 
   # Examples {{{1
   examples = [
