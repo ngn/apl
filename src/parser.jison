@@ -61,5 +61,5 @@ indexable
     | STRING                     { $$ = ['str', $1]; }
     | SYMBOL                     { $$ = ['sym', $1]; }
     | '(' expr ')'               { $$ = $2; }
-    | '{' expr '}'               { $$ = ['lambda', $2]; }
+    | '{' body '}'               { $$ = ['lambda', $2]; }
     ;
