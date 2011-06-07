@@ -1,8 +1,11 @@
-WARNING on line 29 of /home/nick/develop/apl/examples/web/index.sass:
+WARNING on line 32 of /home/nick/develop/apl/examples/web/index.sass:
 This selector doesn't have any properties and will not be rendered.
 body {
   width: 1000px;
   margin: 10px auto; }
+
+h1 {
+  font-family: monospace; }
 
 a {
   padding: 1px 1px;
@@ -13,7 +16,7 @@ a {
 a:hover {
   background-color: khaki; }
 
-#program {
+#code {
   font-size: 28px;
   vertical-align: bottom;
   height: 200px;
@@ -37,6 +40,9 @@ a:hover {
     color: red; }
   #result .array {
     border: solid black 1px; }
+  #result .empty {
+    color: #aaaaaa;
+    font-style: italic; }
   #result .error {
     color: red;
     border: solid #ffdddd 1px;
