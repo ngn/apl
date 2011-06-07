@@ -211,8 +211,8 @@ dyadic '?', (x, y) -> # Deal
   available = [0...y]
   for [0...x] then available.splice floor(available.length * random()), 1
 
-monadic '*', pervasive (x) -> exp numericValueOf x # Exponentiate
-dyadic  '*', pervasive (x, y) -> pow numericValueOf(x), numericValueOf(y) # To the power of
+monadic '⋆', pervasive (x) -> exp numericValueOf x # Exponentiate
+dyadic  '⋆', pervasive (x, y) -> pow numericValueOf(x), numericValueOf(y) # To the power of
 monadic '⍟' # Natural logarithm
 dyadic  '⍟' # Logarithm to the base
 monadic '○', pervasive (x) -> PI * x # Pi times
@@ -255,8 +255,8 @@ dyadic  '⍷' # Find
 monadic '∪' # Unique
 dyadic  '∪' # Union
 dyadic  '∩' # Intersection
-monadic '~', pervasive (x) -> +!booleanValueOf(x) # Not
-dyadic  '~' # Without
+monadic '∼', pervasive (x) -> +!booleanValueOf(x) # Not
+dyadic  '∼' # Without
 dyadic  '∨', pervasive (x, y) -> + (booleanValueOf(x) || booleanValueOf(y)) # Or
 dyadic  '∧', pervasive (x, y) -> + (booleanValueOf(x) && booleanValueOf(y)) # And
 dyadic  '⍱', pervasive (x, y) -> +!(booleanValueOf(x) || booleanValueOf(y)) # Nor
