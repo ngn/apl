@@ -45,7 +45,7 @@
 
 # TODO: Can we model APL's concept of "prototypes"?
 
-{min, max, abs, floor, ceil, random, exp, pow, PI} = Math
+{min, max, abs, floor, ceil, random, exp, pow, PI, log, sin, cos, tan, asin, acos, atan, sqrt} = Math
 exports ?= @
 
 # Helpers
@@ -213,10 +213,28 @@ dyadic '?', (x, y) -> # Deal
 
 monadic '⋆', pervasive (x) -> exp numericValueOf x # Exponentiate
 dyadic  '⋆', pervasive (x, y) -> pow numericValueOf(x), numericValueOf(y) # To the power of
-monadic '⍟' # Natural logarithm
-dyadic  '⍟' # Logarithm to the base
+monadic '⍟', pervasive (x) -> log x # Natural logarithm
+dyadic  '⍟', pervasive (x, y) -> log(y) / log(x) # Logarithm to the base
 monadic '○', pervasive (x) -> PI * x # Pi times
-dyadic  '○' # Circular and hyperbolic functions
+
+dyadic '○', pervasive (i, x) -> # Circular and hyperbolic functions
+  switch i
+    when 0 then sqrt(1 - x * x)
+    when 1 then sin x
+    when 2 then cos x
+    when 3 then tan x
+    when 4 then sqrt(1 + x * x)
+    when 5 then (exp(2 * x) - 1) / 2 # sinh
+    when 6 then (exp(2 * x) + 1) / 2 # cosh
+    when 7 then ex = exp(2 * x); (ex - 1) / (ex + 1) # tanh
+    when -1 then asin x
+    when -2 then acos x
+    when -3 then atan x
+    when -4 then sqrt(x * x - 1)
+    when -5 then log(x + sqrt(x * x + 1)) # arcsinh
+    when -6 then log(x + sqrt(x * x - 1)) # arccosh
+    when -7 then log((1 + x) / (1 - x)) / 2 # arctanh
+    else throw Error 'Unknown circular or hyperbolic function ' + i
 
 monadic '!', pervasive (a) -> # Factorial
   n = a = floor numericValueOf a # todo: "Gamma" function for non-integer argument
@@ -319,7 +337,9 @@ dyadic '⊖', (a, b) -> # 1st axis rotate
 
 monadic '⍉' # Transpose
 
-monadic '↑' # First
+monadic '↑', (a) -> # First
+  a = arrayValueOf(a)
+  if a.length then a[0] else 0 # todo: use the prototype of a
 
 dyadic  '↑', (a, b) -> # Take
   if isSimple a then a = [a]
