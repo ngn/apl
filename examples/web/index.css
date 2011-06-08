@@ -1,4 +1,4 @@
-WARNING on line 32 of /home/nick/develop/apl/examples/web/index.sass:
+WARNING on line 36 of /home/nick/develop/apl/examples/web/index.sass:
 This selector doesn't have any properties and will not be rendered.
 body {
   width: 1000px;
@@ -15,6 +15,10 @@ a {
 
 a:hover {
   background-color: khaki; }
+
+#symbols {
+  font-family: monospace;
+  font-size: 20px; }
 
 #code {
   font-size: 28px;
