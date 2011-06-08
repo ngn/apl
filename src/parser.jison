@@ -53,7 +53,12 @@ sequence
 
 item
     : indexable                  { $$ = $1; }
-    | indexable '[' sequence ']' { $$ = ['[]', $1, $2]; }
+    | indexable '[' indices ']'  { $$ = ['index', $1].concat($3); }
+    ;
+
+indices
+    : expr                       { $$ = [$1]; }
+    | indices ';' expr           { ($$ = $1).push($3); }
     ;
 
 indexable

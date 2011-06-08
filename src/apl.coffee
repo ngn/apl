@@ -32,7 +32,7 @@
 #                      0, // Element at indices [0;0;2]
 #                      0, // Element at indices [0;1;0]
 #                      0, // Element at indices [0;1;1]
-#                      // ...                   
+#                      // ...
 #                      0  // Element at indices [1;1;2]
 #              ];
 #              cube.shape = [2, 2, 3];
@@ -378,7 +378,29 @@ monadic '⊂', (a) -> # Enclose
 dyadic '⊂' # Partition (with axis)
 monadic '⊃' # Disclose
 dyadic '⊃' # Pick
-dyadic '[]' # Index
+
+dyadic '⌷', (a, b) -> # Index
+  # (a0 a1 ...)⌷b is equivalent to b[a0;a1;...]
+  if isSimple a then a = [a]
+  if a.shape and a.shape.length > 1
+    throw Error 'Indices must be a scalar or a vector, not a higher-dimensional array.'
+  sb = shapeOf b
+  if a.length isnt sb.length
+    throw Error 'The number of indices must be equal to the rank of the indexable.'
+  a = for x in a then (if isSimple x then withShape [], [x] else x)
+  for x, d in a then for y in x when not (typeof y is 'number' and y is floor(y))
+    throw Error 'Indices must be integers'
+  for x, d in a then for y in x when not (0 <= y < sb[d])
+    throw Error 'Index out of bounds'
+  sr = []; for x in a then sr = sr.concat shapeOf x
+  r = []
+  rec = (d, i, n) ->
+    if d >= a.length then r.push b[i]
+    else then for x in a[d] then rec d + 1, i + (x * n / sb[d]), n / sb[d]
+    0
+  rec 0, 0, b.length
+  if sr.length is 0 then r[0] else withShape sr, r
+
 monadic '⍋' # Grade up
 monadic '⍒' # Grade down
 monadic '⊤' # Encode
@@ -481,7 +503,14 @@ exec = exports.exec = (ast, ctx) ->
       when 'body' then r = 0; (for x in ast[1...] then r = exec x, ctx); r
       when 'num' then parseFloat ast[1].replace(/¯/, '-')
       when 'str' then eval(ast[1]).split ''
-      when '[]' then ast[1] # todo
+
+      when 'index'
+        x = exec ast[1], ctx
+        y = for subscriptAST in ast[2...] then exec subscriptAST, ctx
+        if typeof x is 'function'
+          (a, b) -> x(a, b, y)
+        else
+          builtins['⌷'](y, x)
 
       when 'assign'
         name = ast[1]; value = exec ast[2], ctx

@@ -75,6 +75,23 @@ gives '1 ◇ 2 ◇ 3', 3
 gives 'A←5', 5
 gives 'A×A←2 5', [4, 25]
 
+# [] Subscripting {{{1
+gives '(23 54 38)[0]', 23
+gives '(23 54 38)[1]', 54
+gives '(23 54 38)[2]', 38
+fails '(23 54 38)[3]'
+fails '(23 54 38)[¯1]'
+gives '(23 54 38)[0 2]', [23, 38]
+gives '(2 3 ⍴ 100 101 102 110 111 112)[1;2]', 112
+fails '(2 3 ⍴ 100 101 102 110 111 112)[1;¯1]'
+fails '(2 3 ⍴ 100 101 102 110 111 112)[10;1]'
+gives '"hello"[1]', 'e'
+gives '"ipodlover"[1 2 5 8 3 7 6 0 4]', S 'poordevil'
+gives '("axlrose"[4 3 0 2 5 6 1])[0 1 2 3]', S 'oral'
+gives '" X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]', S ' X ' +
+                                      'X  ' +
+                                      'XXX'
+
 # {} Lambda expressions {{{1
 gives '{1 + 1} 1', 2
 
