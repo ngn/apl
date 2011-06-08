@@ -244,6 +244,15 @@ gives '1 2 ↑ 1 + 4 3 ⍴ ⍳ 12',
 gives '⍴ ⊂ 2 3⍴⍳6', []
 gives '⍴⍴ ⊂ 2 3⍴⍳6', [0]
 
+# ⊃ Disclose {{{1
+gives '⊃ (1 2 3) (4 5 6)', [1, 2, 3, 4, 5, 6], [2, 3]
+gives '⍴⊃ (1 2 3) (4 5 6)', [2, 3]
+gives '⊃ (1 2) (3 4 5)', [1, 2, 0, 3, 4, 5]
+gives '⍴⊃ (1 2) (3 4 5)', [2, 3]
+gives '⊃ (1 2 3) "AB"', [1, 2, 3, 'A', 'B', 0] # todo: when we implement prototypes, the last element of the result should be ' '
+gives '⍴⊃ (1 2 3) "AB"', [2, 3]
+gives '⊃123', 123
+
 
 # / Reduction {{{1
 gives '+/ 3', 3

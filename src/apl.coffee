@@ -376,7 +376,36 @@ monadic '⊂', (a) -> # Enclose
   if isSimple a then a else withShape [], [a]
 
 dyadic '⊂' # Partition (with axis)
-monadic '⊃' # Disclose
+
+monadic '⊃', (a) -> # Disclose
+  if isSimple a then return a
+  sa = shapeOf a
+  if sa.length is 0 then return a[0]
+  sr1 = shapeOf a[0]
+  for x in a[1...]
+    sx = shapeOf x
+    if sx.length isnt sr1.length
+      throw Error 'The argument of ⊃ must contain elements of the same rank.'
+    for i in [0...sr1.length]
+      sr1[i] = max sr1[i], sx[i]
+  sr = shapeOf(a).concat sr1
+  r = []
+  for x in a
+    sx = shapeOf x
+    rec = (d, i, n, N) ->
+      # d: dimension, i: index in x, n: block size in x, N: block size in r
+      if d >= sr1.length
+        r.push x[i]
+      else
+        n /= sx[d]
+        N /= sr1[d]
+        for j in [0...sx[d]]
+          rec d + 1, i + j * n, n, N
+        for [0 ... N * (sr1[d] - sx[d])]
+          r.push 0
+    rec 0, 0, x.length, prod sr1
+  withShape sr, r
+
 dyadic '⊃' # Pick
 
 dyadic '⌷', (a, b) -> # Index
