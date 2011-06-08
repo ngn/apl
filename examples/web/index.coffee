@@ -107,6 +107,7 @@ jQuery ($) ->
     ['↓', '`u', 'Drop']
     ['⊂', '`z', 'Enclose, Partition']
     ['⊃', '`x', 'Disclose, Pick']
+    ['⌷', '`I', 'Index']
     ['⍋', '`g', 'Grade up']
     ['⍒', '`h', 'Grade down']
     ['⊤', '`n', 'Encode']
