@@ -24,7 +24,7 @@
         } else if (typeof x === 'number') {
           return "<span class='number'>" + (x < 0 ? '¯' + (-x) : '' + x) + "</span>";
         } else if (typeof x === 'function') {
-          return "<span class='function'>function</span>";
+          return "<span class='function'>" + (x.isPrefixOperator || x.isInfixOperator || x.isPostfixOperator ? 'operator' : 'function') + (x.aplName ? ' ' + x.aplName : '') + "</span>";
         } else if (!(x.length != null)) {
           return "<span class='unknown'>" + (esc('' + x)) + "</span>";
         } else if (x.shape && x.shape.length > 2) {

@@ -161,26 +161,27 @@ pervasive = (f) -> (a, b) ->
 # DSL for defining operators, functions, and pseudo-variables
 
 builtins = {} # `builtins' will be the prototype of all execution contexts, see exec()
-prefixOperator  = (symbol, f) -> f.isPrefixOperator  = true; builtins[symbol] = f
-postfixOperator = (symbol, f) -> f.isPostfixOperator = true; builtins[symbol] = f
-infixOperator   = (symbol, f) -> f.isInfixOperator   = true; builtins[symbol] = f
-niladic         = (symbol, f) -> f.isNiladic         = true; builtins[symbol] = f
+prefixOperator  = (symbol, f) -> f.isPrefixOperator  = true; f.aplName = symbol; builtins[symbol] = f
+postfixOperator = (symbol, f) -> f.isPostfixOperator = true; f.aplName = symbol; builtins[symbol] = f
+infixOperator   = (symbol, f) -> f.isInfixOperator   = true; f.aplName = symbol; builtins[symbol] = f
+niladic         = (symbol, f) -> f.isNiladic         = true; f.aplName = symbol; builtins[symbol] = f
 
-fnsByArity = [{}, {}] # monadics and dyadics stored here separately
-
-ambivalent = (symbol) -> # enable symbol to act both as a monadic and a dyadic
-  f = builtins[symbol] ?= (a, b) -> if b? then fnsByArity[1][symbol] a, b else fnsByArity[0][symbol] a
-  f.name = symbol
-  f.aplName = symbol
+ambivalent = (f1, f2) -> # combine a monadic and a dyadic function into one
+  f = (args...) -> (if args[1]? then f2 else f1)(args...)
+  f.aplName = f1.aplName or f2.aplName
   f
 
 monadic = (symbol, f) ->
-  ambivalent symbol
-  fnsByArity[0][symbol] = f or -> throw Error "Monadic function #{symbol} is not available."
+  f ?= -> throw Error "Monadic function #{symbol} is not available."
+  if (g = builtins[symbol]) then f = ambivalent f, g
+  f.aplName = symbol
+  builtins[symbol] = f
 
 dyadic = (symbol, f) ->
-  ambivalent symbol
-  fnsByArity[1][symbol] = f or -> throw Error "Dyadic function #{symbol} is not available."
+  f ?= -> throw Error "Dyadic function #{symbol} is not available."
+  if (g = builtins[symbol]) then f = ambivalent g, f
+  f.aplName = symbol
+  builtins[symbol] = f
 
 
 

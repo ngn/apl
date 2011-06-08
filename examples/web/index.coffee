@@ -15,7 +15,11 @@ jQuery ($) ->
       else if typeof x is 'number'
         "<span class='number'>#{if x < 0 then '¯' + (-x) else '' + x}</span>"
       else if typeof x is 'function'
-        "<span class='function'>function</span>"
+        "<span class='function'>#{
+          if x.isPrefixOperator or x.isInfixOperator or x.isPostfixOperator then 'operator' else 'function'
+        }#{
+          if x.aplName then ' ' + x.aplName else ''
+        }</span>"
       else if not x.length?
         "<span class='unknown'>#{esc('' + x)}</span>"
       else if x.shape and x.shape.length > 2
