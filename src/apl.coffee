@@ -396,7 +396,7 @@ dyadic '⌷', (a, b) -> # Index
   r = []
   rec = (d, i, n) ->
     if d >= a.length then r.push b[i]
-    else then for x in a[d] then rec d + 1, i + (x * n / sb[d]), n / sb[d]
+    else for x in a[d] then rec d + 1, i + (x * n / sb[d]), n / sb[d]
     0
   rec 0, 0, b.length
   if sr.length is 0 then r[0] else withShape sr, r
