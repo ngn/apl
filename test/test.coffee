@@ -119,6 +119,19 @@ gives '3 3 ⍴ ⍳ 4', [0, 1, 2
                     3, 0, 1
                     2, 3, 0]
 
+# ? Roll {{{1
+gives 'n←6 ◇ r←?n ◇ (0≤r)∧(r<n)', 1
+gives '?0', 0
+gives '?1', 0
+
+# ? Deal {{{1
+gives 'n←100 ◇ (+/n?n)=(+/⍳n)', 1 # a permutation (an "n?n" dealing) contains all numbers 0...n
+gives 'n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A<n', 1 # any number x in a dealing is 0 <= x < n
+gives '0?100', []
+gives '0?0', []
+gives '1?1', [0]
+fails '5?3'
+
 # ! Factorial {{{1
 gives '!5', 120
 gives '!21', 51090942171709440000

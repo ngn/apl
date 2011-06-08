@@ -202,14 +202,14 @@ monadic '|', pervasive (x)    -> abs x             # Absolute value
 dyadic  '|', pervasive (x, y) -> y % x             # Residue
 monadic '⍳', (a) -> [0 ... floor numericValueOf a] # Index generate
 dyadic  '⍳', -> throw Error 'Not implemented'      # Index of
-monadic '?', pervasive (x) -> ceil random() * max 0, floor numericValueOf x # Roll
+monadic '?', pervasive (x) -> floor random() * max 0, floor numericValueOf x # Roll
 
 dyadic '?', (x, y) -> # Deal
   x = max 0, floor numericValueOf x
   y = max 0, floor numericValueOf y
-  if x > y then throw Error 'Domain error'
+  if x > y then throw Error 'Domain error: left argument of ? must not be greater than its right argument.'
   available = [0...y]
-  for [0...x] then available.splice floor(available.length * random()), 1
+  for [0...x] then available.splice(floor(available.length * random()), 1)[0]
 
 monadic '⋆', pervasive (x) -> exp numericValueOf x # Exponentiate
 dyadic  '⋆', pervasive (x, y) -> pow numericValueOf(x), numericValueOf(y) # To the power of
