@@ -129,16 +129,19 @@
       bodyHandler: function() {
         var k, _ref;
         _ref = hSymbolDefs[$(this).text()], ch = _ref[0], key = _ref[1], description = _ref[2];
-        return "<span class='keys' style=\"float: right\">\n  " + (((function() {
-          var _j, _len2, _ref2, _results;
-          _ref2 = key.split('');
+        return "<span class='keys' style=\"float: right\">" + (((function() {
+          var _j, _len2, _results;
           _results = [];
-          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-            k = _ref2[_j];
-            _results.push("<span class='key'>" + k + "</span>");
+          for (_j = 0, _len2 = key.length; _j < _len2; _j++) {
+            k = key[_j];
+            s = "<span class='key'>" + k + "</span>";
+            if (k !== k.toLowerCase()) {
+              s = "<span class='key'>⇧&nbsp;Shift</span>" + s;
+            }
+            _results.push(s);
           }
           return _results;
-        })()).join(' ')) + "\n</span>\n<span class='symbol'>" + ch + "</span>\n<p class='description'>" + description + "</p>";
+        })()).join(' ')) + "</span>\n<span class='symbol'>" + ch + "</span>\n<p class='description'>" + description + "</p>";
       }
     });
     $('#code').keydown(function(event) {

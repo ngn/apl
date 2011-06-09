@@ -159,9 +159,12 @@ jQuery ($) ->
     bodyHandler: ->
       [ch, key, description] = hSymbolDefs[$(@).text()]
       """
-        <span class='keys' style="float: right">
-          #{(for k in key.split '' then "<span class='key'>#{k}</span>").join(' ')}
-        </span>
+        <span class='keys' style="float: right">#{(
+            for k in key
+              s = "<span class='key'>#{k}</span>"
+              if k isnt k.toLowerCase() then s = "<span class='key'>⇧&nbsp;Shift</span>" + s
+              s
+        ).join(' ')}</span>
         <span class='symbol'>#{ch}</span>
         <p class='description'>#{description}</p>
       """
