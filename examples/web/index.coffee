@@ -144,8 +144,12 @@ jQuery ($) ->
   for symbolDef in symbolDefs
     [ch, key, description] = symbolDef
     hSymbolDefs[ch] = symbolDef
-    if key then mapping[key] = ch; description += " (key: #{key})"
-    symbolsHTML += "<a href='#' title='#{esc description}'>#{esc ch}</a>"
+    href = '#' + (
+      for c in ch
+        s = '0000' + c.charCodeAt(0).toString(16).toUpperCase()
+        'U+' + s[s.length - 4 ...]
+    ).join ','
+    symbolsHTML += "<a href='#{href}'>#{esc ch}</a>"
   $('#symbols').html "<p>#{symbolsHTML}</p>"
   $('#symbols a').live 'click', -> $('#code').replaceSelection $(@).text()
 

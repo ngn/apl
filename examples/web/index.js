@@ -1,6 +1,6 @@
 (function() {
   jQuery(function($) {
-    var ch, code, description, esc, escHard, escT, examples, formatAsHTML, formatHTMLTable, hSymbolDefs, i, key, mapping, name, symbolDef, symbolDefs, symbolsHTML, _i, _len, _len2, _ref;
+    var c, ch, code, description, esc, escHard, escT, examples, formatAsHTML, formatHTMLTable, hSymbolDefs, href, i, key, mapping, name, s, symbolDef, symbolDefs, symbolsHTML, _i, _len, _len2, _ref;
     escT = {
       '<': 'lt',
       '>': 'gt',
@@ -104,11 +104,17 @@
       symbolDef = symbolDefs[_i];
       ch = symbolDef[0], key = symbolDef[1], description = symbolDef[2];
       hSymbolDefs[ch] = symbolDef;
-      if (key) {
-        mapping[key] = ch;
-        description += " (key: " + key + ")";
-      }
-      symbolsHTML += "<a href='#' title='" + (esc(description)) + "'>" + (esc(ch)) + "</a>";
+      href = '#' + ((function() {
+        var _j, _len2, _results;
+        _results = [];
+        for (_j = 0, _len2 = ch.length; _j < _len2; _j++) {
+          c = ch[_j];
+          s = '0000' + c.charCodeAt(0).toString(16).toUpperCase();
+          _results.push('U+' + s.slice(s.length - 4));
+        }
+        return _results;
+      })()).join(',');
+      symbolsHTML += "<a href='" + href + "'>" + (esc(ch)) + "</a>";
     }
     $('#symbols').html("<p>" + symbolsHTML + "</p>");
     $('#symbols a').live('click', function() {
