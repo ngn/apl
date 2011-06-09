@@ -149,6 +149,7 @@ jQuery ($) ->
         s = '0000' + c.charCodeAt(0).toString(16).toUpperCase()
         'U+' + s[s.length - 4 ...]
     ).join ','
+    if key then mapping[key] = ch
     symbolsHTML += "<a href='#{href}'>#{esc ch}</a>"
   $('#symbols').html "<p>#{symbolsHTML}</p>"
   $('#symbols a').live 'click', -> $('#code').focus().replaceSelection $(@).text(); false

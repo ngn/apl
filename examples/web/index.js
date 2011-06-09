@@ -114,6 +114,9 @@
         }
         return _results;
       })()).join(',');
+      if (key) {
+        mapping[key] = ch;
+      }
       symbolsHTML += "<a href='" + href + "'>" + (esc(ch)) + "</a>";
     }
     $('#symbols').html("<p>" + symbolsHTML + "</p>");
