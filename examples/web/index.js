@@ -118,7 +118,8 @@
     }
     $('#symbols').html("<p>" + symbolsHTML + "</p>");
     $('#symbols a').live('click', function() {
-      return $('#code').replaceSelection($(this).text());
+      $('#code').focus().replaceSelection($(this).text());
+      return false;
     });
     $('#symbols a').tooltip({
       showURL: false,
@@ -154,7 +155,8 @@
     return $('#examples a').live('click', function() {
       var _ref2;
       _ref2 = examples[parseInt($(this).attr('href').replace(/#example(\d+)$/, '$1'))], name = _ref2[0], code = _ref2[1];
-      return $('#code').val(code).focus();
+      $('#code').val(code).focus();
+      return false;
     });
   });
 }).call(this);

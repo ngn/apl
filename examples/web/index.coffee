@@ -151,7 +151,7 @@ jQuery ($) ->
     ).join ','
     symbolsHTML += "<a href='#{href}'>#{esc ch}</a>"
   $('#symbols').html "<p>#{symbolsHTML}</p>"
-  $('#symbols a').live 'click', -> $('#code').replaceSelection $(@).text()
+  $('#symbols a').live 'click', -> $('#code').focus().replaceSelection $(@).text(); false
 
   $('#symbols a').tooltip
     showURL: false
@@ -205,5 +205,6 @@ jQuery ($) ->
   $('#examples a').live 'click', ->
     [name, code] = examples[parseInt $(@).attr('href').replace /#example(\d+)$/, '$1']
     $('#code').val(code).focus()
+    false
 
   # }}}1
