@@ -181,6 +181,13 @@ gives ''' TABLE ← 2 3⍴1 2 3 4 5 6
         [ 1, 1, 1
           0, 0, 0 ] ]
 
+# ≡ Depth
+gives '≡4', 0
+gives '≡⍳4', 1
+gives '≡2 2⍴⍳4', 1
+gives '≡"abc" 1 2 3 (23 55)', 2
+gives '≡"abc" (2 4⍴("abc" 2 3 "k"))', 3
+
 # ∈ Enlist {{{1
 gives '∈ 17', [17]
 gives '⍴ ∈ (1 2 3) "ABC" (4 5 6)', [9]

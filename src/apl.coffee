@@ -256,7 +256,11 @@ dyadic '=', pervasive (x, y) -> +(x is   y) # Equal
 dyadic '≥', pervasive (x, y) -> +(x >=   y) # Greater than
 dyadic '>', pervasive (x, y) -> +(x >    y) # Greater than or equal
 dyadic '≠', pervasive (x, y) -> +(x isnt y) # Not equal
-monadic '≡' # Depth
+
+monadic '≡', depthOf = (a) -> # Depth
+  if isSimple a then return 0
+  r = 0; (for x in a then r = max r, depthOf x); r + 1
+
 dyadic '≡' # Match
 dyadic '≢' # Not match
 
