@@ -448,10 +448,7 @@ dyadic '⊢' # Right
 
 # Operators ("functions that act upon functions")
 
-postfixOperator '/', (f) -> (a, b) -> reduce f, a, b # Reduce
-postfixOperator '⌿', (f) -> (a, b) -> reduce f, a, b, 0 # 1st axis reduce
-
-reduce = (f, a, b, axis=-1) -> # helper for operators / and ⌿
+postfixOperator '/', reduce = (f, _, axis=-1) -> (a, b) -> # Reduce
   invokedAsMonadic = not b?
   if invokedAsMonadic then b = a; a = 0
   a = floor numericValueOf a
@@ -477,6 +474,8 @@ reduce = (f, a, b, axis=-1) -> # helper for operators / and ⌿
         x = items[i]; (for j in [i + 1 ... i + a] by 1 then x = f x, items[j]); x
   if invokedAsMonadic then r[0] else r
 
+postfixOperator '⌿', (f) -> reduce f, null, 0 # 1st axis reduce
+
 postfixOperator '¨', (f) -> (a, b) -> # Each
   if not b? then return (for x in arrayValueOf a then f x)
   if isSimple a then return (for x in arrayValueOf b then f a, x)
@@ -485,13 +484,23 @@ postfixOperator '¨', (f) -> (a, b) -> # Each
   if b.length is 1 then return (for x in a then f x, b[0])
   throw Error 'Length error'
 
-prefixOperator '∘.', (f) -> (a, b) -> # Outer product
+prefixOperator '∘.', outerProduct = (f) -> (a, b) -> # Outer product
   if not b? then throw Error 'Operator ∘. (Outer product) works only with dyadic functions'
   a = arrayValueOf a
   b = arrayValueOf b
   r = []
   for x in a then for y in b then r.push f x, y
   withShape (shapeOf a).concat(shapeOf b), r
+
+infixOperator '.', (f, g) -> # Inner product
+  # todo: the general formula for higher dimensions is
+  #   A f.g B   <=>   f/¨ (⊂[⍴⍴A]A)∘.g ⊂[1]B
+  F = reduce f
+  G = outerProduct g
+  (a, b) ->
+    if shapeOf(a).length > 1 or shapeOf(b).length > 1
+      throw Error 'Inner product operator (.) is implemented only for arrays of rank no more than 1.'
+    F g a, b
 
 
 
@@ -586,7 +595,7 @@ exec = exports.exec = (ast, ctx) ->
           if typeof a[i] is 'function'
             if typeof a[i+1] is 'function' and a[i+1].isInfixOperator
               if typeof a[i+2] is 'function'
-                a[i..i+2] = a[i+1] a[i+2], a[i]
+                a[i..i+2] = a[i+1] a[i], a[i+2]
                 continue
           i++
 
