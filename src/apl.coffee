@@ -462,7 +462,7 @@ dyadic '⊢' # Right
 
 # Operators ("functions that act upon functions")
 
-postfixOperator '/', reduce = (f, _, axis=-1) -> (a, b) -> # Reduce
+reduce = (f, _, axis=-1) -> (a, b) -> 
   invokedAsMonadic = not b?
   if invokedAsMonadic then b = a; a = 0
   a = floor numericValueOf a
@@ -488,7 +488,61 @@ postfixOperator '/', reduce = (f, _, axis=-1) -> (a, b) -> # Reduce
         x = items[i]; (for j in [i + 1 ... i + a] by 1 then x = f x, items[j]); x
   if invokedAsMonadic then r[0] else r
 
-postfixOperator '⌿', (f) -> reduce f, null, 0 # 1st axis reduce
+compressOrReplicate = (a, b, axis=-1) ->
+  sb = shapeOf b
+  if axis < 0 then axis += sb.length
+  if not (0 <= axis < sb.length) then throw Error 'Axis out of bounds'
+  sr = sb[0...]
+  sr[axis] = 0
+  if shapeOf(a).length > 1 then throw Error 'Left argument to / must be an integer or a vector of integers'
+  if not a.length then a = for [0...sb[axis]] then a
+
+  nNonNegative = 0 # number of non-negative elements in a
+  for x in a
+    if typeof x isnt 'number' or x isnt floor x then throw Error 'Left argument to / must be an integer or a vector of integers'
+    sr[axis] += abs x
+    nNonNegative += (x >= 0)
+
+  isExtensive = true; isExpansive = isHyperexpansive = false
+  if sb[axis] isnt 1
+    isExtensive = false
+    isExpansive = a.length is sb[axis]
+    isHyperexpansive = not isExpansive
+    if isHyperexpansive and (nNonNegative isnt sb[axis])
+      throw Error 'For A/B, the length of B along the selected axis ' +
+                  'must be equal either to one, ' +                 # extension
+                  'or the length of A, ' +                          # expansion
+                  'or to the number of non-negative elements in A.' # hyperexpansion
+  r = []
+  ni = prod sb[... axis]
+  nj = sb[axis]
+  nk = prod sb[axis + 1 ...]
+  for i in [0...ni]
+    j = 0
+    for x in a
+      if x > 0
+        for [0...x]
+          for k in [0...nk]
+            r.push b[k + nk*(j + nj*i)]
+        j += isExpansive or isHyperexpansive
+      else
+        for [0...-a[j]*nk]
+          r.push 0 # todo: prototype
+        j += isExpansive
+
+  withShape sr, r
+
+postfixOperator '/', (a, b, axis=-1) -> # Reduce, compress, or replicate
+  if typeof a is 'function'
+    reduce a, undefined, axis
+  else
+    compressOrReplicate a, b, axis
+
+postfixOperator '⌿', (a, b, axis=0) -> # 1st axis reduce, compress, or replicate
+  if typeof a is 'function'
+    reduce a, undefined, axis
+  else
+    compressOrReplicate a, b, axis
 
 postfixOperator '¨', (f) -> (a, b) -> # Each
   if not b? then return (for x in arrayValueOf a then f x)
