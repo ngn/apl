@@ -199,8 +199,8 @@ monadic '⌈', pervasive (x)    -> ceil x            # Ceiling
 dyadic  '⌈', pervasive (x, y) -> max x, y          # Greater of
 monadic '⌊', pervasive (x)    -> floor x           # Floor
 dyadic  '⌊', pervasive (x, y) -> min x, y          # Lesser of
-monadic '|', pervasive (x)    -> abs x             # Absolute value
-dyadic  '|', pervasive (x, y) -> y % x             # Residue
+monadic '∣', pervasive (x)    -> abs x             # Absolute value
+dyadic  '∣', pervasive (x, y) -> y % x             # Residue
 monadic '⍳', (a) -> [0 ... floor numericValueOf a] # Index generate
 dyadic  '⍳', -> throw Error 'Not implemented'      # Index of
 monadic '?', pervasive (x) -> floor random() * max 0, floor numericValueOf x # Roll
