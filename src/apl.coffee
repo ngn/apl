@@ -261,8 +261,18 @@ monadic '≡', depthOf = (a) -> # Depth
   if isSimple a then return 0
   r = 0; (for x in a then r = max r, depthOf x); r + 1
 
-dyadic '≡' # Match
-dyadic '≢' # Not match
+dyadic '≡', match = (a, b) -> # Match
+  if isSimple(a) and isSimple(b) then return +(a is b)
+  if isSimple(a) isnt isSimple(b) then return 0
+  sa = shapeOf a
+  sb = shapeOf b
+  if sa.length isnt sb.length then return 0
+  for i in [0...sa.length] when sa[i] isnt sb[i] then return 0
+  if a.length isnt b.length then return 0
+  for i in [0...a.length] then if not match a[i], b[i] then return 0
+  1
+
+dyadic '≢', (a, b) -> +not match a, b # Not match
 
 monadic '∈', (a) -> # Enlist
   r = []
