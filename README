@@ -15,5 +15,7 @@ An APL interpreter written in CoffeeScript
 Works with node.js or in a browser
 Uses Jison for parsing
 
-Run an APL script:
-apl /path/to/script.apl
+See examples/web/index.html for an in-browser demo.
+
+To run an APL script, install node.js and run:
+bin/apl examples/life.apl
