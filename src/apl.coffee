@@ -350,7 +350,19 @@ dyadic '⊖', (a, b) -> # 1st axis rotate
   a %= n; if a < 0 then a += n
   withShape sb, (for i in [0...b.length] then b[((floor(i / k) + a) % n) * k + (i % k)])
 
-monadic '⍉' # Transpose
+monadic '⍉', (a) -> # Transpose
+  sa = shapeOf a
+  if sa.length <= 1 then return a # has no effect on scalars or vectors
+  sr = sa[0...].reverse()
+  psr = [1] # partial products over sr
+  for i in [0 ... sa.length - 1] then psr.push psr[i] * sr[i]
+  r = []
+  rec = (d, i) ->
+    if d >= sa.length then r.push a[i]
+    else for j in [0...sr[d]] then rec d + 1, i + j*psr[d]
+    0
+  rec 0, 0
+  withShape sr, r
 
 monadic '↑', (a) -> # First
   a = arrayValueOf(a)
