@@ -330,8 +330,20 @@ catenate = (a, b, axis=-1) -> # helper for functions , and ⍪
 dyadic  ',', catenate # Catenate
 dyadic  '⍪', (a, b) -> catenate a, b, 0 # 1st axis catenate
 
-monadic '⌽' # Reverse
-monadic '⊖' # 1st axis reverse
+monadic '⌽', reverse = (a, _, axis=-1) -> # Reverse
+  sa = shapeOf a
+  if sa.length is 0 then return a
+  if axis < 0 then axis += sa.length
+  if not (0 <= axis < sa.length) then throw Error 'Axis out of bounds'
+  ni = prod sa[...axis]
+  nj = sa[axis]
+  nk = prod sa[axis + 1 ...]
+  r = []
+  for i in [0...ni]
+    for j in [nj - 1 .. 0] by -1
+      for k in [0...nk]
+        r.push a[k + nk*(j + nj*i)]
+  withShape sa, r
 
 dyadic  '⌽', (a, b) -> # Rotate
   a = numericValueOf a
@@ -340,6 +352,8 @@ dyadic  '⌽', (a, b) -> # Rotate
   n = sb[sb.length - 1]
   a %= n; if a < 0 then a += n
   withShape sb, (for i in [0...b.length] then b[i - (i % n) + ((i % n) + a) % n])
+
+monadic '⊖', (a, _, axis=0) -> reverse a, undefined, axis # 1st axis reverse
 
 dyadic '⊖', (a, b) -> # 1st axis rotate
   a = numericValueOf a
