@@ -2,7 +2,7 @@
   var S, all, eq, exec, fail, fails, gives, identityFunction, nFailed, nTests, parser, puts, repr;
   puts = require('sys').puts;
   parser = require('../lib/parser').parser;
-  exec = require('../lib/apl').exec;
+  exec = require('../lib/interpreter').exec;
   repr = JSON.stringify;
   nTests = 0;
   nFailed = 0;

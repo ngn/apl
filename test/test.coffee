@@ -3,7 +3,7 @@
 # Test framework {{{1
 {puts} = require 'sys'
 {parser} = require '../lib/parser'
-{exec} = require '../lib/apl'
+{exec} = require '../lib/interpreter'
 repr = JSON.stringify
 
 nTests = 0

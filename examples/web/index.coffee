@@ -59,7 +59,9 @@ jQuery ($) ->
   $('#go').closest('form').submit ->
     $('#result').html(
       try
-        formatAsHTML exec parser.parse $('#code').val()
+        interpreter = require './interpreter'
+        parser = require './parser'
+        formatAsHTML interpreter.exec parser.parse $('#code').val()
       catch e
         console?.error?(e)
         "<div class='error'>#{escHard e.message}</div>"

@@ -86,9 +86,12 @@
     };
     $('#code').focus();
     $('#go').closest('form').submit(function() {
+      var interpreter, parser;
       $('#result').html((function() {
         try {
-          return formatAsHTML(exec(parser.parse($('#code').val())));
+          interpreter = require('./interpreter');
+          parser = require('./parser');
+          return formatAsHTML(interpreter.exec(parser.parse($('#code').val())));
         } catch (e) {
           if (typeof console !== "undefined" && console !== null) {
             if (typeof console.error === "function") {
