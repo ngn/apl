@@ -1,6 +1,6 @@
 (function() {
   jQuery(function($) {
-    var c, ch, code, description, esc, escHard, escT, examples, formatAsHTML, formatHTMLTable, hSymbolDefs, href, i, key, mapping, name, s, symbolDef, symbolDefs, symbolsHTML, _i, _len, _len2, _ref;
+    var $keyboard, c, ch, code, description, esc, escHard, escT, examples, formatAsHTML, formatHTMLTable, hSymbolDefs, href, i, isKeyboardShown, key, mapping, name, renderKey, renderKeyboard, s, symbolDef, symbolDefs, symbolsHTML, td, _i, _len, _len2, _ref;
     escT = {
       '<': 'lt',
       '>': 'gt',
@@ -9,9 +9,13 @@
       '"': 'quot'
     };
     esc = function(s) {
-      return s.replace(/[<>&'"]/g, function(x) {
-        return "&" + escT[x] + ";";
-      });
+      if (s) {
+        return s.replace(/[<>&'"]/g, function(x) {
+          return "&" + escT[x] + ";";
+        });
+      } else {
+        return '';
+      }
     };
     escHard = function(s) {
       return esc(s).replace(' ', '&nbsp;', 'g').replace('\n', '<br/>', 'g');
@@ -136,7 +140,7 @@
             k = key[_j];
             s = "<span class='key'>" + k + "</span>";
             if (k !== k.toLowerCase()) {
-              s = "<span class='key'>⇧&nbsp;Shift</span>" + s;
+              s = "<span class='key'>Shift&nbsp;⇧</span>" + s;
             }
             _results.push(s);
           }
@@ -152,6 +156,28 @@
     });
     $('#code').retype('on', {
       mapping: mapping
+    });
+    renderKey = function(lowerRegister, upperRegister) {
+      return "<table class='key'>\n  <tr>\n    <td class='upperRegister'>" + (esc(upperRegister)) + "</td>\n    <td class='upperAPLRegister'>" + (esc(mapping['`' + upperRegister])) + "</td>\n  </tr>\n  <tr>\n    <td class='lowerRegister'>" + (esc(lowerRegister)) + "</td>\n    <td class='lowerAPLRegister'>" + (esc(mapping['`' + lowerRegister])) + "</td>\n  </tr>\n</table>";
+    };
+    td = function(content) {
+      return "<td>" + content + "</td>";
+    };
+    renderKeyboard = function(mapping) {
+      return "<div class=\"keyboard\">\n  <table class=\"row\"><tr>" + ([td(renderKey('`', '~')), td(renderKey('1', '!')), td(renderKey('2', '@')), td(renderKey('3', '#')), td(renderKey('4', '$')), td(renderKey('5', '%')), td(renderKey('6', '^')), td(renderKey('7', '&')), td(renderKey('8', '*')), td(renderKey('9', '(')), td(renderKey('0', ')')), td(renderKey('-', '_')), td(renderKey('=', '+'))].join('')) + "\n    <td><table class=\"key backspaceKey\"><tr><td>Backspace<br/>⟵</td></tr></table></td>\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key tabKey\"><tr><td>Tab<br/>↹</td></tr></table></td>\n    " + ([td(renderKey('q', 'Q')), td(renderKey('w', 'W')), td(renderKey('e', 'E')), td(renderKey('r', 'R')), td(renderKey('t', 'T')), td(renderKey('y', 'Y')), td(renderKey('u', 'U')), td(renderKey('i', 'I')), td(renderKey('o', 'O')), td(renderKey('p', 'P')), td(renderKey('[', '{')), td(renderKey(']', '}')), td(renderKey('\\', '|'))].join('')) + "\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key capsLockKey\"><tr><td>Caps Lock</td></tr></table></td>\n    " + ([td(renderKey('a', 'A')), td(renderKey('s', 'S')), td(renderKey('d', 'D')), td(renderKey('f', 'F')), td(renderKey('g', 'G')), td(renderKey('h', 'H')), td(renderKey('j', 'J')), td(renderKey('k', 'K')), td(renderKey('l', 'L')), td(renderKey(';', ':')), td(renderKey("'", '"'))].join('')) + "\n    <td><table class=\"key enterKey\"><tr><td>Enter<br/>⏎</td></tr></table></td>\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key leftShiftKey\"><tr><td>Shift&nbsp;⇧</td></tr></table></td>\n    " + ([td(renderKey('z', 'Z')), td(renderKey('x', 'X')), td(renderKey('c', 'C')), td(renderKey('v', 'V')), td(renderKey('b', 'B')), td(renderKey('n', 'N')), td(renderKey('m', 'M')), td(renderKey(',', '<')), td(renderKey('.', '>')), td(renderKey('/', '?'))].join('')) + "\n    <td><table class=\"key rightShiftKey\"><tr><td>Shift&nbsp;⇧</td></tr></table></td>\n  </tr></table>\n</div>";
+    };
+    isKeyboardShown = false;
+    $keyboard = null;
+    $('#keyboardSwitch a').live('click', function(event) {
+      isKeyboardShown = !isKeyboardShown;
+            if ($keyboard != null) {
+        $keyboard;
+      } else {
+        $keyboard = $(renderKeyboard()).appendTo('#keyboardSwitch');
+      };
+      $keyboard.toggle(isKeyboardShown);
+      $(this).text(isKeyboardShown ? 'Hide keyboard' : 'Show keyboard');
+      return false;
     });
     examples = [['Rho-Iota', '⍝  ⍳ n  generates a list of numbers from 0 to n−1\n⍝  n n ⍴ A  arranges the elements of A in an n×n matrix\n\n5 5 ⍴ ⍳ 25'], ['Multiplication table', '⍝  ∘.       is the "outer product" operator\n⍝  a × b    scalar multiplication, "a times b"\n⍝  A ∘.× B  every item in A times every item in B\n\n(⍳ 10) ∘.× ⍳ 10'], ['Life', '⍝ Conway\'s game of life\nr←(3 3 ⍴ ⍳ 9)∈1 3 6 7 8\nR←¯1⊖¯2⌽5 7↑r\nlife←{∨/1⍵∧3 4=⊂+/+⌿1 0 ¯1∘.⊖1 0 ¯1⌽¨⊂⍵}\nR (life R) (life life R)']];
     for (i = 0, _len2 = examples.length; i < _len2; i++) {

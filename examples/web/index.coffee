@@ -3,7 +3,7 @@ jQuery ($) ->
   # Result formatting {{{1
 
   escT = {'<': 'lt', '>': 'gt', '&': 'amp', "'": 'apos', '"': 'quot'}
-  esc = (s) -> s.replace /[<>&'"]/g, (x) -> "&#{escT[x]};"
+  esc = (s) -> if s then s.replace /[<>&'"]/g, (x) -> "&#{escT[x]};" else ''
   escHard = (s) -> esc(s).replace(' ', '&nbsp;', 'g').replace('\n', '<br/>', 'g')
 
   formatAsHTML = (x) ->
@@ -163,7 +163,7 @@ jQuery ($) ->
         <span class='keys' style="float: right">#{(
             for k in key
               s = "<span class='key'>#{k}</span>"
-              if k isnt k.toLowerCase() then s = "<span class='key'>⇧&nbsp;Shift</span>" + s
+              if k isnt k.toLowerCase() then s = "<span class='key'>Shift&nbsp;⇧</span>" + s
               s
         ).join(' ')}</span>
         <span class='symbol'>#{ch}</span>
@@ -172,6 +172,106 @@ jQuery ($) ->
 
   $('#code').keydown (event) -> if event.keyCode is 13 and event.ctrlKey then $('#go').click(); false
   $('#code').retype 'on', {mapping}
+
+  # Keyboard visualisation {{{1
+  renderKey = (lowerRegister, upperRegister) ->
+    """
+      <table class='key'>
+        <tr>
+          <td class='upperRegister'>#{esc upperRegister}</td>
+          <td class='upperAPLRegister'>#{esc mapping['`' + upperRegister]}</td>
+        </tr>
+        <tr>
+          <td class='lowerRegister'>#{esc lowerRegister}</td>
+          <td class='lowerAPLRegister'>#{esc mapping['`' + lowerRegister]}</td>
+        </tr>
+      </table>
+    """
+
+  td = (content) -> "<td>#{content}</td>"
+
+  renderKeyboard = (mapping) ->
+    """
+      <div class="keyboard">
+        <table class="row"><tr>#{[
+          td renderKey '`', '~'
+          td renderKey '1', '!'
+          td renderKey '2', '@'
+          td renderKey '3', '#'
+          td renderKey '4', '$'
+          td renderKey '5', '%'
+          td renderKey '6', '^'
+          td renderKey '7', '&'
+          td renderKey '8', '*'
+          td renderKey '9', '('
+          td renderKey '0', ')'
+          td renderKey '-', '_'
+          td renderKey '=', '+'
+          ].join ''}
+          <td><table class="key backspaceKey"><tr><td>Backspace<br/>⟵</td></tr></table></td>
+        </tr></table>
+        <table class="row"><tr>
+          <td><table class="key tabKey"><tr><td>Tab<br/>↹</td></tr></table></td>
+          #{[
+          td renderKey 'q', 'Q'
+          td renderKey 'w', 'W'
+          td renderKey 'e', 'E'
+          td renderKey 'r', 'R'
+          td renderKey 't', 'T'
+          td renderKey 'y', 'Y'
+          td renderKey 'u', 'U'
+          td renderKey 'i', 'I'
+          td renderKey 'o', 'O'
+          td renderKey 'p', 'P'
+          td renderKey '[', '{'
+          td renderKey ']', '}'
+          td renderKey '\\', '|'
+          ].join ''}
+        </tr></table>
+        <table class="row"><tr>
+          <td><table class="key capsLockKey"><tr><td>Caps Lock</td></tr></table></td>
+          #{[
+          td renderKey 'a', 'A'
+          td renderKey 's', 'S'
+          td renderKey 'd', 'D'
+          td renderKey 'f', 'F'
+          td renderKey 'g', 'G'
+          td renderKey 'h', 'H'
+          td renderKey 'j', 'J'
+          td renderKey 'k', 'K'
+          td renderKey 'l', 'L'
+          td renderKey ';', ':'
+          td renderKey "'", '"'
+          ].join ''}
+          <td><table class="key enterKey"><tr><td>Enter<br/>⏎</td></tr></table></td>
+        </tr></table>
+        <table class="row"><tr>
+          <td><table class="key leftShiftKey"><tr><td>Shift&nbsp;⇧</td></tr></table></td>
+          #{[
+          td renderKey 'z', 'Z'
+          td renderKey 'x', 'X'
+          td renderKey 'c', 'C'
+          td renderKey 'v', 'V'
+          td renderKey 'b', 'B'
+          td renderKey 'n', 'N'
+          td renderKey 'm', 'M'
+          td renderKey ',', '<'
+          td renderKey '.', '>'
+          td renderKey '/', '?'
+          ].join ''}
+          <td><table class="key rightShiftKey"><tr><td>Shift&nbsp;⇧</td></tr></table></td>
+        </tr></table>
+      </div>
+    """
+
+  isKeyboardShown = false
+  $keyboard = null
+  $('#keyboardSwitch a').live 'click', (event) ->
+    isKeyboardShown = not isKeyboardShown
+    $keyboard ?= $(renderKeyboard()).appendTo '#keyboardSwitch'
+    $keyboard.toggle isKeyboardShown
+    $(@).text(if isKeyboardShown then 'Hide keyboard' else 'Show keyboard')
+    false
 
   # Examples {{{1
   examples = [
