@@ -1,6 +1,6 @@
 fs = require 'fs'
 parser = require './parser'
-interpreter = require './apl'
+interpreter = require './interpreter'
 
 exports.main = ->
   if process.argv.length > 3
