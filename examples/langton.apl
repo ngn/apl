@@ -18,6 +18,4 @@ n ← 1+2×m
 A0 ← (−m) ⊖ (−m) ⌽ n n ↑ 1 1 ⍴ 1
 next ← {0≠A0−¯1⊖⌽[⍵[m;m]]⍉⍵}
 
-next10 ← {next next next next next next next next next next ⍵}
-next100 ← {next10 next10 next10 next10 next10 next10 next10 next10 next10 next10 ⍵}
-⎕ ← ' X'[next100 next100 next100 A0]
+⎕ ← ' X'[(next⍣300) A0]
