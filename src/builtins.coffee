@@ -46,7 +46,6 @@
 # TODO: Can we model APL's concept of "prototypes"?
 
 # Utility functions
-inherit = (x) -> f = (->); f.prototype = x; new f # JavaScript's prototypical inheritance
 sum = (xs) -> r = 0; (for x in xs then r += x); r
 prod = (xs) -> r = 1; (for x in xs then r *= x); r
 repeat = (s, n) -> r = ''; (for [0...n] then r += s); r # catenate `n' instances of a string `s'
