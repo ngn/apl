@@ -128,6 +128,7 @@ jQuery ($) ->
     ['⌿', '`/', '1st axis reduce']
     ['\\','',   'Scan']
     ['⍀', '`\\','1st axis scan']
+    ['⍣', '`!', 'Power operator']
     ['¯', '`2', 'Negative number sign']
     ['⍝', '`C', 'Comment']
     ['←', '`[', 'Assignment']

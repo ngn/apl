@@ -430,6 +430,10 @@ gives "2 ↑¨ 'MONDAY' 'TUESDAY'", [S('MO'), S('TU')]
 gives '2 3 ⍴¨ 1 2', [[1, 1], [2, 2, 2]]
 gives '4 5 ⍴¨ "THE" "CAT"', [S('THET'), S('CATCA')]
 
+# ⍣ Power operator
+gives '({⍵+1}⍣5) 3', 8
+gives '({⍵+1}⍣0) 3', 3
+gives '(⍴⍣3) 2 2⍴⍳4', [1]
 
 # Game of life {{{1
 # from http://www.youtube.com/watch?v=a9xAKttWgP4

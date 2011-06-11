@@ -622,6 +622,11 @@ infixOperator '.', (f, g) -> # Inner product
       throw Error 'Inner product operator (.) is implemented only for arrays of rank no more than 1.'
     F g a, b
 
+postfixOperator '⍣', (f) -> (n) -> # Power operator
+  if typeof n isnt 'number' or n < 0 or n isnt floor n
+    throw Error 'Right argument to ⍣ must be a non-negative integer'
+  (a) -> (for [0...n] then a = f a); a
+
 
 
 # Niladic functions and pseudo-variables
