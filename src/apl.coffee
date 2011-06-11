@@ -45,7 +45,6 @@
 
 # TODO: Can we model APL's concept of "prototypes"?
 
-{min, max, abs, floor, ceil, random, exp, pow, PI, log, sin, cos, tan, asin, acos, atan, sqrt} = Math
 exports ?= @
 
 # Helpers
@@ -90,8 +89,8 @@ format0 = (a) -> # todo: handle 3+ dimensional arrays properly
       for r in [0...nr]
         for c in [0...nc]
           box = format0 a[r * nc + c]
-          h[r] = max h[r], box.length
-          w[c] = max w[c], box[0].length
+          h[r] = Math.max h[r], box.length
+          w[c] = Math.max w[c], box[0].length
           box
     bigWidth = nc - 1 + sum w # from border to border, excluding the borders
     result = [TOPLFT + repeat(TOP, bigWidth) + TOPRGT]
@@ -142,14 +141,14 @@ pervasive = (f) -> (a, b) ->
     else if isSimple b then withShape a.shape, (for x in a then F x, b)
     else
       sa = shapeOf a; sb = shapeOf b
-      for i in [0 ... min sa.length, sb.length]
+      for i in [0 ... Math.min sa.length, sb.length]
         if sa[i] isnt sb[i] then throw Error 'Length error'
       if sa.length > sb.length
         k = prod sa[sb.length...]
-        withShape sa, (for i in [0...a.length] then F a[i], b[floor i / k])
+        withShape sa, (for i in [0...a.length] then F a[i], b[Math.floor i / k])
       else if sa.length < sb.length
         k = prod sb[sa.length...]
-        withShape sb, (for i in [0...b.length] then F a[floor i / k], b[i])
+        withShape sb, (for i in [0...b.length] then F a[Math.floor i / k], b[i])
       else
         withShape sa, (for i in [0...a.length] then F a[i], b[i])
   else # monadic pervasiveness
@@ -195,55 +194,55 @@ monadic '×', pervasive (x)    -> if x < 0 then -1 else if x > 0 then 1 else 0 #
 dyadic  '×', pervasive (x, y) -> x * y             # Multiply
 monadic '÷', pervasive (x)    -> 1 / x             # Reciprocal
 dyadic  '÷', pervasive (x, y) -> x / y             # Divide
-monadic '⌈', pervasive (x)    -> ceil x            # Ceiling
-dyadic  '⌈', pervasive (x, y) -> max x, y          # Greater of
-monadic '⌊', pervasive (x)    -> floor x           # Floor
-dyadic  '⌊', pervasive (x, y) -> min x, y          # Lesser of
-monadic '∣', pervasive (x)    -> abs x             # Absolute value
+monadic '⌈', pervasive (x)    -> Math.ceil x            # Ceiling
+dyadic  '⌈', pervasive (x, y) -> Math.max x, y          # Greater of
+monadic '⌊', pervasive (x)    -> Math.floor x           # Math.Floor
+dyadic  '⌊', pervasive (x, y) -> Math.min x, y          # Lesser of
+monadic '∣', pervasive (x)    -> Math.abs x             # Absolute value
 dyadic  '∣', pervasive (x, y) -> y % x             # Residue
-monadic '⍳', (a) -> [0 ... floor numericValueOf a] # Index generate
+monadic '⍳', (a) -> [0 ... Math.floor numericValueOf a] # Index generate
 dyadic  '⍳', -> throw Error 'Not implemented'      # Index of
-monadic '?', pervasive (x) -> floor random() * max 0, floor numericValueOf x # Roll
+monadic '?', pervasive (x) -> Math.floor Math.random() * Math.max 0, Math.floor numericValueOf x # Roll
 
 dyadic '?', (x, y) -> # Deal
-  x = max 0, floor numericValueOf x
-  y = max 0, floor numericValueOf y
+  x = Math.max 0, Math.floor numericValueOf x
+  y = Math.max 0, Math.floor numericValueOf y
   if x > y then throw Error 'Domain error: left argument of ? must not be greater than its right argument.'
   available = [0...y]
-  for [0...x] then available.splice(floor(available.length * random()), 1)[0]
+  for [0...x] then available.splice(Math.floor(available.length * Math.random()), 1)[0]
 
-monadic '⋆', pervasive (x) -> exp numericValueOf x # Exponentiate
-dyadic  '⋆', pervasive (x, y) -> pow numericValueOf(x), numericValueOf(y) # To the power of
-monadic '⍟', pervasive (x) -> log x # Natural logarithm
-dyadic  '⍟', pervasive (x, y) -> log(y) / log(x) # Logarithm to the base
-monadic '○', pervasive (x) -> PI * x # Pi times
+monadic '⋆', pervasive (x) -> Math.exp numericValueOf x # Exponentiate
+dyadic  '⋆', pervasive (x, y) -> Math.pow numericValueOf(x), numericValueOf(y) # To the power of
+monadic '⍟', pervasive (x) -> Math.log x # Natural logarithm
+dyadic  '⍟', pervasive (x, y) -> Math.log(y) / Math.log(x) # Logarithm to the base
+monadic '○', pervasive (x) -> Math.PI * x # Math.Pi times
 
 dyadic '○', pervasive (i, x) -> # Circular and hyperbolic functions
   switch i
-    when 0 then sqrt(1 - x * x)
-    when 1 then sin x
-    when 2 then cos x
-    when 3 then tan x
-    when 4 then sqrt(1 + x * x)
-    when 5 then (exp(2 * x) - 1) / 2 # sinh
-    when 6 then (exp(2 * x) + 1) / 2 # cosh
-    when 7 then ex = exp(2 * x); (ex - 1) / (ex + 1) # tanh
-    when -1 then asin x
-    when -2 then acos x
-    when -3 then atan x
-    when -4 then sqrt(x * x - 1)
-    when -5 then log(x + sqrt(x * x + 1)) # arcsinh
-    when -6 then log(x + sqrt(x * x - 1)) # arccosh
-    when -7 then log((1 + x) / (1 - x)) / 2 # arctanh
+    when 0 then Math.sqrt(1 - x * x)
+    when 1 then Math.sin x
+    when 2 then Math.cos x
+    when 3 then Math.tan x
+    when 4 then Math.sqrt(1 + x * x)
+    when 5 then (Math.exp(2 * x) - 1) / 2 # sinh
+    when 6 then (Math.exp(2 * x) + 1) / 2 # cosh
+    when 7 then ex = Math.exp(2 * x); (ex - 1) / (ex + 1) # tanh
+    when -1 then Math.asin x
+    when -2 then Math.acos x
+    when -3 then Math.atan x
+    when -4 then Math.sqrt(x * x - 1)
+    when -5 then Math.log(x + Math.sqrt(x * x + 1)) # arcsinh
+    when -6 then Math.log(x + Math.sqrt(x * x - 1)) # arccosh
+    when -7 then Math.log((1 + x) / (1 - x)) / 2 # arctanh
     else throw Error 'Unknown circular or hyperbolic function ' + i
 
 monadic '!', pervasive (a) -> # Factorial
-  n = a = floor numericValueOf a # todo: "Gamma" function for non-integer argument
+  n = a = Math.floor numericValueOf a # todo: "Gamma" function for non-integer argument
   r = 1; (if n > 1 then for i in [2 .. n] then r *= i); r
 
 dyadic '!', pervasive (a, b) -> # Binomial
-  k = a = floor numericValueOf a
-  n = b = floor numericValueOf b
+  k = a = Math.floor numericValueOf a
+  n = b = Math.floor numericValueOf b
   if not (0 <= k <= n) then return 0 # todo: Special cases for negatives and non-integers
   if 2 * k > n then k = n - k # do less work
   r = 1; (if k > 0 then for i in [1 .. k] then r = r * (n - k + i) / i); r
@@ -259,7 +258,7 @@ dyadic '≠', pervasive (x, y) -> +(x isnt y) # Not equal
 
 monadic '≡', depthOf = (a) -> # Depth
   if isSimple a then return 0
-  r = 0; (for x in a then r = max r, depthOf x); r + 1
+  r = 0; (for x in a then r = Math.max r, depthOf x); r + 1
 
 dyadic '≡', match = (a, b) -> # Match
   if isSimple(a) and isSimple(b) then return +(a is b)
@@ -303,7 +302,7 @@ dyadic '⍴', (a, b) -> # Reshape
     for x in a
       if not typeof x is 'number'
         throw Error 'Domain error: Left argument to ⍴ must be a numeric scalar or vector.'
-      max 0, floor x
+      Math.max 0, Math.floor x
   withShape a, (for i in [0...prod a] then b[i % b.length])
 
 monadic ',', (a) -> arrayValueOf(a)[0...] # Ravel
@@ -362,7 +361,7 @@ dyadic '⊖', (a, b) -> # 1st axis rotate
   n = sb[0]
   k = b.length / n
   a %= n; if a < 0 then a += n
-  withShape sb, (for i in [0...b.length] then b[((floor(i / k) + a) % n) * k + (i % k)])
+  withShape sb, (for i in [0...b.length] then b[((Math.floor(i / k) + a) % n) * k + (i % k)])
 
 monadic '⍉', (a) -> # Transpose
   sa = shapeOf a
@@ -401,19 +400,19 @@ dyadic  '↑', (a, b) -> # Take
     else
       k /= sb[d]
       if a[d] >= 0
-        for j in [0 ... min a[d], sb[d]] then rec d + 1, i + j * k, k
+        for j in [0 ... Math.min a[d], sb[d]] then rec d + 1, i + j * k, k
         if sb[d] < a[d]
           for [0 ... (a[d] - sb[d]) * pa[d]] then r.push 0 # todo: use APL array prototype instead of 0
       else
         if sb[d] + a[d] < 0
           for [0 ... -(sb[d] + a[d]) * pa[d]] then r.push 0 # todo: use APL array prototype instead of 0
-        for j in [max(0, sb[d] + a[d]) ... sb[d]] then rec d + 1, i + j * k, k
+        for j in [Math.max(0, sb[d] + a[d]) ... sb[d]] then rec d + 1, i + j * k, k
     r
   withShape a, rec 0, 0, b.length
 
 dyadic '↓', (a, b) -> # Drop
   if isSimple a then a = [a]
-  for x in a when typeof x isnt 'number' or x isnt floor x
+  for x in a when typeof x isnt 'number' or x isnt Math.floor x
     throw Error 'Left argument to ↓ must be an integer or a vector of integers.'
   if isSimple b then b = withShape (for [0...a.length] then 1), b
   sb = shapeOf b
@@ -423,9 +422,9 @@ dyadic '↓', (a, b) -> # Drop
   lims =
     for i in [0...a.length]
       if a[i] >= 0
-        [min(a[i], sb[i]), sb[i]]
+        [Math.min(a[i], sb[i]), sb[i]]
       else
-        [0, max(0, sb[i] + a[i])]
+        [0, Math.max(0, sb[i] + a[i])]
   r = []
   rec = (d, i, n) ->
     if d >= sb.length
@@ -454,7 +453,7 @@ monadic '⊃', (a) -> # Disclose
     if sx.length isnt sr1.length
       throw Error 'The argument of ⊃ must contain elements of the same rank.'
     for i in [0...sr1.length]
-      sr1[i] = max sr1[i], sx[i]
+      sr1[i] = Math.max sr1[i], sx[i]
   sr = shapeOf(a).concat sr1
   r = []
   for x in a
@@ -484,7 +483,7 @@ dyadic '⌷', (a, b) -> # Index
   if a.length isnt sb.length
     throw Error 'The number of indices must be equal to the rank of the indexable.'
   a = for x in a then (if isSimple x then withShape [], [x] else x)
-  for x, d in a then for y in x when not (typeof y is 'number' and y is floor(y))
+  for x, d in a then for y in x when not (typeof y is 'number' and y is Math.floor(y))
     throw Error 'Indices must be integers'
   for x, d in a then for y in x when not (0 <= y < sb[d])
     throw Error 'Index out of bounds'
@@ -517,7 +516,7 @@ dyadic '⊢' # Right
 reduce = (f, _, axis=-1) -> (a, b) -> 
   invokedAsMonadic = not b?
   if invokedAsMonadic then b = a; a = 0
-  a = floor numericValueOf a
+  a = Math.floor numericValueOf a
   isBackwards = a < 0; if isBackwards then a = -a
   b = arrayValueOf b
   sb = shapeOf b
@@ -530,7 +529,7 @@ reduce = (f, _, axis=-1) -> (a, b) ->
     sItem = sb[...axis].concat sb[axis + 1 ...] # shape of an item
     k = prod sb[axis + 1 ...]
     items = for [0...n] then withShape sItem, []
-    for i in [0...b.length] then items[floor(i / k) % n].push b[i]
+    for i in [0...b.length] then items[Math.floor(i / k) % n].push b[i]
   r =
     if isBackwards
       for i in [0 ... n - a + 1]
@@ -551,8 +550,8 @@ compressOrReplicate = (a, b, axis=-1) ->
 
   nNonNegative = 0 # number of non-negative elements in a
   for x in a
-    if typeof x isnt 'number' or x isnt floor x then throw Error 'Left argument to / must be an integer or a vector of integers'
-    sr[axis] += abs x
+    if typeof x isnt 'number' or x isnt Math.floor x then throw Error 'Left argument to / must be an integer or a vector of integers'
+    sr[axis] += Math.abs x
     nNonNegative += (x >= 0)
 
   isExtensive = true; isExpansive = isHyperexpansive = false
@@ -623,7 +622,7 @@ infixOperator '.', (f, g) -> # Inner product
     F g a, b
 
 postfixOperator '⍣', (f) -> (n) -> # Power operator
-  if typeof n isnt 'number' or n < 0 or n isnt floor n
+  if typeof n isnt 'number' or n < 0 or n isnt Math.floor n
     throw Error 'Right argument to ⍣ must be a non-negative integer'
   (a) -> (for [0...n] then a = f a); a
 
