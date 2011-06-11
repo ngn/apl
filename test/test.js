@@ -209,6 +209,14 @@
   gives('2 3 ↑ 1 + 4 3 ⍴ ⍳ 12', [1, 2, 3, 4, 5, 6]);
   gives('¯1 3 ↑ 1 + 4 3 ⍴ ⍳ 12', [10, 11, 12]);
   gives('1 2 ↑ 1 + 4 3 ⍴ ⍳ 12', [1, 2]);
+  gives("4↓'OVERBOARD'", S('BOARD'));
+  gives("¯5↓'OVERBOARD'", S('OVER'));
+  gives("⍴10↓'OVERBOARD'", [0]);
+  gives("0 ¯2↓ 3 3 ⍴ 'ONEFATFLY'", S('OFF'));
+  gives("¯2 ¯1↓ 3 3 ⍴ 'ONEFATFLY'", S('ON'));
+  gives("1↓ 3 3 ⍴ 'ONEFATFLY'", S('FATFLY'));
+  gives('1 1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"', S('QRSTUVWX'));
+  gives('¯1 ¯1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"', S('ABCDEFGH'));
   gives('⍴ ⊂ 2 3⍴⍳6', []);
   gives('⍴⍴ ⊂ 2 3⍴⍳6', [0]);
   gives('⊃ (1 2 3) (4 5 6)', [1, 2, 3, 4, 5, 6], [2, 3]);

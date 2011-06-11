@@ -411,7 +411,33 @@ dyadic  '↑', (a, b) -> # Take
     r
   withShape a, rec 0, 0, b.length
 
-dyadic '↓' # Drop
+dyadic '↓', (a, b) -> # Drop
+  if isSimple a then a = [a]
+  for x in a when typeof x isnt 'number' or x isnt floor x
+    throw Error 'Left argument to ↓ must be an integer or a vector of integers.'
+  if isSimple b then b = withShape (for [0...a.length] then 1), b
+  sb = shapeOf b
+  if a.length > sb.length
+    throw Error 'The left argument to ↓ must have length less than or equal to the rank of its right argument.'
+  for [a.length...sb.length] then a.push 0
+  lims =
+    for i in [0...a.length]
+      if a[i] >= 0
+        [min(a[i], sb[i]), sb[i]]
+      else
+        [0, max(0, sb[i] + a[i])]
+  r = []
+  rec = (d, i, n) ->
+    if d >= sb.length
+      r.push b[i]
+    else
+      n /= sb[d]
+      for j in [lims[d][0]...lims[d][1]]
+        rec d + 1, i + j*n, n
+    0
+  rec 0, 0, b.length
+  sr = for [lo, hi] in lims then hi - lo
+  withShape sr, r
 
 monadic '⊂', (a) -> # Enclose
   if isSimple a then a else withShape [], [a]

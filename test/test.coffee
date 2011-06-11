@@ -281,6 +281,20 @@ gives '¯1 3 ↑ 1 + 4 3 ⍴ ⍳ 12',
 gives '1 2 ↑ 1 + 4 3 ⍴ ⍳ 12',
   [1, 2]
 
+# ↓ Drop {{{1
+gives "4↓'OVERBOARD'", S 'BOARD'
+gives "¯5↓'OVERBOARD'", S 'OVER'
+gives "⍴10↓'OVERBOARD'", [0]
+gives "0 ¯2↓ 3 3 ⍴ 'ONEFATFLY'", S 'OFF'
+gives "¯2 ¯1↓ 3 3 ⍴ 'ONEFATFLY'", S 'ON'
+gives "1↓ 3 3 ⍴ 'ONEFATFLY'", S 'FATFLY'
+gives '1 1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"', S 'QRSTUVWX'
+gives '¯1 ¯1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"', S 'ABCDEFGH'
+
+#gives '1 ↓[1] 2 3 4⍴1+⍳24', [5..12].concat [17..24] # todo: drop with axis specification
+#gives '1 ↓[2] 2 3 4⍴1+⍳24', [3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24] # todo
+#gives '1 ↓[2 1] 2 3 4⍴1+⍳24', [7, 8, 11, 12, 19, 20, 23, 24] # todo
+
 # ⊂ Enclose {{{1
 gives '⍴ ⊂ 2 3⍴⍳6', []
 gives '⍴⍴ ⊂ 2 3⍴⍳6', [0]
