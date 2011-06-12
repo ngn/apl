@@ -4,6 +4,7 @@
 {puts} = require 'sys'
 {parser} = require '../lib/parser'
 {exec} = require '../lib/interpreter'
+{trampoline} = require '../lib/helpers'
 repr = JSON.stringify
 
 nTests = 0
@@ -24,25 +25,29 @@ eq = (x, y) ->
 
 fail = (reason) -> nFailed++; puts reason
 
+queue = [] # stick some CPS functions here and execute them sequentially at the end
+
 gives = (code, expectedResult) ->
   nTests++
-  try
-    actualResult = exec parser.parse code
-    if not eq expectedResult, actualResult
-      fail "Test #{repr code} failed: expected #{repr expectedResult} but got #{repr actualResult}"
-  catch e
-    fail "Test #{repr code} failed with #{e}"
+  queue.push (next) ->
+    exec code, (err, actualResult) ->
+      trampoline ->
+        if err
+          fail "Test #{repr code} failed with #{e}"
+        else if not eq expectedResult, actualResult
+          fail "Test #{repr code} failed: expected #{repr expectedResult} but got #{repr actualResult}"
+        next
 
 fails = (code, expectedErrorMessage) ->
   nTests++
-  try
-    exec parser.parse code
-    fail "Code #{repr code} should have failed, but didn't"
-  catch e
-    if expectedErrorMessage
-      m = expectedErrorMessage.toLowerCase()
-      if e.message[...m.length] isnt expectedErrorMessage
-        fail "Code #{repr code} should have failed with #{repr expectedErrorMessage}, but it failed with #{repr e.message}"
+  queue.push (next) ->
+    exec code, (err, _) ->
+      trampoline ->
+        if not err
+          fail "Code #{repr code} should have failed, but didn't"
+        else if expectedErrorMessage and err.message[...expectedErrorMessage.length] isnt expectedErrorMessage
+          fail "Code #{repr code} should have failed with #{repr expectedErrorMessage}, but it failed with #{repr err.message}"
+        next
 
 S = (s) -> s.split ''
 
@@ -480,5 +485,14 @@ gives(
 )
 # }}}1
 
-if nFailed then puts "Done.  #{nFailed} of #{nTests} tests failed."
-else puts "Done.  All #{nTests} tests passed."
+
+
+# Execute functions from "queue" sequentially
+trampoline (F = ->
+  if queue.length
+    -> queue.shift() F
+  else
+    if nFailed then puts "Done.  #{nFailed} of #{nTests} tests failed."
+    else puts "Done.  All #{nTests} tests passed."
+    0
+)

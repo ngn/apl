@@ -1,26 +1,39 @@
 {builtins} = require './builtins'
 {inherit} = require './helpers'
+{parse} = require './parser'
 
-exec = exports.exec = (ast, ctx) ->
+exports.exec = (code, ctx, callback) ->
+  if typeof ctx is 'function' and not callback? then callback = ctx; ctx = undefined
+  ctx ?= inherit builtins
+  callback ?= (->)
+  ast = parse code
+  setTimeout(
+    ->
+      try r = exec0 ast, ctx
+      catch e0 then e = e0
+      callback e, r
+    1
+  )
+  return
+
+exec0 = (ast, ctx) ->
   # Evaluate a branch of the abstract syntax tree
   # `ctx' holds variable bindings
-  ctx ?= inherit builtins
-
   switch ast[0]
-    when 'body' then r = 0; (for x in ast[1...] then r = exec x, ctx); r
+    when 'body' then r = 0; (for x in ast[1...] then r = exec0 x, ctx); r
     when 'num' then parseFloat ast[1].replace(/¯/, '-')
     when 'str' then eval(ast[1]).split ''
 
     when 'index'
-      x = exec ast[1], ctx
-      y = for subscriptAST in ast[2...] then exec subscriptAST, ctx
+      x = exec0 ast[1], ctx
+      y = for subscriptAST in ast[2...] then exec0 subscriptAST, ctx
       if typeof x is 'function'
         (a, b) -> x(a, b, y)
       else
         builtins['⌷'](y, x)
 
     when 'assign'
-      name = ast[1]; value = exec ast[2], ctx
+      name = ast[1]; value = exec0 ast[2], ctx
       if typeof ctx[name] is 'function' then ctx[name] value else ctx[name] = value
       ctx[name]
 
@@ -40,12 +53,12 @@ exec = exports.exec = (ast, ctx) ->
         else
           ctx1['⍺'] = 0
           ctx1['⍵'] = a
-        exec ast[1], ctx1
+        exec0 ast[1], ctx1
 
     when 'seq'
       if ast.length is 1 then return 0
       a = []
-      for i in [ast.length - 1 .. 1] then a.unshift exec ast[i], ctx
+      for i in [ast.length - 1 .. 1] then a.unshift exec0 ast[i], ctx
 
       # Form vectors from sequences of data
       i = 0

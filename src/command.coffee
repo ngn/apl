@@ -1,6 +1,5 @@
 fs = require 'fs'
-parser = require './parser'
-interpreter = require './interpreter'
+{exec} = require './interpreter'
 
 exports.main = ->
   if process.argv.length > 3
@@ -13,6 +12,6 @@ exports.main = ->
     input.resume()
     input.setEncoding 'utf8'
 
-  data = ''
-  input.on 'data', (chunk) -> data += chunk
-  input.on 'end', -> interpreter.exec parser.parse data
+  code = ''
+  input.on 'data', (chunk) -> code += chunk
+  input.on 'end', -> exec code

@@ -1,8 +1,9 @@
 (function() {
-  var S, all, eq, exec, fail, fails, gives, identityFunction, nFailed, nTests, parser, puts, repr;
+  var F, S, all, eq, exec, fail, fails, gives, identityFunction, nFailed, nTests, parser, puts, queue, repr, trampoline;
   puts = require('sys').puts;
   parser = require('../lib/parser').parser;
   exec = require('../lib/interpreter').exec;
+  trampoline = require('../lib/helpers').trampoline;
   repr = JSON.stringify;
   nTests = 0;
   nFailed = 0;
@@ -46,32 +47,36 @@
     nFailed++;
     return puts(reason);
   };
+  queue = [];
   gives = function(code, expectedResult) {
-    var actualResult;
     nTests++;
-    try {
-      actualResult = exec(parser.parse(code));
-      if (!eq(expectedResult, actualResult)) {
-        return fail("Test " + (repr(code)) + " failed: expected " + (repr(expectedResult)) + " but got " + (repr(actualResult)));
-      }
-    } catch (e) {
-      return fail("Test " + (repr(code)) + " failed with " + e);
-    }
+    return queue.push(function(next) {
+      return exec(code, function(err, actualResult) {
+        return trampoline(function() {
+          if (err) {
+            fail("Test " + (repr(code)) + " failed with " + e);
+          } else if (!eq(expectedResult, actualResult)) {
+            fail("Test " + (repr(code)) + " failed: expected " + (repr(expectedResult)) + " but got " + (repr(actualResult)));
+          }
+          return next;
+        });
+      });
+    });
   };
   fails = function(code, expectedErrorMessage) {
-    var m;
     nTests++;
-    try {
-      exec(parser.parse(code));
-      return fail("Code " + (repr(code)) + " should have failed, but didn't");
-    } catch (e) {
-      if (expectedErrorMessage) {
-        m = expectedErrorMessage.toLowerCase();
-        if (e.message.slice(0, m.length) !== expectedErrorMessage) {
-          return fail("Code " + (repr(code)) + " should have failed with " + (repr(expectedErrorMessage)) + ", but it failed with " + (repr(e.message)));
-        }
-      }
-    }
+    return queue.push(function(next) {
+      return exec(code, function(err, _) {
+        return trampoline(function() {
+          if (!err) {
+            fail("Code " + (repr(code)) + " should have failed, but didn't");
+          } else if (expectedErrorMessage && err.message.slice(0, expectedErrorMessage.length) !== expectedErrorMessage) {
+            fail("Code " + (repr(code)) + " should have failed with " + (repr(expectedErrorMessage)) + ", but it failed with " + (repr(err.message)));
+          }
+          return next;
+        });
+      });
+    });
   };
   S = function(s) {
     return s.split('');
@@ -285,9 +290,18 @@
   gives('r ← (3 3 ⍴ ⍳ 9) ∈ 1 2 3 4 7', [0, 1, 1, 1, 1, 0, 0, 1, 0]);
   gives('r ← (3 3 ⍴ ⍳ 9) ∈ 1 2 3 4 7\n¯1 ⊖ ¯2 ⌽ 5 7 ↑ r', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   gives('r ← (3 3 ⍴ ⍳ 9) ∈ 1 2 3 4 7\nR ← ¯1 ⊖ ¯2 ⌽ 5 7 ↑ r\n1 0 ¯1 ⌽¨ R R R', [[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]]);
-  if (nFailed) {
-    puts("Done.  " + nFailed + " of " + nTests + " tests failed.");
-  } else {
-    puts("Done.  All " + nTests + " tests passed.");
-  }
+  trampoline((F = function() {
+    if (queue.length) {
+      return function() {
+        return queue.shift()(F);
+      };
+    } else {
+      if (nFailed) {
+        puts("Done.  " + nFailed + " of " + nTests + " tests failed.");
+      } else {
+        puts("Done.  All " + nTests + " tests passed.");
+      }
+      return 0;
+    }
+  }));
 }).call(this);
