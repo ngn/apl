@@ -151,6 +151,18 @@ pervasive = (f) -> (a, b) ->
     if isSimple a then f a
     else withShape a.shape, (for x in a then F x)
 
+cpsify = (f) ->
+  if f.cps then return f
+  g = (a, b, c, callback) ->
+    try
+      result = f a, b, c
+      -> callback null, result
+    catch err
+      -> callback err
+  g.cps = true
+  g
+
+cps = (f) -> f.cps = true; f
 
 
 # DSL for defining operators, functions, and pseudo-variables
@@ -617,10 +629,20 @@ infixOperator '.', (f, g) -> # Inner product
       throw Error 'Inner product operator (.) is implemented only for arrays of rank no more than 1.'
     F g a, b
 
-postfixOperator '⍣', (f) -> (n) -> # Power operator
-  if typeof n isnt 'number' or n < 0 or n isnt Math.floor n
-    throw Error 'Right argument to ⍣ must be a non-negative integer'
-  (a) -> (for [0...n] then a = f a); a
+postfixOperator '⍣', cps (f, _, _, callback) -> # Power operator
+  if typeof f isnt 'function' then return -> callback0 Error 'Left argument to ⍣ must be a function.'
+  f = cpsify f
+  -> callback null, cps (n, _, _, callback1) ->
+    if typeof n isnt 'number' or n < 0 or n isnt Math.floor n then return -> callback Error 'Right argument to ⍣ must be a non-negative integer.'
+    -> callback1 null, cps (a, _, _, callback2) ->
+      i = 0
+      F = ->
+        if i < n
+          f a, null, null, (err, r) ->
+            if err then return -> callback2 err
+            a = r; i++; F
+        else
+          -> callback2 null, a
 
 
 
