@@ -71,6 +71,17 @@ exec0 = (ast, ctx, callback) ->
       if typeof value is 'function' and value.isNiladic then value = value() # todo: cpsify
       -> callback null, value
 
+    when 'embedded'
+      try
+        code = ast[1].replace /(^«|»$)/g, ''
+        code = "(function(){return (#{code});})()"
+        r = eval code
+        if not r? then r = 0
+        if typeof r is 'string' then r = r.split ''
+        -> callback null, r
+      catch err
+        -> callback err
+
     when 'lambda'
       -> callback null, cps (a, b, _, callback1) ->
         ctx1 = inherit ctx

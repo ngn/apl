@@ -100,6 +100,10 @@ gives '" X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]', S ' X ' +
 # {} Lambda expressions {{{1
 gives '{1 + 1} 1', 2
 
+# «» Embedded JavaScript {{{1
+gives '«1234+5678»', 6912
+gives '«"asdf"»', S 'asdf'
+
 # + Add {{{1
 gives '1 + 2', 3
 gives '2 3 + 5 8', [7, 11]

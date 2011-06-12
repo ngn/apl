@@ -139,7 +139,10 @@ jQuery ($) ->
   ]
 
   # Symbols setup {{{1
-  mapping = {}
+  mapping =
+    '`<': '«'
+    '`>': '»'
+
   hSymbolDefs = {} # indexed by symbol
   symbolsHTML = ''
   for symbolDef in symbolDefs

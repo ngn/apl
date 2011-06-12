@@ -15,6 +15,7 @@
 "{"                             return '{'
 "}"                             return '}'
 "←"                             return 'ARROW'
+"«"[^»]*"»"                     return 'EMBEDDED'
 "∘."                            return 'SYMBOL'
 [A-Za-z_][A-Za-z_0-9]*          return 'SYMBOL'
 .                               return 'SYMBOL'
@@ -65,6 +66,7 @@ indexable
     : NUMBER                     { $$ = ['num', $1]; }
     | STRING                     { $$ = ['str', $1]; }
     | SYMBOL                     { $$ = ['sym', $1]; }
+    | EMBEDDED                   { $$ = ['embedded', $1]; }
     | '(' expr ')'               { $$ = $2; }
     | '{' body '}'               { $$ = ['lambda', $2]; }
     ;
