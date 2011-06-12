@@ -313,6 +313,10 @@ gives '⊃ (1 2 3) "AB"', [1, 2, 3, 'A', 'B', 0] # todo: when we implement proto
 gives '⍴⊃ (1 2 3) "AB"', [2, 3]
 gives '⊃123', 123
 
+# ⌷ Index {{{1
+gives '1 ⌷ 3 5 8', 5
+gives '(3 5 8)[1]', 5
+gives '⌷←{⍺+¨⍵}  ◇  (3 5 8)[1]', [4, 6, 9]
 
 # / Reduction {{{1
 gives '+/ 3', 3

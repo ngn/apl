@@ -5,7 +5,7 @@
 exports.exec = (code, ctx, callback) ->
   if typeof ctx is 'function' and not callback? then callback = ctx; ctx = undefined
   ctx ?= inherit builtins
-  callback ?= (->)
+  callback ?= (err) -> if err then throw err
   ast = parse code
   setTimeout(
     ->
@@ -30,11 +30,11 @@ exec0 = (ast, ctx) ->
       if typeof x is 'function'
         (a, b) -> x(a, b, y)
       else
-        builtins['⌷'](y, x)
+        ctx['⌷'](y, x)
 
     when 'assign'
       name = ast[1]; value = exec0 ast[2], ctx
-      if typeof ctx[name] is 'function' then ctx[name] value else ctx[name] = value
+      if typeof ctx[name] is 'function' and ctx[name].isNiladic then ctx[name] value else ctx[name] = value
       ctx[name]
 
     when 'sym'
