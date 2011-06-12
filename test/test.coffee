@@ -33,7 +33,7 @@ gives = (code, expectedResult) ->
     exec code, (err, actualResult) ->
       trampoline ->
         if err
-          fail "Test #{repr code} failed with #{e}"
+          fail "Test #{repr code} failed with #{err}"
         else if not eq expectedResult, actualResult
           fail "Test #{repr code} failed: expected #{repr expectedResult} but got #{repr actualResult}"
         next

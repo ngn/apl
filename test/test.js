@@ -54,7 +54,7 @@
       return exec(code, function(err, actualResult) {
         return trampoline(function() {
           if (err) {
-            fail("Test " + (repr(code)) + " failed with " + e);
+            fail("Test " + (repr(code)) + " failed with " + err);
           } else if (!eq(expectedResult, actualResult)) {
             fail("Test " + (repr(code)) + " failed: expected " + (repr(expectedResult)) + " but got " + (repr(actualResult)));
           }
