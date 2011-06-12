@@ -86,21 +86,20 @@
     };
     $('#code').focus();
     $('#go').closest('form').submit(function() {
-      var interpreter, parser;
-      $('#result').html((function() {
-        try {
-          interpreter = require('./interpreter');
-          parser = require('./parser');
-          return formatAsHTML(interpreter.exec(parser.parse($('#code').val())));
-        } catch (e) {
+      var exec;
+      exec = require('./interpreter').exec;
+      exec($('#code').val(), function(err, result) {
+        if (err) {
           if (typeof console !== "undefined" && console !== null) {
             if (typeof console.error === "function") {
-              console.error(e);
+              console.error(err);
             }
           }
-          return "<div class='error'>" + (escHard(e.message)) + "</div>";
+          return $('#result').html("<div class='error'>" + (escHard(err.message)) + "</div>");
+        } else {
+          return $('#result').html(formatAsHTML(result));
         }
-      })());
+      });
       return false;
     });
     symbolDefs = [['+', '', 'Conjugate, Add'], ['−', '`-', 'Negate, Subtract'], ['×', '`=', 'Sign of, Multiply'], ['÷', '`:', 'Reciprocal, Divide'], ['⌈', '`s', 'Ceiling, Greater of'], ['⌊', '`d', 'Floor, Lesser of'], ['∣', '`m', 'Absolute value, Residue'], ['⍳', '`i', 'Index generator, Index of'], ['?', '', 'Roll, Deal'], ['⋆', '`p', 'Exponential, To the power of'], ['⍟', '`P', 'Natural logarithm, Logarithm to the base'], ['○', '`o', 'Pi times, Circular and hyperbolic functions'], ['!', '', 'Factorial, Binomial'], ['⌹', '', 'Matrix inverse, Matrix divide'], ['<', '', 'Less than'], ['≤', '`4', 'Less than or equal'], ['=', '', 'Equal'], ['≥', '`6', 'Greater than or equal'], ['>', '', 'Greater than'], ['≠', '`8', 'Not equal'], ['≡', '`_', 'Depth, Match'], ['≢', '', 'Not match'], ['∈', '`e', 'Enlist, Membership'], ['⍷', '`E', 'Find'], ['∪', '`v', 'Unique, Union'], ['∩', '`c', 'Intersection'], ['∼', '`t', 'Not, Without'], ['∨', '`9', 'Or'], ['∧', '`0', 'And'], ['⍱', '`(', 'Nor'], ['⍲', '`)', 'Nand'], ['⍴', '`r', 'Shape of, Reshape'], [',', '', 'Ravel, Catenate'], ['⍪', '`,', 'First axis catenate'], ['⌽', '`W', 'Reverse, Rotate'], ['⊖', '`A', 'First axis rotate'], ['⍉', '`T', 'Transpose'], ['↑', '`y', 'First, Take'], ['↓', '`u', 'Drop'], ['⊂', '`z', 'Enclose, Partition'], ['⊃', '`x', 'Disclose, Pick'], ['⌷', '`I', 'Index'], ['⍋', '`g', 'Grade up'], ['⍒', '`h', 'Grade down'], ['⊤', '`n', 'Encode'], ['⊥', '`b', 'Decode'], ['⍕', '`N', 'Format, Format by specification'], ['⍎', '`B', 'Execute'], ['⊣', '', 'Stop, Left'], ['⊢', '', 'Pass, Right'], ['⎕', '`l', 'Evaluated input, Output with a newline'], ['⍞', '`L', 'Character input, Bare output'], ['¨', '`1', 'Each'], ['∘.', '`j', 'Outer product'], ['/', '', 'Reduce'], ['⌿', '`/', '1st axis reduce'], ['\\', '', 'Scan'], ['⍀', '`\\', '1st axis scan'], ['⍣', '`!', 'Power operator'], ['¯', '`2', 'Negative number sign'], ['⍝', '`C', 'Comment'], ['←', '`[', 'Assignment'], ['⍬', '`O', 'Zilde'], ['◇', '`;', 'Statement separator'], ['⍺', '`a', 'Left formal parameter'], ['⍵', '`w', 'Right formal parameter']];

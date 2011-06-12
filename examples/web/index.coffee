@@ -57,15 +57,13 @@ jQuery ($) ->
   $('#code').focus()
 
   $('#go').closest('form').submit ->
-    $('#result').html(
-      try
-        interpreter = require './interpreter'
-        parser = require './parser'
-        formatAsHTML interpreter.exec parser.parse $('#code').val()
-      catch e
-        console?.error?(e)
-        "<div class='error'>#{escHard e.message}</div>"
-    )
+    {exec} = require './interpreter'
+    exec $('#code').val(), (err, result) ->
+      if err
+        console?.error?(err)
+        $('#result').html "<div class='error'>#{escHard err.message}</div>"
+      else
+        $('#result').html formatAsHTML result
     false
 
 
