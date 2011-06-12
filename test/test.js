@@ -100,6 +100,7 @@
   gives('1 ◇ 2 ◇ 3', 3);
   gives('A←5', 5);
   gives('A×A←2 5', [4, 25]);
+  gives('radius ← 3\nget_circumference ← {2 × ○ radius}\nget_surface ← {○ radius ⋆ 2}\n\nbefore ← 0.01× ⌊ 100× radius circumference surface\nradius ← radius + 1\nafter  ← 0.01× ⌊ 100× radius circumference surface\n\nbefore after', [[3, 18.84, 28.27], [4, 25.13, 50.26]]);
   gives('(23 54 38)[0]', 23);
   gives('(23 54 38)[1]', 54);
   gives('(23 54 38)[2]', 38);

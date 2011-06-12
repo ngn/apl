@@ -80,6 +80,20 @@ gives '1 ◇ 2 ◇ 3', 3
 gives 'A←5', 5
 gives 'A×A←2 5', [4, 25]
 
+# get_/set_ convention for niladics {{{1
+gives '''
+  radius ← 3
+  get_circumference ← {2 × ○ radius}
+  get_surface ← {○ radius ⋆ 2}
+
+  before ← 0.01× ⌊ 100× radius circumference surface
+  radius ← radius + 1
+  after  ← 0.01× ⌊ 100× radius circumference surface
+
+  before after
+''', [[3, 18.84, 28.27],
+      [4, 25.13, 50.26]]
+
 # [] Subscripting {{{1
 gives '(23 54 38)[0]', 23
 gives '(23 54 38)[1]', 54

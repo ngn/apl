@@ -59,17 +59,24 @@ exec0 = (ast, ctx, callback) ->
               -> cpsify(ctx['⌷']) indices, indexable, null, callback
 
     when 'assign'
+      name = ast[1]
       -> exec0 ast[2], ctx, (err, value) ->
         if err then return -> callback err
-        name = ast[1]
-        if typeof ctx[name] is 'function' and ctx[name].isNiladic then ctx[name] value else ctx[name] = value # todo: cpsify
-        -> callback null, value
+        setter = ctx['set_' + name]
+        if typeof setter is 'function'
+          -> cpsify(setter) value, null, null, (err) ->
+            if err then return -> callback err
+            -> callback null, value
+        else
+          ctx[name] = value
+          -> callback null, value
 
     when 'sym'
       name = ast[1]; value = ctx[name]
-      if not value? then return -> callback Error "Symbol #{name} is not defined."
-      if typeof value is 'function' and value.isNiladic then value = value() # todo: cpsify
-      -> callback null, value
+      if value? then return -> callback null, value
+      getter = ctx['get_' + name]
+      if typeof getter is 'function' then return -> cpsify(getter) null, null, null, callback
+      -> callback Error "Symbol #{name} is not defined."
 
     when 'embedded'
       try

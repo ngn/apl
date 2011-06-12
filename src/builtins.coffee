@@ -163,7 +163,6 @@ exports.builtins = builtins = {} # `builtins' will be the prototype of all execu
 prefixOperator  = (symbol, f) -> f.isPrefixOperator  = true; f.aplName = symbol; builtins[symbol] = f
 postfixOperator = (symbol, f) -> f.isPostfixOperator = true; f.aplName = symbol; builtins[symbol] = f
 infixOperator   = (symbol, f) -> f.isInfixOperator   = true; f.aplName = symbol; builtins[symbol] = f
-niladic         = (symbol, f) -> f.isNiladic         = true; f.aplName = symbol; builtins[symbol] = f
 
 ambivalent = (f1, f2) -> # combine a monadic and a dyadic function into one
   f = (args...) -> (if args[1]? then f2 else f1)(args...)
@@ -640,23 +639,16 @@ postfixOperator '⍣', cps (f, _, _, callback) -> # Power operator
 
 # Niladic functions and pseudo-variables
 
-# In reality, a pseudo-variable is a function.  When invoked with no arguments,
-# it acts as a getter, and with one argument as a setter.
-# Pseudo-variables are very much like niladic functions (except that they
-# can be assigned to), so we'll declare them as niladics here.
+builtins['get_⍬'] = -> []
 
-niladic '⍬', -> []
+builtins['get_⎕'] = -> # ⎕ Evaluated input
+  throw Error 'Getter for ⎕ ("Evaluated input") not implemented'
 
-niladic '⎕', (x) ->
-  if x? # setter: Output with newline
-    if typeof x isnt 'string' then x = format x
-    process.stdout.write x + '\n'
-  else # getter: Evaluated input
-    throw Error 'Getter for ⎕ ("Evaluated input") not implemented'
+builtins['set_⎕'] = (x) -> # ⎕ Output with newline
+  process.stdout.write format(x) + '\n'
 
-niladic '⍞', (x) ->
-  if x? # setter: Bare output
-    if typeof x isnt 'string' then x = format x
-    process.stdout.write x
-  else # getter: Character input
-    throw Error 'Getter for ⍞ ("Raw input") not implemented'
+builtins['get_⍞'] = -> # ⍞ Character input
+  throw Error 'Getter for ⍞ ("Raw input") not implemented'
+
+builtins['set_⍞'] = (x) -> # ⍞ Bare output
+  process.stdout.write format x
