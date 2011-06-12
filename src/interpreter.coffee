@@ -1,5 +1,5 @@
 {builtins} = require './builtins'
-{inherit, trampoline} = require './helpers'
+{inherit, trampoline, cps, cpsify} = require './helpers'
 {parse} = require './parser'
 
 
@@ -16,21 +16,6 @@ exports.exec = (code, ctx, callback) ->
     callback err
 
   return
-
-
-
-cps = (f) -> f.cps = true; f
-
-cpsCall = (f, a0, a1, a2, callback) ->
-  if f.cps
-    -> f a0, a1, a2, callback
-  else
-    ->
-      try
-        r = f a0, a1, a2
-      catch err
-        return callback err
-      callback null, r
 
 
 
@@ -68,21 +53,22 @@ exec0 = (ast, ctx, callback) ->
               indices.push index; i++; F
           else
             if typeof indexable is 'function'
-              -> callback null, (a, b) -> indexable a, b, indices # todo: cpsCall
+              -> callback null, cps (a, b, _, callback1) ->
+                -> cpsify(indexable) a, b, indices, callback1
             else
-              -> cpsCall ctx['⌷'], indices, indexable, null, callback # todo: cpsCall
+              -> cpsify(ctx['⌷']) indices, indexable, null, callback
 
     when 'assign'
       -> exec0 ast[2], ctx, (err, value) ->
         if err then return -> callback err
         name = ast[1]
-        if typeof ctx[name] is 'function' and ctx[name].isNiladic then ctx[name] value else ctx[name] = value # todo: cpsCall
+        if typeof ctx[name] is 'function' and ctx[name].isNiladic then ctx[name] value else ctx[name] = value # todo: cpsify
         -> callback null, value
 
     when 'sym'
       name = ast[1]; value = ctx[name]
       if not value? then return -> callback Error "Symbol #{name} is not defined."
-      if typeof value is 'function' and value.isNiladic then value = value() # todo: cpsCall
+      if typeof value is 'function' and value.isNiladic then value = value() # todo: cpsify
       -> callback null, value
 
     when 'lambda'
@@ -124,7 +110,7 @@ exec0 = (ast, ctx, callback) ->
           F = ->
             if i < a.length - 2
               if (typeof a[i] is 'function') and (typeof a[i+1] is 'function') and (a[i+1].isInfixOperator) and (typeof a[i+2] is 'function')
-                -> cpsCall a[i+1], a[i], a[i+2], null, (err, result) ->
+                -> cpsify(a[i+1]) a[i], a[i+2], null, (err, result) ->
                   if err then return -> callback err
                   a[i..i+2] = [result]
                   F
@@ -137,7 +123,7 @@ exec0 = (ast, ctx, callback) ->
               F = ->
                 if i < a.length - 1
                   if (typeof a[i] is 'function') and (typeof a[i+1] is 'function') and a[i+1].isPostfixOperator
-                    -> cpsCall a[i+1], a[i], null, null, (err, result) ->
+                    -> cpsify(a[i+1]) a[i], null, null, (err, result) ->
                       if err then return -> callback err
                       a[i..i+1] = [result]
                       F
@@ -150,7 +136,7 @@ exec0 = (ast, ctx, callback) ->
                   F = ->
                     if i >= 0
                       if (typeof a[i] is 'function') and a[i].isPrefixOperator and (typeof a[i+1] is 'function')
-                        -> cpsCall a[i], a[i+1], null, null, (err, result) ->
+                        -> cpsify(a[i]) a[i+1], null, null, (err, result) ->
                           if err then return -> callback err
                           a[i..i+1] = [result]
                           F
@@ -167,14 +153,14 @@ exec0 = (ast, ctx, callback) ->
                             y = a.pop(); f = a.pop()
                             if a.length is 0 or typeof a[a.length - 1] is 'function'
                               # apply monadic function
-                              -> cpsCall f, y, null, null, (err, result) ->
+                              -> cpsify(f) y, null, null, (err, result) ->
                                 if err then return -> callback err
                                 a.push result
                                 F
                             else
                               # apply dyadic function
                               x = a.pop()
-                              -> cpsCall f, x, y, null, (err, result) ->
+                              -> cpsify(f) x, y, null, (err, result) ->
                                 if err then return -> callback err
                                 a.push result
                                 F

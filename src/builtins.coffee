@@ -45,6 +45,10 @@
 
 # TODO: Can we model APL's concept of "prototypes"?
 
+
+
+{cps, cpsify} = require './helpers'
+
 # Utility functions
 sum = (xs) -> r = 0; (for x in xs then r += x); r
 prod = (xs) -> r = 1; (for x in xs then r *= x); r
@@ -151,18 +155,6 @@ pervasive = (f) -> (a, b) ->
     if isSimple a then f a
     else withShape a.shape, (for x in a then F x)
 
-cpsify = (f) ->
-  if f.cps then return f
-  g = (a, b, c, callback) ->
-    try
-      result = f a, b, c
-      -> callback null, result
-    catch err
-      -> callback err
-  g.cps = true
-  g
-
-cps = (f) -> f.cps = true; f
 
 
 # DSL for defining operators, functions, and pseudo-variables
