@@ -490,7 +490,6 @@ gives(
 # }}}1
 
 
-
 # Execute functions from "queue" sequentially
 trampoline (F = ->
   if queue.length
