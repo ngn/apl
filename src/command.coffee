@@ -1,17 +1,28 @@
 fs = require 'fs'
 {exec} = require './interpreter'
+{builtins} = require './builtins'
+{inherit} = require './helpers'
 
 exports.main = ->
-  if process.argv.length > 3
-    process.stderr.write 'Usage: apl [filename]\n', -> process.exit 0
+  filename = process.argv[2] or '-'
+
+  if filename in ['-h', '-help', '--help']
+    process.stderr.write '''
+      Usage: apl [ FILENAME [ ARGS... ] ]
+      If "FILENAME" is "-" or not present, APL source code will be read from stdin.\n
+    ''', -> process.exit 0
     return
-  else if process.argv.length is 3
-    input = fs.createReadStream process.argv[2]
-  else
+
+  if filename is '-'
     input = process.stdin
     input.resume()
     input.setEncoding 'utf8'
+  else
+    input = fs.createReadStream filename
 
   code = ''
   input.on 'data', (chunk) -> code += chunk
-  input.on 'end', -> exec code
+  input.on 'end', ->
+    ctx = inherit builtins
+    ctx['⍵'] = for a in process.argv then a.split ''
+    exec code, ctx
