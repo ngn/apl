@@ -49,3 +49,11 @@ exports.cpsify = (f) ->
       -> callback null, result
     catch err
       -> callback err
+
+
+
+exports.shapeOf = (a) -> a.shape or if a.length? then [a.length] else []
+exports.isSimple = (x) -> typeof x is 'number' or typeof x is 'string'
+exports.sum = (xs) -> r = 0; (for x in xs then r += x); r
+exports.prod = (xs) -> r = 1; (for x in xs then r *= x); r
+exports.repeat = (s, n) -> r = ''; (for [0...n] then r += s); r # catenate `n' instances of a string `s'

@@ -47,15 +47,10 @@
 
 
 
-{cps, cpsify} = require './helpers'
+{cps, cpsify, isSimple, shapeOf, sum, prod, repeat} = require './helpers'
 
 # Utility functions
-sum = (xs) -> r = 0; (for x in xs then r += x); r
-prod = (xs) -> r = 1; (for x in xs then r *= x); r
-repeat = (s, n) -> r = ''; (for [0...n] then r += s); r # catenate `n' instances of a string `s'
-shapeOf = (a) -> a.shape or if a.length? then [a.length] else []
 withShape = (shape, a) -> (if shape? and shape.length isnt 1 then a.shape = shape); a
-isSimple = (x) -> typeof x is 'number' or typeof x is 'string'
 arrayValueOf = (x) -> if isSimple x then [x] else x
 
 numericValueOf = (x) ->
@@ -69,68 +64,6 @@ booleanValueOf = (x) ->
   x = numericValueOf x
   if x isnt 0 and x isnt 1 then throw Error 'Boolean values must be either 0 or 1'
   x
-
-format = (a) -> format0(a).join '\n'
-
-format0 = (a) -> # todo: handle 3+ dimensional arrays properly
-  if typeof a is 'undefined' then ['<<UNDEFINED>>']
-  else if a is null then ['<<NULL>>']
-  else if typeof a is 'string' then [a]
-  else if typeof a is 'number' then [if a < 0 then '¯' + (-a) else '' + a]
-  else if isSimple a then ['' + a]
-  else
-    if a.length is 0 then return [',-.', '| |', "`-'"] # empty array
-    sa = shapeOf a
-    nc = if sa.length is 0 then 1 else sa[sa.length - 1]
-    nr = a.length / nc
-    h = for [0...nr] then 0 # row heights
-    w = for [0...nc] then 0 # column widths
-    boxes =
-      for r in [0...nr]
-        for c in [0...nc]
-          box = format0 a[r * nc + c]
-          h[r] = Math.max h[r], box.length
-          w[c] = Math.max w[c], box[0].length
-          box
-    bigWidth = nc - 1 + sum w # from border to border, excluding the borders
-    result = [TOPLFT + repeat(TOP, bigWidth) + TOPRGT]
-    for r in [0...nr]
-      for c in [0...nc]
-        vpad boxes[r][c], h[r]
-        hpad boxes[r][c], w[c]
-      for i in [0...h[r]]
-        s = ''; for c in [0...nc] then s += ' ' + boxes[r][c][i]
-        result.push LFT + s[1...] + RGT
-    result.push BTMLFT + repeat(BTM, bigWidth) + BTMRGT
-    result
-
-hpad = (box, width) -> # horizontally extend a box (a box is a list of same-length strings)
-  if box[0].length < width
-    padding = repeat ' ', width - box[0].length
-    for i in [0...box.length] then box[i] += padding
-    0
-
-vpad = (box, height) -> # vertically extend a box
-  if box.length < height
-    padding = repeat ' ', box[0].length
-    for i in [box.length...height] then box.push padding
-    0
-
-# Graphics symbols for the surrounding border:
-
-# (An idea: these can be used to surrond arrays at different depths;
-# arrays with a deeper structure would have thicker borders.)
-
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "--||,.`'"
-[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "──││┌┐└┘"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "──││╭╮╰╯"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "━━┃┃┏┓┗┛"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "▄▀▐▌▗▖▝▘"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "▀▄▌▐▛▜▙▟"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "▓▓▓▓▓▓▓▓"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "████████"
-
-
 
 pervasive = (f) -> (a, b) ->
   # Decorator, takes a scalar function `f' and makes it propagate through arrays
@@ -641,14 +574,5 @@ postfixOperator '⍣', cps (f, _, _, callback) -> # Power operator
 
 builtins['get_⍬'] = -> []
 
-builtins['get_⎕'] = -> # ⎕ Evaluated input
-  throw Error 'Getter for ⎕ ("Evaluated input") not implemented'
-
-builtins['set_⎕'] = (x) -> # ⎕ Output with newline
-  process.stdout.write format(x) + '\n'
-
-builtins['get_⍞'] = -> # ⍞ Character input
-  throw Error 'Getter for ⍞ ("Raw input") not implemented'
-
-builtins['set_⍞'] = (x) -> # ⍞ Bare output
-  process.stdout.write format x
+# Symbols ⎕ and ⍞ are defined in a platform-specific manner in browser.coffee
+# (for browsers) and command.coffee (for node.js)

@@ -58,7 +58,10 @@ jQuery ($) ->
 
   $('#go').closest('form').submit ->
     {exec} = require './interpreter'
-    exec $('#code').val(), (err, result) ->
+    {browserBuiltins} = require './browser'
+    {inherit} = require './helpers'
+    ctx = inherit browserBuiltins
+    exec $('#code').val(), ctx, (err, result) ->
       if err
         console?.error?(err)
         $('#result').html "<div class='error'>#{escHard err.message}</div>"

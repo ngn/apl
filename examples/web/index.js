@@ -86,9 +86,12 @@
     };
     $('#code').focus();
     $('#go').closest('form').submit(function() {
-      var exec;
+      var browserBuiltins, ctx, exec, inherit;
       exec = require('./interpreter').exec;
-      exec($('#code').val(), function(err, result) {
+      browserBuiltins = require('./browser').browserBuiltins;
+      inherit = require('./helpers').inherit;
+      ctx = inherit(browserBuiltins);
+      exec($('#code').val(), ctx, function(err, result) {
         if (err) {
           if (typeof console !== "undefined" && console !== null) {
             if (typeof console.error === "function") {
