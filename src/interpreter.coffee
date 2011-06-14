@@ -26,7 +26,7 @@ exec0 = (ast, ctx, callback) ->
 
     when 'body'
       i = 1
-      r = 0
+      r = []
       F = ->
         if i < ast.length
           -> exec0 ast[i], ctx, (err, r0) ->
