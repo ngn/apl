@@ -8,10 +8,9 @@ exports.exec = (code, ctx, callback) ->
   if typeof ctx is 'function' and not callback? then callback = ctx; ctx = undefined
   ctx ?= inherit builtins
   callback ?= (err) -> if err then throw err
-  ast = parse code
 
   try
-    trampoline -> exec0 ast, ctx, callback
+    trampoline -> exec0 parse(code), ctx, callback
   catch err
     callback err
 
