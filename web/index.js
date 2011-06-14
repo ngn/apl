@@ -1,6 +1,6 @@
 (function() {
   jQuery(function($) {
-    var $keyboard, c, ch, code, description, esc, escHard, escT, examples, formatAsHTML, formatHTMLTable, hSymbolDefs, href, i, isKeyboardShown, key, mapping, name, renderKey, renderKeyboard, s, symbolDef, symbolDefs, symbolsHTML, td, _i, _len, _len2, _ref;
+    var $keyboard, c, ch, code, description, esc, escHard, escT, examples, formatAsHTML, formatHTMLTable, hSymbolDefs, href, i, isKeyboardShown, key, mapping, name, renderKey, renderKeyboard, renderKeys, s, symbolDef, symbolDefs, symbolsHTML, _i, _len, _len2, _ref;
     escT = {
       '<': 'lt',
       '>': 'gt',
@@ -166,13 +166,23 @@
       mapping: mapping
     });
     renderKey = function(lowerRegister, upperRegister) {
-      return "<table class='key'>\n  <tr>\n    <td class='upperRegister'>" + (esc(upperRegister)) + "</td>\n    <td class='upperAPLRegister'>" + (esc(mapping['`' + upperRegister])) + "</td>\n  </tr>\n  <tr>\n    <td class='lowerRegister'>" + (esc(lowerRegister)) + "</td>\n    <td class='lowerAPLRegister'>" + (esc(mapping['`' + lowerRegister])) + "</td>\n  </tr>\n</table>";
+      return "<td>\n  <table class='key'>\n    <tr>\n      <td class='upperRegister'>" + (esc(upperRegister)) + "</td>\n      <td class='upperAPLRegister'>" + (esc(mapping['`' + upperRegister])) + "</td>\n    </tr>\n    <tr>\n      <td class='lowerRegister'>" + (esc(lowerRegister)) + "</td>\n      <td class='lowerAPLRegister'>" + (esc(mapping['`' + lowerRegister])) + "</td>\n    </tr>\n  </table>\n</td>";
     };
-    td = function(content) {
-      return "<td>" + content + "</td>";
+    renderKeys = function(keysDescription) {
+      var x;
+      return ((function() {
+        var _j, _len2, _ref, _results;
+        _ref = keysDescription.split(' ');
+        _results = [];
+        for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
+          x = _ref[_j];
+          _results.push(renderKey(x[0], x[1]));
+        }
+        return _results;
+      })()).join('');
     };
     renderKeyboard = function(mapping) {
-      return "<div class=\"keyboard\">\n  <div class=\"help\">Prepend a backquote (`) to get the symbols in blue or red.</div>\n  <table class=\"row\"><tr>" + ([td(renderKey('`', '~')), td(renderKey('1', '!')), td(renderKey('2', '@')), td(renderKey('3', '#')), td(renderKey('4', '$')), td(renderKey('5', '%')), td(renderKey('6', '^')), td(renderKey('7', '&')), td(renderKey('8', '*')), td(renderKey('9', '(')), td(renderKey('0', ')')), td(renderKey('-', '_')), td(renderKey('=', '+'))].join('')) + "\n    <td><table class=\"key backspaceKey\"><tr><td>Backspace<br/>⟵</td></tr></table></td>\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key tabKey\"><tr><td>Tab<br/>↹</td></tr></table></td>\n    " + ([td(renderKey('q', 'Q')), td(renderKey('w', 'W')), td(renderKey('e', 'E')), td(renderKey('r', 'R')), td(renderKey('t', 'T')), td(renderKey('y', 'Y')), td(renderKey('u', 'U')), td(renderKey('i', 'I')), td(renderKey('o', 'O')), td(renderKey('p', 'P')), td(renderKey('[', '{')), td(renderKey(']', '}')), td(renderKey('\\', '|'))].join('')) + "\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key capsLockKey\"><tr><td>Caps Lock</td></tr></table></td>\n    " + ([td(renderKey('a', 'A')), td(renderKey('s', 'S')), td(renderKey('d', 'D')), td(renderKey('f', 'F')), td(renderKey('g', 'G')), td(renderKey('h', 'H')), td(renderKey('j', 'J')), td(renderKey('k', 'K')), td(renderKey('l', 'L')), td(renderKey(';', ':')), td(renderKey("'", '"'))].join('')) + "\n    <td><table class=\"key enterKey\"><tr><td>Enter<br/>⏎</td></tr></table></td>\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key leftShiftKey\"><tr><td>Shift&nbsp;⇧</td></tr></table></td>\n    " + ([td(renderKey('z', 'Z')), td(renderKey('x', 'X')), td(renderKey('c', 'C')), td(renderKey('v', 'V')), td(renderKey('b', 'B')), td(renderKey('n', 'N')), td(renderKey('m', 'M')), td(renderKey(',', '<')), td(renderKey('.', '>')), td(renderKey('/', '?'))].join('')) + "\n    <td><table class=\"key rightShiftKey\"><tr><td>Shift&nbsp;⇧</td></tr></table></td>\n  </tr></table>\n</div>";
+      return "<div class=\"keyboard\">\n  <div class=\"help\">Prepend a backquote (`) to get the symbols in blue or red.</div>\n  <table class=\"row\"><tr>\n    " + (renderKeys('`~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) -_ =+')) + "\n    <td><table class=\"key backspaceKey\"><tr><td>Backspace<br/>⟵</td></tr></table></td>\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key tabKey\"><tr><td>Tab<br/>↹</td></tr></table></td>\n    " + (renderKeys('qQ wW eE rR tT yY uU iI oO pP [{ ]} \\|')) + "\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key capsLockKey\"><tr><td>Caps Lock</td></tr></table></td>\n    " + (renderKeys('aA sS dD fF gG hH jJ kK lL ;: \'"')) + "\n    <td><table class=\"key enterKey\"><tr><td>Enter<br/>⏎</td></tr></table></td>\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key leftShiftKey\"><tr><td>Shift&nbsp;⇧</td></tr></table></td>\n    " + (renderKeys('zZ xX cC vV bB nN mM ,< .> /?')) + "\n    <td><table class=\"key rightShiftKey\"><tr><td>Shift&nbsp;⇧</td></tr></table></td>\n  </tr></table>\n</div>";
     };
     isKeyboardShown = false;
     $keyboard = null;

@@ -182,90 +182,43 @@ jQuery ($) ->
   # Keyboard visualisation {{{1
   renderKey = (lowerRegister, upperRegister) ->
     """
-      <table class='key'>
-        <tr>
-          <td class='upperRegister'>#{esc upperRegister}</td>
-          <td class='upperAPLRegister'>#{esc mapping['`' + upperRegister]}</td>
-        </tr>
-        <tr>
-          <td class='lowerRegister'>#{esc lowerRegister}</td>
-          <td class='lowerAPLRegister'>#{esc mapping['`' + lowerRegister]}</td>
-        </tr>
-      </table>
+      <td>
+        <table class='key'>
+          <tr>
+            <td class='upperRegister'>#{esc upperRegister}</td>
+            <td class='upperAPLRegister'>#{esc mapping['`' + upperRegister]}</td>
+          </tr>
+          <tr>
+            <td class='lowerRegister'>#{esc lowerRegister}</td>
+            <td class='lowerAPLRegister'>#{esc mapping['`' + lowerRegister]}</td>
+          </tr>
+        </table>
+      </td>
     """
 
-  td = (content) -> "<td>#{content}</td>"
+  renderKeys = (keysDescription) ->
+    (for x in keysDescription.split ' ' then renderKey x[0], x[1]).join ''
 
   renderKeyboard = (mapping) ->
     """
       <div class="keyboard">
         <div class="help">Prepend a backquote (`) to get the symbols in blue or red.</div>
-        <table class="row"><tr>#{[
-          td renderKey '`', '~'
-          td renderKey '1', '!'
-          td renderKey '2', '@'
-          td renderKey '3', '#'
-          td renderKey '4', '$'
-          td renderKey '5', '%'
-          td renderKey '6', '^'
-          td renderKey '7', '&'
-          td renderKey '8', '*'
-          td renderKey '9', '('
-          td renderKey '0', ')'
-          td renderKey '-', '_'
-          td renderKey '=', '+'
-          ].join ''}
+        <table class="row"><tr>
+          #{renderKeys '`~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) -_ =+'}
           <td><table class="key backspaceKey"><tr><td>Backspace<br/>⟵</td></tr></table></td>
         </tr></table>
         <table class="row"><tr>
           <td><table class="key tabKey"><tr><td>Tab<br/>↹</td></tr></table></td>
-          #{[
-          td renderKey 'q', 'Q'
-          td renderKey 'w', 'W'
-          td renderKey 'e', 'E'
-          td renderKey 'r', 'R'
-          td renderKey 't', 'T'
-          td renderKey 'y', 'Y'
-          td renderKey 'u', 'U'
-          td renderKey 'i', 'I'
-          td renderKey 'o', 'O'
-          td renderKey 'p', 'P'
-          td renderKey '[', '{'
-          td renderKey ']', '}'
-          td renderKey '\\', '|'
-          ].join ''}
+          #{renderKeys 'qQ wW eE rR tT yY uU iI oO pP [{ ]} \\|'}
         </tr></table>
         <table class="row"><tr>
           <td><table class="key capsLockKey"><tr><td>Caps Lock</td></tr></table></td>
-          #{[
-          td renderKey 'a', 'A'
-          td renderKey 's', 'S'
-          td renderKey 'd', 'D'
-          td renderKey 'f', 'F'
-          td renderKey 'g', 'G'
-          td renderKey 'h', 'H'
-          td renderKey 'j', 'J'
-          td renderKey 'k', 'K'
-          td renderKey 'l', 'L'
-          td renderKey ';', ':'
-          td renderKey "'", '"'
-          ].join ''}
+          #{renderKeys 'aA sS dD fF gG hH jJ kK lL ;: \'"'}
           <td><table class="key enterKey"><tr><td>Enter<br/>⏎</td></tr></table></td>
         </tr></table>
         <table class="row"><tr>
           <td><table class="key leftShiftKey"><tr><td>Shift&nbsp;⇧</td></tr></table></td>
-          #{[
-          td renderKey 'z', 'Z'
-          td renderKey 'x', 'X'
-          td renderKey 'c', 'C'
-          td renderKey 'v', 'V'
-          td renderKey 'b', 'B'
-          td renderKey 'n', 'N'
-          td renderKey 'm', 'M'
-          td renderKey ',', '<'
-          td renderKey '.', '>'
-          td renderKey '/', '?'
-          ].join ''}
+          #{renderKeys 'zZ xX cC vV bB nN mM ,< .> /?'}
           <td><table class="key rightShiftKey"><tr><td>Shift&nbsp;⇧</td></tr></table></td>
         </tr></table>
       </div>
