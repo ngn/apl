@@ -535,13 +535,27 @@ postfixOperator '¨', (f) -> (a, b) -> # Each
   if b.length is 1 then return (for x in a then f x, b[0])
   throw Error 'Length error'
 
-prefixOperator '∘.', outerProduct = (f) -> (a, b) -> # Outer product
-  if not b? then throw Error 'Operator ∘. (Outer product) works only with dyadic functions'
-  a = arrayValueOf a
-  b = arrayValueOf b
-  r = []
-  for x in a then for y in b then r.push f x, y
-  withShape (shapeOf a).concat(shapeOf b), r
+prefixOperator '∘.', outerProduct = (f) ->
+  f = cpsify f
+  cps (a, b, _, callback) -> # Outer product
+    if not b? then return -> callback Error 'Operator ∘. (Outer product) works only with dyadic functions'
+    a = arrayValueOf a
+    b = arrayValueOf b
+    r = []
+    ia = 0
+    loopA = ->
+      if ia < a.length
+        ib = 0
+        loopB = ->
+          if ib < b.length
+            -> f a[ia], b[ib], null, (err, x) ->
+              if err then return -> callback err
+              r.push x
+              ib++; loopB
+          else
+            ia++; loopA
+      else
+        -> callback null, withShape (shapeOf a).concat(shapeOf b), r
 
 infixOperator '.', (f, g) -> # Inner product
   # todo: the general formula for higher dimensions is
