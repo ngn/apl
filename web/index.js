@@ -18,7 +18,7 @@
       }
     };
     escHard = function(s) {
-      return esc(s).replace(' ', '&nbsp;', 'g').replace('\n', '<br/>', 'g');
+      return esc(s).replace(/\ /g, '&nbsp;').replace(/\n/g, '<br/>');
     };
     formatAsHTML = function(x) {
       var i, nPlanes, nc, nr, planeSize, planes, rx, sx, y, _ref;
