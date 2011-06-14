@@ -102,7 +102,7 @@ a:hover {
 
 #keyboardSwitch {
   float: right; }
-  #keyboardSwitch p {
+  #keyboardSwitch .switchText {
     margin: 0;
     text-align: right; }
 
@@ -111,6 +111,12 @@ a:hover {
   border: solid black 5px;
   border-color: black #444444 #444444 black;
   padding: 3px; }
+  .keyboard .help {
+    text-align: center;
+    font-family: serif;
+    font-style: italic;
+    color: #888888;
+    padding-bottom: 3px; }
   .keyboard table.row {
     border-collapse: collapse;
     border-width: 0; }

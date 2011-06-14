@@ -199,6 +199,7 @@ jQuery ($) ->
   renderKeyboard = (mapping) ->
     """
       <div class="keyboard">
+        <div class="help">Prepend a backquote (`) to get the symbols in blue or red.</div>
         <table class="row"><tr>#{[
           td renderKey '`', '~'
           td renderKey '1', '!'
@@ -276,7 +277,7 @@ jQuery ($) ->
     isKeyboardShown = not isKeyboardShown
     $keyboard ?= $(renderKeyboard()).appendTo '#keyboardSwitch'
     $keyboard.toggle isKeyboardShown
-    $(@).text(if isKeyboardShown then 'Hide keyboard' else 'Show keyboard')
+    $(@).text(if isKeyboardShown then 'Hide keyboard mapping' else 'Show Keyboard mapping')
     false
 
   # Examples {{{1
