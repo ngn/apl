@@ -16,7 +16,7 @@ An APL interpreter written in [CoffeeScript](http://jashkenas.github.com/coffee-
 Runs on [node.js](http://nodejs.org/) or in a browser<br/>
 Uses [Jison](http://zaach.github.com/jison/) for parsing
 
-See `[examples/web/index.html](http://ngn.github.com/apl/examples/web/index.html)`
+See [`examples/web/index.html`](http://ngn.github.com/apl/examples/web/index.html)
 for an in-browser demo.<br/>
 To run an APL script, install node.js and type: `bin/apl examples/life.apl`
 
