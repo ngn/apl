@@ -1,6 +1,6 @@
 (function() {
   jQuery(function($) {
-    var $keyboard, c, ch, code, description, esc, escHard, escT, examples, formatAsHTML, formatHTMLTable, hSymbolDefs, href, i, isKeyboardShown, key, mapping, name, renderKey, renderKeyboard, renderKeys, s, symbolDef, symbolDefs, symbolsHTML, _i, _len, _len2, _ref;
+    var $keyboard, a, c, ch, code, esc, escHard, escT, examples, formatAsHTML, formatHTMLTable, hSymbolDefs, href, i, isKeyboardShown, k, mapping, name, rMapping, renderKey, renderKeyboard, renderKeys, symbolDef, symbolDefs, symbolsHTML, v, _i, _len, _len2, _ref, _ref2;
     escT = {
       '<': 'lt',
       '>': 'gt',
@@ -105,30 +105,37 @@
       });
       return false;
     });
-    symbolDefs = [['+', '', 'Conjugate, Add'], ['−', '`-', 'Negate, Subtract'], ['×', '`=', 'Sign of, Multiply'], ['÷', '`:', 'Reciprocal, Divide'], ['⌈', '`s', 'Ceiling, Greater of'], ['⌊', '`d', 'Floor, Lesser of'], ['∣', '`m', 'Absolute value, Residue'], ['⍳', '`i', 'Index generator, Index of'], ['?', '', 'Roll, Deal'], ['⋆', '`p', 'Exponential, To the power of'], ['⍟', '`P', 'Natural logarithm, Logarithm to the base'], ['○', '`o', 'Pi times, Circular and hyperbolic functions'], ['!', '', 'Factorial, Binomial'], ['⌹', '', 'Matrix inverse, Matrix divide'], ['<', '', 'Less than'], ['≤', '`4', 'Less than or equal'], ['=', '', 'Equal'], ['≥', '`6', 'Greater than or equal'], ['>', '', 'Greater than'], ['≠', '`8', 'Not equal'], ['≡', '`_', 'Depth, Match'], ['≢', '', 'Not match'], ['∈', '`e', 'Enlist, Membership'], ['⍷', '`E', 'Find'], ['∪', '`v', 'Unique, Union'], ['∩', '`c', 'Intersection'], ['∼', '`t', 'Not, Without'], ['∨', '`9', 'Or'], ['∧', '`0', 'And'], ['⍱', '`(', 'Nor'], ['⍲', '`)', 'Nand'], ['⍴', '`r', 'Shape of, Reshape'], [',', '', 'Ravel, Catenate'], ['⍪', '`,', 'First axis catenate'], ['⌽', '`W', 'Reverse, Rotate'], ['⊖', '`A', 'First axis rotate'], ['⍉', '`T', 'Transpose'], ['↑', '`y', 'First, Take'], ['↓', '`u', 'Drop'], ['⊂', '`z', 'Enclose, Partition'], ['⊃', '`x', 'Disclose, Pick'], ['⌷', '`I', 'Index'], ['⍋', '`g', 'Grade up'], ['⍒', '`h', 'Grade down'], ['⊤', '`n', 'Encode'], ['⊥', '`b', 'Decode'], ['⍕', '`N', 'Format, Format by specification'], ['⍎', '`B', 'Execute'], ['⊣', '', 'Stop, Left'], ['⊢', '', 'Pass, Right'], ['⎕', '`l', 'Evaluated input, Output with a newline'], ['⍞', '`L', 'Character input, Bare output'], ['¨', '`1', 'Each'], ['∘.', '`j', 'Outer product'], ['/', '', 'Reduce'], ['⌿', '`/', '1st axis reduce'], ['\\', '', 'Scan'], ['⍀', '`\\', '1st axis scan'], ['⍣', '`!', 'Power operator'], ['¯', '`2', 'Negative number sign'], ['⍝', '`C', 'Comment'], ['←', '`[', 'Assignment'], ['⍬', '`O', 'Zilde'], ['◇', '`;', 'Statement separator'], ['⍺', '`a', 'Left formal parameter'], ['⍵', '`w', 'Right formal parameter']];
-    mapping = {
-      '`<': '«',
-      '`>': '»'
-    };
+    symbolDefs = [
+      ['+', 'Conjugate, Add'], ['−', 'Negate, Subtract'], ['×', 'Sign of, Multiply'], ['÷', 'Reciprocal, Divide'], ['⌈', 'Ceiling, Greater of'], ['⌊', 'Floor, Lesser of'], ['∣', 'Absolute value, Residue'], ['⍳', 'Index generator, Index of'], ['?', 'Roll, Deal'], ['⋆', 'Exponential, To the power of'], ['⍟', 'Natural logarithm, Logarithm to the base'], ['○', 'Pi times, Circular and hyperbolic functions'], ['!', 'Factorial, Binomial'], ['⌹', 'Matrix inverse, Matrix divide'], ['<', 'Less than'], ['≤', 'Less than or equal'], ['=', 'Equal'], ['≥', 'Greater than or equal'], ['>', 'Greater than'], ['≠', 'Not equal'], ['≡', 'Depth, Match'], ['≢', 'Not match'], ['∈', 'Enlist, Membership'], ['⍷', 'Find'], ['∪', 'Unique, Union'], ['∩', 'Intersection'], ['∼', 'Not, Without'], ['∨', 'Or'], ['∧', 'And'], ['⍱', 'Nor'], ['⍲', 'Nand'], ['⍴', 'Shape of, Reshape'], [',', 'Ravel, Catenate'], ['⍪', 'First axis catenate'], ['⌽', 'Reverse, Rotate'], ['⊖', 'First axis rotate'], ['⍉', 'Transpose'], ['↑', 'First, Take'], ['↓', 'Drop'], ['⊂', 'Enclose, Partition'], ['⊃', 'Disclose, Pick'], ['⌷', 'Index'], ['⍋', 'Grade up'], ['⍒', 'Grade down'], ['⊤', 'Encode'], ['⊥', 'Decode'], ['⍕', 'Format, Format by specification'], ['⍎', 'Execute'], ['⊣', 'Stop, Left'], ['⊢', 'Pass, Right'], ['⎕', 'Evaluated input, Output with a newline'], ['⍞', 'Character input, Bare output'], ['¨', 'Each'], [
+        '∘.', 'Outer product', {
+          keys: '`j.'
+        }
+      ], ['/', 'Reduce'], ['⌿', '1st axis reduce'], ['\\', 'Scan'], ['⍀', '1st axis scan'], ['⍣', 'Power operator'], ['¯', 'Negative number sign'], ['⍝', 'Comment'], ['←', 'Assignment'], ['⍬', 'Zilde'], ['◇', 'Statement separator'], ['⍺', 'Left formal parameter'], ['⍵', 'Right formal parameter']
+    ];
+    mapping = {};
+    rMapping = {};
+    a = '`< «   `= ×   `> »   `_ ≡   `- −   `, ⍪   `; ◇   `: ÷   `! ⍣   `/ ⌿   `( ⍱\n`) ⍲   `[ ←   `\\ ⍀  `0 ∧   `1 ¨   `2 ¯   `4 ≤   `6 ≥   `8 ≠   `9 ∨   `a ⍺\n`A ⊖   `b ⊥   `B ⍎   `c ∩   `C ⍝   `d ⌊   `e ∈   `E ⍷   `g ⍋   `h ⍒   `i ⍳\n`I ⌷   `j ∘   `l ⎕   `L ⍞   `m ∣   `n ⊤   `N ⍕   `o ○   `O ⍬   `p ⋆   `P ⍟\n`r ⍴   `s ⌈   `t ∼   `T ⍉   `u ↓   `v ∪   `w ⍵   `W ⌽   `x ⊃   `y ↑   `z ⊂                       '.replace(/(^\s+|\s+$)/g, '').split(/\s+/);
+    for (i = 0, _ref = a.length / 2; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
+      k = a[2 * i];
+      v = a[2 * i + 1];
+      mapping[k] = v;
+      rMapping[v] = k;
+    }
     hSymbolDefs = {};
     symbolsHTML = '';
     for (_i = 0, _len = symbolDefs.length; _i < _len; _i++) {
       symbolDef = symbolDefs[_i];
-      ch = symbolDef[0], key = symbolDef[1], description = symbolDef[2];
+      ch = symbolDef[0];
       hSymbolDefs[ch] = symbolDef;
       href = '#' + ((function() {
         var _j, _len2, _results;
         _results = [];
         for (_j = 0, _len2 = ch.length; _j < _len2; _j++) {
           c = ch[_j];
-          s = '0000' + c.charCodeAt(0).toString(16).toUpperCase();
-          _results.push('U+' + s.slice(s.length - 4));
+          _results.push('U+' + ('000' + c.charCodeAt(0).toString(16).toUpperCase()).slice(-4));
         }
         return _results;
       })()).join(',');
-      if (key) {
-        mapping[key] = ch;
-      }
       symbolsHTML += "<a href='" + href + "'>" + (esc(ch)) + "</a>";
     }
     $('#symbols').html("<p>" + symbolsHTML + "</p>");
@@ -139,13 +146,14 @@
     $('#symbols a').tooltip({
       showURL: false,
       bodyHandler: function() {
-        var k, _ref;
-        _ref = hSymbolDefs[$(this).text()], ch = _ref[0], key = _ref[1], description = _ref[2];
+        var description, k, opts, s, _ref2;
+        _ref2 = hSymbolDefs[$(this).text()], ch = _ref2[0], description = _ref2[1], opts = _ref2[2];
         return "<span class='keys' style=\"float: right\">" + (((function() {
-          var _j, _len2, _results;
+          var _j, _len2, _ref3, _results;
+          _ref3 = (opts != null ? opts.keys : void 0) || rMapping[ch] || '';
           _results = [];
-          for (_j = 0, _len2 = key.length; _j < _len2; _j++) {
-            k = key[_j];
+          for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+            k = _ref3[_j];
             s = "<span class='key'>" + k + "</span>";
             if (k !== k.toLowerCase()) {
               s = "<span class='key'>Shift&nbsp;⇧</span>" + s;
@@ -171,11 +179,11 @@
     renderKeys = function(keysDescription) {
       var x;
       return ((function() {
-        var _j, _len2, _ref, _results;
-        _ref = keysDescription.split(' ');
+        var _j, _len2, _ref2, _results;
+        _ref2 = keysDescription.split(' ');
         _results = [];
-        for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
-          x = _ref[_j];
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          x = _ref2[_j];
           _results.push(renderKey(x[0], x[1]));
         }
         return _results;
@@ -199,12 +207,12 @@
     });
     examples = [['Rho-Iota', '⍝  ⍳ n  generates a list of numbers from 0 to n−1\n⍝  n n ⍴ A  arranges the elements of A in an n×n matrix\n\n5 5 ⍴ ⍳ 25'], ['Multiplication table', '⍝  ∘.       is the "outer product" operator\n⍝  a × b    scalar multiplication, "a times b"\n⍝  A ∘.× B  every item in A times every item in B\n\n(⍳ 10) ∘.× ⍳ 10'], ['Life', '⍝ Conway\'s game of life\nr←(3 3 ⍴ ⍳ 9)∈1 3 6 7 8\nR←¯1⊖¯2⌽5 7↑r\nlife←{∨/1⍵∧3 4=⊂+/+⌿1 0 ¯1∘.⊖1 0 ¯1⌽¨⊂⍵}\nR (life R) (life life R)']];
     for (i = 0, _len2 = examples.length; i < _len2; i++) {
-      _ref = examples[i], name = _ref[0], code = _ref[1];
+      _ref2 = examples[i], name = _ref2[0], code = _ref2[1];
       $('#examples').append(" <a href='#example" + i + "'>" + name + "</a>");
     }
     return $('#examples a').live('click', function() {
-      var _ref2;
-      _ref2 = examples[parseInt($(this).attr('href').replace(/#example(\d+)$/, '$1'))], name = _ref2[0], code = _ref2[1];
+      var _ref3;
+      _ref3 = examples[parseInt($(this).attr('href').replace(/#example(\d+)$/, '$1'))], name = _ref3[0], code = _ref3[1];
       $('#code').val(code).focus();
       return false;
     });

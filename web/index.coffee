@@ -73,90 +73,98 @@ jQuery ($) ->
 
   # Symbols table {{{1
   symbolDefs = [
-    ['+', '',   'Conjugate, Add']
-    ['−', '`-', 'Negate, Subtract']
-    ['×', '`=', 'Sign of, Multiply']
-    ['÷', '`:', 'Reciprocal, Divide']
-    ['⌈', '`s', 'Ceiling, Greater of']
-    ['⌊', '`d', 'Floor, Lesser of']
-    ['∣', '`m', 'Absolute value, Residue']
-    ['⍳', '`i', 'Index generator, Index of']
-    ['?', '',   'Roll, Deal']
-    ['⋆', '`p', 'Exponential, To the power of']
-    ['⍟', '`P', 'Natural logarithm, Logarithm to the base']
-    ['○', '`o', 'Pi times, Circular and hyperbolic functions']
-    ['!', '',   'Factorial, Binomial']
-    ['⌹', '',   'Matrix inverse, Matrix divide']
-    ['<', '',   'Less than']
-    ['≤', '`4', 'Less than or equal']
-    ['=', '',   'Equal']
-    ['≥', '`6', 'Greater than or equal']
-    ['>', '',   'Greater than']
-    ['≠', '`8', 'Not equal']
-    ['≡', '`_', 'Depth, Match']
-    ['≢', '',   'Not match']
-    ['∈', '`e', 'Enlist, Membership']
-    ['⍷', '`E', 'Find']
-    ['∪', '`v', 'Unique, Union']
-    ['∩', '`c', 'Intersection']
-    ['∼', '`t', 'Not, Without']
-    ['∨', '`9', 'Or']
-    ['∧', '`0', 'And']
-    ['⍱', '`(', 'Nor']
-    ['⍲', '`)', 'Nand']
-    ['⍴', '`r', 'Shape of, Reshape']
-    [',', '',   'Ravel, Catenate']
-    ['⍪', '`,', 'First axis catenate']
-    ['⌽', '`W', 'Reverse, Rotate']
-    ['⊖', '`A', 'First axis rotate']
-    ['⍉', '`T', 'Transpose']
-    ['↑', '`y', 'First, Take']
-    ['↓', '`u', 'Drop']
-    ['⊂', '`z', 'Enclose, Partition']
-    ['⊃', '`x', 'Disclose, Pick']
-    ['⌷', '`I', 'Index']
-    ['⍋', '`g', 'Grade up']
-    ['⍒', '`h', 'Grade down']
-    ['⊤', '`n', 'Encode']
-    ['⊥', '`b', 'Decode']
-    ['⍕', '`N', 'Format, Format by specification']
-    ['⍎', '`B', 'Execute']
-    ['⊣', '',   'Stop, Left']
-    ['⊢', '',   'Pass, Right']
-    ['⎕', '`l', 'Evaluated input, Output with a newline']
-    ['⍞', '`L', 'Character input, Bare output']
-    ['¨', '`1', 'Each']
-    ['∘.','`j', 'Outer product']
-    ['/', '',   'Reduce']
-    ['⌿', '`/', '1st axis reduce']
-    ['\\','',   'Scan']
-    ['⍀', '`\\','1st axis scan']
-    ['⍣', '`!', 'Power operator']
-    ['¯', '`2', 'Negative number sign']
-    ['⍝', '`C', 'Comment']
-    ['←', '`[', 'Assignment']
-    ['⍬', '`O', 'Zilde']
-    ['◇', '`;', 'Statement separator']
-    ['⍺', '`a', 'Left formal parameter']
-    ['⍵', '`w', 'Right formal parameter']
+    ['+', 'Conjugate, Add']
+    ['−', 'Negate, Subtract']
+    ['×', 'Sign of, Multiply']
+    ['÷', 'Reciprocal, Divide']
+    ['⌈', 'Ceiling, Greater of']
+    ['⌊', 'Floor, Lesser of']
+    ['∣', 'Absolute value, Residue']
+    ['⍳', 'Index generator, Index of']
+    ['?', 'Roll, Deal']
+    ['⋆', 'Exponential, To the power of']
+    ['⍟', 'Natural logarithm, Logarithm to the base']
+    ['○', 'Pi times, Circular and hyperbolic functions']
+    ['!', 'Factorial, Binomial']
+    ['⌹', 'Matrix inverse, Matrix divide']
+    ['<', 'Less than']
+    ['≤', 'Less than or equal']
+    ['=', 'Equal']
+    ['≥', 'Greater than or equal']
+    ['>', 'Greater than']
+    ['≠', 'Not equal']
+    ['≡', 'Depth, Match']
+    ['≢', 'Not match']
+    ['∈', 'Enlist, Membership']
+    ['⍷', 'Find']
+    ['∪', 'Unique, Union']
+    ['∩', 'Intersection']
+    ['∼', 'Not, Without']
+    ['∨', 'Or']
+    ['∧', 'And']
+    ['⍱', 'Nor']
+    ['⍲', 'Nand']
+    ['⍴', 'Shape of, Reshape']
+    [',', 'Ravel, Catenate']
+    ['⍪', 'First axis catenate']
+    ['⌽', 'Reverse, Rotate']
+    ['⊖', 'First axis rotate']
+    ['⍉', 'Transpose']
+    ['↑', 'First, Take']
+    ['↓', 'Drop']
+    ['⊂', 'Enclose, Partition']
+    ['⊃', 'Disclose, Pick']
+    ['⌷', 'Index']
+    ['⍋', 'Grade up']
+    ['⍒', 'Grade down']
+    ['⊤', 'Encode']
+    ['⊥', 'Decode']
+    ['⍕', 'Format, Format by specification']
+    ['⍎', 'Execute']
+    ['⊣', 'Stop, Left']
+    ['⊢', 'Pass, Right']
+    ['⎕', 'Evaluated input, Output with a newline']
+    ['⍞', 'Character input, Bare output']
+    ['¨', 'Each']
+    ['∘.','Outer product', {keys: '`j.'}]
+    ['/', 'Reduce']
+    ['⌿', '1st axis reduce']
+    ['\\','Scan']
+    ['⍀', '1st axis scan']
+    ['⍣', 'Power operator']
+    ['¯', 'Negative number sign']
+    ['⍝', 'Comment']
+    ['←', 'Assignment']
+    ['⍬', 'Zilde']
+    ['◇', 'Statement separator']
+    ['⍺', 'Left formal parameter']
+    ['⍵', 'Right formal parameter']
   ]
 
   # Symbols setup {{{1
-  mapping =
-    '`<': '«'
-    '`>': '»'
+  mapping = {}
+  rMapping = {} # reverse mapping
+  a = '''
+    `< «   `= ×   `> »   `_ ≡   `- −   `, ⍪   `; ◇   `: ÷   `! ⍣   `/ ⌿   `( ⍱
+    `) ⍲   `[ ←   `\\ ⍀  `0 ∧   `1 ¨   `2 ¯   `4 ≤   `6 ≥   `8 ≠   `9 ∨   `a ⍺
+    `A ⊖   `b ⊥   `B ⍎   `c ∩   `C ⍝   `d ⌊   `e ∈   `E ⍷   `g ⍋   `h ⍒   `i ⍳
+    `I ⌷   `j ∘   `l ⎕   `L ⍞   `m ∣   `n ⊤   `N ⍕   `o ○   `O ⍬   `p ⋆   `P ⍟
+    `r ⍴   `s ⌈   `t ∼   `T ⍉   `u ↓   `v ∪   `w ⍵   `W ⌽   `x ⊃   `y ↑   `z ⊂                       
+  '''.replace(/(^\s+|\s+$)/g, '').split /\s+/
+  for i in [0 ... a.length / 2]
+    k = a[2 * i]; v = a[2 * i + 1]; mapping[k] = v; rMapping[v] = k
+
+
 
   hSymbolDefs = {} # indexed by symbol
   symbolsHTML = ''
   for symbolDef in symbolDefs
-    [ch, key, description] = symbolDef
+    ch = symbolDef[0]
     hSymbolDefs[ch] = symbolDef
     href = '#' + (
       for c in ch
-        s = '0000' + c.charCodeAt(0).toString(16).toUpperCase()
-        'U+' + s[s.length - 4 ...]
+        'U+' + ('000' + c.charCodeAt(0).toString(16).toUpperCase())[-4...]
     ).join ','
-    if key then mapping[key] = ch
     symbolsHTML += "<a href='#{href}'>#{esc ch}</a>"
   $('#symbols').html "<p>#{symbolsHTML}</p>"
   $('#symbols a').live 'click', -> $('#code').focus().replaceSelection $(@).text(); false
@@ -164,10 +172,10 @@ jQuery ($) ->
   $('#symbols a').tooltip
     showURL: false
     bodyHandler: ->
-      [ch, key, description] = hSymbolDefs[$(@).text()]
+      [ch, description, opts] = hSymbolDefs[$(@).text()]
       """
         <span class='keys' style="float: right">#{(
-            for k in key
+            for k in (opts?.keys or rMapping[ch] or '')
               s = "<span class='key'>#{k}</span>"
               if k isnt k.toLowerCase() then s = "<span class='key'>Shift&nbsp;⇧</span>" + s
               s
@@ -179,50 +187,50 @@ jQuery ($) ->
   $('#code').keydown (event) -> if event.keyCode is 13 and event.ctrlKey then $('#go').click(); false
   $('#code').retype 'on', {mapping}
 
+
+
   # Keyboard visualisation {{{1
-  renderKey = (lowerRegister, upperRegister) ->
-    """
-      <td>
-        <table class='key'>
-          <tr>
-            <td class='upperRegister'>#{esc upperRegister}</td>
-            <td class='upperAPLRegister'>#{esc mapping['`' + upperRegister]}</td>
-          </tr>
-          <tr>
-            <td class='lowerRegister'>#{esc lowerRegister}</td>
-            <td class='lowerAPLRegister'>#{esc mapping['`' + lowerRegister]}</td>
-          </tr>
-        </table>
-      </td>
-    """
+  renderKey = (lowerRegister, upperRegister) -> """
+    <td>
+      <table class='key'>
+        <tr>
+          <td class='upperRegister'>#{esc upperRegister}</td>
+          <td class='upperAPLRegister'>#{esc mapping['`' + upperRegister]}</td>
+        </tr>
+        <tr>
+          <td class='lowerRegister'>#{esc lowerRegister}</td>
+          <td class='lowerAPLRegister'>#{esc mapping['`' + lowerRegister]}</td>
+        </tr>
+      </table>
+    </td>
+  """
 
   renderKeys = (keysDescription) ->
     (for x in keysDescription.split ' ' then renderKey x[0], x[1]).join ''
 
-  renderKeyboard = (mapping) ->
-    """
-      <div class="keyboard">
-        <div class="help">Prepend a backquote (`) to get the symbols in blue or red.</div>
-        <table class="row"><tr>
-          #{renderKeys '`~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) -_ =+'}
-          <td><table class="key backspaceKey"><tr><td>Backspace<br/>⟵</td></tr></table></td>
-        </tr></table>
-        <table class="row"><tr>
-          <td><table class="key tabKey"><tr><td>Tab<br/>↹</td></tr></table></td>
-          #{renderKeys 'qQ wW eE rR tT yY uU iI oO pP [{ ]} \\|'}
-        </tr></table>
-        <table class="row"><tr>
-          <td><table class="key capsLockKey"><tr><td>Caps Lock</td></tr></table></td>
-          #{renderKeys 'aA sS dD fF gG hH jJ kK lL ;: \'"'}
-          <td><table class="key enterKey"><tr><td>Enter<br/>⏎</td></tr></table></td>
-        </tr></table>
-        <table class="row"><tr>
-          <td><table class="key leftShiftKey"><tr><td>Shift&nbsp;⇧</td></tr></table></td>
-          #{renderKeys 'zZ xX cC vV bB nN mM ,< .> /?'}
-          <td><table class="key rightShiftKey"><tr><td>Shift&nbsp;⇧</td></tr></table></td>
-        </tr></table>
-      </div>
-    """
+  renderKeyboard = (mapping) -> """
+    <div class="keyboard">
+      <div class="help">Prepend a backquote (`) to get the symbols in blue or red.</div>
+      <table class="row"><tr>
+        #{renderKeys '`~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) -_ =+'}
+        <td><table class="key backspaceKey"><tr><td>Backspace<br/>⟵</td></tr></table></td>
+      </tr></table>
+      <table class="row"><tr>
+        <td><table class="key tabKey"><tr><td>Tab<br/>↹</td></tr></table></td>
+        #{renderKeys 'qQ wW eE rR tT yY uU iI oO pP [{ ]} \\|'}
+      </tr></table>
+      <table class="row"><tr>
+        <td><table class="key capsLockKey"><tr><td>Caps Lock</td></tr></table></td>
+        #{renderKeys 'aA sS dD fF gG hH jJ kK lL ;: \'"'}
+        <td><table class="key enterKey"><tr><td>Enter<br/>⏎</td></tr></table></td>
+      </tr></table>
+      <table class="row"><tr>
+        <td><table class="key leftShiftKey"><tr><td>Shift&nbsp;⇧</td></tr></table></td>
+        #{renderKeys 'zZ xX cC vV bB nN mM ,< .> /?'}
+        <td><table class="key rightShiftKey"><tr><td>Shift&nbsp;⇧</td></tr></table></td>
+      </tr></table>
+    </div>
+  """
 
   isKeyboardShown = false
   $keyboard = null
