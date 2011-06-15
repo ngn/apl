@@ -44,7 +44,9 @@ exec0 = (ast, ctx, callback) ->
     # # Numeric literal
     # Parse like in JavaScript, except that negatives use a _high minus_ instead of _hyphen_.
     when 'num'
-      -> callback null, parseFloat ast[1].replace /¯/, '-'
+      s = ast[1].replace /¯/g, '-'
+      value = if s.match /^-?0x/i then parseInt s, 16 else parseFloat s
+      -> callback null, value
 
     # # String literal
     # Parse like in JavaScript.  The result is split into individual characters to form an APL vector.

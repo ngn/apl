@@ -22,7 +22,16 @@ o = (args...) -> args
 t /[ \t]+/                           # skip whitespace
 t /[⍝#].*/                           # skip comments
 t /[\n\r◇]/,                         'SEPARATOR'
-t /¯?\d+(\.\d+)?/,                   'NUMBER'
+
+t ///
+      ¯?                             # optional negation
+      (?:
+          0[xX][\da-fA-F]+           # hexadecimal
+          |
+          \d*\.?\d+(?:[eE][+¯]?\d+)? # possibly scientific notation
+      )
+  ///, 'NUMBER'
+
 t /\'([^\'\\\r\n]|\'\'|\\[a-z])*\'/, 'STRING'
 t /\"([^\"\\\r\n]|\"\"|\\[a-z])*\"/, 'STRING'
 t /\[/,                              '['
