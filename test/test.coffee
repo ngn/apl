@@ -71,7 +71,7 @@ gives '⍬⍬', [[], []]
 gives '1⍬2⍬3', [1, [], 2, [], 3]
 
 # ◇ Statement separator {{{1
-gives '', 0
+gives '', []
 gives '1\n2', 2
 gives '1\r2', 2
 gives '1 ◇ 2 ◇ 3', 3
