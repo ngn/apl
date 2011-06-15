@@ -1,8 +1,11 @@
+# This file contains the entry point (`main()`) for APL execution on node.js.
+
 fs = require 'fs'
 {exec} = require './interpreter'
 {builtins} = require './builtins'
 {inherit, cps, trampoline, isSimple, shapeOf, sum, prod, repeat} = require './helpers'
 
+# Format an APL object as a multiline string
 format = (a) -> format0(a).join '\n'
 
 format0 = (a) -> # todo: handle 3+ dimensional arrays properly
@@ -37,34 +40,44 @@ format0 = (a) -> # todo: handle 3+ dimensional arrays properly
     result.push BTMLFT + repeat(BTM, bigWidth) + BTMRGT
     result
 
-hpad = (box, width) -> # horizontally extend a box (a box is a list of same-length strings)
+# Horizontally extend a box (a box is a list of same-length strings)
+hpad = (box, width) ->
   if box[0].length < width
     padding = repeat ' ', width - box[0].length
     for i in [0...box.length] then box[i] += padding
     0
 
-vpad = (box, height) -> # vertically extend a box
+# Vertically extend a box
+vpad = (box, height) ->
   if box.length < height
     padding = repeat ' ', box[0].length
     for i in [box.length...height] then box.push padding
     0
 
-# Graphics symbols for the surrounding border:
+# Graphics symbols for the surrounding border
+[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "──││┌┐└┘"
+
+
 
 # (An idea: these can be used to surrond arrays at different depths;
 # arrays with a deeper structure would have thicker borders.)
+borders = [
+  "--||,.`'"
+  "──││┌┐└┘"
+  "──││╭╮╰╯"
+  "━━┃┃┏┓┗┛"
+  "▄▀▐▌▗▖▝▘"
+  "▀▄▌▐▛▜▙▟"
+  "▓▓▓▓▓▓▓▓"
+  "████████"
+]
 
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "--||,.`'"
-[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "──││┌┐└┘"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "──││╭╮╰╯"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "━━┃┃┏┓┗┛"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "▄▀▐▌▗▖▝▘"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "▀▄▌▐▛▜▙▟"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "▓▓▓▓▓▓▓▓"
-#[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "████████"
 
 
-
+# `getline = createGetline(input)` will create a line iterator CPS function
+# `getline` attached to an input stream `input`.
+# To implement line iteration, some buffering is required---either callbacks
+# must wait for input, or buffered content must wait for a calls to consume it.
 createGetline = (input) ->
   buf = ''
   callbacks = []
@@ -82,9 +95,12 @@ createGetline = (input) ->
 
 
 
+# The entry point
 exports.main = ->
+  # Use `'-'` to mean `stdin`
   filename = process.argv[2] or '-'
 
+  # Be user-friendly, help strangers
   if filename in ['-h', '-help', '--help']
     process.stderr.write '''
       Usage: apl [ FILENAME [ ARGS... ] ]
@@ -92,8 +108,11 @@ exports.main = ->
     '''
     return
 
+  # cast these spells on `stdin` to be able to read from it properly
   process.stdin.resume()
   process.stdin.setEncoding 'utf8'
+
+  # `input` is our stream, `getline` is our line iterator function
   if filename is '-'
     input = process.stdin
     getline = (callback) -> trampoline -> callback Error 'Symbols ⎕ and ⍞ cannot be read when APL source code is read from stdin.'
@@ -101,10 +120,12 @@ exports.main = ->
     input = fs.createReadStream filename
     getline = createGetline process.stdin
 
+  # Read all of the input as `code`
   code = ''
   input.on 'data', (chunk) -> code += chunk
   input.on 'end', ->
 
+    # Create a context for APL execution, specific to running on node.js
     ctx = inherit builtins
 
     ctx['⍵'] = for a in process.argv then a.split ''
@@ -116,4 +137,5 @@ exports.main = ->
         if err then return -> callback err
         -> callback null, 0
 
+    # Go!
     exec code, ctx, (err) -> if err then throw err else process.exit 0

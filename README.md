@@ -20,6 +20,9 @@ See [`web/index.html`](http://ngn.github.com/apl/web/index.html)
 for an in-browser demo.<br/>
 To run an APL script, install node.js and type: `bin/apl examples/life.apl`
 
+[Annotated source code](http://ngn.github.com/apl/docs/interpreter.html) is
+available in literate programming style.
+
 # Stuff
 
 Most symbols have roughly the same semantics as in

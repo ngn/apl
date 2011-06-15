@@ -1,55 +1,73 @@
 #!/usr/bin/env coffee
 
-# APL built-in library
+# This file contains an implementation of APL's built-in functions and
+# operators.
+
+# # A note about the data model
 
 # APL's data structures are multidimensional arrays:
-#   0. Scalars---can be:
-#        * simple scalars, like numbers and characters
-#        * an APL array of rank zero, containing exactly one element
-#   1. Vectors---sequences of APL objects with zero or more elements
-#   2. Matrices---two-dimensional arrays of APL objects
-#   3... Cubes, etc
+#
+#   * (rank 0) Scalars---can be:
+#
+#       * simple scalars, like numbers and characters
+#
+#       * an APL array of rank zero, containing exactly one element
+#
+#   * (rank 1) Vectors---sequences of APL objects with zero or more elements
+#
+#   * (rank 2) Matrices---two-dimensional arrays of APL objects
+#
+#   * (rank 3+) Cubes, etc
+#
 # APL arrays are not necessarily heterogenous, they may contain data of mixed
 # types.
-
+#
 # An array in APL is aware of its own dimensions, so there is an essential
-# difference between a vector of vectors and a matrix.
-# To reflect this in JavaScript objects, we use the following convention:
-#   0. APL scalars:
-#         * Simple scalars: APL numbers are JavaScript numbers
-#             and APL characters are JavaScript one-character strings.
-#         * A zero-rank APL array is a JavaScript array of size one
-#             with a "shape" property of [], e.g. created by:
-#                     var a = []; a.shape = [];
-#   1. An APL vector is a JavaScript array
-#   2. An APL matrix, cube, etc is a JavaScript array with an additional
-#       "shape" property, describing the dimensions of the APL array.
-#       E.g. a 2-by-2-by-3 cube of zeroes may be constructed via:
-#          function createSomeCube() {
-#              var cube = [
-#                      0, // Element at indices [0;0;0]
-#                      0, // Element at indices [0;0;1]
-#                      0, // Element at indices [0;0;2]
-#                      0, // Element at indices [0;1;0]
-#                      0, // Element at indices [0;1;1]
-#                      // ...
-#                      0  // Element at indices [1;1;2]
-#              ];
-#              cube.shape = [2, 2, 3];
-#              return cube;
-#          }
-#       A vector's representation, as opposed to that of higher dimension arrays,
-#       is not required to have a "shape" property.  The shape of a vector's
-#       representation `v' is assumed to be [v.length], by convention.
-#       Similarly, we could say that a scalar's shape is [] by convention.
+# difference between a vector of vectors and a matrix.  To reflect this in
+# JavaScript objects, we use the following convention:
+#
+#   * APL scalars:
+#
+#       - Simple scalars: APL numbers are JavaScript numbers and APL characters
+#       are JavaScript one-character strings.
+#
+#       - A zero-rank APL array is a JavaScript array of size one with a
+#       `shape` property of `[]`, e.g. created by:
+#
+#               var a = []; a.shape = [];
+#
+#   * An APL vector is a JavaScript array.
+#
+#   * An APL matrix, cube, etc is a JavaScript array with an additional `shape`
+#   property, describing the dimensions of the APL array.  E.g. a 2-by-2-by-3
+#   cube of zeroes may be constructed via:
+#
+#           function createSomeCube() {
+#               var cube = [
+#                   0, // Element at indices [0;0;0]
+#                   0, // Element at indices [0;0;1]
+#                   0, // Element at indices [0;0;2]
+#                   0, // Element at indices [0;1;0]
+#                   0, // Element at indices [0;1;1]
+#                   // ...
+#                   0  // Element at indices [1;1;2]
+#               ];
+#               cube.shape = [2, 2, 3];
+#               return cube;
+#           }
+#
+#       A vector's representation, as opposed to that of higher-dimension
+#       arrays, is not required to have a `shape` property.  The shape of a
+#       vector `v` is assumed to be `[v.length]`, by convention.  Similarly, we
+#       could say that a scalar's shape is `[]` by convention.
 
 # TODO: Can we model APL's concept of "prototypes"?
 
 
 
-{cps, cpsify, isSimple, shapeOf, sum, prod, repeat} = require './helpers'
+# # Utility functions
 
-# Utility functions
+{cps, cpsify, isSimple, shapeOf, sum, prod, repeat} = require './helpers'
 withShape = (shape, a) -> (if shape? and shape.length isnt 1 then a.shape = shape); a
 arrayValueOf = (x) -> if isSimple x then [x] else x
 
@@ -65,8 +83,9 @@ booleanValueOf = (x) ->
   if x isnt 0 and x isnt 1 then throw Error 'Boolean values must be either 0 or 1'
   x
 
+# `pervasive(f)` is a dcorator which takes a scalar function `f` and makes it
+# propagate through arrays.
 pervasive = (f) -> (a, b) ->
-  # Decorator, takes a scalar function `f' and makes it propagate through arrays
   F = arguments.callee
   if b? # dyadic pervasiveness
     if isSimple(a) and isSimple(b) then f a, b
@@ -90,9 +109,11 @@ pervasive = (f) -> (a, b) ->
 
 
 
-# DSL for defining operators, functions, and pseudo-variables
+# # DSL for defining operators and functions
+#
+# `builtins` will be the prototype of all execution contexts, see [interpreter.coffee](interpreter.html).
+exports.builtins = builtins = {}
 
-exports.builtins = builtins = {} # `builtins' will be the prototype of all execution contexts, see exec()
 prefixOperator  = (symbol, f) -> f.isPrefixOperator  = true; f.aplName = symbol; builtins[symbol] = f
 postfixOperator = (symbol, f) -> f.isPostfixOperator = true; f.aplName = symbol; builtins[symbol] = f
 infixOperator   = (symbol, f) -> f.isInfixOperator   = true; f.aplName = symbol; builtins[symbol] = f
@@ -116,7 +137,7 @@ dyadic = (symbol, f) ->
 
 
 
-# Built-in functions
+# # Built-in functions
 
 monadic '+', (a) -> a                              # Conjugate
 dyadic  '+', pervasive (x, y) -> x + y             # Add
@@ -126,11 +147,11 @@ monadic '×', pervasive (x)    -> if x < 0 then -1 else if x > 0 then 1 else 0 #
 dyadic  '×', pervasive (x, y) -> x * y             # Multiply
 monadic '÷', pervasive (x)    -> 1 / x             # Reciprocal
 dyadic  '÷', pervasive (x, y) -> x / y             # Divide
-monadic '⌈', pervasive (x)    -> Math.ceil x            # Ceiling
-dyadic  '⌈', pervasive (x, y) -> Math.max x, y          # Greater of
-monadic '⌊', pervasive (x)    -> Math.floor x           # Math.Floor
-dyadic  '⌊', pervasive (x, y) -> Math.min x, y          # Lesser of
-monadic '∣', pervasive (x)    -> Math.abs x             # Absolute value
+monadic '⌈', pervasive (x)    -> Math.ceil x       # Ceiling
+dyadic  '⌈', pervasive (x, y) -> Math.max x, y     # Greater of
+monadic '⌊', pervasive (x)    -> Math.floor x      # Math.Floor
+dyadic  '⌊', pervasive (x, y) -> Math.min x, y     # Lesser of
+monadic '∣', pervasive (x)    -> Math.abs x        # Absolute value
 dyadic  '∣', pervasive (x, y) -> y % x             # Residue
 monadic '⍳', (a) -> [0 ... Math.floor numericValueOf a] # Index generate
 dyadic  '⍳', -> throw Error 'Not implemented'      # Index of
@@ -443,9 +464,19 @@ dyadic '⊢' # Right
 
 
 
-# Operators ("functions that act upon functions")
+# Niladic functions and pseudo-variables
 
-reduce = (f, _, axis=-1) -> (a, b) -> 
+builtins['get_⍬'] = -> []
+
+# Note: Symbols _quad_ (⎕) and _quote-quad_ (⍞) are defined in a
+# platform-specific manner in [browser.coffee](browser.html) (for browsers)
+# and [command.coffee](command.html) (for node.js).
+
+
+
+# # Built-in operators
+
+reduce = (f, _, axis=-1) -> (a, b) ->
   invokedAsMonadic = not b?
   if invokedAsMonadic then b = a; a = 0
   a = Math.floor numericValueOf a
@@ -557,9 +588,9 @@ prefixOperator '∘.', outerProduct = (f) ->
       else
         -> callback null, withShape (shapeOf a).concat(shapeOf b), r
 
+# todo: the general formula for higher dimensions is
+#        A f.g B   <=>   f/¨ (⊂[⍴⍴A]A)∘.g ⊂[1]B
 infixOperator '.', (f, g) -> # Inner product
-  # todo: the general formula for higher dimensions is
-  #   A f.g B   <=>   f/¨ (⊂[⍴⍴A]A)∘.g ⊂[1]B
   F = reduce f
   G = outerProduct g
   (a, b) ->
@@ -581,12 +612,3 @@ postfixOperator '⍣', cps (f, _, _, callback) -> # Power operator
             a = r; i++; F
         else
           -> callback2 null, a
-
-
-
-# Niladic functions and pseudo-variables
-
-builtins['get_⍬'] = -> []
-
-# Symbols ⎕ and ⍞ are defined in a platform-specific manner in browser.coffee
-# (for browsers) and command.coffee (for node.js)

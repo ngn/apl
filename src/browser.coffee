@@ -1,4 +1,4 @@
-# This file will only be sourced when apl is executed in a browser environment.
+# This file will only be sourced when APL is used in a browser environment.
 
 {builtins} = require './builtins'
 {inherit} = require './helpers'
