@@ -6,9 +6,11 @@
 grammar = lex: {rules: []}, bnf: {}
 
 # `t` declares a terminal symbol
-t = (regex, action='') ->
-  action and= "return #{JSON.stringify action}"
-  grammar.lex.rules.push [regex.source, action]
+t = (name, regex) ->
+  grammar.lex.rules.push [
+    regex.source,
+    name and "return #{JSON.stringify name}"
+  ]
 
 # `nt` declares a non-terminal symbol
 nt = (name, alternatives) -> grammar.bnf[name] = alternatives
@@ -19,34 +21,34 @@ o = (args...) -> args
 
 
 # # Terminals
-t /[ \t]+/                           # skip whitespace
-t /[⍝#].*/                           # skip comments
-t /[\n\r◇]/,                         'SEPARATOR'
+t '', /[ \t]+/ # skip whitespace
+t '', /[⍝#].*/ # skip comments
+t 'SEPARATOR', /[\n\r◇]/
 
-t ///
-      ¯?                             # optional negation
-      (?:
-          0[xX][\da-fA-F]+           # hexadecimal
-          |
-          \d*\.?\d+(?:[eE][+¯]?\d+)? # possibly scientific notation
-      )
-  ///, 'NUMBER'
+t 'NUMBER', ///
+  ¯?                             # optional negation
+  (?:
+      0[xX][\da-fA-F]+           # hexadecimal
+      |
+      \d*\.?\d+(?:[eE][+¯]?\d+)? # possibly scientific notation
+  )
+///
 
-t /\'([^\'\\\r\n]|\'\'|\\[a-z])*\'/, 'STRING'
-t /\"([^\"\\\r\n]|\"\"|\\[a-z])*\"/, 'STRING'
-t /\[/,                              '['
-t /\]/,                              ']'
-t /;/,                               ';'
-t /\(/,                              '('
-t /\)/,                              ')'
-t /\{/,                              '{'
-t /\}/,                              '}'
-t /←/,                               'ARROW'
-t /«[^»]*»/,                         'EMBEDDED'
-t /∘./,                              'SYMBOL'
-t /[A-Za-z_][A-Za-z_0-9]*/,          'SYMBOL'
-t /./,                               'SYMBOL'
-t /$/,                               'EOF'
+t 'STRING', /\'([^\'\\\r\n]|\'\'|\\[a-z])*\'/
+t 'STRING', /\"([^\"\\\r\n]|\"\"|\\[a-z])*\"/
+t '[', /\[/
+t ']', /\]/
+t ';', /;/
+t '(', /\(/
+t ')', /\)/
+t '{', /\{/
+t '}', /\}/
+t 'ARROW', /←/
+t 'EMBEDDED', /«[^»]*»/
+t 'SYMBOL', /∘./
+t 'SYMBOL', /[A-Za-z_][A-Za-z_0-9]*/
+t 'SYMBOL', /./
+t 'EOF', /$/
 
 
 
