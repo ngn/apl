@@ -242,41 +242,11 @@ jQuery ($) ->
     false
 
   # Examples {{{1
-  examples = [
-
-    ['Rho-Iota',
-     '''
-        ⍝  ⍳ n  generates a list of numbers from 0 to n−1
-        ⍝  n n ⍴ A  arranges the elements of A in an n×n matrix
-
-        5 5 ⍴ ⍳ 25
-     ''']
-
-    ['Multiplication table',
-     '''
-        ⍝  ∘.       is the "outer product" operator
-        ⍝  a × b    scalar multiplication, "a times b"
-        ⍝  A ∘.× B  every item in A times every item in B
-
-        (⍳ 10) ∘.× ⍳ 10
-     ''']
-
-    ['Life',
-     '''
-        ⍝ Conway's game of life
-        r←(3 3 ⍴ ⍳ 9)∈1 3 6 7 8
-        R←¯1⊖¯2⌽5 7↑r
-        life←{∨/1⍵∧3 4=⊂+/+⌿1 0 ¯1∘.⊖1 0 ¯1⌽¨⊂⍵}
-        R (life R) (life life R)
-     ''']
-
-  ]
-
-  for [name, code], i in examples
+  for [name, code], i in window.examples
     $('#examples').append(" <a href='#example#{i}'>#{name}</a>")
 
   $('#examples a').live 'click', ->
-    [name, code] = examples[parseInt $(@).attr('href').replace /#example(\d+)$/, '$1']
+    [name, code] = window.examples[parseInt $(@).attr('href').replace /#example(\d+)$/, '$1']
     $('#code').val(code).focus()
     false
 

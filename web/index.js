@@ -1,6 +1,6 @@
 (function() {
   jQuery(function($) {
-    var $keyboard, a, c, ch, code, esc, escHard, escT, examples, formatAsHTML, formatHTMLTable, hSymbolDefs, href, i, isKeyboardShown, k, mapping, name, rMapping, renderKey, renderKeyboard, renderKeys, symbolDef, symbolDefs, symbolsHTML, v, _i, _len, _len2, _ref, _ref2;
+    var $keyboard, a, c, ch, code, esc, escHard, escT, formatAsHTML, formatHTMLTable, hSymbolDefs, href, i, isKeyboardShown, k, mapping, name, rMapping, renderKey, renderKeyboard, renderKeys, symbolDef, symbolDefs, symbolsHTML, v, _i, _len, _len2, _ref, _ref2, _ref3;
     escT = {
       '<': 'lt',
       '>': 'gt',
@@ -205,14 +205,14 @@
       $(this).text(isKeyboardShown ? 'Hide keyboard mapping' : 'Show Keyboard mapping');
       return false;
     });
-    examples = [['Rho-Iota', '⍝  ⍳ n  generates a list of numbers from 0 to n−1\n⍝  n n ⍴ A  arranges the elements of A in an n×n matrix\n\n5 5 ⍴ ⍳ 25'], ['Multiplication table', '⍝  ∘.       is the "outer product" operator\n⍝  a × b    scalar multiplication, "a times b"\n⍝  A ∘.× B  every item in A times every item in B\n\n(⍳ 10) ∘.× ⍳ 10'], ['Life', '⍝ Conway\'s game of life\nr←(3 3 ⍴ ⍳ 9)∈1 3 6 7 8\nR←¯1⊖¯2⌽5 7↑r\nlife←{∨/1⍵∧3 4=⊂+/+⌿1 0 ¯1∘.⊖1 0 ¯1⌽¨⊂⍵}\nR (life R) (life life R)']];
-    for (i = 0, _len2 = examples.length; i < _len2; i++) {
-      _ref2 = examples[i], name = _ref2[0], code = _ref2[1];
+    _ref2 = window.examples;
+    for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
+      _ref3 = _ref2[i], name = _ref3[0], code = _ref3[1];
       $('#examples').append(" <a href='#example" + i + "'>" + name + "</a>");
     }
     return $('#examples a').live('click', function() {
-      var _ref3;
-      _ref3 = examples[parseInt($(this).attr('href').replace(/#example(\d+)$/, '$1'))], name = _ref3[0], code = _ref3[1];
+      var _ref4;
+      _ref4 = window.examples[parseInt($(this).attr('href').replace(/#example(\d+)$/, '$1'))], name = _ref4[0], code = _ref4[1];
       $('#code').val(code).focus();
       return false;
     });
