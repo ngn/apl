@@ -1,5 +1,8 @@
 #!/usr/bin/env coffee
 
+# This file should be run every time modifications are made to it---it
+# generates `../lib/parser.js`.
+
 grammar = lex: {rules: []}, bnf: {}
 
 # `t` declares a terminal symbol

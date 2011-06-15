@@ -1,0 +1,81 @@
+<!DOCTYPE html>  <html> <head>   <title>parser.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="browser.html">                 browser.coffee               </a>                                           <a class="source" href="builtins.html">                 builtins.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="helpers.html">                 helpers.coffee               </a>                                           <a class="source" href="interpreter.html">                 interpreter.coffee               </a>                                           <a class="source" href="parser.html">                 parser.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               parser.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="c1">#!/usr/bin/env coffee</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>This file should be run every time modifications are made to it---it
+generates <code>../lib/parser.js</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">grammar</span> <span class="o">=</span> <span class="nv">lex: </span><span class="p">{</span><span class="nv">rules: </span><span class="p">[]},</span> <span class="nv">bnf: </span><span class="p">{}</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p><code>t</code> declares a terminal symbol</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">t</span> <span class="o">=</span> <span class="p">(</span><span class="nx">regex</span><span class="p">,</span> <span class="nx">action</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="nx">action</span> <span class="o">and=</span> <span class="s2">&quot;return #{JSON.stringify action}&quot;</span>
+  <span class="nx">grammar</span><span class="p">.</span><span class="nx">lex</span><span class="p">.</span><span class="nx">rules</span><span class="p">.</span><span class="nx">push</span> <span class="p">[</span><span class="nx">regex</span><span class="p">.</span><span class="nx">source</span><span class="p">,</span> <span class="nx">action</span><span class="p">]</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p><code>nt</code> declares a non-terminal symbol</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">nt</span> <span class="o">=</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">alternatives</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nx">grammar</span><span class="p">.</span><span class="nx">bnf</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">alternatives</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p><code>o</code> declares an alternative in the BNF for a non-terminal</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">o</span> <span class="o">=</span> <span class="p">(</span><span class="nx">args</span><span class="p">...)</span> <span class="o">-&gt;</span> <span class="nx">args</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h1>Terminals</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">t</span> <span class="o">/</span><span class="p">[</span> <span class="err">\</span><span class="nx">t</span><span class="p">]</span><span class="o">+</span><span class="err">/                           # skip whitespace</span>
+<span class="nx">t</span> <span class="o">/</span><span class="p">[</span><span class="err">⍝</span><span class="c1">#].*/                           # skip comments</span>
+<span class="nx">t</span> <span class="o">/</span><span class="p">[</span><span class="err">\</span><span class="nx">n</span><span class="err">\</span><span class="nx">r</span><span class="err">◇</span><span class="p">]</span><span class="o">/</span><span class="p">,</span>                         <span class="s1">&#39;SEPARATOR&#39;</span>
+<span class="nx">t</span> <span class="o">/</span><span class="err">¯</span><span class="o">?</span><span class="err">\</span><span class="nx">d</span><span class="o">+</span><span class="p">(</span><span class="err">\</span><span class="p">.</span><span class="err">\</span><span class="nx">d</span><span class="o">+</span><span class="p">)</span><span class="o">?</span><span class="err">/,                   &#39;NUMBER&#39;</span>
+<span class="nx">t</span> <span class="o">/</span><span class="err">\</span><span class="s1">&#39;([^\&#39;\\\r\n]|\&#39;\&#39;|\\[a-z])*\&#39;/, &#39;</span><span class="nx">STRING</span><span class="s1">&#39;</span>
+<span class="s1">t /\&quot;([^\&quot;\\\r\n]|\&quot;\&quot;|\\[a-z])*\&quot;/, &#39;</span><span class="nx">STRING</span><span class="s1">&#39;</span>
+<span class="s1">t /\[/,                              &#39;</span><span class="p">[</span><span class="s1">&#39;</span>
+<span class="s1">t /\]/,                              &#39;</span><span class="p">]</span><span class="s1">&#39;</span>
+<span class="s1">t /;/,                               &#39;</span><span class="p">;</span><span class="s1">&#39;</span>
+<span class="s1">t /\(/,                              &#39;</span><span class="p">(</span><span class="s1">&#39;</span>
+<span class="s1">t /\)/,                              &#39;</span><span class="p">)</span><span class="s1">&#39;</span>
+<span class="s1">t /\{/,                              &#39;</span><span class="p">{</span><span class="s1">&#39;</span>
+<span class="s1">t /\}/,                              &#39;</span><span class="p">}</span><span class="s1">&#39;</span>
+<span class="s1">t /←/,                               &#39;</span><span class="nx">ARROW</span><span class="s1">&#39;</span>
+<span class="s1">t /«[^»]*»/,                         &#39;</span><span class="nx">EMBEDDED</span><span class="s1">&#39;</span>
+<span class="s1">t /∘./,                              &#39;</span><span class="nx">SYMBOL</span><span class="s1">&#39;</span>
+<span class="s1">t /[A-Za-z_][A-Za-z_0-9]*/,          &#39;</span><span class="nx">SYMBOL</span><span class="s1">&#39;</span>
+<span class="s1">t /./,                               &#39;</span><span class="nx">SYMBOL</span><span class="s1">&#39;</span>
+<span class="s1">t /$/,                               &#39;</span><span class="nx">EOF</span><span class="s1">&#39;</span>
+
+
+
+
+<span class="s1">#DIVIDER</span>
+<span class="s1">nt &#39;</span><span class="nx">root</span><span class="s1">&#39;, [</span>
+<span class="s1">  o &#39;</span><span class="nx">body</span> <span class="nx">EOF</span><span class="s1">&#39;,                  &quot;return $1&quot;</span>
+<span class="s1">]</span>
+
+<span class="s1">nt &#39;</span><span class="nx">body</span><span class="s1">&#39;, [</span>
+<span class="s1">  o &#39;&#39;,                          &quot;$$ = [&#39;</span><span class="nx">body</span><span class="s1">&#39;]&quot;</span>
+<span class="s1">  o &#39;</span><span class="nx">expr</span><span class="s1">&#39;,                      &quot;$$ = [&#39;</span><span class="nx">body</span><span class="s1">&#39;, $1]&quot;</span>
+<span class="s1">  o &#39;</span><span class="nx">body</span> <span class="nx">SEPARATOR</span><span class="s1">&#39;,            &quot;$$ = $1&quot;</span>
+<span class="s1">  o &#39;</span><span class="nx">body</span> <span class="nx">SEPARATOR</span> <span class="nx">expr</span><span class="s1">&#39;,       &quot;($$ = $1).push($3)&quot;</span>
+<span class="s1">]</span>
+
+<span class="s1">nt &#39;</span><span class="nx">expr</span><span class="s1">&#39;, [</span>
+<span class="s1">  o &#39;</span><span class="nx">sequence</span><span class="s1">&#39;,                  &quot;$$ = $1&quot;</span>
+<span class="s1">  o &#39;</span><span class="nx">assignment</span><span class="s1">&#39;,                &quot;$$ = $1&quot;</span>
+<span class="s1">  o &#39;</span><span class="nx">sequence</span> <span class="nx">assignment</span><span class="s1">&#39;,       &quot;($$ = $1).push($2)&quot;</span>
+<span class="s1">]</span>
+
+<span class="s1">nt &#39;</span><span class="nx">assignment</span><span class="s1">&#39;, [</span>
+<span class="s1">  o &#39;</span><span class="nx">SYMBOL</span> <span class="nx">ARROW</span> <span class="nx">expr</span><span class="s1">&#39;,         &quot;$$ = [&#39;</span><span class="nx">assign</span><span class="s1">&#39;, $1, $3]&quot;</span>
+<span class="s1">]</span>
+
+<span class="s1">nt &#39;</span><span class="nx">sequence</span><span class="s1">&#39;, [</span>
+<span class="s1">  o &#39;</span><span class="nx">item</span><span class="s1">&#39;,                      &quot;$$ = [&#39;</span><span class="nx">seq</span><span class="s1">&#39;, $1]&quot;</span>
+<span class="s1">  o &#39;</span><span class="nx">sequence</span> <span class="nx">item</span><span class="s1">&#39;,             &quot;($$ = $1).push($2)&quot;</span>
+<span class="s1">]</span>
+
+<span class="s1">nt &#39;</span><span class="nx">item</span><span class="s1">&#39;, [</span>
+<span class="s1">  o &#39;</span><span class="nx">indexable</span><span class="s1">&#39;,                 &quot;$$ = $1&quot;</span>
+<span class="s1">  o &quot;indexable [ indices ]&quot;,     &quot;$$ = [&#39;</span><span class="nx">index</span><span class="s1">&#39;, $1].concat($3)&quot;</span>
+<span class="s1">]</span>
+
+<span class="s1">nt &#39;</span><span class="nx">indices</span><span class="s1">&#39;, [</span>
+<span class="s1">  o &#39;</span><span class="nx">expr</span><span class="s1">&#39;,                      &quot;$$ = [$1]&quot;</span>
+<span class="s1">  o &quot;indices ; expr&quot;,            &quot;($$ = $1).push($3)&quot;</span>
+<span class="s1">]</span>
+
+<span class="s1">nt &#39;</span><span class="nx">indexable</span><span class="s1">&#39;, [</span>
+<span class="s1">  o &#39;</span><span class="nx">NUMBER</span><span class="s1">&#39;,                    &quot;$$ = [&#39;</span><span class="nx">num</span><span class="s1">&#39;, $1]&quot;</span>
+<span class="s1">  o &#39;</span><span class="nx">STRING</span><span class="s1">&#39;,                    &quot;$$ = [&#39;</span><span class="nx">str</span><span class="s1">&#39;, $1]&quot;</span>
+<span class="s1">  o &#39;</span><span class="nx">SYMBOL</span><span class="s1">&#39;,                    &quot;$$ = [&#39;</span><span class="nx">sym</span><span class="s1">&#39;, $1]&quot;</span>
+<span class="s1">  o &#39;</span><span class="nx">EMBEDDED</span><span class="s1">&#39;,                  &quot;$$ = [&#39;</span><span class="nx">embedded</span><span class="s1">&#39;, $1]&quot;</span>
+<span class="s1">  o &quot;( expr )&quot;,                  &quot;$$ = $2&quot;</span>
+<span class="s1">  o &quot;{ body }&quot;,                  &quot;$$ = [&#39;</span><span class="nx">lambda</span><span class="s1">&#39;, $2]&quot;</span>
+<span class="s1">]</span>
+
+
+
+
+<span class="s1">#DIVIDER</span>
+<span class="s1">{Parser} = require &#39;</span><span class="nx">jison</span><span class="s1">&#39;</span>
+<span class="s1">fs = require &#39;</span><span class="nx">fs</span><span class="s1">&#39;</span>
+<span class="s1">fs.writeFileSync &#39;</span><span class="p">..</span><span class="o">/</span><span class="nx">lib</span><span class="o">/</span><span class="nx">parser</span><span class="p">.</span><span class="nx">js</span><span class="err">&#39;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">Parser</span><span class="p">(</span><span class="nx">grammar</span><span class="p">).</span><span class="nx">generate</span><span class="p">()</span>
+
+</pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h1>Non-terminals</h1>             </td>             <td class="code">               <div class="highlight"><pre>undefined</pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Generate parser.js</p>             </td>             <td class="code">               <div class="highlight"><pre>undefined</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
