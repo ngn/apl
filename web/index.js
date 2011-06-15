@@ -202,7 +202,7 @@
         $keyboard = $(renderKeyboard()).appendTo('#keyboardSwitch');
       };
       $keyboard.toggle(isKeyboardShown);
-      $(this).text(isKeyboardShown ? 'Hide keyboard mapping' : 'Show Keyboard mapping');
+      $(this).text(isKeyboardShown ? 'Hide keyboard mapping' : 'Show keyboard mapping');
       return false;
     });
     _ref2 = window.examples;

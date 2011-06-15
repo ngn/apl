@@ -238,7 +238,7 @@ jQuery ($) ->
     isKeyboardShown = not isKeyboardShown
     $keyboard ?= $(renderKeyboard()).appendTo '#keyboardSwitch'
     $keyboard.toggle isKeyboardShown
-    $(@).text(if isKeyboardShown then 'Hide keyboard mapping' else 'Show Keyboard mapping')
+    $(@).text(if isKeyboardShown then 'Hide keyboard mapping' else 'Show keyboard mapping')
     false
 
   # Examples {{{1
