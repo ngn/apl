@@ -70,6 +70,10 @@ gives '¯12.34e¯56', -12.34e-56
 gives '0Xffff', 0xffff
 gives '¯0xffff', -0xffff
 gives '¯0xaBcD1234', -0xabcd1234
+gives '""', []
+gives '"\\f\\t\\n\\r\\u1234\\xff"', S '\f\t\n\r\u1234\xff'
+fails '"a\nb"'
+fails '"a'
 
 # Empty vectors {{{1
 gives '⍳ 0', []

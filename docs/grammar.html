@@ -14,10 +14,10 @@ generates <code>../lib/parser.js</code>.</p>             </td>             <td c
       <span class="o">|</span>
       <span class="err">\</span><span class="nx">d</span><span class="o">*</span><span class="err">\</span><span class="p">.</span><span class="o">?</span><span class="err">\</span><span class="nx">d</span><span class="o">+</span><span class="p">(</span><span class="o">?:</span><span class="p">[</span><span class="nx">eE</span><span class="p">][</span><span class="o">+</span><span class="err">¯</span><span class="p">]</span><span class="o">?</span><span class="err">\</span><span class="nx">d</span><span class="o">+</span><span class="p">)</span><span class="o">?</span> <span class="c1"># possibly scientific notation</span>
   <span class="p">)</span>
-<span class="o">/</span><span class="err">// </span>
+<span class="o">/</span><span class="err">//</span>
 
-<span class="nx">t</span> <span class="s1">&#39;STRING&#39;</span><span class="p">,</span> <span class="sr">/\&#39;([^\&#39;\\\r\n]|\&#39;\&#39;|\\[a-z])*\&#39;/</span>
-<span class="nx">t</span> <span class="s1">&#39;STRING&#39;</span><span class="p">,</span> <span class="sr">/\&quot;([^\&quot;\\\r\n]|\&quot;\&quot;|\\[a-z])*\&quot;/</span>
+<span class="nx">t</span> <span class="s1">&#39;STRING&#39;</span><span class="p">,</span> <span class="sr">/^&#39;[^\\&#39;]*(?:\\.[^\\&#39;]*)*&#39;/</span>
+<span class="nx">t</span> <span class="s1">&#39;STRING&#39;</span><span class="p">,</span> <span class="sr">/^&quot;[^\\&quot;]*(?:\\.[^\\&quot;]*)*&quot;/</span>
 <span class="nx">t</span> <span class="s1">&#39;[&#39;</span><span class="p">,</span> <span class="sr">/\[/</span>
 <span class="nx">t</span> <span class="s1">&#39;]&#39;</span><span class="p">,</span> <span class="sr">/\]/</span>
 <span class="nx">t</span> <span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="sr">/;/</span>
@@ -29,7 +29,7 @@ generates <code>../lib/parser.js</code>.</p>             </td>             <td c
 <span class="nx">t</span> <span class="s1">&#39;EMBEDDED&#39;</span><span class="p">,</span> <span class="sr">/«[^»]*»/</span>
 <span class="nx">t</span> <span class="s1">&#39;SYMBOL&#39;</span><span class="p">,</span> <span class="sr">/∘./</span>
 <span class="nx">t</span> <span class="s1">&#39;SYMBOL&#39;</span><span class="p">,</span> <span class="sr">/[A-Za-z_][A-Za-z_0-9]*/</span>
-<span class="nx">t</span> <span class="s1">&#39;SYMBOL&#39;</span><span class="p">,</span> <span class="sr">/./</span>
+<span class="nx">t</span> <span class="s1">&#39;SYMBOL&#39;</span><span class="p">,</span> <span class="sr">/[^&#39;&quot;]/</span>
 <span class="nx">t</span> <span class="s1">&#39;EOF&#39;</span><span class="p">,</span> <span class="sr">/$/</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h1>Non-terminals</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">nt</span> <span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="p">[</span>
   <span class="nx">o</span> <span class="s1">&#39;body EOF&#39;</span><span class="p">,</span>                  <span class="s2">&quot;return $1&quot;</span>
 <span class="p">]</span>
