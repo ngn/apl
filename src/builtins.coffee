@@ -3,7 +3,7 @@
 # This file contains an implementation of APL's built-in functions and
 # operators.
 
-# # A note about the data model
+# # APL objects
 
 # APL's data structures are multidimensional arrays:
 #
@@ -61,14 +61,47 @@
 #       vector `v` is assumed to be `[v.length]`, by convention.  Similarly, we
 #       could say that a scalar's shape is `[]` by convention.
 
-# TODO: Can we model APL's concept of "prototypes"?
 
+
+# # APL prototypes
+#
+# Every object in APL, including empty arrays, has a _prototype_ used whenever
+# "padding material" is needed, such as in the _take_ function:
+#
+#     5 ↑ 1 2 3     ⍝ gives      1 2 3 0 0
+#     5 ↑ 'abc'     ⍝ gives      'abc  '
+#
+# Prototypes are defined recursively:
+#
+#   * For numbers, the prototype is `0`.
+#
+#   * For characters, the prototype is a space, `' '`.
+#
+#   * For non-empty arrays, the prototype is the prototype of the first
+#   element, repeated and arranged to fit the first element's shape.  E.g. the
+#   prototype of `((1 2) 'a' (1 2 3))` is `(0 0)`.
+#
+#   * For empty arrays, the prototype is determined by the operation used to
+#   construct the array.  Usually it is copied from another array.
+#
+# To represent this in JavaScript, we simply use the first elements of arrays
+# and calculate it dynamically.  For empty arrays, we put an additional
+# `aplPrototype` property on the array, like so:
+#
+#     var a = [];
+#     a.aplPrototype = ' ';
+#
+#     var b = [];
+#     b.aplPrototype = [0, 0, 0, 0];
+#     b.aplPrototype.shape = [2, 2];
+#
+# If an empty array has a prototype of `0`, we skip `aplPrototype` and leave
+# `0` as an implicit default.
 
 
 # # Utility functions
 
-{cps, cpsify, isSimple, shapeOf, sum, prod, repeat} = require './helpers'
-withShape = (shape, a) -> (if shape? and shape.length isnt 1 then a.shape = shape); a
+{cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
 arrayValueOf = (x) -> if isSimple x then [x] else x
 
 numericValueOf = (x) ->
@@ -283,13 +316,18 @@ monadic '≡', depthOf = (a) ->
 dyadic '≡', match = (a, b) -> 
   if isSimple(a) and isSimple(b) then return +(a is b)
   if isSimple(a) isnt isSimple(b) then return 0
+  # Compare by shape
   sa = shapeOf a
   sb = shapeOf b
   if sa.length isnt sb.length then return 0
   for i in [0...sa.length] when sa[i] isnt sb[i] then return 0
+  # Compare by elements
   if a.length isnt b.length then return 0
   for i in [0...a.length] then if not match a[i], b[i] then return 0
-  1
+  # Compare by prototype
+  if a.length then return 1
+  if not (a.aplPrototype? or b.aplPrototype?) then return 1
+  match prototypeOf(a), prototypeOf(b)
 
 # `≢` Not match
 dyadic '≢', (a, b) -> +not match a, b 
@@ -348,7 +386,7 @@ dyadic '⍴', (a, b) ->
       if not typeof x is 'number'
         throw Error 'Domain error: Left argument to ⍴ must be a numeric scalar or vector.'
       Math.max 0, Math.floor x
-  withShape a, (for i in [0...prod a] then b[i % b.length])
+  withShape a, withPrototypeCopiedFrom b, (for i in [0...prod a] then b[i % b.length])
 
 # `,` Ravel
 monadic ',', (a) -> arrayValueOf(a)[0...] 
@@ -435,7 +473,7 @@ monadic '⍉', (a) ->
 # `↑` First
 monadic '↑', (a) -> 
   a = arrayValueOf(a)
-  if a.length then a[0] else 0 # todo: use the prototype of a
+  if a.length then a[0] else prototypeOf a
 
 # `↑` Take
 dyadic  '↑', (a, b) -> 
@@ -451,6 +489,7 @@ dyadic  '↑', (a, b) ->
   pa = for [0...a.length] then 0
   pa[a.length - 1] = 1
   i = a.length - 2; while i >= 0 then pa[i] = pa[i + 1] * a[i + 1]; i--
+  filler = prototypeOf b
   rec = (d, i, k) ->
     if d >= sb.length
       r.push b[i]
@@ -459,13 +498,14 @@ dyadic  '↑', (a, b) ->
       if a[d] >= 0
         for j in [0 ... Math.min a[d], sb[d]] then rec d + 1, i + j * k, k
         if sb[d] < a[d]
-          for [0 ... (a[d] - sb[d]) * pa[d]] then r.push 0 # todo: use APL array prototype instead of 0
+          for [0 ... (a[d] - sb[d]) * pa[d]] then r.push filler
       else
         if sb[d] + a[d] < 0
-          for [0 ... -(sb[d] + a[d]) * pa[d]] then r.push 0 # todo: use APL array prototype instead of 0
+          for [0 ... -(sb[d] + a[d]) * pa[d]] then r.push filler
         for j in [Math.max(0, sb[d] + a[d]) ... sb[d]] then rec d + 1, i + j * k, k
-    r
-  withShape a, rec 0, 0, b.length
+    0
+  rec 0, 0, b.length
+  withShape a, withPrototype filler, r
 
 # `↓` Drop
 dyadic '↓', (a, b) -> 
@@ -508,11 +548,11 @@ monadic '⊃', (a) ->
   if isSimple a then return a
   sa = shapeOf a
   if sa.length is 0 then return a[0]
-  sr1 = shapeOf a[0]
+  sr1 = shapeOf(a[0])[0...]
   for x in a[1...]
     sx = shapeOf x
     if sx.length isnt sr1.length
-      throw Error 'The argument of ⊃ must contain elements of the same rank.'
+      throw Error 'The argument of ⊃ must contain elements of the same rank.' # todo: or scalars
     for i in [0...sr1.length]
       sr1[i] = Math.max sr1[i], sx[i]
   sr = shapeOf(a).concat sr1
@@ -527,8 +567,10 @@ monadic '⊃', (a) ->
         N /= sr1[d]
         for j in [0...sx[d]]
           rec d + 1, i + j * n, n, N
-        for [0 ... N * (sr1[d] - sx[d])]
-          r.push 0
+        if sr1[d] > sx[d]
+          filler = prototypeOf x
+          for [0 ... N * (sr1[d] - sx[d])]
+            r.push filler
     rec 0, 0, x.length, prod sr1
   withShape sr, r
 
@@ -670,8 +712,9 @@ compressOrReplicate = (a, b, axis=-1) ->
             r.push b[k + nk*(j + nj*i)]
         j += isExpansive or isHyperexpansive
       else
-        for [0...-a[j]*nk]
-          r.push 0 # todo: prototype
+        filler = prototypeOf(if isExpansive then [b[nk*(j + nj*i)]] else [b[nk*nj*i]])
+        for [0...-x*nk]
+          r.push filler
         j += isExpansive
 
   withShape sr, r

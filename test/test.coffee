@@ -23,7 +23,7 @@ eq = (x, y) ->
   else if x.length isnt y.length then false
   else all [0...x.length], -> eq x[@], y[@]
 
-fail = (reason) -> nFailed++; puts reason
+fail = (reason, err) -> nFailed++; puts reason; if err then puts err.stack
 
 queue = [] # stick some CPS functions here and execute them sequentially at the end
 
@@ -33,7 +33,7 @@ gives = (code, expectedResult) ->
     exec code, (err, actualResult) ->
       trampoline ->
         if err
-          fail "Test #{repr code} failed with #{err}"
+          fail "Test #{repr code} failed with #{err}", err
         else if not eq expectedResult, actualResult
           fail "Test #{repr code} failed: expected #{repr expectedResult} but got #{repr actualResult}"
         next
@@ -46,7 +46,7 @@ fails = (code, expectedErrorMessage) ->
         if not err
           fail "Code #{repr code} should have failed, but didn't"
         else if expectedErrorMessage and err.message[...expectedErrorMessage.length] isnt expectedErrorMessage
-          fail "Code #{repr code} should have failed with #{repr expectedErrorMessage}, but it failed with #{repr err.message}"
+          fail "Code #{repr code} should have failed with #{repr expectedErrorMessage}, but it failed with #{repr err.message}", err
         next
 
 S = (s) -> s.split ''
@@ -243,9 +243,9 @@ gives '4 7.1 8 ≡ 4 7.2 8', 0
 gives '(3 4⍴⍳12) ≡ 3 4⍴⍳12', 1
 gives '(3 4⍴⍳12) ≡ ⊂3 4⍴⍳12', 0
 gives '("ABC" "DEF") ≡ "ABCDEF"', 0
-#gives '(⍳0)≡""', 0   # todo: prototypes
+gives '(⍳0)≡""', 0
 gives '(2 0⍴0)≡(0 2⍴0)', 0
-#gives '(0⍴1 2 3)≡0⍴⊂2 2⍴⍳4', 0 # todo: prototypes
+gives '(0⍴1 2 3)≡0⍴⊂2 2⍴⍳4', 0
 
 # ≢ Not match {{{1
 gives '3≢3', 0
@@ -323,6 +323,9 @@ gives '⍴ 1 ↑ (2 2 ⍴ ⍳ 4) (⍳ 10)', [1]
 gives '5 ↑ 40 92 11', [40, 92, 11, 0, 0]
 gives '¯5 ↑ 40 92 11', [0, 0, 40, 92, 11]
 gives '3 3 ↑ 1 1 ⍴ 0', [0, 0, 0, 0, 0, 0, 0, 0, 0]
+gives '5 ↑ "abc"', S 'abc  '
+gives '¯5 ↑ "abc"', S '  abc'
+gives '3 3 ↑ 1 1 ⍴ "a"', S 'a        '
 
 gives '1 + 4 3 ⍴ ⍳ 12',
   [ 1, 2, 3
@@ -363,7 +366,7 @@ gives '⊃ (1 2 3) (4 5 6)', [1, 2, 3, 4, 5, 6], [2, 3]
 gives '⍴⊃ (1 2 3) (4 5 6)', [2, 3]
 gives '⊃ (1 2) (3 4 5)', [1, 2, 0, 3, 4, 5]
 gives '⍴⊃ (1 2) (3 4 5)', [2, 3]
-gives '⊃ (1 2 3) "AB"', [1, 2, 3, 'A', 'B', 0] # todo: when we implement prototypes, the last element of the result should be ' '
+gives '⊃ (1 2 3) "AB"', [1, 2, 3, 'A', 'B', ' ']
 gives '⍴⊃ (1 2 3) "AB"', [2, 3]
 gives '⊃123', 123
 
@@ -414,8 +417,8 @@ gives 't←1+2 3⍴⍳6  ◇  2 ¯2 2 ¯2 2/t',
         [1, 1, 0, 0, 2, 2, 0, 0, 3, 3
          4, 4, 0, 0, 5, 5, 0, 0, 6, 6]
 
-#gives '1 1 ¯2 1 1 / 1 2 (2 2⍴⍳4) 3 4',
-#      [1, 2, [0, 0, 0, 0], [0, 0, 0, 0], 3, 4] # todo: prototypes
+gives '1 1 ¯2 1 1 / 1 2 (2 2⍴⍳4) 3 4',
+      [1, 2, [0, 0, 0, 0], [0, 0, 0, 0], 3, 4]
 
 gives '1 1 ¯2 1 1 1 / 1 2 (2 2⍴⍳4) 3 4',
       [1, 2, 0, 0, [0, 1, 2, 3], 3, 4]
@@ -439,10 +442,15 @@ gives '2 3/3 1⍴"ABC"',
        'B', 'B', 'B', 'B', 'B'
        'C', 'C', 'C', 'C', 'C']
 
-#gives '2 ¯1 2/[1]3 1⍴"ABC"',
-#      ['A', 'A', ' ', 'A', 'A'
-#       'B', 'B', ' ', 'B', 'B'
-#       'C', 'C', ' ', 'C', 'C'] # todo: prototypes
+gives '2 ¯1 2/[1]3 1⍴(7 8 9)',
+      [7, 7, 0, 7, 7
+       8, 8, 0, 8, 8
+       9, 9, 0, 9, 9]
+
+gives '2 ¯1 2/[1]3 1⍴"ABC"',
+      ['A', 'A', ' ', 'A', 'A'
+       'B', 'B', ' ', 'B', 'B'
+       'C', 'C', ' ', 'C', 'C']
 
 # ⌿ 1st axis reduction {{{1
 gives '+⌿ 2 3 ⍴ 1 2 3 10 20 30', [11, 22, 33]

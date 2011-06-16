@@ -43,9 +43,12 @@
       });
     }
   };
-  fail = function(reason) {
+  fail = function(reason, err) {
     nFailed++;
-    return puts(reason);
+    puts(reason);
+    if (err) {
+      return puts(err.stack);
+    }
   };
   queue = [];
   gives = function(code, expectedResult) {
@@ -54,7 +57,7 @@
       return exec(code, function(err, actualResult) {
         return trampoline(function() {
           if (err) {
-            fail("Test " + (repr(code)) + " failed with " + err);
+            fail("Test " + (repr(code)) + " failed with " + err, err);
           } else if (!eq(expectedResult, actualResult)) {
             fail("Test " + (repr(code)) + " failed: expected " + (repr(expectedResult)) + " but got " + (repr(actualResult)));
           }
@@ -71,7 +74,7 @@
           if (!err) {
             fail("Code " + (repr(code)) + " should have failed, but didn't");
           } else if (expectedErrorMessage && err.message.slice(0, expectedErrorMessage.length) !== expectedErrorMessage) {
-            fail("Code " + (repr(code)) + " should have failed with " + (repr(expectedErrorMessage)) + ", but it failed with " + (repr(err.message)));
+            fail("Code " + (repr(code)) + " should have failed with " + (repr(expectedErrorMessage)) + ", but it failed with " + (repr(err.message)), err);
           }
           return next;
         });
@@ -190,7 +193,9 @@
   gives('(3 4⍴⍳12) ≡ 3 4⍴⍳12', 1);
   gives('(3 4⍴⍳12) ≡ ⊂3 4⍴⍳12', 0);
   gives('("ABC" "DEF") ≡ "ABCDEF"', 0);
+  gives('(⍳0)≡""', 0);
   gives('(2 0⍴0)≡(0 2⍴0)', 0);
+  gives('(0⍴1 2 3)≡0⍴⊂2 2⍴⍳4', 0);
   gives('3≢3', 0);
   gives('∈ 17', [17]);
   gives('⍴ ∈ (1 2 3) "ABC" (4 5 6)', [9]);
@@ -236,6 +241,9 @@
   gives('5 ↑ 40 92 11', [40, 92, 11, 0, 0]);
   gives('¯5 ↑ 40 92 11', [0, 0, 40, 92, 11]);
   gives('3 3 ↑ 1 1 ⍴ 0', [0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  gives('5 ↑ "abc"', S('abc  '));
+  gives('¯5 ↑ "abc"', S('  abc'));
+  gives('3 3 ↑ 1 1 ⍴ "a"', S('a        '));
   gives('1 + 4 3 ⍴ ⍳ 12', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
   gives('2 3 ↑ 1 + 4 3 ⍴ ⍳ 12', [1, 2, 3, 4, 5, 6]);
   gives('¯1 3 ↑ 1 + 4 3 ⍴ ⍳ 12', [10, 11, 12]);
@@ -254,7 +262,7 @@
   gives('⍴⊃ (1 2 3) (4 5 6)', [2, 3]);
   gives('⊃ (1 2) (3 4 5)', [1, 2, 0, 3, 4, 5]);
   gives('⍴⊃ (1 2) (3 4 5)', [2, 3]);
-  gives('⊃ (1 2 3) "AB"', [1, 2, 3, 'A', 'B', 0]);
+  gives('⊃ (1 2 3) "AB"', [1, 2, 3, 'A', 'B', ' ']);
   gives('⍴⊃ (1 2 3) "AB"', [2, 3]);
   gives('⊃123', 123);
   gives('1 ⌷ 3 5 8', 5);
@@ -284,6 +292,7 @@
   gives('t←1+2 3⍴⍳6  ◇  1 0⌿t', [1, 2, 3]);
   gives('t←1+2 3⍴⍳6  ◇  2 ¯2 2/t', [1, 1, 0, 0, 3, 3, 4, 4, 0, 0, 6, 6]);
   gives('t←1+2 3⍴⍳6  ◇  2 ¯2 2 ¯2 2/t', [1, 1, 0, 0, 2, 2, 0, 0, 3, 3, 4, 4, 0, 0, 5, 5, 0, 0, 6, 6]);
+  gives('1 1 ¯2 1 1 / 1 2 (2 2⍴⍳4) 3 4', [1, 2, [0, 0, 0, 0], [0, 0, 0, 0], 3, 4]);
   gives('1 1 ¯2 1 1 1 / 1 2 (2 2⍴⍳4) 3 4', [1, 2, 0, 0, [0, 1, 2, 3], 3, 4]);
   gives('2 3 2 / "ABC"', S('AABBBCC'));
   gives('2 / "DEF"', S('DDEEFF'));
@@ -291,6 +300,8 @@
   gives('t←1+2 3⍴⍳6  ◇  2/t', [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6]);
   gives('t←1+2 3⍴⍳6  ◇  2⌿t', [1, 2, 3, 1, 2, 3, 4, 5, 6, 4, 5, 6]);
   gives('2 3/3 1⍴"ABC"', ['A', 'A', 'A', 'A', 'A', 'B', 'B', 'B', 'B', 'B', 'C', 'C', 'C', 'C', 'C']);
+  gives('2 ¯1 2/[1]3 1⍴(7 8 9)', [7, 7, 0, 7, 7, 8, 8, 0, 8, 8, 9, 9, 0, 9, 9]);
+  gives('2 ¯1 2/[1]3 1⍴"ABC"', ['A', 'A', ' ', 'A', 'A', 'B', 'B', ' ', 'B', 'B', 'C', 'C', ' ', 'C', 'C']);
   gives('+⌿ 2 3 ⍴ 1 2 3 10 20 30', [11, 22, 33]);
   gives('2 3 4 ∘.× 1 2 3 4', [2, 4, 6, 8, 3, 6, 9, 12, 4, 8, 12, 16]);
   gives('0 1 2 3 4 ∘.! 0 1 2 3 4', [1, 1, 1, 1, 1, 0, 1, 2, 3, 4, 0, 0, 1, 3, 6, 0, 0, 0, 1, 4, 0, 0, 0, 0, 1]);

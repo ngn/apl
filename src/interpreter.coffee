@@ -1,5 +1,5 @@
 {builtins} = require './builtins'
-{inherit, trampoline, cps, cpsify} = require './helpers'
+{inherit, trampoline, cps, cpsify, withPrototype} = require './helpers'
 {parse} = require './parser'
 
 
@@ -51,7 +51,7 @@ exec0 = (ast, ctx, callback) ->
     # # String literal
     # Parse like in JavaScript.  The result is split into individual characters to form an APL vector.
     when 'str'
-      -> callback null, eval(ast[1]).split ''
+      -> callback null, withPrototype ' ', eval(ast[1]).split ''
 
     # # Indexing
     # `A[B0;B1;...]`
