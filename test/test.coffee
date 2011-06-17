@@ -106,20 +106,13 @@ gives '''
       [4, 25.13, 50.26]]
 
 # overloadable functions {{{1
-gives '''
-  x ← «{'+': function (y) { return y + 1234; }}»
-  x + 1
-''', 1235
-
-gives '''
-  x ← «{'+': function (y) { return y + 1234; }}»
-  1 + x
-''', 1235
-
-gives '''
-  x ← «{'+': function () { return 1234; }}»
-  +x
-''', 1234
+gives "x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1", 1235
+gives "x ← «{'⍟': function (y) { return y + 1234; }}» ◇ 1 ⍟ x", 1235
+gives "x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1 1", [1235, 1235]
+gives "x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x x ⍟ 1", [1235, 1235]
+gives "x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x", 1234
+gives "x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x", 1234
+gives "x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x x", [1234, 1234]
 
 # [] Subscripting {{{1
 gives '(23 54 38)[0]', 23
