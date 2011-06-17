@@ -1,6 +1,5 @@
 (function() {
-  var F, S, all, eq, exec, fail, fails, gives, identityFunction, nFailed, nTests, parser, puts, queue, repr, trampoline;
-  puts = require('sys').puts;
+  var F, S, all, eq, exec, fail, fails, gives, identityFunction, nFailed, nTests, parser, queue, repr, t0, trampoline;
   parser = require('../lib/parser').parser;
   exec = require('../lib/interpreter').exec;
   trampoline = require('../lib/helpers').trampoline;
@@ -45,9 +44,9 @@
   };
   fail = function(reason, err) {
     nFailed++;
-    puts(reason);
+    console.error(reason);
     if (err) {
-      return puts(err.stack);
+      return console.error(err.stack);
     }
   };
   queue = [];
@@ -332,6 +331,8 @@
   gives('r ← (3 3 ⍴ ⍳ 9) ∈ 1 2 3 4 7', [0, 1, 1, 1, 1, 0, 0, 1, 0]);
   gives('r ← (3 3 ⍴ ⍳ 9) ∈ 1 2 3 4 7\n¯1 ⊖ ¯2 ⌽ 5 7 ↑ r', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   gives('r ← (3 3 ⍴ ⍳ 9) ∈ 1 2 3 4 7\nR ← ¯1 ⊖ ¯2 ⌽ 5 7 ↑ r\n1 0 ¯1 ⌽¨ R R R', [[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]]);
+  t0 = Date.now();
+  console.info('Running tests...');
   trampoline((F = function() {
     if (queue.length) {
       return function() {
@@ -339,9 +340,9 @@
       };
     } else {
       if (nFailed) {
-        puts("Done.  " + nFailed + " of " + nTests + " tests failed.");
+        console.info("Done.  " + nFailed + " of " + nTests + " tests failed.");
       } else {
-        puts("Done.  All " + nTests + " tests passed.");
+        console.info("Done.  All " + nTests + " tests passed in " + (Date.now() - t0) + " ms.");
       }
       return 0;
     }

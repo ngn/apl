@@ -1,7 +1,6 @@
 #!/usr/bin/env coffee
   
 # Test framework {{{1
-{puts} = require 'sys'
 {parser} = require '../lib/parser'
 {exec} = require '../lib/interpreter'
 {trampoline} = require '../lib/helpers'
@@ -23,7 +22,7 @@ eq = (x, y) ->
   else if x.length isnt y.length then false
   else all [0...x.length], -> eq x[@], y[@]
 
-fail = (reason, err) -> nFailed++; puts reason; if err then puts err.stack
+fail = (reason, err) -> nFailed++; console.error reason; if err then console.error err.stack
 
 queue = [] # stick some CPS functions here and execute them sequentially at the end
 
@@ -556,11 +555,13 @@ gives(
 
 
 # Execute functions from "queue" sequentially
+t0 = Date.now()
+console.info 'Running tests...'
 trampoline (F = ->
   if queue.length
     -> queue.shift() F
   else
-    if nFailed then puts "Done.  #{nFailed} of #{nTests} tests failed."
-    else puts "Done.  All #{nTests} tests passed."
+    if nFailed then console.info "Done.  #{nFailed} of #{nTests} tests failed."
+    else console.info "Done.  All #{nTests} tests passed in #{Date.now() - t0} ms."
     0
 )
