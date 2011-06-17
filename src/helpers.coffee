@@ -53,7 +53,7 @@ exports.cpsify = (f) ->
 
 
 # Helpers for the APL data model
-exports.isSimple = isSimple = (x) -> typeof x is 'number' or typeof x is 'string'
+exports.isSimple = isSimple = (x) -> not (x instanceof Array)
 exports.shapeOf = shapeOf = (a) -> a.shape or if a.length? then [a.length] else []
 exports.withShape = withShape = (shape, a) -> (if shape? and shape.length isnt 1 then a.shape = shape); a
 

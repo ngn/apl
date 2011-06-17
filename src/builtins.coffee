@@ -151,6 +151,27 @@ pervasive = (f) -> named f.aplName, (a, b) ->
     if isSimple a then f a
     else withShape a.shape, (for x in a then F x)
 
+# `overloadable(f)` decorates a named function `f` so that its arguments can
+# overload its behaviour by providing a method of the same name as the
+# function.  For instance, if `f` is the usual _addition_ (named `'+'`),
+# then:
+#
+#     var x = {
+#         '+': function (y) {
+#             console.info("hello");
+#             return y + 1234;
+#         }
+#     };
+#     return overloadable(f)(x, 1);
+#
+# will print "hello" and return 1235.
+overloadable = (f) ->
+  named f.aplName, (x, y, args...) ->
+    assert f.aplName
+    if typeof x[f.aplName] is 'function' then x[f.aplName](y, args...)
+    else if y? and typeof y[f.aplName] is 'function' then y[f.aplName](x, args...)
+    else f x, y, args...
+
 
 
 # # DSL for defining functions and operators
@@ -160,20 +181,21 @@ pervasive = (f) -> named f.aplName, (a, b) ->
 exports.builtins = builtins = {}
 
 ambivalent = (f1, f2) -> # combine a monadic and a dyadic function into one
+  assert(f1.aplName and (f1.aplName is f2.aplName))
   f = (args...) -> (if args[1]? then f2 else f1)(args...)
-  f.aplName = f1.aplName or f2.aplName
+  f.aplName = f1.aplName
   f
 
 monadic = (f) ->
   assert typeof f is 'function'
   assert typeof f.aplName is 'string'
-  if (g = builtins[f.aplName]) then f = ambivalent f, g
+  if (g = builtins[f.aplName]) then f = ambivalent f, g else f = f
   builtins[f.aplName] = f
 
 dyadic = (f) ->
   assert typeof f is 'function'
   assert typeof f.aplName is 'string'
-  if (g = builtins[f.aplName]) then f = ambivalent g, f
+  if (g = builtins[f.aplName]) then f = ambivalent g, f else f = f
   builtins[f.aplName] = f
 
 prefixOperator  = (f) -> f.isPrefixOperator  = true; builtins[f.aplName] = f
@@ -185,59 +207,59 @@ infixOperator   = (f) -> f.isInfixOperator   = true; builtins[f.aplName] = f
 # # Built-in functions
 
 # `+` Conjugate
-monadic named '+', (a) -> a
+monadic overloadable named '+', (a) -> a
 
 # `+` Add
-dyadic pervasive named '+', (x, y) -> x + y
+dyadic pervasive overloadable named '+', (x, y) -> x + y
 
 # `−` Negate
-monadic pervasive named '−', (x) -> -x
+monadic pervasive overloadable named '−', (x) -> -x
 
 # `−` Subtract
-dyadic pervasive named '−', (x, y) -> x - y
+dyadic pervasive overloadable named '−', (x, y) -> x - y
 
 # `×` Sign of
-monadic pervasive named '×', (x) -> if x < 0 then -1 else if x > 0 then 1 else 0
+monadic pervasive overloadable named '×', (x) -> if x < 0 then -1 else if x > 0 then 1 else 0
 
 # `×` Multiply
-dyadic pervasive named '×', (x, y) -> x * y
+dyadic pervasive overloadable named '×', (x, y) -> x * y
 
 # `÷` Reciprocal
-monadic pervasive named '÷', (x) -> 1 / x
+monadic pervasive overloadable named '÷', (x) -> 1 / x
 
 # `÷` Divide
-dyadic pervasive named '÷', (x, y) -> x / y
+dyadic pervasive overloadable named '÷', (x, y) -> x / y
 
 # `⌈` Ceiling
-monadic pervasive named '⌈', (x) -> Math.ceil x
+monadic pervasive overloadable named '⌈', (x) -> Math.ceil x
 
 # `⌈` Greater of
-dyadic pervasive named '⌈', (x, y) -> Math.max x, y
+dyadic pervasive overloadable named '⌈', (x, y) -> Math.max x, y
 
 # `⌊` Floor
-monadic pervasive named '⌊', (x) -> Math.floor x
+monadic pervasive overloadable named '⌊', (x) -> Math.floor x
 
 # `⌊` Lesser of
-dyadic pervasive named '⌊', (x, y) -> Math.min x, y
+dyadic pervasive overloadable named '⌊', (x, y) -> Math.min x, y
 
 # `∣` Absolute value
-monadic pervasive named '∣', (x) -> Math.abs x
+monadic pervasive overloadable named '∣', (x) -> Math.abs x
 
 # `∣` Residue
-dyadic pervasive named '∣', (x, y) -> y % x
+dyadic pervasive overloadable named '∣', (x, y) -> y % x
 
 # `⍳` Index generate
-monadic named '⍳', (a) -> [0 ... Math.floor numericValueOf a]
+monadic overloadable named '⍳', (a) -> [0 ... Math.floor numericValueOf a]
 
 # `⍳` Index of
-dyadic named '⍳'
+dyadic overloadable named '⍳'
 
 # `?` Roll
-monadic pervasive named '?', (x) -> Math.floor Math.random() * Math.max 0, Math.floor numericValueOf x
+monadic pervasive overloadable named '?', (x) -> Math.floor Math.random() * Math.max 0, Math.floor numericValueOf x
 
 
 # `?` Deal
-dyadic named '?', (x, y) ->
+dyadic overloadable named '?', (x, y) ->
   x = Math.max 0, Math.floor numericValueOf x
   y = Math.max 0, Math.floor numericValueOf y
   if x > y then throw Error 'Domain error: left argument of ? must not be greater than its right argument.'
@@ -246,22 +268,22 @@ dyadic named '?', (x, y) ->
 
 
 # `⋆` Exponentiate
-monadic pervasive named '⋆', (x) -> Math.exp numericValueOf x
+monadic pervasive overloadable named '⋆', (x) -> Math.exp numericValueOf x
 
 # `⋆` To the power of
-dyadic pervasive named '⋆', (x, y) -> Math.pow numericValueOf(x), numericValueOf(y)
+dyadic pervasive overloadable named '⋆', (x, y) -> Math.pow numericValueOf(x), numericValueOf(y)
 
 # `⍟` Natural logarithm
-monadic pervasive named '⍟', (x) -> Math.log x
+monadic pervasive overloadable named '⍟', (x) -> Math.log x
 
 # `⍟` Logarithm to the base
-dyadic pervasive named '⍟', (x, y) -> Math.log(y) / Math.log(x)
+dyadic pervasive overloadable named '⍟', (x, y) -> Math.log(y) / Math.log(x)
 
 # `○` Pi times
-monadic pervasive named '○', (x) -> Math.PI * x
+monadic pervasive overloadable named '○', (x) -> Math.PI * x
 
 # `○` Circular and hyperbolic functions
-dyadic pervasive named '○', (i, x) ->
+dyadic pervasive overloadable named '○', (i, x) ->
   switch i
     when 0 then Math.sqrt(1 - x * x)
     when 1 then Math.sin x
@@ -281,12 +303,12 @@ dyadic pervasive named '○', (i, x) ->
     else throw Error 'Unknown circular or hyperbolic function ' + i
 
 # `!` Factorial
-monadic pervasive named '!', (a) ->
+monadic pervasive overloadable named '!', (a) ->
   n = a = Math.floor numericValueOf a # todo: "Gamma" function for non-integer argument
   r = 1; (if n > 1 then for i in [2 .. n] then r *= i); r
 
 # `!` Binomial
-dyadic pervasive named '!', (a, b) ->
+dyadic pervasive overloadable named '!', (a, b) ->
   k = a = Math.floor numericValueOf a
   n = b = Math.floor numericValueOf b
   if not (0 <= k <= n) then return 0 # todo: Special cases for negatives and non-integers
@@ -295,36 +317,36 @@ dyadic pervasive named '!', (a, b) ->
 
 
 # `⌹` Matrix inverse
-monadic named '⌹'
+monadic overloadable named '⌹'
 
 # `⌹` Matrix divide
-dyadic named '⌹'
+dyadic overloadable named '⌹'
 
 # `<` Less than
-dyadic pervasive named '<', (x, y) -> +(x <    y)
+dyadic pervasive overloadable named '<', (x, y) -> +(x <    y)
 
 # `≤` Less than or equal
-dyadic pervasive named '≤', (x, y) -> +(x <=   y)
+dyadic pervasive overloadable named '≤', (x, y) -> +(x <=   y)
 
 # `=` Equal
-dyadic pervasive named '=', (x, y) -> +(x is   y)
+dyadic pervasive overloadable named '=', (x, y) -> +(x is   y)
 
 # `>` Greater than
-dyadic pervasive named '≥', (x, y) -> +(x >=   y)
+dyadic pervasive overloadable named '≥', (x, y) -> +(x >=   y)
 
 # `≥` Greater than or equal
-dyadic pervasive named '>', (x, y) -> +(x >    y)
+dyadic pervasive overloadable named '>', (x, y) -> +(x >    y)
 
 # `≠` Not equal
-dyadic pervasive named '≠', (x, y) -> +(x isnt y)
+dyadic pervasive overloadable named '≠', (x, y) -> +(x isnt y)
 
 # `≡` Depth
-monadic named '≡', depthOf = (a) ->
+monadic overloadable named '≡', depthOf = (a) ->
   if isSimple a then return 0
   r = 0; (for x in a then r = Math.max r, depthOf x); r + 1
 
 # `≡` Match
-dyadic named '≡', match = (a, b) ->
+dyadic overloadable named '≡', match = (a, b) ->
   if isSimple(a) and isSimple(b) then return +(a is b)
   if isSimple(a) isnt isSimple(b) then return 0
   # Compare by shape
@@ -341,55 +363,55 @@ dyadic named '≡', match = (a, b) ->
   match prototypeOf(a), prototypeOf(b)
 
 # `≢` Not match
-dyadic named '≢', (a, b) -> +not match a, b
+dyadic overloadable named '≢', (a, b) -> +not match a, b
 
 # `∈` Enlist
-monadic named '∈', (a) ->
+monadic overloadable named '∈', (a) ->
   r = []
   rec = (x) -> (if isSimple x then r.push x else for y in x then rec y); r
   rec a
 
 # `∈` Membership
-dyadic named '∈', (a, b) ->
+dyadic overloadable named '∈', (a, b) ->
   a = arrayValueOf a
   b = arrayValueOf b
   withShape a.shape, (for x in a then +(x in b))
 
 # `⍷` Find
-dyadic named '⍷'
+dyadic overloadable named '⍷'
 
 # `∪` Unique
-monadic named '∪'
+monadic overloadable named '∪'
 
 # `∪` Union
-dyadic named '∪'
+dyadic overloadable named '∪'
 
 # `∩` Intersection
-dyadic named '∩'
+dyadic overloadable named '∩'
 
 # `∼` Not
-monadic pervasive named '∼', (x) -> +!booleanValueOf(x)
+monadic pervasive overloadable named '∼', (x) -> +!booleanValueOf(x)
 
 # `∼` Without
-dyadic named '∼'
+dyadic overloadable named '∼'
 
 # `∨` Or
-dyadic pervasive named '∨', (x, y) -> + (booleanValueOf(x) || booleanValueOf(y))
+dyadic pervasive overloadable named '∨', (x, y) -> + (booleanValueOf(x) || booleanValueOf(y))
 
 # `∧` And
-dyadic pervasive named '∧', (x, y) -> + (booleanValueOf(x) && booleanValueOf(y))
+dyadic pervasive overloadable named '∧', (x, y) -> + (booleanValueOf(x) && booleanValueOf(y))
 
 # `⍱` Nor
-dyadic pervasive named '⍱', (x, y) -> +!(booleanValueOf(x) || booleanValueOf(y))
+dyadic pervasive overloadable named '⍱', (x, y) -> +!(booleanValueOf(x) || booleanValueOf(y))
 
 # `⍲` Nand
-dyadic pervasive named '⍲', (x, y) -> +!(booleanValueOf(x) && booleanValueOf(y))
+dyadic pervasive overloadable named '⍲', (x, y) -> +!(booleanValueOf(x) && booleanValueOf(y))
 
 # `⍴` Shape of
-monadic named '⍴', shapeOf
+monadic overloadable named '⍴', shapeOf
 
 # `⍴` Reshape
-dyadic named '⍴', (a, b) ->
+dyadic overloadable named '⍴', (a, b) ->
   if isSimple a then a = [a]
   if isSimple b then b = [b]
   a =
@@ -400,7 +422,7 @@ dyadic named '⍴', (a, b) ->
   withShape a, withPrototypeCopiedFrom b, (for i in [0...prod a] then b[i % b.length])
 
 # `,` Ravel
-monadic named ',', (a) -> arrayValueOf(a)[0...]
+monadic overloadable named ',', (a) -> arrayValueOf(a)[0...]
 
 # Helper for functions , and ⍪
 catenate = (a, b, axis=-1) ->
@@ -423,13 +445,13 @@ catenate = (a, b, axis=-1) ->
   withShape sr, r
 
 # `,` Catenate
-dyadic named ',', catenate
+dyadic overloadable named ',', catenate
 
 # `⍪` 1st axis catenate
-dyadic named '⍪', (a, b) -> catenate a, b, 0
+dyadic overloadable named '⍪', (a, b) -> catenate a, b, 0
 
 # `⌽` Reverse
-monadic named '⌽', reverse = (a, _, axis=-1) ->
+monadic overloadable named '⌽', reverse = (a, _, axis=-1) ->
   sa = shapeOf a
   if sa.length is 0 then return a
   if axis < 0 then axis += sa.length
@@ -445,7 +467,7 @@ monadic named '⌽', reverse = (a, _, axis=-1) ->
   withShape sa, r
 
 # `⌽` Rotate
-dyadic named '⌽', (a, b) ->
+dyadic overloadable named '⌽', (a, b) ->
   a = numericValueOf a
   if a is 0 or isSimple(b) or (b.length <= 1) then return b
   sb = shapeOf b
@@ -454,10 +476,10 @@ dyadic named '⌽', (a, b) ->
   withShape sb, (for i in [0...b.length] then b[i - (i % n) + ((i % n) + a) % n])
 
 # `⊖` 1st axis reverse
-monadic named '⊖', (a, _, axis=0) -> reverse a, undefined, axis
+monadic overloadable named '⊖', (a, _, axis=0) -> reverse a, undefined, axis
 
 # `⊖` 1st axis rotate
-dyadic named '⊖', (a, b) ->
+dyadic overloadable named '⊖', (a, b) ->
   a = numericValueOf a
   if a is 0 or isSimple(b) or (b.length <= 1) then return b
   sb = shapeOf b
@@ -467,7 +489,7 @@ dyadic named '⊖', (a, b) ->
   withShape sb, (for i in [0...b.length] then b[((Math.floor(i / k) + a) % n) * k + (i % k)])
 
 # `⍉` Transpose
-monadic named '⍉', (a) ->
+monadic overloadable named '⍉', (a) ->
   sa = shapeOf a
   if sa.length <= 1 then return a # has no effect on scalars or vectors
   sr = sa[0...].reverse()
@@ -482,12 +504,12 @@ monadic named '⍉', (a) ->
   withShape sr, r
 
 # `↑` First
-monadic named '↑', (a) ->
+monadic overloadable named '↑', (a) ->
   a = arrayValueOf(a)
   if a.length then a[0] else prototypeOf a
 
 # `↑` Take
-dyadic named '↑', (a, b) ->
+dyadic overloadable named '↑', (a, b) ->
   if isSimple a then a = [a]
   for x in a
     if not typeof x is 'number'
@@ -519,7 +541,7 @@ dyadic named '↑', (a, b) ->
   withShape a, withPrototype filler, r
 
 # `↓` Drop
-dyadic named '↓', (a, b) ->
+dyadic overloadable named '↓', (a, b) ->
   if isSimple a then a = [a]
   for x in a when typeof x isnt 'number' or x isnt Math.floor x
     throw Error 'Left argument to ↓ must be an integer or a vector of integers.'
@@ -548,14 +570,14 @@ dyadic named '↓', (a, b) ->
   withShape sr, r
 
 # `⊂` Enclose
-monadic named '⊂', (a) ->
+monadic overloadable named '⊂', (a) ->
   if isSimple a then a else withShape [], [a]
 
 # `⊂` Partition (with axis)
-dyadic named '⊂'
+dyadic overloadable named '⊂'
 
 # `⊃` Disclose
-monadic named '⊃', (a) ->
+monadic overloadable named '⊃', (a) ->
   if isSimple a then return a
   sa = shapeOf a
   if sa.length is 0 then return a[0]
@@ -586,12 +608,12 @@ monadic named '⊃', (a) ->
   withShape sr, r
 
 # `⊃` Pick
-dyadic named '⊃'
+dyadic overloadable named '⊃'
 
 # `⌷` Index
 #
 # `(a0 a1 ...)⌷b` is equivalent to `b[a0;a1;...]`
-dyadic named '⌷', (a, b) ->
+dyadic overloadable named '⌷', (a, b) ->
   if isSimple a then a = [a]
   if a.shape and a.shape.length > 1
     throw Error 'Indices must be a scalar or a vector, not a higher-dimensional array.'
@@ -614,37 +636,37 @@ dyadic named '⌷', (a, b) ->
 
 
 # `⍋` Grade up
-monadic named '⍋'
+monadic overloadable named '⍋'
 
 # `⍒` Grade down
-monadic named '⍒'
+monadic overloadable named '⍒'
 
 # `⊤` Encode
-monadic named '⊤'
+monadic overloadable named '⊤'
 
 # `⊥` Decode
-monadic named '⊥'
+monadic overloadable named '⊥'
 
 # `⍕` Format
-monadic named '⍕'
+monadic overloadable named '⍕'
 
 # `⍕` Format by example or specification
-dyadic named '⍕'
+dyadic overloadable named '⍕'
 
 # `⍎` Execute
-monadic named '⍎'
+monadic overloadable named '⍎'
 
 # `⊣` Stop
-monadic named '⊣'
+monadic overloadable named '⊣'
 
 # `⊣` Left
-dyadic named '⊣'
+dyadic overloadable named '⊣'
 
 # `⊢` Pass
-monadic named '⊢'
+monadic overloadable named '⊢'
 
 # `⊢` Right
-dyadic named '⊢'
+dyadic overloadable named '⊢'
 
 # `⍬` Zilde (niladic function)
 builtins['get_⍬'] = -> []
