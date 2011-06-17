@@ -28,16 +28,30 @@ exec0 = (ast, ctx, callback) ->
   switch ast[0]
 
     # # Body
-    # Evaluate subnodes in sequence.  Return the result from the last node's
+    # Evaluate subnodes in sequence and return the result from the last node's
     # evaluation.
+    #
+    # If a _guard_ node `A:B` is met on the way, evaluate its condition `A` and:
+    #
+    # * if the result is 0, continue to the next node without evaluating `B`
+    # * otherwise, terminate _body_'s evaluation and return the result from evaluating `B`
     when 'body'
       i = 1
       r = []
       F = ->
         if i < ast.length
-          -> exec0 ast[i], ctx, (err, r0) ->
-            if err then return -> callback err
-            r = r0; i++; F
+          if ast[i][0] is 'guard'
+            -> exec0 ast[i][1], ctx, (err, rCondition) ->
+              if err then return -> callback err
+              if rCondition is 0 then i++; return F
+              return -> exec0 ast[i][2], ctx, (err, rConsequence) ->
+                if err then return -> callback err
+                r = rConsequence
+                -> callback null, rConsequence
+          else
+            -> exec0 ast[i], ctx, (err, r0) ->
+              if err then return -> callback err
+              r = r0; i++; F
         else
           -> callback null, r
 
@@ -131,6 +145,7 @@ exec0 = (ast, ctx, callback) ->
     when 'lambda'
       -> callback null, cps (a, b, _, callback1) ->
         ctx1 = inherit ctx
+        ctx1['∇'] = arguments.callee
         if b?
           ctx1['⍺'] = a
           ctx1['⍵'] = b

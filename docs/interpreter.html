@@ -17,15 +17,31 @@ bindings.</p>             </td>             <td class="code">               <div
   <span class="k">return</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Evaluate a branch of the abstract syntax tree.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">exec0</span> <span class="o">=</span> <span class="p">(</span><span class="nx">ast</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="o">-&gt;</span>
   <span class="k">switch</span> <span class="nx">ast</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h1>Body</h1>
 
-<p>Evaluate subnodes in sequence.  Return the result from the last node's
-evaluation.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">when</span> <span class="s1">&#39;body&#39;</span>
+<p>Evaluate subnodes in sequence and return the result from the last node's
+evaluation.</p>
+
+<p>If a <em>guard</em> node <code>A:B</code> is met on the way, evaluate its condition <code>A</code> and:</p>
+
+<ul>
+<li>if the result is 0, continue to the next node without evaluating <code>B</code></li>
+<li>otherwise, terminate <em>body</em>'s evaluation and return the result from evaluating <code>B</code></li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">when</span> <span class="s1">&#39;body&#39;</span>
       <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span>
       <span class="nx">r</span> <span class="o">=</span> <span class="p">[]</span>
       <span class="nx">F</span> <span class="o">=</span> <span class="o">-&gt;</span>
         <span class="k">if</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">ast</span><span class="p">.</span><span class="nx">length</span>
-          <span class="o">-&gt;</span> <span class="nx">exec0</span> <span class="nx">ast</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">ctx</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">r0</span><span class="p">)</span> <span class="o">-&gt;</span>
-            <span class="k">if</span> <span class="nx">err</span> <span class="k">then</span> <span class="k">return</span> <span class="o">-&gt;</span> <span class="nx">callback</span> <span class="nx">err</span>
-            <span class="nx">r</span> <span class="o">=</span> <span class="nx">r0</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">;</span> <span class="nx">F</span>
+          <span class="k">if</span> <span class="nx">ast</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">is</span> <span class="s1">&#39;guard&#39;</span>
+            <span class="o">-&gt;</span> <span class="nx">exec0</span> <span class="nx">ast</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="nx">ctx</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">rCondition</span><span class="p">)</span> <span class="o">-&gt;</span>
+              <span class="k">if</span> <span class="nx">err</span> <span class="k">then</span> <span class="k">return</span> <span class="o">-&gt;</span> <span class="nx">callback</span> <span class="nx">err</span>
+              <span class="k">if</span> <span class="nx">rCondition</span> <span class="o">is</span> <span class="mi">0</span> <span class="k">then</span> <span class="nx">i</span><span class="o">++</span><span class="p">;</span> <span class="k">return</span> <span class="nx">F</span>
+              <span class="k">return</span> <span class="o">-&gt;</span> <span class="nx">exec0</span> <span class="nx">ast</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="nx">ctx</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">rConsequence</span><span class="p">)</span> <span class="o">-&gt;</span>
+                <span class="k">if</span> <span class="nx">err</span> <span class="k">then</span> <span class="k">return</span> <span class="o">-&gt;</span> <span class="nx">callback</span> <span class="nx">err</span>
+                <span class="nx">r</span> <span class="o">=</span> <span class="nx">rConsequence</span>
+                <span class="o">-&gt;</span> <span class="nx">callback</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">rConsequence</span>
+          <span class="k">else</span>
+            <span class="o">-&gt;</span> <span class="nx">exec0</span> <span class="nx">ast</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">ctx</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">r0</span><span class="p">)</span> <span class="o">-&gt;</span>
+              <span class="k">if</span> <span class="nx">err</span> <span class="k">then</span> <span class="k">return</span> <span class="o">-&gt;</span> <span class="nx">callback</span> <span class="nx">err</span>
+              <span class="nx">r</span> <span class="o">=</span> <span class="nx">r0</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">;</span> <span class="nx">F</span>
         <span class="k">else</span>
           <span class="o">-&gt;</span> <span class="nx">callback</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h1>Numeric literal</h1>
 
@@ -109,6 +125,7 @@ rest of the work.</p>             </td>             <td class="code">           
 to the left and right argument and evaluates the body.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">when</span> <span class="s1">&#39;lambda&#39;</span>
       <span class="o">-&gt;</span> <span class="nx">callback</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">cps</span> <span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">callback1</span><span class="p">)</span> <span class="o">-&gt;</span>
         <span class="nx">ctx1</span> <span class="o">=</span> <span class="nx">inherit</span> <span class="nx">ctx</span>
+        <span class="nx">ctx1</span><span class="p">[</span><span class="s1">&#39;∇&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">callee</span>
         <span class="k">if</span> <span class="nx">b</span><span class="o">?</span>
           <span class="nx">ctx1</span><span class="p">[</span><span class="s1">&#39;⍺&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">a</span>
           <span class="nx">ctx1</span><span class="p">[</span><span class="s1">&#39;⍵&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">b</span>

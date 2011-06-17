@@ -133,6 +133,8 @@ gives '" X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]', S ' X ' +
 
 # {} Lambda expressions {{{1
 gives '{1 + 1} 1', 2
+gives '{⍵=0:1 ◇ 2×∇⍵−1} 5', 32 # two to the power of
+gives '{ ⍵<2 : 1   ◇   (∇⍵−1)+(∇⍵−2) } 8', 34 # Fibonacci sequence
 
 # «» Embedded JavaScript {{{1
 gives '«1234+5678»', 6912

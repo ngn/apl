@@ -34,8 +34,8 @@ t 'NUMBER', ///
   )
 ///
 
-t 'STRING', /^'[^\\']*(?:\\.[^\\']*)*'/
-t 'STRING', /^"[^\\"]*(?:\\.[^\\"]*)*"/
+t 'STRING', /'[^\\']*(?:\\.[^\\']*)*'/
+t 'STRING', /"[^\\"]*(?:\\.[^\\"]*)*"/
 t '[', /\[/
 t ']', /\]/
 t ';', /;/
@@ -43,11 +43,12 @@ t '(', /\(/
 t ')', /\)/
 t '{', /\{/
 t '}', /\}/
+t ':', /:/
 t 'ARROW', /←/
 t 'EMBEDDED', /«[^»]*»/
 t 'SYMBOL', /∘./
 t 'SYMBOL', /[A-Za-z_][A-Za-z_0-9]*/
-t 'SYMBOL', /[^'"]/
+t 'SYMBOL', /[^'":«»]/
 t 'EOF', /$/
 
 
@@ -59,9 +60,14 @@ nt 'root', [
 
 nt 'body', [
   o '',                          "$$ = ['body']"
-  o 'expr',                      "$$ = ['body', $1]"
+  o 'guard',                     "$$ = ['body', $1]"
   o 'body SEPARATOR',            "$$ = $1"
-  o 'body SEPARATOR expr',       "($$ = $1).push($3)"
+  o 'body SEPARATOR guard',      "($$ = $1).push($3)"
+]
+
+nt 'guard', [
+  o 'expr',                      "$$ = $1"
+  o 'expr : expr',               "$$ = ['guard', $1, $3]"
 ]
 
 nt 'expr', [
