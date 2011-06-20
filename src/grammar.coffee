@@ -28,14 +28,21 @@ t 'SEPARATOR', /[\n\r◇]/
 t 'NUMBER', ///
   ¯?                             # optional negation
   (?:
-      0[xX][\da-fA-F]+           # hexadecimal
-      |
-      \d*\.?\d+(?:[eE][+¯]?\d+)? # possibly scientific notation
+    0[xX][\da-fA-F]+             # hexadecimal
+    | \d*\.?\d+(?:[eE][+¯]?\d+)? # possibly scientific notation
   )
+  (?:
+    [jJ]                         # imaginary part for complex numbers
+    ¯?
+    (?:
+      0[xX][\da-fA-F]+
+      | \d*\.?\d+(?:[eE][+¯]?\d+)?
+    )
+  ) ?
 ///
 
-t 'STRING', /'[^\\']*(?:\\.[^\\']*)*'/
-t 'STRING', /"[^\\"]*(?:\\.[^\\"]*)*"/
+t 'STRING', /(?:'[^\\']*(?:\\.[^\\']*)*')+/
+t 'STRING', /(?:"[^\\"]*(?:\\.[^\\"]*)*")+/
 t '[', /\[/
 t ']', /\]/
 t ';', /;/
@@ -47,8 +54,8 @@ t ':', /:/
 t 'ARROW', /←/
 t 'EMBEDDED', /«[^»]*»/
 t 'SYMBOL', /∘./
-t 'SYMBOL', /[A-Za-z_][A-Za-z_0-9]*/
-t 'SYMBOL', /[^'":«»]/
+t 'SYMBOL', /⎕?[A-Za-z_][A-Za-z_0-9]*/
+t 'SYMBOL', /[^¯'":«»]/
 t 'EOF', /$/
 
 
