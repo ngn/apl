@@ -74,6 +74,10 @@ gives '"\\f\\t\\n\\r\\u1234\\xff"', S '\f\t\n\r\u1234\xff'
 fails '"a\nb"'
 fails '"a'
 
+# Pairs of quotes inside strings {{{1
+gives '''  'Let''s parse it!'  ''', S 'Let\'s parse it!'
+gives '''  "0x22's the code for ""."  ''', S '0x22\'s the code for ".'
+
 # Empty vectors {{{1
 gives '⍳ 0', []
 gives '⍴ 0', []

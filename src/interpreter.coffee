@@ -63,9 +63,20 @@ exec0 = (ast, ctx, callback) ->
       -> callback null, value
 
     # # String literal
-    # Parse like in JavaScript.  The result is split into individual characters to form an APL vector.
+    # APL has a tradition of using a pair of quotes to mean a single escaped
+    # quote inside a quote-delimited string:
+    #
+    #     'Let''s parse it!'   ⍝ equivalent to 'Let\'s parse it!'
+    #     "0x22's the code for ""."   ⍝ equivalent to "0x22's the code for \"."
+    #
+    # Other than that, we'll parse like in JavaScript.  The result is split
+    # into individual characters to form an APL vector.
     when 'str'
-      -> callback null, withPrototype ' ', eval(ast[1]).split ''
+      s = ast[1]
+      d = s[0] # the delimiter: '"' or "'"
+      s = d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d
+      value = eval(s).split ''
+      -> callback null, withPrototype ' ', value
 
     # # Indexing
     # `A[B0;B1;...]`
