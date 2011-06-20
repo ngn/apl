@@ -74,6 +74,10 @@ gives '"\\f\\t\\n\\r\\u1234\\xff"', S '\f\t\n\r\u1234\xff'
 fails '"a\nb"'
 fails '"a'
 
+# Complex numbers {{{1
+gives "(1j¯2 + ¯2j3) = ¯1j1", 1
+gives "(1j¯2 × ¯2j3) = 4j7", 1
+
 # Pairs of quotes inside strings {{{1
 gives '''  'Let''s parse it!'  ''', S 'Let\'s parse it!'
 gives '''  "0x22's the code for ""."  ''', S '0x22\'s the code for ".'

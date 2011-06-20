@@ -1,6 +1,7 @@
 {builtins} = require './builtins'
 {inherit, trampoline, cps, cpsify, withPrototype} = require './helpers'
 {parse} = require './parser'
+{Complex} = require './complex'
 
 
 
@@ -59,7 +60,9 @@ exec0 = (ast, ctx, callback) ->
     # Parse like in JavaScript, except that negatives use a _high minus_ instead of _hyphen_.
     when 'num'
       s = ast[1].replace /¯/g, '-'
-      value = if s.match /^-?0x/i then parseInt s, 16 else parseFloat s
+      a = for x in s.split /j/i
+            if x.match /^-?0x/i then parseInt x, 16 else parseFloat x
+      value = if a.length is 1 then a[0] else new Complex a...
       -> callback null, value
 
     # # String literal
