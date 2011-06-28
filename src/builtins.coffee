@@ -396,10 +396,27 @@ monadic pervasive overloadable named '∼', (x) -> +!booleanValueOf(x)
 dyadic overloadable named '∼'
 
 # `∨` Or
-dyadic pervasive overloadable named '∨', (x, y) -> + (booleanValueOf(x) || booleanValueOf(y))
+dyadic pervasive overloadable named '∨', (x, y) ->
+  x = Math.abs numericValueOf x
+  y = Math.abs numericValueOf y
+  if x isnt Math.floor(x) or y isnt Math.floor(y)
+    throw Error '∨ is defined only for integers'
+  if x is 0 and y is 0 then return 0
+  if x < y then [x, y] = [y, x]
+  while y then [x, y] = [y, x % y] # Euclid's algorithm
+  x
 
-# `∧` And
-dyadic pervasive overloadable named '∧', (x, y) -> + (booleanValueOf(x) && booleanValueOf(y))
+# `∧` And (Greatest Common Divisor)
+dyadic pervasive overloadable named '∧', (x, y) ->
+  x = Math.abs numericValueOf x
+  y = Math.abs numericValueOf y
+  if x isnt Math.floor(x) or y isnt Math.floor(y)
+    throw Error '∨ is defined only for integers'
+  if x is 0 or y is 0 then return 0
+  p = x * y
+  if x < y then [x, y] = [y, x]
+  while y then [x, y] = [y, x % y] # Euclid's algorithm
+  p / x # LCM(x, y) = x * y / GCD(x, y)
 
 # `⍱` Nor
 dyadic pervasive overloadable named '⍱', (x, y) -> +!(booleanValueOf(x) || booleanValueOf(y))
