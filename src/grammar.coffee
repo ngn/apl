@@ -99,7 +99,9 @@ nt 'item', [
 
 nt 'indices', [
   o 'expr',                      "$$ = [$1]"
-  o "indices ; expr",            "($$ = $1).push($3)"
+  o ';',                         "$$ = [null]"
+  o 'indices ; expr',            "($$ = $1).push($3)"
+  o 'indices ;',                 "($$ = $1).push(null)"
 ]
 
 nt 'indexable', [

@@ -94,9 +94,12 @@ exec0 = (ast, ctx, callback) ->
         indices = []
         F = ->
           if i < ast.length
-            -> exec0 ast[i], ctx, (err, index) ->
-              if err then return -> callback err
-              indices.push index; i++; F
+            if ast[i]?
+              -> exec0 ast[i], ctx, (err, index) ->
+                if err then return -> callback err
+                indices.push index; i++; F
+            else
+              indices.push []; i++; F
           else
             if typeof indexable is 'function'
               -> callback null, cps (a, b, _, callback1) ->
