@@ -620,7 +620,10 @@ dyadic overloadable named '⌷', (a, b) ->
   sb = shapeOf b
   if a.length isnt sb.length
     throw Error 'The number of indices must be equal to the rank of the indexable.'
-  a = for x in a then (if isSimple x then withShape [], [x] else x)
+  a = for x, i in a
+        if isSimple x then withShape [], [x]
+        else if not x.length then [0...sb[i]]
+        else x
   for x, d in a then for y in x when not (typeof y is 'number' and y is Math.floor(y))
     throw Error 'Indices must be integers'
   for x, d in a then for y in x when not (0 <= y < sb[d])
@@ -634,12 +637,38 @@ dyadic overloadable named '⌷', (a, b) ->
   rec 0, 0, b.length
   if sr.length is 0 then r[0] else withShape sr, r
 
+# Helper for ⍋ and ⍒
+grade = (a, b, direction) ->
+  if not b? then b = a; a = []
+  sa = shapeOf a
+  sb = shapeOf b
+  if sa.length is 0 then throw Error 'Left argument to ⍋ or ⍒ must be non-scalar.'
+  if sb.length is 0 then return b
+  n = sa[sa.length - 1] # length along last axis
+  h = {} # maps a character to its index in the collation
+  for i in [0...a.length] then h[a[i]] = i % n
+  m = b.length / sb[0]
+  r = [0...sb[0]]
+  r.sort (i, j) ->
+    for k in [0...m]
+      x = b[m*i + k]
+      y = b[m*j + k]
+      tx = typeof x
+      ty = typeof y
+      if tx < ty then return -direction
+      if tx > ty then return direction
+      if h[x]? then x = h[x]
+      if h[y]? then y = h[y]
+      if x < y then return -direction
+      if x > y then return direction
+    0
+  r
 
 # `⍋` Grade up
-monadic overloadable named '⍋'
+monadic overloadable named '⍋', (a, b) -> grade a, b, 1
 
 # `⍒` Grade down
-monadic overloadable named '⍒'
+monadic overloadable named '⍒', (a, b) -> grade a, b, -1
 
 # `⊤` Encode
 monadic overloadable named '⊤'

@@ -393,6 +393,34 @@ gives '1 ⌷ 3 5 8', 5
 gives '(3 5 8)[1]', 5
 gives '⌷←{⍺+¨⍵}  ◇  (3 5 8)[1]', [4, 6, 9]
 
+# ⍋ Grade up/down {{{1
+gives '⍋13 8 122 4', [3, 1, 0, 2]
+gives 'a←13 8 122 4  ◇  a[⍋a]', [4, 8, 13, 122]
+gives '⍋"ZAMBIA"', [1, 5, 3, 4, 2, 0]
+gives 's←"ZAMBIA"  ◇  s[⍋s]', S 'AABIMZ'
+gives 't←3 3⍴"BOBALFZAK"  ◇  ⍋t', [1, 0, 2]
+gives 't←3 3⍴4 5 6 1 1 3 1 1 2  ◇  ⍋t', [2, 1, 0]
+gives 't←3 3⍴4 5 6 1 1 3 1 1 2  ◇  t[⍋t;]', [1, 1, 2, 1, 1, 3, 4, 5, 6]
+gives 'a←3 2 3⍴2 3 4 0 1 0 1 1 3 4 5 6 1 1 2 10 11 12  ◇  a[⍋a;;]',
+      [1, 1, 2, 10, 11, 12, 1, 1, 3, 4, 5, 6, 2, 3, 4, 0, 1, 0]
+gives 'a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]',
+      S 'bob  jonesbob  zwartjoe  doe  '
+gives '"ZYXWVUTSRQPONMLKJIHGFEDCBA"⍋"ZAMBIA"', [0, 2, 4, 3, 1, 5]
+gives '''⎕A←"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+         (⌽⎕A)⍋3 3⍴"BOBALFZAK"''',
+      [2, 0, 1]
+gives '''data←6 4⍴"ABLEaBLEACREABELaBELACES"
+         coll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+         data[coll⍋data;]''',
+       S 'ABELaBELABLEaBLEACESACRE'
+gives '''data←6 4⍴"ABLEaBLEACREABELaBELACES"
+         coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+         data[coll1⍋data;]''',
+       S 'ABELABLEACESACREaBELaBLE'
+
+# ⍒ Grade down {{{1
+gives '⍒3 1 8', [2, 0, 1]
+
 # / Reduction {{{1
 gives '+/ 3', 3
 gives '+/ 3 5 8', 16
