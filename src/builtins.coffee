@@ -378,7 +378,37 @@ dyadic overloadable named '∈', (a, b) ->
   withShape a.shape, (for x in a then +(x in b))
 
 # `⍷` Find
-dyadic overloadable named '⍷'
+dyadic overloadable named '⍷', (a, b) ->
+  sa = shapeOf a
+  sb = shapeOf b
+  if isSimple b then return isSimple(a) and match a, b
+  if isSimple a then a = [a]
+  r = withShape sb, (for [0...b.length] then 0)
+  if sa.length > sb.length then return r
+  while sa.length < sb.length then sa.unshift 1
+  for i in [0...sb.length] then if sa[i] > sb[i] then return r
+
+  indices = Array sb.length
+
+  rec = (d, ir) ->
+    if d < sb.length
+      for i in [0 ... sb[d] - sa[d] + 1]
+        indices[d] = i
+        rec d + 1, ir * sb[d] + i
+    else
+      r[ir] = rec2 0, 0, 0
+
+  rec2 = (d, ia, ib) ->
+    if d < sb.length
+      for i in [0...sa[d]]
+        if not rec2 d + 1, ia * sa[d] + i, ib * sb[d] + indices[d] + i
+          return 0
+      1
+    else
+      match a[ia], b[ib]
+
+  rec 0, 0
+  r
 
 # `∪` Unique
 monadic overloadable named '∪'

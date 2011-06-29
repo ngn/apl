@@ -1,5 +1,5 @@
 #!/usr/bin/env coffee
-  
+
 # Test framework {{{1
 {parser} = require '../lib/parser'
 {exec} = require '../lib/interpreter'
@@ -277,6 +277,26 @@ gives '∈ 2 2⍴(1 + 2 2⍴⍳4) "DEF" (1 + 2 3⍴⍳6) (7 8 9)',
 # ∈ Membership {{{1
 gives '2 3 4 5 6 ∈ 1 2 3 5 8 13 21', [1, 1, 0, 1, 0]
 gives '5 ∈ 1 2 3 5 8 13 21', [1] # todo: should it return a simple 1?
+
+# ⍷ Find {{{1
+gives '"AN"⍷"BANANA"', [0, 1, 0, 1, 0, 0]
+gives '"BIRDS" "NEST"⍷"BIRDS" "NEST" "SOUP"', [1, 0, 0]
+gives '"ME"⍷"HOME AGAIN"', [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+gives '"DAY"⍷7 9⍴"SUNDAY   MONDAY   TUESDAY  WEDNESDAYTHURSDAY FRIDAY   SATURDAY "',
+        [ 0, 0, 0, 1, 0, 0, 0, 0, 0
+          0, 0, 0, 1, 0, 0, 0, 0, 0
+          0, 0, 0, 0, 1, 0, 0, 0, 0
+          0, 0, 0, 0, 0, 0, 1, 0, 0
+          0, 0, 0, 0, 0, 1, 0, 0, 0
+          0, 0, 0, 1, 0, 0, 0, 0, 0
+          0, 0, 0, 0, 0, 1, 0, 0, 0 ]
+gives '(2 2⍴"ABCD")⍷"ABCD"', [0, 0, 0, 0]
+gives '(1 2) (3 4) ⍷ "START" (1 2 3) (1 2) (3 4)', [0, 0, 1, 0]
+gives '(2 2⍴7 8 12 13)⍷ 1+ 4 5⍴⍳20',
+        [0, 0, 0, 0, 0
+         0, 1, 0, 0, 0
+         0, 0, 0, 0, 0
+         0, 0, 0, 0, 0]
 
 # ∧ And (GCD) {{{1
 gives '1∧1', 1
