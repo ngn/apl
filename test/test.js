@@ -316,6 +316,23 @@
   gives('data←6 4⍴"ABLEaBLEACREABELaBELACES"\ncoll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"\ndata[coll⍋data;]', S('ABELaBELABLEaBLEACESACRE'));
   gives('data←6 4⍴"ABLEaBLEACREABELaBELACES"\ncoll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"\ndata[coll1⍋data;]', S('ABELABLEACESACREaBELaBLE'));
   gives('⍒3 1 8', [2, 0, 1]);
+  gives('1760 3 12⊤75', [2, 0, 3]);
+  gives('3 12⊤75', [0, 3]);
+  gives('100000 12⊤75', [6, 3]);
+  gives('16 16 16 16⊤100', [0, 0, 6, 4]);
+  gives('1760 3 12⊤75.3', [2, 0, 75.3 - 72]);
+  gives('0 1⊤75.3', [75, 75.3 - 75]);
+  gives('2 2 2 2 2⊤1 2 3 4 5', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1]);
+  gives('10⊤5 15 125', [5, 5, 5]);
+  gives('0 10⊤5 15 125', [0, 1, 12, 5, 5, 5]);
+  gives('(8 3⍴ 2 0 0\
+             2 0 0\
+             2 0 0\
+             2 0 0\
+             2 8 0\
+             2 8 0\
+             2 8 16\
+             2 8 16) ⊤ 75', [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 4, 1, 3, 11]);
   gives('+/ 3', 3);
   gives('+/ 3 5 8', 16);
   gives('+/ 2 4 6', 12);

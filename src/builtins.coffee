@@ -718,7 +718,26 @@ monadic overloadable named '⍋', (a, b) -> grade a, b, 1
 monadic overloadable named '⍒', (a, b) -> grade a, b, -1
 
 # `⊤` Encode
-monadic overloadable named '⊤'
+monadic overloadable named '⊤', (a, b) ->
+  sa = shapeOf a
+  sb = shapeOf b
+  if isSimple a then a = [a]
+  if isSimple b then b = [b]
+  r = Array a.length * b.length
+  n = if sa.length then sa[0] else 1
+  m = a.length / n
+  for i in [0...m]
+    for j in [0...b.length]
+      y = b[j]
+      for k in [n - 1 .. 0]
+        x = a[k * m + i]
+        if x is 0
+          r[(k * m + i) * b.length + j] = y
+          y = 0
+        else
+          r[(k * m + i) * b.length + j] = y % x
+          y = Math.round((y - (y % x)) / x)
+  withShape sa.concat(sb), r
 
 # `⊥` Decode
 monadic overloadable named '⊥'
