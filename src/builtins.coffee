@@ -740,7 +740,30 @@ monadic overloadable named '⊤', (a, b) ->
   withShape sa.concat(sb), r
 
 # `⊥` Decode
-monadic overloadable named '⊥'
+monadic overloadable named '⊥', (a, b) ->
+  sa = shapeOf a
+  sb = shapeOf b
+  lastDimA = if sa.length then sa[sa.length - 1] else 1
+  firstDimB = if sb.length then sb[0] else 1
+  if lastDimA isnt 1 and firstDimB isnt 1 and lastDimA isnt firstDimB
+    throw Error 'Incompatible shapes for ⊥ ("Decode")'
+  if isSimple a then a = [a]
+  if isSimple b then b = [b]
+  r = []
+  for i in [0 ... a.length / lastDimA]
+    for j in [0 ... b.length / firstDimB]
+      x = a[i * lastDimA ... (i + 1) * lastDimA]
+      y = for k in [0...firstDimB] then b[j + k * (b.length / firstDimB)]
+      if x.length is 1 then x = for [0...y.length] then x[0]
+      if y.length is 1 then y = for [0...x.length] then y[0]
+      z = y[0]
+      for k in [1...y.length]
+        z = z * x[k] + y[k]
+      r.push z
+  if sa.length <= 1 and sb.length <= 1
+    r[0]
+  else
+    withShape sa[...-1].concat(sb[1...]), r
 
 # `⍕` Format
 monadic overloadable named '⍕'
