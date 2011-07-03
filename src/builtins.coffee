@@ -252,7 +252,15 @@ dyadic pervasive overloadable named '∣', (x, y) -> y % x
 monadic overloadable named '⍳', (a) -> [0 ... Math.floor numericValueOf a]
 
 # `⍳` Index of
-dyadic overloadable named '⍳'
+dyadic overloadable named '⍳', (a, b) ->
+  if isSimple a then a = [a]
+  else if shapeOf(a).length > 1
+    throw Error 'Left argument to ⍳ must be of rank no more than 1.'
+  if isSimple b then b = [b]
+  for y in b
+    pos = a.length
+    for x, i in a when match x, y then pos = i; break
+    pos
 
 # `?` Roll
 monadic pervasive overloadable named '?', (x) -> Math.floor Math.random() * Math.max 0, Math.floor numericValueOf x

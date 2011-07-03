@@ -178,6 +178,16 @@ gives '⍴ ⍳ 5', [5]
 gives '⍳ 0', []
 gives '⍴ ⍳ 0', [0]
 
+# ⍳ Index of {{{1
+gives '2 5 9 14 20 ⍳ 9', [2]
+gives '2 5 9 14 20 ⍳ 6', [5]
+gives '"GORSUCH" ⍳ "S"', [3]
+gives '"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "CARP"', [2, 0, 17, 15]
+gives '"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "PORK PIE"', [15, 14, 17, 10, 26, 15, 8, 4]
+gives '"MON" "TUES" "WED" ⍳ "MON" "THURS"', [0, 3]
+gives '1 3 2 0 3 ⍳ ⍳ 5', [3, 0, 2, 1, 5]
+gives '"CAT" "DOG" "MOUSE" ⍳ "DOG" "BIRD"', [1, 3]
+
 # × Sign of {{{1
 gives '× ¯2 ¯1 0 1 2', [-1, -1, 0, 1, 1]
 gives '× 0÷0', 0 # sgn(NaN)
