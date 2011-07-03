@@ -221,6 +221,13 @@
   gives('(2 2⍴"ABCD")⍷"ABCD"', [0, 0, 0, 0]);
   gives('(1 2) (3 4) ⍷ "START" (1 2 3) (1 2) (3 4)', [0, 0, 1, 0]);
   gives('(2 2⍴7 8 12 13)⍷ 1+ 4 5⍴⍳20', [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  gives('"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ∼ "AEIOU"', S('BCDFGHJKLMNPQRSTVWXYZ'));
+  gives('1 2 3 4 5 6 ∼ 2 4 6', [1, 3, 5]);
+  gives('"THIS IS TEXT" ∼ " "', S('THISISTEXT'));
+  gives('"THIS" "AND" "THAT" ∼ "T"', [S('THIS'), S('AND'), S('THAT')]);
+  gives('"THIS" "AND" "THAT" ∼ "AND"', [S('THIS'), S('AND'), S('THAT')]);
+  gives('"THIS" "AND" "THAT" ∼ ⊂"AND"', [S('THIS'), S('THAT')]);
+  gives('"THIS" "AND" "THAT" ∼ "TH" "AND"', [S('THIS'), S('THAT')]);
   gives('1∧1', 1);
   gives('1∧0', 0);
   gives('0∧1', 0);

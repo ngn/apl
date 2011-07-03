@@ -423,7 +423,21 @@ dyadic overloadable named '∩'
 monadic pervasive overloadable named '∼', (x) -> +!booleanValueOf(x)
 
 # `∼` Without
-dyadic overloadable named '∼'
+dyadic overloadable named '∼', (a, b) ->
+  if isSimple a then a = [a]
+  else if shapeOf(a).length > 1
+    throw Error 'Left argument to ∼ must be of rank no more than 1.'
+  if isSimple b then b = [b]
+  r = []
+  for x in a
+    excluded = false
+    for y in b
+      if match x, y
+        excluded = true
+        break
+    if not excluded
+      r.push x
+  r
 
 # `∨` Or
 dyadic pervasive overloadable named '∨', (x, y) ->
