@@ -906,6 +906,42 @@ postfixOperator named '⌿', (a, b, axis=0) ->
   else
     compressOrReplicate a, b, axis
 
+# Helper for `\` and `⍀` in their operator sense
+scan = (f, _, axis=-1) -> (a, b) ->
+  if b? then throw Error 'Scan can only be applied monadically.'
+  sa = shapeOf a
+  if sa.length is 0 then return a
+  if axis < 0 then axis += sa.length
+  r = Array a.length
+  ni = prod sa[...axis]
+  nj = sa[axis]
+  nk = prod sa[axis + 1 ...]
+  for i in [0...ni]
+    for k in [0...nk]
+      x = r[k + nk*nj*i] = a[k + nk*nj*i]
+      for j in [1...nj]
+        ijk = k + nk * (j + nj * i)
+        x = r[ijk] = f x, a[ijk]
+  withShape shapeOf(a), r
+
+# Helper for `\` and `⍀` in their function sense
+expand = ->
+  # todo
+
+# `\` Scan or expand
+postfixOperator named '\\', (a, b, axis=-1) ->
+  if typeof a is 'function'
+    scan a, undefined, axis
+  else
+    expand a, b, axis
+
+# `⍀` 1st axis scan or expand
+postfixOperator named '⍀', (a, b, axis=0) ->
+  if typeof a is 'function'
+    scan a, undefined, axis
+  else
+    expand a, b, axis
+
 # `¨` Each
 postfixOperator named '¨', (f) -> (a, b) ->
   if not b? then return (for x in arrayValueOf a then f x)
