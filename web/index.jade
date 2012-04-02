@@ -1,0 +1,39 @@
+!!!5
+html
+  head
+    title ngn/apl demo
+    meta(charset='UTF-8')
+    link(rel='stylesheet', type='text/css', href='index.css')
+  body
+
+    h1 ngn/apl demo
+    #symbols
+    #keyboardSwitch: div.switchText: a(href='#keyboard') Show keyboard mapping
+    #examples Examples:
+    form: p
+      textarea#code
+      input#go(type='submit', value='⍎', title='Execute code (ctrl-Enter)')
+
+    #result
+    script(src='examples.js')
+    script(src='fake-exports.js')
+    script(src='../lib/helpers.js')
+    script(src='../lib/parser.js')
+    script(src='../lib/builtins.js')
+    script(src='../lib/complex.js')
+    script(src='../lib/interpreter.js')
+    script(src='../lib/browser.js')
+    script(src='jquery-1.6.1.min.js')
+    script(src='jquery.fieldselection.min.js')
+    script(src='jquery.retype.min.js')
+    script(src='jquery.dimensions.js')
+    script(src='jquery.tooltip.js')
+    script(src='index.js')
+    script(type='text/javascript')
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+
+    script(type='text/javascript')
+      var pageTracker = _gat._getTracker("UA-23946726-1");
+      pageTracker._initData();
+      pageTracker._trackPageview();
