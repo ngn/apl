@@ -53,9 +53,17 @@ jQuery ($) ->
 
 
 
-  # "Execute" button {{{1
-  $('#code').focus()
+  # Code loading {{{1
+  hashParams = {}
+  if location.hash
+    for nameValue in location.hash.substring(1).split ','
+      [name, value] = nameValue.split '='
+      hashParams[name] = unescape value
+  $('#code').text(hashParams.code or '').focus()
 
+
+
+  # "Execute" button {{{1
   $('#go').closest('form').submit ->
     {exec} = require './interpreter'
     {browserBuiltins} = require './browser'
