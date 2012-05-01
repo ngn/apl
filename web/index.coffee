@@ -62,9 +62,7 @@ jQuery ($) ->
   $('#code').text(hashParams.code or '').focus()
 
   $('#permalink').bind 'mouseover focus', ->
-    h = '#code=' + escape $('#code').val()
-    console.info 'h =', h
-    $(@).attr 'href', h
+    $(@).attr 'href', '#code=' + escape $('#code').val()
     false
 
 

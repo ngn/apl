@@ -94,10 +94,7 @@
     }
     $('#code').text(hashParams.code || '').focus();
     $('#permalink').bind('mouseover focus', function() {
-      var h;
-      h = '#code=' + escape($('#code').val());
-      console.info('h =', h);
-      $(this).attr('href', h);
+      $(this).attr('href', '#code=' + escape($('#code').val()));
       return false;
     });
     $('#go').closest('form').submit(function() {
