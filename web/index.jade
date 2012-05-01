@@ -1,15 +1,16 @@
 !!!5
 html
   head
-    title ngn/apl demo
     meta(charset='UTF-8')
-    link(rel='stylesheet', type='text/css', href='index.css')
+    title ngn/apl demo
+    style @import url(index.css);
   body
 
     h1 ngn/apl demo
     #symbols
     #keyboardSwitch: div.switchText: a(href='#keyboard') Show keyboard mapping
     #examples Examples:
+    a#permalink(href='#', title='A bookmarkable link to the source code below') Permalink
     form: p
       <textarea id='code'></textarea>
       input#go(type='submit', value='⍎', title='Execute code (ctrl-Enter)')
@@ -29,11 +30,10 @@ html
     script(src='jquery.dimensions.js')
     script(src='jquery.tooltip.js')
     script(src='index.js')
-    script(type='text/javascript')
+    script
       var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
       document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-
-    script(type='text/javascript')
+    script
       var pageTracker = _gat._getTracker("UA-23946726-1");
       pageTracker._initData();
       pageTracker._trackPageview();

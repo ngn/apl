@@ -93,6 +93,13 @@
       }
     }
     $('#code').text(hashParams.code || '').focus();
+    $('#permalink').bind('mouseover focus', function() {
+      var h;
+      h = '#code=' + escape($('#code').val());
+      console.info('h =', h);
+      $(this).attr('href', h);
+      return false;
+    });
     $('#go').closest('form').submit(function() {
       var browserBuiltins, ctx, exec, inherit;
       exec = require('./interpreter').exec;

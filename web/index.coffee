@@ -53,13 +53,19 @@ jQuery ($) ->
 
 
 
-  # Code loading {{{1
+  # Bookmarkable source code {{{1
   hashParams = {}
   if location.hash
     for nameValue in location.hash.substring(1).split ','
       [name, value] = nameValue.split '='
       hashParams[name] = unescape value
   $('#code').text(hashParams.code or '').focus()
+
+  $('#permalink').bind 'mouseover focus', ->
+    h = '#code=' + escape $('#code').val()
+    console.info 'h =', h
+    $(@).attr 'href', h
+    false
 
 
 
