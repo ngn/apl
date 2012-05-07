@@ -178,7 +178,7 @@ overloadable = (f) ->
 #
 # `builtins` will be the prototype of all execution contexts, used by
 # [interpreter.coffee](interpreter.html).
-exports.builtins = builtins = {}
+@builtins = builtins = {}
 
 ambivalent = (f1, f2) -> # combine a monadic and a dyadic function into one
   assert(f1.aplName and (f1.aplName is f2.aplName))

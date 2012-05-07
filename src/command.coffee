@@ -96,7 +96,7 @@ createGetline = (input) ->
 
 
 # The entry point
-exports.main = ->
+@main = ->
   # Use `'-'` to mean `stdin`
   filename = process.argv[2] or '-'
 
