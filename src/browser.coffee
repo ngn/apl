@@ -3,7 +3,7 @@
 {builtins} = require './builtins'
 {inherit} = require './helpers'
 
-@browserBuiltins = ctx = inherit builtins
+exports.browserBuiltins = ctx = inherit builtins
 ctx['⍵'] = ('' + location).split ''
 ctx['get_⎕'] = -> (prompt('⎕:') or '').split ''
 ctx['set_⎕'] = (x) -> alert x

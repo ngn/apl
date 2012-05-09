@@ -10,7 +10,7 @@
 #
 # The second parameter, `ctx`, is optional and may contain initial variable
 # bindings.
-@exec = (code, ctx, callback) ->
+exports.exec = (code, ctx, callback) ->
   if typeof ctx is 'function' and not callback? then callback = ctx; ctx = undefined
   ctx ?= inherit builtins
   callback ?= (err) -> if err then throw err

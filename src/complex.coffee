@@ -1,6 +1,6 @@
 #!/usr/bin/env coffee
 
-class @Complex
+exports.Complex = class Complex
 
   constructor: (@re = 0, @im = 0) ->
     if not @im then return @re

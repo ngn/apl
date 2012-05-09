@@ -1,13 +1,13 @@
 # Prototypal inheritance of JavaScript objects
 # (see [Douglas Crockford's explanation](http://javascript.crockford.com/prototypal.html))
-@inherit = (x) ->
+exports.inherit = (x) ->
   f = (->); f.prototype = x; new f
 
 
 
 # A continuation-passing style helper that works around the lack of tail call optimisation
 # (see [Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Continuation-passing_style#Use_and_implementation))
-@trampoline = (x) ->
+exports.trampoline = (x) ->
   while typeof x is 'function' then x = x()
   x
 
@@ -34,14 +34,14 @@
 #
 # A function is marked as CPS by setting its ".cps" property to true.
 # That informs callers that they should follow the CPS convention, too.
-@cps = cps = (f) ->
+exports.cps = cps = (f) ->
   f.cps = true; f
 
 
 
 # `cpsify(f)` decorates a traditional function so that it follows the CPS
 # calling convention.
-@cpsify = (f) ->
+exports.cpsify = (f) ->
   if f.cps then return f
   cps (a, b, c, callback) ->
     try
@@ -53,11 +53,11 @@
 
 
 # Helpers for the APL data model
-@isSimple = isSimple = (x) -> not (x instanceof Array)
-@shapeOf = shapeOf = (a) -> a.shape or if a.length? then [a.length] else []
-@withShape = withShape = (shape, a) -> (if shape? and shape.length isnt 1 then a.shape = shape); a
+exports.isSimple = isSimple = (x) -> not (x instanceof Array)
+exports.shapeOf = shapeOf = (a) -> a.shape or if a.length? then [a.length] else []
+exports.withShape = withShape = (shape, a) -> (if shape? and shape.length isnt 1 then a.shape = shape); a
 
-@prototypeOf = prototypeOf = (x) ->
+exports.prototypeOf = prototypeOf = (x) ->
   if typeof x is 'number' then 0
   else if typeof x is 'string' then ' '
   else if x.aplPrototype? then x.aplPrototype
@@ -65,19 +65,19 @@
   else if isSimple x[0] then prototypeOf x[0]
   else p = prototypeOf x[0]; withShape shapeOf(x[0]), (for [0...x[0].length] then p)
 
-@withPrototype = withPrototype = (p, x) ->
+exports.withPrototype = withPrototype = (p, x) ->
   if (x instanceof Array) and (not x.length) and (p isnt 0) then x.aplPrototype = p
   x
 
-@withPrototypeCopiedFrom = (y, x) ->
+exports.withPrototypeCopiedFrom = (y, x) ->
   if (x instanceof Array) and (not x.length) then withPrototype prototypeOf(y), x
   x
 
 
 
 # Sum and product;  I wish JavaScript had a _reduce_ operator :)
-@sum = (xs) -> r = 0; (for x in xs then r += x); r
-@prod = (xs) -> r = 1; (for x in xs then r *= x); r
+exports.sum = (xs) -> r = 0; (for x in xs then r += x); r
+exports.prod = (xs) -> r = 1; (for x in xs then r *= x); r
 
 # `repeat(s, n)` catenates `n` instances of a string `s`.
-@repeat = (s, n) -> r = ''; (for [0...n] then r += s); r
+exports.repeat = (s, n) -> r = ''; (for [0...n] then r += s); r
