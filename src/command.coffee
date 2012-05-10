@@ -24,7 +24,7 @@ specialColour = red # for null and undefined
 # alternatives: "──││┌┐└┘", "━━┃┃┏┓┗┛"
 
 Rect = (width, height, strings) -> {width, height, strings}
-colouredRect = (s, colour) -> Rect s.length, 1, [if colour then colour s else s]
+ColouredRect = (s, colour) -> Rect s.length, 1, [if colour then colour s else s]
 
 encode = (a, x) ->
   if a.length is 0 then return []
@@ -37,11 +37,11 @@ decode = (a, b) ->
 format = (a) -> format0(a).strings.join '\n'
 
 format0 = (a) ->
-  if typeof a is 'undefined' then colouredRect 'undefined', specialColour
-  else if a is null then colouredRect 'null', specialColour
-  else if typeof a is 'string' then colouredRect a, stringColour
-  else if typeof a is 'number' then colouredRect (if a < 0 then '¯' + (-a) else '' + a), numberColour
-  else if isSimple a then colouredRect('' + a)
+  if typeof a is 'undefined' then ColouredRect 'undefined', specialColour
+  else if a is null then ColouredRect 'null', specialColour
+  else if typeof a is 'string' then ColouredRect a, stringColour
+  else if typeof a is 'number' then ColouredRect (if a < 0 then '¯' + (-a) else '' + a), numberColour
+  else if isSimple a then ColouredRect('' + a)
   else if a.length is 0
     Rect 3, 3, [
       borderColour TOPLFT + TOP + TOPRGT
@@ -71,18 +71,42 @@ format0 = (a) ->
           h[r] = Math.max h[r], box.height
           w[c] = Math.max w[c], box.width
           box
-    totalWidth = nCols + 1 + sum w
-    totalHeight = 2 + sum h
+
+    mm = 1
+    totalWidth = 2 + sum(w) - colDims.length + sum(for i in [colDims.length - 1 .. 0] then mm *= colDims[i])
+
+    totalHeight = 2 + sum(h)
+    if rowDims.length
+      mm = 1
+      totalHeight += 1 - rowDims.length + sum(for i in [rowDims.length - 1 .. 1] by -1 then mm *= rowDims[i])
+
     strings = [borderColour TOPLFT + repeat(TOP, totalWidth - 2) + TOPRGT]
     for r in [0...nRows]
       for c in [0...nCols]
         grid[r][c] = vpad grid[r][c], h[r]
         grid[r][c] = hpad grid[r][c], w[c]
+
+      if r
+        # Add vertical spacing
+        mm = 1
+        for m in rowDims
+          if r % (mm *= m) then break
+          strings.push borderColour(LFT) + repeat(' ', totalWidth - 2) + borderColour(RGT)
+
       for i in [0...h[r]]
         s = ''
         for c in [0...nCols]
-          s += ' ' + grid[r][c].strings[i]
-        strings.push borderColour(LFT) + s[1...] + borderColour(RGT)
+
+          if c
+            # Add horizontal spacing
+            s += ' '
+            mm = 1
+            for m in colDims
+              if c % (mm *= m) then break
+              s += ' '
+
+          s += grid[r][c].strings[i]
+        strings.push borderColour(LFT) + s + borderColour(RGT)
     strings.push borderColour BTMLFT + repeat(BTM, totalWidth - 2) + BTMRGT
     Rect totalWidth, totalHeight, strings
 
