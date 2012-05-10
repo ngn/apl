@@ -5,72 +5,102 @@ fs = require 'fs'
 {builtins} = require './builtins'
 {inherit, cps, trampoline, isSimple, shapeOf, sum, prod, repeat} = require './helpers'
 
-# Format an APL object as a multiline string
-format = (a) -> format0(a).join '\n'
-
-format0 = (a) -> # todo: handle 3+ dimensional arrays properly
-  if typeof a is 'undefined' then ['<<UNDEFINED>>']
-  else if a is null then ['<<NULL>>']
-  else if typeof a is 'string' then [a]
-  else if typeof a is 'number' then [if a < 0 then '¯' + (-a) else '' + a]
-  else if isSimple a then ['' + a]
+# TTY colours
+makeColour =
+  if process.stdout.isTTY
+    (code) -> (s) -> "\x1b[1;#{code}m#{s}\x1b[m"
   else
-    if a.length is 0 then return [',-.', '| |', "`-'"] # empty array
-    sa = shapeOf a
-    nc = if sa.length is 0 then 1 else sa[sa.length - 1]
-    nr = a.length / nc
-    h = for [0...nr] then 0 # row heights
-    w = for [0...nc] then 0 # column widths
-    boxes =
-      for r in [0...nr]
-        for c in [0...nc]
-          box = format0 a[r * nc + c]
-          h[r] = Math.max h[r], box.length
-          w[c] = Math.max w[c], box[0].length
-          box
-    bigWidth = nc - 1 + sum w # from border to border, excluding the borders
-    result = [TOPLFT + repeat(TOP, bigWidth) + TOPRGT]
-    for r in [0...nr]
-      for c in [0...nc]
-        vpad boxes[r][c], h[r]
-        hpad boxes[r][c], w[c]
-      for i in [0...h[r]]
-        s = ''; for c in [0...nc] then s += ' ' + boxes[r][c][i]
-        result.push LFT + s[1...] + RGT
-    result.push BTMLFT + repeat(BTM, bigWidth) + BTMRGT
-    result
+    -> (s) -> s
+[grey, red, green, yellow, blue, purple, cyan] = for c in [30..36] then makeColour c
 
-# Horizontally extend a box (a box is a list of same-length strings)
-hpad = (box, width) ->
-  if box[0].length < width
-    padding = repeat ' ', width - box[0].length
-    for i in [0...box.length] then box[i] += padding
-    0
-
-# Vertically extend a box
-vpad = (box, height) ->
-  if box.length < height
-    padding = repeat ' ', box[0].length
-    for i in [box.length...height] then box.push padding
-    0
+# Colour scheme
+borderColour = grey
+numberColour = cyan
+stringColour = purple
+specialColour = red # for null and undefined
 
 # Graphics symbols for the surrounding border
-[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "──││┌┐└┘"
+[TOP, BTM, LFT, RGT, TOPLFT, TOPRGT, BTMLFT, BTMRGT] = "──││╭╮╰╯"
+# alternatives: "──││┌┐└┘", "━━┃┃┏┓┗┛"
 
+Rect = (width, height, strings) -> {width, height, strings}
+colouredRect = (s, colour) -> Rect s.length, 1, [if colour then colour s else s]
 
+encode = (a, x) ->
+  if a.length is 0 then return []
+  for m in a then r = x % m; x = Math.floor x / m; r
 
-# (An idea: these can be used to surrond arrays at different depths;
-# arrays with a deeper structure would have thicker borders.)
-borders = [
-  "--||,.`'"
-  "──││┌┐└┘"
-  "──││╭╮╰╯"
-  "━━┃┃┏┓┗┛"
-  "▄▀▐▌▗▖▝▘"
-  "▀▄▌▐▛▜▙▟"
-  "▓▓▓▓▓▓▓▓"
-  "████████"
-]
+decode = (a, b) ->
+  r = 0; (for ai, i in a then r = r * ai + b[i]); r
+
+# Format an APL object as a multiline string
+format = (a) -> format0(a).strings.join '\n'
+
+format0 = (a) ->
+  if typeof a is 'undefined' then colouredRect 'undefined', specialColour
+  else if a is null then colouredRect 'null', specialColour
+  else if typeof a is 'string' then colouredRect a, stringColour
+  else if typeof a is 'number' then colouredRect (if a < 0 then '¯' + (-a) else '' + a), numberColour
+  else if isSimple a then colouredRect('' + a)
+  else if a.length is 0
+    Rect 3, 3, [
+      borderColour TOPLFT + TOP + TOPRGT
+      borderColour LFT    + ' ' +    RGT
+      borderColour BTMLFT + BTM + BTMRGT
+    ]
+  else
+    sa = shapeOf a
+    nsa = sa.length
+    rowDimIndices = for i in [nsa - 2 .. 0] by -2 then i
+    colDimIndices = for i in [nsa - 1 .. 0] by -2 then i
+    rowDims = for d in rowDimIndices then sa[d]
+    colDims = for d in colDimIndices then sa[d]
+    nRows = prod rowDims
+    nCols = prod colDims
+    h = for [0...nRows] then 0 # row heights
+    w = for [0...nCols] then 0 # column widths
+    grid =
+      for r in [0...nRows]
+        for c in [0...nCols]
+          rb = encode rowDims, r
+          cb = encode colDims, c
+          b = for [0...nsa] then 0
+          for i, j in rowDimIndices then b[i] = rb[j]
+          for i, j in colDimIndices then b[i] = cb[j]
+          box = format0 a[decode sa, b]
+          h[r] = Math.max h[r], box.height
+          w[c] = Math.max w[c], box.width
+          box
+    totalWidth = nCols + 1 + sum w
+    totalHeight = 2 + sum h
+    strings = [borderColour TOPLFT + repeat(TOP, totalWidth - 2) + TOPRGT]
+    for r in [0...nRows]
+      for c in [0...nCols]
+        grid[r][c] = vpad grid[r][c], h[r]
+        grid[r][c] = hpad grid[r][c], w[c]
+      for i in [0...h[r]]
+        s = ''
+        for c in [0...nCols]
+          s += ' ' + grid[r][c].strings[i]
+        strings.push borderColour(LFT) + s[1...] + borderColour(RGT)
+    strings.push borderColour BTMLFT + repeat(BTM, totalWidth - 2) + BTMRGT
+    Rect totalWidth, totalHeight, strings
+
+# Horizontally extend a rectangle
+hpad = (rect, width) ->
+  if rect.width >= width
+    rect
+  else
+    padding = repeat ' ', width - rect.width
+    Rect width, rect.height, (for line in rect.strings then line + padding)
+
+# Vertically extend a rectangle
+vpad = (rect, height) ->
+  if rect.height >= height
+    rect
+  else
+    padding = repeat ' ', rect.width
+    Rect rect.width, height, rect.strings.concat(for [rect.height...height] then padding)
 
 
 
