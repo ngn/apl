@@ -17,6 +17,7 @@ makeColour =
 borderColour = grey
 numberColour = cyan
 stringColour = purple
+functionColour = green
 specialColour = red # for null and undefined
 
 # Graphics symbols for the surrounding border
@@ -41,6 +42,10 @@ format0 = (a) ->
   else if a is null then ColouredRect 'null', specialColour
   else if typeof a is 'string' then ColouredRect a, stringColour
   else if typeof a is 'number' then ColouredRect (if a < 0 then '¯' + (-a) else '' + a), numberColour
+  else if typeof a is 'function'
+    s = if a.isPrefixOperator or a.isInfixOperator or a.isPostfixOperator then 'operator' else 'function'
+    if a.aplName then s += ' ' + a.aplName
+    ColouredRect s, functionColour
   else if isSimple a then ColouredRect('' + a)
   else if a.length is 0
     Rect 3, 3, [
