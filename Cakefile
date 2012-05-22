@@ -6,7 +6,7 @@ exec = (cmd, args, opts, cont) ->
   execFile cmd, args, opts, (error, stdout, stderr) ->
     if stdout then console.info stdout
     if stderr then console.info stderr
-    throw error if error
+    if error then throw error 
     cont()
 
 newer = (x, y) ->
@@ -21,3 +21,17 @@ task 'build', ->
         console.info 'Generating parser...'
         exec 'node', ['grammar.js'], {cwd: 'lib'}, ->
           console.info 'Done'
+
+task 'test', ->
+
+  f = (cont) ->
+    if newer 'test/test.coffee', 'test/test.js'
+      console.info 'Compiling tests...'
+      exec 'coffee', ['-c', 'test.coffee'], {cwd: 'test'}, cont
+    else
+      cont()
+
+  f ->
+    console.info 'Running tests...'
+    exec 'node', ['test.js'], {cwd: 'test'}, ->
+      console.info 'Done'

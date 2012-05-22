@@ -768,12 +768,11 @@ gives(
 
 # Execute functions from "queue" sequentially
 t0 = Date.now()
-console.info 'Running tests...'
 trampoline (F = ->
   if queue.length
     -> queue.shift() F
   else
-    if nFailed then console.info "Done.  #{nFailed} of #{nTests} tests failed."
-    else console.info "Done.  All #{nTests} tests passed in #{Date.now() - t0} ms."
+    if nFailed then console.info "#{nFailed} of #{nTests} tests failed."
+    else console.info "All #{nTests} tests passed in #{Date.now() - t0} ms."
     0
 )
