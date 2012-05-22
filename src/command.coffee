@@ -189,9 +189,9 @@ exports.main = ->
 
     ctx['⍵'] = for a in process.argv then a.split ''
 
-    ctx['get_⎕'] = cps (_, _, _, callback) -> -> getline callback
+    ctx['get_⎕'] = cps (_1, _2, _3, callback) -> -> getline callback
 
-    ctx['set_⎕'] = cps (x, _, _, callback) ->
+    ctx['set_⎕'] = cps (x, _1, _2, callback) ->
       -> process.stdout.write format(x) + '\n', (err) -> trampoline ->
         if err then return -> callback err
         -> callback null, 0

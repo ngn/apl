@@ -986,12 +986,12 @@ infixOperator named '.', (f, g) ->
     F g a, b
 
 # `⍣` Power operator
-postfixOperator named '⍣', cps (f, _, _, callback) ->
+postfixOperator named '⍣', cps (f, _1, _2, callback) ->
   if typeof f isnt 'function' then return -> callback0 Error 'Left argument to ⍣ must be a function.'
   f = cpsify f
-  -> callback null, cps (n, _, _, callback1) ->
+  -> callback null, cps (n, _1, _2, callback1) ->
     if typeof n isnt 'number' or n < 0 or n isnt Math.floor n then return -> callback Error 'Right argument to ⍣ must be a non-negative integer.'
-    -> callback1 null, cps (a, _, _, callback2) ->
+    -> callback1 null, cps (a, _1, _2, callback2) ->
       i = 0
       F = ->
         if i < n
