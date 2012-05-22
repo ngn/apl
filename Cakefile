@@ -35,3 +35,10 @@ task 'test', ->
     console.info 'Running tests...'
     exec 'node', ['test.js'], {cwd: 'test'}, ->
       console.info 'Done'
+
+task 'docs', ->
+  filenames = for f in readdirSync 'src' when f.match(/^\w.*\.coffee$/) and newer('src/' + f, 'docs/' + f.replace(/\.coffee$/, '.html')) then 'src/' + f
+  if filenames.length
+    console.info 'Generating docs...'
+    exec 'docco', filenames, {}, ->
+      console.info 'Done'
