@@ -1,12 +1,13 @@
 {existsSync} = require 'path'
 {statSync, readdirSync} = require 'fs'
-{execFile} = require 'child_process'
+{spawn} = require 'child_process'
 
 exec = (cmd, args, opts, cont) ->
-  execFile cmd, args, opts, (error, stdout, stderr) ->
-    if stdout then console.info stdout
-    if stderr then console.info stderr
-    if error then throw error 
+  child = spawn cmd, args, opts
+  child.stdout.on 'data', (data) -> process.stdout.write data
+  child.stderr.on 'data', (data) -> process.stderr.write data
+  child.on 'exit', (code) ->
+    if code then throw Error "Child process '#{cmd}' returned exit code #{code}."
     cont()
 
 newer = (x, y) ->
