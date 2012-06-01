@@ -1,5 +1,3 @@
-#!/usr/bin/env coffee
-
 exports.Complex = class Complex
 
   constructor: (@re = 0, @im = 0) ->
