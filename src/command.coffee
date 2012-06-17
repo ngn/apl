@@ -156,15 +156,19 @@ createGetline = (input) ->
 
 # The entry point
 exports.main = ->
-  # Use `'-'` to mean `stdin`
-  filename = process.argv[2] or '-'
 
-  # Be user-friendly, help strangers
-  if filename in ['-h', '-help', '--help']
-    process.stderr.write '''
-      Usage: apl [ FILENAME [ ARGS... ] ]
-      If "FILENAME" is "-" or not present, APL source code will be read from stdin.\n
+  {argv} = optimist = require('optimist')
+    .boolean(['h', 'help'])
+    .usage '''
+        Usage: apl [ FILENAME [ ARGS... ] ]
+        If "FILENAME" is "-" or not present, APL source code will be read from stdin.
     '''
+
+  # Use `'-'` to mean `stdin`
+  filename = argv._[0] or '-'
+
+  if argv.h or argv.help
+    optimist.showHelp()
     return
 
   # cast these spells on `stdin` to be able to read from it properly
@@ -187,7 +191,7 @@ exports.main = ->
     # Create a context for APL execution, specific to running on node.js
     ctx = inherit builtins
 
-    ctx['⍵'] = for a in process.argv then a.split ''
+    ctx['⍵'] = for a in argv._ then a.split ''
 
     ctx['get_⎕'] = cps (_1, _2, _3, callback) -> -> getline callback
 
