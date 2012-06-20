@@ -79,22 +79,26 @@ nt 'guard', [
 
 nt 'expr', [
   o 'sequence',                  "$$ = $1"
+]
+
+nt 'sequence', [
   o 'assignment',                "$$ = $1"
-  o 'sequence assignment',       "($$ = $1).push($2)"
+  o 'simpleSequence',            "$$ = $1"
+  o 'simpleSequence assignment', "($$ = $1).push($2)"
 ]
 
 nt 'assignment', [
   o 'SYMBOL ARROW expr',         "$$ = ['assign', $1, $3]"
 ]
 
-nt 'sequence', [
+nt 'simpleSequence', [
   o 'item',                      "$$ = ['seq', $1]"
-  o 'sequence item',             "($$ = $1).push($2)"
+  o 'simpleSequence item',       "($$ = $1).push($2)"
 ]
 
 nt 'item', [
   o 'indexable',                 "$$ = $1"
-  o "indexable [ indices ]",     "$$ = ['index', $1].concat($3)"
+  o 'indexable [ indices ]',     "$$ = ['index', $1].concat($3)"
 ]
 
 nt 'indices', [
@@ -109,8 +113,8 @@ nt 'indexable', [
   o 'STRING',                    "$$ = ['str', $1]"
   o 'SYMBOL',                    "$$ = ['sym', $1]"
   o 'EMBEDDED',                  "$$ = ['embedded', $1]"
-  o "( expr )",                  "$$ = $2"
-  o "{ body }",                  "$$ = ['lambda', $2]"
+  o '( expr )',                  "$$ = $2"
+  o '{ body }',                  "$$ = ['lambda', $2]"
 ]
 
 
