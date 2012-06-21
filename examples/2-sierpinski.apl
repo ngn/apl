@@ -7,7 +7,7 @@
 ⍝
 ⍝   * the Sierpinski triangle of rank 0 is a one-by-one matrix 'X'
 ⍝
-⍝   * if A is the triangle of rank n, then rank n+1 would be
+⍝   * if S is the triangle of rank n, then rank n+1 would be
 ⍝     the two-dimensional catenation:
 ⍝             S 0
 ⍝             S S
