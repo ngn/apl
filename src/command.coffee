@@ -11,7 +11,7 @@ makeColour =
     (code) -> (s) -> "\x1b[1;#{code}m#{s}\x1b[m"
   else
     -> (s) -> s
-[grey, red, green, yellow, blue, purple, cyan] = for c in [30..36] then makeColour c
+[grey, red, green, yellow, blue, purple, cyan] = for colourId in [30..36] then makeColour colourId
 
 # Colour scheme
 borderColour = grey
