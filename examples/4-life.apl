@@ -18,5 +18,9 @@ board ← ¯1 ⊖ ¯2 ⌽ 5 7 ↑ creature
 ⍝ A function to move from one generation to the next
 life ← {∨/ 1 ⍵ ∧ 3 4 = ⊂+/ +⌿ 1 0 ¯1 ∘.⊖ 1 0 ¯1 ⌽¨ ⊂⍵}
 
+⍝ Compute n-th generation and format it as a
+⍝ character matrix
+gen ← {' #'[(life ⍣ ⍵) board]}
+
 ⍝ Show first three generations
-⎕ ← board (life board) (life life board)
+⎕ ← (gen 1) (gen 2) (gen 3)

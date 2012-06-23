@@ -13,5 +13,6 @@
 ⍝             S S
 ⍝     where "0" is an all-blank matrix same size as S.
 
-f←{(⍵,(⍴⍵)⍴0)⍪⍵,⍵}
-⎕←' X'[(f⍣4) 1 1 ⍴ 1]
+f ← {(⍵,(⍴⍵)⍴0)⍪⍵,⍵}
+S ← {' #'[(f⍣⍵) 1 1 ⍴ 1]}
+⎕ ← S 5
