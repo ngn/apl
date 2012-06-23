@@ -1,29 +1,25 @@
 <pre>
-      _           _     ____                                                _
-     | |         / \   |  _ \ _ __ ___   __ _ _ __ __ _ _ __ ___  _ __ ___ (_)_ __   __ _
-   __| |__      / _ \  | |_) | '__/ _ \ / _` | '__/ _` | '_ ` _ \| '_ ` _ \| | '_ \ / _` |
-  / _   _ \    / ___ \ |  __/| | | (_) | (_| | | | (_| | | | | | | | | | | | | | | | (_| |
- / / | | \ \  /_/   \_\|_|   |_|  \___/ \__, |_|  \__,_|_| |_| |_|_| |_| |_|_|_| |_|\__, |
- | | | | | |                  _         |___/                                       |___/
- \ \_| |_/ /                 | |    __ _ _ __   __ _ _   _  __ _  __ _  ___
-  \__   __/                  | |   / _` | '_ \ / _` | | | |/ _` |/ _` |/ _ \
- ____| |____                 | |__| (_| | | | | (_| | |_| | (_| | (_| |  __/
-|___________|                |_____\__,_|_| |_|\__, |\__,_|\__,_|\__, |\___|
-                                               |___/             |___/
+  _   _  ____ _   _          _      
+ | \ | |/ ___| \ | |        | |     
+ |  \| | |  _|  \| |      __| |__   
+ | |\  | |_| | |\  |     / _   _ \  
+ |_| \_|\____|_| \_|    / / | | \ \ 
+    _    ____  _        | | | | | | 
+   / \  |  _ \| |       \ \_| |_/ / 
+  / _ \ | |_) | |        \__   __/  
+ / ___ \|  __/| |___    ____| |____ 
+/_/   \_\_|   |_____|  |___________|
 </pre>
 
 An APL interpreter written in [CoffeeScript](http://jashkenas.github.com/coffee-script/)<br/>
 Runs on [node.js](http://nodejs.org/) or in a browser<br/>
 Uses [Jison](http://zaach.github.com/jison/) for parsing
 
-See [`web/index.html`](http://ngn.github.com/apl/web/index.html)
-for an in-browser demo.<br/>
-To run an APL script, install node.js and type: `bin/apl examples/life.apl`
+[Literate source code](http://ngn.github.com/apl/docs/interpreter.html)
 
-[Annotated source code](http://ngn.github.com/apl/docs/interpreter.html) is
-available in literate programming style.
+[In-browser demo](http://ngn.github.com/apl/web/index.html)
 
-# Stuff
+# Sample code
 
 Most symbols have roughly the same semantics as in
 [Dyalog](http://docs.dyalog.com/13.0/Dyalog%20APL%20Language%20Reference.v13.0.pdf)
@@ -64,4 +60,6 @@ Continuation-passing style throughout the interpreter:
         // result comes later if APL code does any I/O
     });
 
-Vim keymap and syntax highlighting at [ngn/vim-apl](https://github.com/ngn/vim-apl)
+# Goodies
+
+[Vim keymap and syntax](https://github.com/ngn/vim-apl)
