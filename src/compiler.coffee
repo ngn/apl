@@ -2,6 +2,7 @@
 
 {parse} = require '../lib/parser'
 {inherit} = require './helpers'
+repr = JSON.stringify
 
 globalVarInfo =
 
@@ -22,6 +23,7 @@ compile = (source) ->
   ast = parse source
   firstPass ast
   printAST ast
+  secondPass ast
 
 
 # # First pass
@@ -63,7 +65,7 @@ firstPass = (ast) ->
         when 'index'
           t1 = visit node[1]
           t2 = visit node[2]
-          if t2 isnt 'X'
+          if t2.type isnt 'X'
             throw Error 'Only data can be used as an index'
           t1
         when 'seq'
@@ -110,14 +112,6 @@ firstPass = (ast) ->
                 a[i...i+2] = [['prefixOperator'].concat a[i...i+2]]
                 h[i...i+2] = [{type: 'F'}]
 
-#            # Apply functions
-#            i = a.length - 2
-#            while i >= 0
-#              if (i is 0 or h[i - 1].type is 'F') and h[i].type is 'F' and h[i + 1].type is 'X'
-#                a[i...i+2] = [['monadic'].concat a[i...i+2]]
-#                h[i...i+2] = [{type: 'X'}]
-#              i--
-
             if h[h.length - 1].type is 'F'
               if h.length > 1
                 throw Error 'Trailing function in expression'
@@ -130,9 +124,8 @@ firstPass = (ast) ->
                 else
                   a[h.length - 3...] = [['dyadic'].concat a[h.length - 3...]]
                   h[h.length - 3...] = [{type: 'X'}]
-              
+
             node.seqTree = a[0]
-            console.info 'seqTree', node.seqTree
             h[0]
 
         else
@@ -142,6 +135,87 @@ firstPass = (ast) ->
       visit node
 
   return
+
+
+
+secondPass = (ast) ->
+  visit = (node) ->
+    switch node[0]
+      when 'body'
+        (for child in node[1...] then visit child).join '\n'
+      when 'assign'
+        """
+          #{visit node[2]}
+          ctx[#{repr node[1]}] = stack[stack.length - 1];
+        """
+      when 'sym'
+        """
+          stack.push(ctx[#{repr node[1]}]);
+        """
+      when 'lambda'
+        """
+          stack.push(
+            function (alpha, omega) {
+              var stack = [];
+              var ctx = inherit(ctx);
+              #{visit node[1]}
+              return stack.length ? stack[0] : 0;
+            }
+          );
+        """
+      when 'str'
+        s = node[1]
+        d = s[0] # the delimiter: '"' or "'"
+        s = d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d
+        """
+          stack.push(#{s});
+        """
+      when 'num'
+        s = node[1].replace /¯/g, '-'
+        a = for x in s.split /j/i
+              if x.match /^-?0x/i then parseInt x, 16 else parseFloat x
+        if a.length is 1
+          """
+            stack.push(#{a[0]});
+          """
+        else
+          """
+            stack.push(new Complex(#{a[0]}, #{a[1]}));
+          """
+      when 'index'
+        """
+          #{visit node[1]}
+          #{visit node[2]}
+          stack.push(ctx['⌷'](stack.pop(), stack.pop()));
+        """
+      when 'seq'
+        visit node.seqTree
+      when 'monadic'
+        """
+          #{visit node[1]}
+          #{visit node[2]}
+          var x = stack.pop();
+          var f = stack.pop();
+          stack.push(f(x));
+        """
+      when 'dyadic'
+        """
+          #{visit node[1]}
+          #{visit node[2]}
+          #{visit node[3]}
+          var y = stack.pop();
+          var f = stack.pop();
+          var x = stack.pop();
+          stack.push(f(x, y));
+        """
+      when 'prefixOperator'
+        0 # todo
+      when 'infixOperator'
+        0 # todo
+      when 'postfixOperator'
+        0 # todo
+
+  visit ast
 
 
 isArray = (x) -> x.length? and typeof x isnt 'string'
@@ -159,8 +233,8 @@ printAST = (x, indent = '') ->
     console.info indent + JSON.stringify x
   return
 
-compile '''
+console.info compile '''
   f ← g ← h ← {}
   x ← y ← z ← 0
-  f x y g h z
+  f x y[0] g[1] h z
 '''
