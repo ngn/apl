@@ -5,11 +5,13 @@
 repr = JSON.stringify
 
 globalVarInfo =
-  '+': type: 'F'
+  '+': {type: 'F'}
   '/': {type: 'F', isPostfixOperator: true}
   '⍣': {type: 'F', isInfixOperator: true}
-  '⍺': type: 'X'
-  '⍵': type: 'X'
+  '⍺': {type: 'X'}
+  '⍵': {type: 'X'}
+  '⍬': {type: 'X', isNiladicFunction: true}
+  '⎕': {type: 'X', isNiladicFunction: true}
 
 compile = (source) ->
   ast = parse source
@@ -66,6 +68,11 @@ firstPass = (ast) ->
           else
             a = node[1...]
             h = for child in a then visit child
+
+            # Apply niladic functions
+            for i in [0...a.length]
+              if h[i].isNiladicFunction
+                a[i] = ['niladic', a[i]]
 
             # Form vectors from sequences of data
             i = 0
@@ -128,6 +135,8 @@ firstPass = (ast) ->
 
 
 
+# # Second pass
+# Convert AST into JavaScript code
 secondPass = (ast) ->
   visit = (node) ->
     switch node[0]
@@ -164,6 +173,8 @@ secondPass = (ast) ->
       when 'vector'
         n = node.length - 1
         "[#{(for child in node[1...] then visit child).join ', '}]"
+      when 'niladic'
+        "#{visit node[1]}()"
       when 'monadic'
         "#{visit node[1]}(#{visit node[2]})"
       when 'dyadic'
@@ -204,7 +215,6 @@ printAST = (x, indent = '') ->
   return
 
 console.info compile '''
-  f ← g ← h ← {}
-  x ← y ← z ← 0
-  f x y[0] g[1] h z
+  a ← ⎕
+  ⎕ ← a
 '''
