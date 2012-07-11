@@ -1,0 +1,199 @@
+<!DOCTYPE html>  <html> <head>   <title>compiler.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               compiler.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="c1">#!/usr/bin/env coffee</span>
+
+<span class="p">{</span><span class="nx">parse</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;../lib/parser&#39;</span>
+<span class="p">{</span><span class="nx">inherit</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./helpers&#39;</span>
+<span class="nv">repr = </span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span>
+
+<span class="nv">globalVarInfo =</span>
+  <span class="s1">&#39;+&#39;</span><span class="o">:</span> <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;F&#39;</span><span class="p">}</span>
+  <span class="s1">&#39;/&#39;</span><span class="o">:</span> <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="nv">isPostfixOperator: </span><span class="kc">true</span><span class="p">}</span>
+  <span class="s1">&#39;⍣&#39;</span><span class="o">:</span> <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="nv">isInfixOperator: </span><span class="kc">true</span><span class="p">}</span>
+  <span class="s1">&#39;⍺&#39;</span><span class="o">:</span> <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">}</span>
+  <span class="s1">&#39;⍵&#39;</span><span class="o">:</span> <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">}</span>
+  <span class="s1">&#39;⍬&#39;</span><span class="o">:</span> <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="nv">isNiladicFunction: </span><span class="kc">true</span><span class="p">}</span>
+  <span class="s1">&#39;⎕&#39;</span><span class="o">:</span> <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="nv">isNiladicFunction: </span><span class="kc">true</span><span class="p">}</span>
+
+<span class="nv">compile = </span><span class="nf">(source) -&gt;</span>
+  <span class="nv">ast = </span><span class="nx">parse</span> <span class="nx">source</span>
+  <span class="nx">firstPass</span> <span class="nx">ast</span>
+  <span class="nx">printAST</span> <span class="nx">ast</span>
+  <span class="nx">secondPass</span> <span class="nx">ast</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h1>First pass</h1>
+
+<p>For each scope, determine the type of each symbol.
+A symbol can be either of two types:</p>
+
+<ul>
+<li><p>Type X: data or a niladic function</p></li>
+<li><p>Type F: a monadic function, a dyadic function, or an operator</p></li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">firstPass = </span><span class="nf">(ast) -&gt;</span>
+  <span class="nv">ast.vars = </span><span class="nx">inherit</span> <span class="nx">globalVarInfo</span>
+  <span class="nv">queue = </span><span class="p">[</span><span class="nx">ast</span><span class="p">]</span>
+  <span class="k">while</span> <span class="nx">queue</span><span class="p">.</span><span class="nx">length</span>
+    <span class="p">{</span><span class="nx">vars</span><span class="p">}</span> <span class="o">=</span> <span class="nv">scopeNode = </span><span class="nx">queue</span><span class="p">.</span><span class="nx">shift</span><span class="p">()</span>
+
+    <span class="nv">visit = </span><span class="nf">(node) -&gt;</span>
+      <span class="k">switch</span> <span class="nx">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">when</span> <span class="s1">&#39;body&#39;</span>
+          <span class="nv">node.vars = </span><span class="nx">inherit</span> <span class="nx">vars</span>
+          <span class="nx">queue</span><span class="p">.</span><span class="nx">push</span> <span class="nx">node</span>
+          <span class="kc">null</span>
+        <span class="k">when</span> <span class="s1">&#39;assign&#39;</span>
+          <span class="nv">name = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+          <span class="nv">h = </span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+          <span class="k">if</span> <span class="nx">vars</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nx">vars</span><span class="p">[</span><span class="nx">name</span><span class="p">].</span><span class="nx">type</span> <span class="o">isnt</span> <span class="nx">h</span><span class="p">.</span><span class="nx">type</span>
+              <span class="k">throw</span> <span class="nb">Error</span> <span class="s2">&quot;Inconsistent usage of symbol &#39;#{name}&#39;&quot;</span>
+          <span class="k">else</span>
+            <span class="nx">vars</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">h</span>
+          <span class="nx">h</span>
+        <span class="k">when</span> <span class="s1">&#39;sym&#39;</span>
+          <span class="nv">name = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+          <span class="k">if</span> <span class="o">not</span> <span class="nx">vars</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span><span class="o">?</span>
+            <span class="k">throw</span> <span class="nb">Error</span> <span class="s2">&quot;Symbol &#39;#{name}&#39; referenced before assignment&quot;</span>
+          <span class="nx">vars</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span>
+        <span class="k">when</span> <span class="s1">&#39;lambda&#39;</span>
+          <span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+          <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;F&#39;</span><span class="p">}</span>
+        <span class="k">when</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="s1">&#39;num&#39;</span><span class="p">,</span> <span class="s1">&#39;embedded&#39;</span>
+          <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">}</span>
+        <span class="k">when</span> <span class="s1">&#39;index&#39;</span>
+          <span class="nv">t1 = </span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+          <span class="nv">t2 = </span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+          <span class="k">if</span> <span class="nx">t2</span><span class="p">.</span><span class="nx">type</span> <span class="o">isnt</span> <span class="s1">&#39;X&#39;</span>
+            <span class="k">throw</span> <span class="nb">Error</span> <span class="s1">&#39;Only data can be used as an index&#39;</span>
+          <span class="nx">t1</span>
+        <span class="k">when</span> <span class="s1">&#39;seq&#39;</span>
+          <span class="k">if</span> <span class="nx">node</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span>
+            <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">}</span>
+          <span class="k">else</span>
+            <span class="nv">a = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">...]</span>
+            <span class="nv">h = </span><span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">then</span> <span class="nx">visit</span> <span class="nx">child</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Apply niladic functions</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span>
+              <span class="k">if</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">isNiladicFunction</span>
+                <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;niladic&#39;</span><span class="p">,</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]]</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Form vectors from sequences of data</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nv">i = </span><span class="mi">0</span>
+            <span class="k">while</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span>
+              <span class="k">if</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">type</span> <span class="o">is</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">].</span><span class="nx">type</span> <span class="o">is</span> <span class="s1">&#39;X&#39;</span>
+                <span class="nv">j = </span><span class="nx">i</span> <span class="o">+</span> <span class="mi">2</span>
+                <span class="k">while</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">and</span> <span class="nx">h</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">type</span> <span class="o">is</span> <span class="s1">&#39;X&#39;</span> <span class="k">then</span> <span class="nx">j</span><span class="o">++</span>
+                <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;vector&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">j</span><span class="p">]]</span>
+                <span class="nx">h</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">}]</span>
+              <span class="k">else</span>
+                <span class="nx">i</span><span class="o">++</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Apply infix operators</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nv">i = </span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">2</span>
+            <span class="k">while</span> <span class="o">--</span><span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+              <span class="k">if</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">type</span> <span class="o">is</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">].</span><span class="nx">type</span> <span class="o">is</span> <span class="s1">&#39;F&#39;</span> <span class="o">and</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">].</span><span class="nx">isInfixOperator</span> <span class="o">and</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">].</span><span class="nx">type</span> <span class="o">is</span> <span class="s1">&#39;F&#39;</span>
+                <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">i</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;infixOperator&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">i</span><span class="o">+</span><span class="mi">3</span><span class="p">]]</span>
+                <span class="nx">h</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">i</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="nv">type: </span><span class="s1">&#39;F&#39;</span><span class="p">}]</span>
+                <span class="nx">i</span><span class="o">--</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Apply postfix operators</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nv">i = </span><span class="mi">0</span>
+            <span class="k">while</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span>
+              <span class="k">if</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">type</span> <span class="o">is</span> <span class="s1">&#39;F&#39;</span> <span class="o">and</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">].</span><span class="nx">isPostfixOperator</span>
+                <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;postfixOperator&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]]</span>
+                <span class="nx">h</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="nv">type: </span><span class="s1">&#39;F&#39;</span><span class="p">}]</span>
+              <span class="k">else</span>
+                <span class="nx">i</span><span class="o">++</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Apply prefix operators</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nv">i = </span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="o">--</span><span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+              <span class="k">if</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">isPrefixOperator</span> <span class="o">and</span> <span class="nx">h</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">].</span><span class="nx">type</span> <span class="o">is</span> <span class="s1">&#39;F&#39;</span>
+                <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;prefixOperator&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]]</span>
+                <span class="nx">h</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="nv">type: </span><span class="s1">&#39;F&#39;</span><span class="p">}]</span>
+
+            <span class="k">if</span> <span class="nx">h</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="nx">type</span> <span class="o">is</span> <span class="s1">&#39;F&#39;</span>
+              <span class="k">if</span> <span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="k">throw</span> <span class="nb">Error</span> <span class="s1">&#39;Trailing function in expression&#39;</span>
+            <span class="k">else</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Apply monadic and dyadic functions</p>             </td>             <td class="code">               <div class="highlight"><pre>              <span class="k">while</span> <span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">2</span> <span class="o">or</span> <span class="nx">h</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">].</span><span class="nx">type</span> <span class="o">is</span> <span class="s1">&#39;F&#39;</span>
+                  <span class="nx">a</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">2</span><span class="p">...]</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;monadic&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="nx">a</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">2</span><span class="p">...]]</span>
+                  <span class="nx">h</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">2</span><span class="p">...]</span> <span class="o">=</span> <span class="p">[{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">}]</span>
+                <span class="k">else</span>
+                  <span class="nx">a</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">...]</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;dyadic&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="nx">a</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">...]]</span>
+                  <span class="nx">h</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">...]</span> <span class="o">=</span> <span class="p">[{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">}]</span>
+
+            <span class="nv">node.seqTree = </span><span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="nx">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">else</span>
+          <span class="k">throw</span> <span class="nb">Error</span> <span class="s2">&quot;Unrecognised node type, &#39;#{node[0]}&#39;&quot;</span>
+
+    <span class="k">for</span> <span class="nx">node</span> <span class="k">in</span> <span class="nx">scopeNode</span><span class="p">[</span><span class="mi">1</span><span class="p">...]</span>
+      <span class="nx">visit</span> <span class="nx">node</span>
+
+  <span class="k">return</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h1>Second pass</h1>
+
+<p>Convert AST to JavaScript code</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">secondPass = </span><span class="nf">(ast) -&gt;</span>
+  <span class="nv">visit = </span><span class="nf">(node) -&gt;</span>
+    <span class="k">switch</span> <span class="nx">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="k">when</span> <span class="s1">&#39;body&#39;</span>
+        <span class="nv">a = </span><span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">...]</span> <span class="k">then</span> <span class="nx">visit</span> <span class="nx">child</span>
+        <span class="nx">a</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;return &#39;</span> <span class="o">+</span> <span class="nx">a</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="nx">a</span><span class="p">.</span><span class="nx">join</span> <span class="s1">&#39;;\n&#39;</span>
+      <span class="k">when</span> <span class="s1">&#39;assign&#39;</span>
+        <span class="s2">&quot;ctx#{jsProp node[1]} = #{visit node[2]}&quot;</span>
+      <span class="k">when</span> <span class="s1">&#39;sym&#39;</span>
+        <span class="s2">&quot;ctx#{jsProp node[1]}&quot;</span>
+      <span class="k">when</span> <span class="s1">&#39;lambda&#39;</span>
+        <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">          function (alpha, omega) {</span>
+<span class="s2">            var ctx = inherit(ctx);</span>
+<span class="s2">            ctx[&#39;⍺&#39;] = alpha;</span>
+<span class="s2">            ctx[&#39;⍵&#39;] = omega;</span>
+<span class="s2">            #{visit node[1]}</span>
+<span class="s2">          }</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+      <span class="k">when</span> <span class="s1">&#39;str&#39;</span>
+        <span class="nv">s = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="nv">d = </span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># the delimiter: &#39;&quot;&#39; or &quot;&#39;&quot;</span>
+        <span class="nx">d</span> <span class="o">+</span> <span class="nx">s</span><span class="p">[</span><span class="mi">1</span><span class="p">...</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="err">///#{d + d}///g, &#39;\\&#39; + d) + d</span>
+      <span class="k">when</span> <span class="s1">&#39;num&#39;</span>
+        <span class="nv">s = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span> <span class="sr">/¯/g</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span>
+        <span class="nv">a = </span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">s</span><span class="p">.</span><span class="nx">split</span> <span class="sr">/j/i</span>
+              <span class="k">if</span> <span class="nx">x</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/^-?0x/i</span> <span class="k">then</span> <span class="nb">parseInt</span> <span class="nx">x</span><span class="p">,</span> <span class="mi">16</span> <span class="k">else</span> <span class="nb">parseFloat</span> <span class="nx">x</span>
+        <span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span> <span class="k">then</span> <span class="s1">&#39;&#39;</span> <span class="o">+</span> <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;new Complex(#{a[0]}, #{a[1]})&quot;</span>
+      <span class="k">when</span> <span class="s1">&#39;index&#39;</span>
+        <span class="s2">&quot;ctx[&#39;⌷&#39;](#{visit node[2]}, #{visit node[1]})&quot;</span>
+      <span class="k">when</span> <span class="s1">&#39;seq&#39;</span>
+        <span class="nx">visit</span> <span class="nx">node</span><span class="p">.</span><span class="nx">seqTree</span>
+      <span class="k">when</span> <span class="s1">&#39;vector&#39;</span>
+        <span class="nv">n = </span><span class="nx">node</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="s2">&quot;[#{(for child in node[1...] then visit child).join &#39;, &#39;}]&quot;</span>
+      <span class="k">when</span> <span class="s1">&#39;niladic&#39;</span>
+        <span class="s2">&quot;#{visit node[1]}()&quot;</span>
+      <span class="k">when</span> <span class="s1">&#39;monadic&#39;</span>
+        <span class="s2">&quot;#{visit node[1]}(#{visit node[2]})&quot;</span>
+      <span class="k">when</span> <span class="s1">&#39;dyadic&#39;</span>
+        <span class="s2">&quot;#{visit node[2]}(#{visit node[1]}, #{visit node[3]})&quot;</span>
+      <span class="k">when</span> <span class="s1">&#39;prefixOperator&#39;</span>
+        <span class="mi">0</span> <span class="c1"># todo</span>
+      <span class="k">when</span> <span class="s1">&#39;infixOperator&#39;</span>
+        <span class="mi">0</span> <span class="c1"># todo</span>
+      <span class="k">when</span> <span class="s1">&#39;postfixOperator&#39;</span>
+        <span class="mi">0</span> <span class="c1"># todo</span>
+      <span class="k">else</span>
+        <span class="k">throw</span> <span class="nb">Error</span> <span class="s2">&quot;Unrecognised node type, &#39;#{node[0]}&#39;&quot;</span>
+
+  <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    (function () {</span>
+<span class="s2">      var ctx = inherit(builtInContext);</span>
+<span class="s2">      #{visit ast}</span>
+<span class="s2">    })();</span>
+<span class="s2">  &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p><code>jsProp(name)</code> creates code to look up property <code>name</code> from a JavaScript
+object.  This could be either <code>".some_name"</code> if <code>name</code> contains only safe
+characters, or <code>"['some⎕weird⍎name']"</code> otherwise.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">jsProp = </span><span class="nf">(name) -&gt;</span> <span class="k">if</span> <span class="nx">name</span><span class="p">.</span><span class="nx">match</span> <span class="sr">/^[a-z_][0-9a-z_]*$/i</span> <span class="k">then</span> <span class="s2">&quot;.#{name}&quot;</span> <span class="k">else</span> <span class="s2">&quot;[#{repr name}]&quot;</span>
+
+<span class="nv">isArray = </span><span class="nf">(x) -&gt;</span> <span class="nx">x</span><span class="p">.</span><span class="nx">length</span><span class="o">?</span> <span class="o">and</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">isnt</span> <span class="s1">&#39;string&#39;</span>
+
+<span class="nv">printAST = </span><span class="nf">(x, indent = &#39;&#39;) -&gt;</span>
+  <span class="k">if</span> <span class="nx">isArray</span> <span class="nx">x</span>
+    <span class="nv">x = </span><span class="nx">x</span><span class="p">.</span><span class="nx">seqTree</span> <span class="o">or</span> <span class="nx">x</span>
+    <span class="k">if</span> <span class="nx">x</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">2</span> <span class="o">and</span> <span class="o">not</span> <span class="nx">isArray</span> <span class="nx">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">info</span> <span class="nx">indent</span> <span class="o">+</span> <span class="nx">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">info</span> <span class="nx">indent</span> <span class="o">+</span> <span class="nx">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="k">for</span> <span class="nx">y</span> <span class="k">in</span> <span class="nx">x</span><span class="p">[</span><span class="mi">1</span><span class="p">...]</span>
+        <span class="nx">printAST</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">indent</span> <span class="o">+</span> <span class="s1">&#39;  &#39;</span>
+  <span class="k">else</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">info</span> <span class="nx">indent</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">x</span>
+  <span class="k">return</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">info</span> <span class="nx">compile</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">  a ← ⎕</span>
+<span class="s1">  ⎕ ← a</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

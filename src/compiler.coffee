@@ -23,7 +23,9 @@ compile = (source) ->
 # # First pass
 # For each scope, determine the type of each symbol.
 # A symbol can be either of two types:
+#
 #   * Type X: data or a niladic function
+#
 #   * Type F: a monadic function, a dyadic function, or an operator
 firstPass = (ast) ->
   ast.vars = inherit globalVarInfo
@@ -136,7 +138,7 @@ firstPass = (ast) ->
 
 
 # # Second pass
-# Convert AST into JavaScript code
+# Convert AST to JavaScript code
 secondPass = (ast) ->
   visit = (node) ->
     switch node[0]
@@ -197,6 +199,9 @@ secondPass = (ast) ->
 
 
 
+# `jsProp(name)` creates code to look up property `name` from a JavaScript
+# object.  This could be either `".some_name"` if `name` contains only safe
+# characters, or `"['some⎕weird⍎name']"` otherwise.
 jsProp = (name) -> if name.match /^[a-z_][0-9a-z_]*$/i then ".#{name}" else "[#{repr name}]"
 
 isArray = (x) -> x.length? and typeof x isnt 'string'
