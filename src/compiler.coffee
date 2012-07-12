@@ -6,12 +6,14 @@ repr = JSON.stringify
 
 globalVarInfo =
   '+': {type: 'F'}
+  '×': {type: 'F'}
   '/': {type: 'F', isPostfixOperator: true}
   '⍣': {type: 'F', isInfixOperator: true}
   '⍺': {type: 'X'}
   '⍵': {type: 'X'}
   '⍬': {type: 'X', isNiladicFunction: true}
   '⎕': {type: 'X', isNiladicFunction: true}
+  '⎕sleep': {type: 'F', isCPS: true}
 
 compile = (source) ->
   ast = parse source
@@ -140,6 +142,9 @@ firstPass = (ast) ->
 # # Second pass
 # Convert AST to JavaScript code
 secondPass = (ast) ->
+
+  depth = 0 # scope nesting depth
+
   visit = (node) ->
     switch node[0]
       when 'body'
@@ -151,14 +156,18 @@ secondPass = (ast) ->
       when 'sym'
         "ctx#{jsProp node[1]}"
       when 'lambda'
-        """
+        depth++
+        r = """
           function (alpha, omega) {
-            var ctx = inherit(ctx);
+            var ctx, ctx#{depth};
+            ctx = ctx[#{depth}] = inherit(ctx#{depth - 1});
             ctx['⍺'] = alpha;
             ctx['⍵'] = omega;
             #{visit node[1]}
           }
         """
+        depth--
+        r
       when 'str'
         s = node[1]
         d = s[0] # the delimiter: '"' or "'"
@@ -192,7 +201,7 @@ secondPass = (ast) ->
 
   """
     (function () {
-      var ctx = inherit(builtInContext);
+      var ctx0 = inherit(builtInContext);
       #{visit ast}
     })();
   """
@@ -219,7 +228,19 @@ printAST = (x, indent = '') ->
     console.info indent + JSON.stringify x
   return
 
-console.info compile '''
-  a ← ⎕
-  ⎕ ← a
-'''
+
+
+do ->
+  s = '''
+    f ← g
+    g ← f
+  '''
+  console.info '-----APL SOURCE-----'
+  console.info s
+  console.info '-----AST-----'
+  printAST parse s
+  console.info '-----COMPILED-----'
+  console.info(js = compile s)
+  console.info '-----OUTPUT-----'
+  (new Function js)()
+
