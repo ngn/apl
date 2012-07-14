@@ -18,7 +18,6 @@ globalVarInfo =
 compile = (source) ->
   ast = parse source
   firstPass ast
-  printAST ast
   secondPass ast
 
 
@@ -160,7 +159,7 @@ secondPass = (ast) ->
         r = """
           function (alpha, omega) {
             var ctx, ctx#{depth};
-            ctx = ctx[#{depth}] = inherit(ctx#{depth - 1});
+            ctx = ctx#{depth} = inherit(ctx#{depth - 1});
             ctx['⍺'] = alpha;
             ctx['⍵'] = omega;
             #{visit node[1]}
@@ -200,10 +199,13 @@ secondPass = (ast) ->
         throw Error "Unrecognised node type, '#{node[0]}'"
 
   """
-    (function () {
-      var ctx0 = inherit(builtInContext);
-      #{visit ast}
-    })();
+    var require = arguments[0];
+    var builtins = require('../lib/builtins').builtins;
+    var helpers = require('../lib/helpers');
+    var inherit = helpers.inherit;
+    var ctx;
+    var ctx0 = ctx = inherit(builtins);
+    #{visit ast}
   """
 
 
@@ -232,8 +234,9 @@ printAST = (x, indent = '') ->
 
 do ->
   s = '''
-    f ← g
-    g ← f
+    a ← 2 3 4
+    b ← 5 6 7
+    a + b
   '''
   console.info '-----APL SOURCE-----'
   console.info s
@@ -242,5 +245,4 @@ do ->
   console.info '-----COMPILED-----'
   console.info(js = compile s)
   console.info '-----OUTPUT-----'
-  (new Function js)()
-
+  console.info (new Function js)(require)
