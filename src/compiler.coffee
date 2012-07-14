@@ -1,7 +1,7 @@
 #!/usr/bin/env coffee
 
 {parse} = require '../lib/parser'
-{inherit} = require './helpers'
+{inherit, die, assert} = require './helpers'
 repr = JSON.stringify
 
 globalVarInfo =
@@ -44,15 +44,13 @@ firstPass = (ast) ->
           name = node[1]
           h = visit node[2]
           if vars[name]
-            if vars[name].type isnt h.type
-              throw Error "Inconsistent usage of symbol '#{name}'"
+            assert vars[name].type is h.type, "Inconsistent usage of symbol '#{name}'"
           else
             vars[name] = h
           h
         when 'sym'
           name = node[1]
-          if not vars[name]?
-            throw Error "Symbol '#{name}' referenced before assignment"
+          assert vars[name]?, "Symbol '#{name}' referenced before assignment"
           vars[name]
         when 'lambda'
           visit node[1]
@@ -62,8 +60,7 @@ firstPass = (ast) ->
         when 'index'
           t1 = visit node[1]
           t2 = visit node[2]
-          if t2.type isnt 'X'
-            throw Error 'Only data can be used as an index'
+          assert t2.type is 'X', 'Only data can be used as an index'
           t1
         when 'seq'
           if node.length is 1
@@ -113,8 +110,7 @@ firstPass = (ast) ->
                 h[i...i+2] = [{type: 'F'}]
 
             if h[h.length - 1].type is 'F'
-              if h.length > 1
-                throw Error 'Trailing function in expression'
+              assert h.length <= 1, 'Trailing function in expression'
             else
               # Apply monadic and dyadic functions
               while h.length > 1
@@ -129,7 +125,7 @@ firstPass = (ast) ->
             h[0]
 
         else
-          throw Error "Unrecognised node type, '#{node[0]}'"
+          die "Unrecognised node type, '#{node[0]}'"
 
     for node in scopeNode[1...]
       visit node
@@ -196,7 +192,7 @@ secondPass = (ast) ->
       when 'postfixOperator'
         0 # todo
       else
-        throw Error "Unrecognised node type, '#{node[0]}'"
+        die "Unrecognised node type, '#{node[0]}'"
 
   """
     var require = arguments[0];

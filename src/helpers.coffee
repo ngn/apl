@@ -81,3 +81,6 @@ exports.prod = (xs) -> r = 1; (for x in xs then r *= x); r
 
 # `repeat(s, n)` catenates `n` instances of a string `s`.
 exports.repeat = (s, n) -> r = ''; (for [0...n] then r += s); r
+
+exports.die = (s) -> throw Error s
+exports.assert = (flag, s = 'Assertion failed') -> if not flag then throw Error s

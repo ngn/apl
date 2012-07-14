@@ -101,9 +101,7 @@
 
 # # Utility functions
 
-{cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
-
-assert = (flag) -> if not flag then throw Error 'Assertion failed.'
+{assert, cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
 
 arrayValueOf = (x) -> if isSimple x then [x] else x
 
