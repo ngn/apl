@@ -1,36 +1,47 @@
 #!/usr/bin/env coffee
 
 {parse} = require '../lib/parser'
-{inherit, die, assert} = require './helpers'
+{inherit, die, assert} = helpers = require './helpers'
 repr = JSON.stringify
 
-globalVarInfo =
+builtinVarInfo =
   '+': {type: 'F'}
+  '−': {type: 'F'}
   '×': {type: 'F'}
+  '÷': {type: 'F'}
   '/': {type: 'F', isPostfixOperator: true}
   '⍣': {type: 'F', isInfixOperator: true}
   '⍺': {type: 'X'}
   '⍵': {type: 'X'}
   '⍬': {type: 'X', isNiladicFunction: true}
   '⎕': {type: 'X', isNiladicFunction: true}
-  '⎕sleep': {type: 'F', isCPS: true}
+  'set_⎕': {type: 'F'}
+  '⎕sleep': {type: 'F', cps: true}
 
 compile = (source) ->
   ast = parse source
-  firstPass ast
-  secondPass ast
+  assignParents ast
+  resolveSeqs ast
+  toJavaScript ast
 
+assignParents = (node) ->
+  for child in node[1...]
+    assignParents child
+    child.parent = node
+  return
 
-# # First pass
 # For each scope, determine the type of each symbol.
 # A symbol can be either of two types:
 #
 #   * Type X: data or a niladic function
 #
 #   * Type F: a monadic function, a dyadic function, or an operator
-firstPass = (ast) ->
-  ast.vars = inherit globalVarInfo
-  queue = [ast]
+#
+# This information is used to convert each "seq" node into a hierarchy of
+# function applications.
+resolveSeqs = (ast) ->
+  ast.vars = inherit builtinVarInfo
+  queue = [ast] # accumulates "body" nodes which we encounter on our way
   while queue.length
     {vars} = scopeNode = queue.shift()
 
@@ -134,9 +145,8 @@ firstPass = (ast) ->
 
 
 
-# # Second pass
 # Convert AST to JavaScript code
-secondPass = (ast) ->
+toJavaScript = (ast) ->
 
   depth = 0 # scope nesting depth
 
@@ -144,10 +154,15 @@ secondPass = (ast) ->
     switch node[0]
       when 'body'
         a = for child in node[1...] then visit child
-        a[a.length - 1] = 'return ' + a[a.length - 1]
+        a[a.length - 1] = 'return ' + a[a.length - 1] + ';'
         a.join ';\n'
       when 'assign'
-        "ctx#{jsProp node[1]} = #{visit node[2]}"
+        name = node[1]
+        setter = "set_#{name}"
+        if closestScope(node).vars[setter]?.type is 'F'
+          "ctx#{jsProp setter}(#{visit node[2]})" # todo: pass-through value
+        else
+          "ctx#{jsProp name} = #{visit node[2]}"
       when 'sym'
         "ctx#{jsProp node[1]}"
       when 'lambda'
@@ -195,16 +210,16 @@ secondPass = (ast) ->
         die "Unrecognised node type, '#{node[0]}'"
 
   """
-    var require = arguments[0];
-    var builtins = require('../lib/builtins').builtins;
-    var helpers = require('../lib/helpers');
-    var inherit = helpers.inherit;
-    var ctx;
-    var ctx0 = ctx = inherit(builtins);
+    var inherit = arguments[1].inherit,
+        ctx, ctx0 = ctx = inherit(arguments[0]);
     #{visit ast}
   """
 
 
+
+closestScope = (node) ->
+  while node[0] isnt 'body' then node = node.parent
+  node
 
 # `jsProp(name)` creates code to look up property `name` from a JavaScript
 # object.  This could be either `".some_name"` if `name` contains only safe
@@ -230,9 +245,10 @@ printAST = (x, indent = '') ->
 
 do ->
   s = '''
-    a ← 2 3 4
-    b ← 5 6 7
-    a + b
+    a ← 1 2 3
+    b ← {4 5 6}
+    ⎕ ← 'hell oh world'
+    a + (b 0) 1
   '''
   console.info '-----APL SOURCE-----'
   console.info s
@@ -241,4 +257,6 @@ do ->
   console.info '-----COMPILED-----'
   console.info(js = compile s)
   console.info '-----OUTPUT-----'
-  console.info (new Function js)(require)
+  builtins = require('./builtins').builtins
+  builtins['set_⎕'] = (s) -> console.info s
+  console.info (new Function js) builtins, helpers
