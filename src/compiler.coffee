@@ -132,7 +132,13 @@ resolveSeqs = (ast) ->
                   a[h.length - 3...] = [['dyadic'].concat a[h.length - 3...]]
                   h[h.length - 3...] = [{type: 'X'}]
 
-            node.seqTree = a[0]
+            # Replace the `"seq"` node with `a[0]` in the AST
+            for x, i in node.parent
+              if x is node
+                node.parent[i] = a[0]
+            a[0].parent = node.parent
+            node.parent = null
+
             h[0]
 
         else
@@ -190,7 +196,7 @@ toJavaScript = (ast) ->
       when 'index'
         "ctx['⌷'](#{visit node[2]}, #{visit node[1]})"
       when 'seq'
-        visit node.seqTree
+        die 'No "seq" nodes are expected at this stage.'
       when 'vector'
         n = node.length - 1
         "[#{(for child in node[1...] then visit child).join ', '}]"
@@ -230,7 +236,6 @@ isArray = (x) -> x.length? and typeof x isnt 'string'
 
 printAST = (x, indent = '') ->
   if isArray x
-    x = x.seqTree or x
     if x.length is 2 and not isArray x[1]
       console.info indent + x[0] + ' ' + JSON.stringify x[1]
     else
@@ -246,9 +251,9 @@ printAST = (x, indent = '') ->
 do ->
   s = '''
     a ← 1 2 3
-    b ← {4 5 6}
-    ⎕ ← 'hell oh world'
-    a + (b 0) 1
+    b ← 4 5 6
+    #⎕sleep 1000
+    a + b
   '''
   console.info '-----APL SOURCE-----'
   console.info s
@@ -259,4 +264,9 @@ do ->
   console.info '-----OUTPUT-----'
   builtins = require('./builtins').builtins
   builtins['set_⎕'] = (s) -> console.info s
+
+  builtins['⎕sleep'] = (x, y, axis, callback) ->
+    setTimeout((-> callback 0), x)
+    return
+
   console.info (new Function js) builtins, helpers
