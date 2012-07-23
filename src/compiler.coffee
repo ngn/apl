@@ -4,11 +4,66 @@
 {inherit, die, assert} = helpers = require './helpers'
 repr = JSON.stringify
 
+predefinedNames =
+  '⍺': '_a'
+  '⍵': '_w'
+  '+': '_add'
+  '-': '_sub'
+  '×': '_mul'
+  '÷': '_div'
+  '!': '_bang'
+  '?': '_ques'
+  '⌷': '_idx'
+  '⍴': '_r'
+  '⍳': '_i'
+  ',': '_cat'
+  '⍪': '_cat1'
+  '⎕': '_q'
+  '⍞': '_qq'
+  '∈': '_e'
+  '⍷': '_eu'
+  '∼': '_tilde'
+  '↑': '_take'
+  '↓': '_drop'
+  '⍉': '_trans'
+  '⊖': '_rot1'
+  '⌽': '_rot'
+  '○': '_circ'
+  '⍬': '_zilde'
+  '⋆': '_pow'
+  '⌈': '_max'
+  '⌊': '_min'
+  '∘.': '_outer'
+  '.': '_inner'
+  '∣': '_mod'
+  '⊤': '_tee'
+  '⊥': '_bot'
+  '∪': '_cup'
+  '∩': '_cap'
+  '⊂': '_enclose'
+  '⊃': '_disclose'
+  '⍒': '_gradeUp'
+  '⍋': '_gradeDown'
+  '⍣': '_powOp'
+  '¨': '_each'
+  '\\': '_bslash'
+  '/': '_slash'
+
+ord = (s) -> s.charCodeAt 0
+hex4 = (n) -> s = '0000' + n.toString 16; s[s.length - 4 ...]
+jsName = (name) -> predefinedNames[name] or name.replace /[^a-z0-9]/gi, (x) -> '_' + hex4 ord x
+
+builtins = inherit require('./builtins').builtins
+builtins['set_⎕'] = (s) -> console.info s
+
 builtinVarInfo =
   '+': {type: 'F'}
   '−': {type: 'F'}
   '×': {type: 'F'}
   '÷': {type: 'F'}
+  ',': {type: 'F'}
+  '⍪': {type: 'F'}
+  '⍴': {type: 'F'}
   '/': {type: 'F', isPostfixOperator: true}
   '⍣': {type: 'F', isInfixOperator: true}
   '⍺': {type: 'X'}
@@ -16,13 +71,18 @@ builtinVarInfo =
   '⍬': {type: 'X', isNiladicFunction: true}
   '⎕': {type: 'X', isNiladicFunction: true}
   'set_⎕': {type: 'F'}
-  '⎕sleep': {type: 'F', cps: true}
 
-compile = (source) ->
+compile = (source, opts = {}) ->
+  console.info 'DEBUG: ' + opts.debug
+  if opts.debug then console.info '-----APL SOURCE-----\n' + source
   ast = parse source
+  if opts.debug then (console.info '-----RAW AST-----\n'; printAST ast)
   assignParents ast
   resolveSeqs ast
-  toJavaScript ast
+  if opts.debug then (console.info '-----AST-----\n'; printAST ast)
+  output = toJavaScript ast
+  if opts.debug then console.info '-----JS OUTPUT-----\n' + output
+  output
 
 assignParents = (node) ->
   for child in node[1...]
@@ -44,6 +104,7 @@ resolveSeqs = (ast) ->
   queue = [ast] # accumulates "body" nodes which we encounter on our way
   while queue.length
     {vars} = scopeNode = queue.shift()
+    scopeNode.varsToDeclare = []
 
     visit = (node) ->
       switch node[0]
@@ -55,9 +116,10 @@ resolveSeqs = (ast) ->
           name = node[1]
           h = visit node[2]
           if vars[name]
-            assert vars[name].type is h.type, "Inconsistent usage of symbol '#{name}'"
+            assert vars[name].type is h.type, "Inconsistent usage of symbol '#{name}', it is assigned both data and functions"
           else
             vars[name] = h
+            scopeNode.varsToDeclare.push name
           h
         when 'sym'
           name = node[1]
@@ -132,12 +194,10 @@ resolveSeqs = (ast) ->
                   a[h.length - 3...] = [['dyadic'].concat a[h.length - 3...]]
                   h[h.length - 3...] = [{type: 'X'}]
 
-            # Replace the `"seq"` node with `a[0]` in the AST
-            for x, i in node.parent
-              if x is node
-                node.parent[i] = a[0]
-            a[0].parent = node.parent
-            node.parent = null
+            # Replace `"seq"` node with `a[0]` in the AST
+            node[0...] = a[0]
+            a[0][0] = 'IDIOT'
+            a[0].parent = null
 
             h[0]
 
@@ -154,36 +214,31 @@ resolveSeqs = (ast) ->
 # Convert AST to JavaScript code
 toJavaScript = (ast) ->
 
-  depth = 0 # scope nesting depth
 
   visit = (node) ->
     switch node[0]
       when 'body'
+        r = ''
+        if node.varsToDeclare.length
+          r += 'var ' + node.varsToDeclare.join(', ') + ';\n'
         a = for child in node[1...] then visit child
         a[a.length - 1] = 'return ' + a[a.length - 1] + ';'
-        a.join ';\n'
+        r += a.join(';\n')
       when 'assign'
         name = node[1]
         setter = "set_#{name}"
         if closestScope(node).vars[setter]?.type is 'F'
-          "ctx#{jsProp setter}(#{visit node[2]})" # todo: pass-through value
+          "#{jsName setter}(#{visit node[2]})" # todo: pass-through value
         else
-          "ctx#{jsProp name} = #{visit node[2]}"
+          "#{jsName name} = #{visit node[2]}"
       when 'sym'
-        "ctx#{jsProp node[1]}"
+        "#{jsName node[1]}"
       when 'lambda'
-        depth++
-        r = """
-          function (alpha, omega) {
-            var ctx, ctx#{depth};
-            ctx = ctx#{depth} = inherit(ctx#{depth - 1});
-            ctx['⍺'] = alpha;
-            ctx['⍵'] = omega;
+        """
+          function (_a, _w) {
             #{visit node[1]}
           }
         """
-        depth--
-        r
       when 'str'
         s = node[1]
         d = s[0] # the delimiter: '"' or "'"
@@ -194,7 +249,7 @@ toJavaScript = (ast) ->
               if x.match /^-?0x/i then parseInt x, 16 else parseFloat x
         if a.length is 1 then '' + a[0] else "new Complex(#{a[0]}, #{a[1]})"
       when 'index'
-        "ctx['⌷'](#{visit node[2]}, #{visit node[1]})"
+        "_index(#{visit node[2]}, #{visit node[1]})"
       when 'seq'
         die 'No "seq" nodes are expected at this stage.'
       when 'vector'
@@ -203,21 +258,21 @@ toJavaScript = (ast) ->
       when 'niladic'
         "#{visit node[1]}()"
       when 'monadic'
-        "#{visit node[1]}(#{visit node[2]})"
+        "#{visit node[1]}(undefined, #{visit node[2]})"
       when 'dyadic'
         "#{visit node[2]}(#{visit node[1]}, #{visit node[3]})"
       when 'prefixOperator'
-        0 # todo
+        "#{visit node[1]}(undefined, #{visit node[2]})"
       when 'infixOperator'
-        0 # todo
+        "#{visit node[2]}(#{visit node[1]}, #{visit node[3]})"
       when 'postfixOperator'
-        0 # todo
+        "#{visit node[2]}(#{visit node[1]})"
       else
         die "Unrecognised node type, '#{node[0]}'"
 
   """
-    var inherit = arguments[1].inherit,
-        ctx, ctx0 = ctx = inherit(arguments[0]);
+    var _apl = arguments[0],
+    #{(for k of builtins then "#{jsName k} = _apl[#{repr k}]").join ',\n    '};
     #{visit ast}
   """
 
@@ -226,11 +281,6 @@ toJavaScript = (ast) ->
 closestScope = (node) ->
   while node[0] isnt 'body' then node = node.parent
   node
-
-# `jsProp(name)` creates code to look up property `name` from a JavaScript
-# object.  This could be either `".some_name"` if `name` contains only safe
-# characters, or `"['some⎕weird⍎name']"` otherwise.
-jsProp = (name) -> if name.match /^[a-z_][0-9a-z_]*$/i then ".#{name}" else "[#{repr name}]"
 
 isArray = (x) -> x.length? and typeof x isnt 'string'
 
@@ -247,26 +297,14 @@ printAST = (x, indent = '') ->
   return
 
 
+console.info 'hello'
 
 do ->
+  console.info 'hallo'
   s = '''
-    a ← 1 2 3
-    b ← 4 5 6
-    #⎕sleep 1000
-    a + b
+    f ← {(⍵,(⍴⍵)⍴0)⍪⍵,⍵}
+    S ← {' #'[(f⍣⍵) 1 1 ⍴ 1]}
+    ⎕ ← f f 1 1 ⍴ 1
   '''
-  console.info '-----APL SOURCE-----'
-  console.info s
-  console.info '-----AST-----'
-  printAST parse s
-  console.info '-----COMPILED-----'
-  console.info(js = compile s)
-  console.info '-----OUTPUT-----'
-  builtins = require('./builtins').builtins
-  builtins['set_⎕'] = (s) -> console.info s
-
-  builtins['⎕sleep'] = (x, y, axis, callback) ->
-    setTimeout((-> callback 0), x)
-    return
-
-  console.info (new Function js) builtins, helpers
+  js = compile s, debug: true
+  (new Function js) builtins

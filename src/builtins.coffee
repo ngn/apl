@@ -180,7 +180,11 @@ exports.builtins = builtins = {}
 
 ambivalent = (f1, f2) -> # combine a monadic and a dyadic function into one
   assert(f1.aplName and (f1.aplName is f2.aplName))
-  f = (args...) -> (if args[1]? then f2 else f1)(args...)
+  f = (args...) ->
+    if args[0]?
+      f2 args...
+    else
+      f1 ([args[1], args[0]].concat args[2...])...
   f.aplName = f1.aplName
   f
 
