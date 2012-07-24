@@ -102,6 +102,7 @@
 # # Utility functions
 
 {assert, die, cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
+{min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin, cos, tan, asin, acos, atan} = Math
 repr = JSON.stringify
 
 array = (x) -> if isSimple x then [x] else x
@@ -136,14 +137,14 @@ pervasive = (f) -> named f.aplName, (a, b) ->
     else if isSimple b then withShape a.shape, (for x in a then F x, b)
     else
       sa = shapeOf a; sb = shapeOf b
-      for i in [0 ... Math.min sa.length, sb.length]
+      for i in [0 ... min sa.length, sb.length]
         assert sa[i] is sb[i], 'Length error'
       if sa.length > sb.length
         k = prod sa[sb.length...]
-        withShape sa, (for i in [0...a.length] then F a[i], b[Math.floor i / k])
+        withShape sa, (for i in [0...a.length] then F a[i], b[floor i / k])
       else if sa.length < sb.length
         k = prod sb[sa.length...]
-        withShape sb, (for i in [0...b.length] then F a[Math.floor i / k], b[i])
+        withShape sb, (for i in [0...b.length] then F a[floor i / k], b[i])
       else
         withShape sa, (for i in [0...a.length] then F a[i], b[i])
   else # monadic pervasiveness
@@ -234,25 +235,25 @@ monadic pervasive overloadable named '÷', (x) -> 1 / x
 dyadic pervasive overloadable named '÷', (x, y) -> x / y
 
 # `⌈` Ceiling
-monadic pervasive overloadable named '⌈', (x) -> Math.ceil x
+monadic pervasive overloadable named '⌈', (x) -> ceil x
 
 # `⌈` Greater of
-dyadic pervasive overloadable named '⌈', (x, y) -> Math.max x, y
+dyadic pervasive overloadable named '⌈', (x, y) -> max x, y
 
 # `⌊` Floor
-monadic pervasive overloadable named '⌊', (x) -> Math.floor x
+monadic pervasive overloadable named '⌊', (x) -> floor x
 
 # `⌊` Lesser of
-dyadic pervasive overloadable named '⌊', (x, y) -> Math.min x, y
+dyadic pervasive overloadable named '⌊', (x, y) -> min x, y
 
 # `∣` Absolute value
-monadic pervasive overloadable named '∣', (x) -> Math.abs x
+monadic pervasive overloadable named '∣', (x) -> abs x
 
 # `∣` Residue
 dyadic pervasive overloadable named '∣', (x, y) -> y % x
 
 # `⍳` Index generate
-monadic overloadable named '⍳', (a) -> [0 ... Math.floor num a]
+monadic overloadable named '⍳', (a) -> [0 ... floor num a]
 
 # `⍳` Index of
 dyadic overloadable named '⍳', (a, b) ->
@@ -265,62 +266,62 @@ dyadic overloadable named '⍳', (a, b) ->
     pos
 
 # `?` Roll
-monadic pervasive overloadable named '?', (x) -> Math.floor Math.random() * Math.max 0, Math.floor num x
+monadic pervasive overloadable named '?', (x) -> floor random() * max 0, floor num x
 
 
 # `?` Deal
 dyadic overloadable named '?', (x, y) ->
-  x = Math.max 0, Math.floor num x
-  y = Math.max 0, Math.floor num y
+  x = max 0, floor num x
+  y = max 0, floor num y
   assert x <= y, 'Domain error: left argument of ? must not be greater than its right argument.'
   available = [0...y]
-  for [0...x] then available.splice(Math.floor(available.length * Math.random()), 1)[0]
+  for [0...x] then available.splice(floor(available.length * random()), 1)[0]
 
 
 # `⋆` Exponentiate
-monadic pervasive overloadable named '⋆', (x) -> Math.exp num x
+monadic pervasive overloadable named '⋆', (x) -> exp num x
 
 # `⋆` To the power of
-dyadic pervasive overloadable named '⋆', (x, y) -> Math.pow num(x), num(y)
+dyadic pervasive overloadable named '⋆', (x, y) -> pow num(x), num(y)
 
 # `⍟` Natural logarithm
-monadic pervasive overloadable named '⍟', (x) -> Math.log x
+monadic pervasive overloadable named '⍟', (x) -> log x
 
 # `⍟` Logarithm to the base
-dyadic pervasive overloadable named '⍟', (x, y) -> Math.log(y) / Math.log(x)
+dyadic pervasive overloadable named '⍟', (x, y) -> log(y) / log(x)
 
 # `○` Pi times
-monadic pervasive overloadable named '○', (x) -> Math.PI * x
+monadic pervasive overloadable named '○', (x) -> PI * x
 
 # `○` Circular and hyperbolic functions
 dyadic pervasive overloadable named '○', (i, x) ->
   switch i
-    when 0 then Math.sqrt(1 - x * x)
-    when 1 then Math.sin x
-    when 2 then Math.cos x
-    when 3 then Math.tan x
-    when 4 then Math.sqrt(1 + x * x)
-    when 5 then (Math.exp(2 * x) - 1) / 2 # sinh
-    when 6 then (Math.exp(2 * x) + 1) / 2 # cosh
-    when 7 then ex = Math.exp(2 * x); (ex - 1) / (ex + 1) # tanh
-    when -1 then Math.asin x
-    when -2 then Math.acos x
-    when -3 then Math.atan x
-    when -4 then Math.sqrt(x * x - 1)
-    when -5 then Math.log(x + Math.sqrt(x * x + 1)) # arcsinh
-    when -6 then Math.log(x + Math.sqrt(x * x - 1)) # arccosh
-    when -7 then Math.log((1 + x) / (1 - x)) / 2 # arctanh
+    when 0 then sqrt(1 - x * x)
+    when 1 then sin x
+    when 2 then cos x
+    when 3 then tan x
+    when 4 then sqrt(1 + x * x)
+    when 5 then (exp(2 * x) - 1) / 2 # sinh
+    when 6 then (exp(2 * x) + 1) / 2 # cosh
+    when 7 then ex = exp(2 * x); (ex - 1) / (ex + 1) # tanh
+    when -1 then asin x
+    when -2 then acos x
+    when -3 then atan x
+    when -4 then sqrt(x * x - 1)
+    when -5 then log(x + sqrt(x * x + 1)) # arcsinh
+    when -6 then log(x + sqrt(x * x - 1)) # arccosh
+    when -7 then log((1 + x) / (1 - x)) / 2 # arctanh
     else die 'Unknown circular or hyperbolic function ' + i
 
 # `!` Factorial
 monadic pervasive overloadable named '!', (a) ->
-  n = a = Math.floor num a # todo: "Gamma" function for non-integer argument
+  n = a = floor num a # todo: "Gamma" function for non-integer argument
   r = 1; (if n > 1 then for i in [2 .. n] then r *= i); r
 
 # `!` Binomial
 dyadic pervasive overloadable named '!', (a, b) ->
-  k = a = Math.floor num a
-  n = b = Math.floor num b
+  k = a = floor num a
+  n = b = floor num b
   if not (0 <= k <= n) then return 0 # todo: Special cases for negatives and non-integers
   if 2 * k > n then k = n - k # do less work
   r = 1; (if k > 0 then for i in [1 .. k] then r = r * (n - k + i) / i); r
@@ -353,7 +354,7 @@ dyadic pervasive overloadable named '≠', (x, y) -> +(x isnt y)
 # `≡` Depth
 monadic overloadable named '≡', depthOf = (a) ->
   if isSimple a then return 0
-  r = 0; (for x in a then r = Math.max r, depthOf x); r + 1
+  r = 0; (for x in a then r = max r, depthOf x); r + 1
 
 # `≡` Match
 dyadic overloadable named '≡', match = (a, b) ->
@@ -450,9 +451,9 @@ dyadic overloadable named '∼', (a, b) ->
 
 # `∨` Or
 dyadic pervasive overloadable named '∨', (x, y) ->
-  x = Math.abs num x
-  y = Math.abs num y
-  assert x is Math.floor(x) and y is Math.floor(y), '∨ is defined only for integers'
+  x = abs num x
+  y = abs num y
+  assert x is floor(x) and y is floor(y), '∨ is defined only for integers'
   if x is 0 and y is 0 then return 0
   if x < y then [x, y] = [y, x]
   while y then [x, y] = [y, x % y] # Euclid's algorithm
@@ -460,9 +461,9 @@ dyadic pervasive overloadable named '∨', (x, y) ->
 
 # `∧` And (Greatest Common Divisor)
 dyadic pervasive overloadable named '∧', (x, y) ->
-  x = Math.abs num x
-  y = Math.abs num y
-  assert x is Math.floor(x) and y is Math.floor(y), '∧ is defined only for integers'
+  x = abs num x
+  y = abs num y
+  assert x is floor(x) and y is floor(y), '∧ is defined only for integers'
   if x is 0 or y is 0 then return 0
   p = x * y
   if x < y then [x, y] = [y, x]
@@ -485,7 +486,7 @@ dyadic overloadable named '⍴', (a, b) ->
   a =
     for x in a
       assert typeof x is 'number', 'Domain error: Left argument to ⍴ must be a numeric scalar or vector.'
-      Math.max 0, Math.floor x
+      max 0, floor x
   withShape a, withPrototypeCopiedFrom b, (for i in [0...prod a] then b[i % b.length])
 
 # `,` Ravel
@@ -553,7 +554,7 @@ dyadic overloadable named '⊖', (a, b) ->
   n = sb[0]
   k = b.length / n
   a %= n; if a < 0 then a += n
-  withShape sb, (for i in [0...b.length] then b[((Math.floor(i / k) + a) % n) * k + (i % k)])
+  withShape sb, (for i in [0...b.length] then b[((floor(i / k) + a) % n) * k + (i % k)])
 
 # `⍉` Transpose
 monadic overloadable named '⍉', (a) ->
@@ -594,13 +595,13 @@ dyadic overloadable named '↑', (a, b) ->
     else
       k /= sb[d]
       if a[d] >= 0
-        for j in [0 ... Math.min a[d], sb[d]] then rec d + 1, i + j * k, k
+        for j in [0 ... min a[d], sb[d]] then rec d + 1, i + j * k, k
         if sb[d] < a[d]
           for [0 ... (a[d] - sb[d]) * pa[d]] then r.push filler
       else
         if sb[d] + a[d] < 0
           for [0 ... -(sb[d] + a[d]) * pa[d]] then r.push filler
-        for j in [Math.max(0, sb[d] + a[d]) ... sb[d]] then rec d + 1, i + j * k, k
+        for j in [max(0, sb[d] + a[d]) ... sb[d]] then rec d + 1, i + j * k, k
     0
   rec 0, 0, b.length
   withShape a, withPrototype filler, r
@@ -608,7 +609,7 @@ dyadic overloadable named '↑', (a, b) ->
 # `↓` Drop
 dyadic overloadable named '↓', (a, b) ->
   if isSimple a then a = [a]
-  for x in a when typeof x isnt 'number' or x isnt Math.floor x
+  for x in a when typeof x isnt 'number' or x isnt floor x
     die 'Left argument to ↓ must be an integer or a vector of integers.'
   if isSimple b then b = withShape (for [0...a.length] then 1), b
   sb = shapeOf b
@@ -618,9 +619,9 @@ dyadic overloadable named '↓', (a, b) ->
   lims =
     for i in [0...a.length]
       if a[i] >= 0
-        [Math.min(a[i], sb[i]), sb[i]]
+        [min(a[i], sb[i]), sb[i]]
       else
-        [0, Math.max(0, sb[i] + a[i])]
+        [0, max(0, sb[i] + a[i])]
   r = []
   rec = (d, i, n) ->
     if d >= sb.length
@@ -652,7 +653,7 @@ monadic overloadable named '⊃', (a) ->
     if sx.length isnt sr1.length
       die 'The argument of ⊃ must contain elements of the same rank.' # todo: or scalars
     for i in [0...sr1.length]
-      sr1[i] = Math.max sr1[i], sx[i]
+      sr1[i] = max sr1[i], sx[i]
   sr = shapeOf(a).concat sr1
   r = []
   for x in a
@@ -687,7 +688,7 @@ dyadic overloadable named '⌷', (a, b) ->
         if isSimple x then withShape [], [x]
         else if not x.length then [0...sb[i]]
         else x
-  for x, d in a then for y in x when not (typeof y is 'number' and y is Math.floor(y))
+  for x, d in a then for y in x when not (typeof y is 'number' and y is floor(y))
     die 'Indices must be integers'
   for x, d in a then for y in x when not (0 <= y < sb[d])
     die 'Index out of bounds'
@@ -752,7 +753,7 @@ monadic overloadable named '⊤', (a, b) ->
           y = 0
         else
           r[(k * m + i) * b.length + j] = y % x
-          y = Math.round((y - (y % x)) / x)
+          y = round((y - (y % x)) / x)
   withShape sa.concat(sb), r
 
 # `⊥` Decode
@@ -816,7 +817,7 @@ builtins['get_⍬'] = -> []
 reduce = (f, _, axis=-1) -> (a, b) ->
   invokedAsMonadic = not b?
   if invokedAsMonadic then b = a; a = 0
-  a = Math.floor num a
+  a = floor num a
   isBackwards = a < 0; if isBackwards then a = -a
   b = array b
   sb = shapeOf b
@@ -829,7 +830,7 @@ reduce = (f, _, axis=-1) -> (a, b) ->
     sItem = sb[...axis].concat sb[axis + 1 ...] # shape of an item
     k = prod sb[axis + 1 ...]
     items = for [0...n] then withShape sItem, []
-    for i in [0...b.length] then items[Math.floor(i / k) % n].push b[i]
+    for i in [0...b.length] then items[floor(i / k) % n].push b[i]
   r =
     if isBackwards
       for i in [0 ... n - a + 1]
@@ -851,8 +852,8 @@ compressOrReplicate = (a, b, axis=-1) ->
 
   nNonNegative = 0 # number of non-negative elements in a
   for x in a
-    assert typeof x is 'number' and x is Math.floor x, 'Left argument to / must be an integer or a vector of integers'
-    sr[axis] += Math.abs x
+    assert typeof x is 'number' and x is floor x, 'Left argument to / must be an integer or a vector of integers'
+    sr[axis] += abs x
     nNonNegative += (x >= 0)
 
   isExtensive = true; isExpansive = isHyperexpansive = false
@@ -973,7 +974,7 @@ infixOperator named '.', (f, g) ->
 postfixOperator named '⍣', cps (f, _1, _2, callback) ->
   assert typeof f is 'function', 'Left argument to ⍣ must be a function.'
   -> (n, _1, _2, callback1) ->
-    if typeof n isnt 'number' or n < 0 or n isnt Math.floor n then return -> callback Error 'Right argument to ⍣ must be a non-negative integer.'
+    if typeof n isnt 'number' or n < 0 or n isnt floor n then return -> callback Error 'Right argument to ⍣ must be a non-negative integer.'
     -> callback1 null, cps (a, _1, _2, callback2) ->
       i = 0
       F = ->
