@@ -104,17 +104,17 @@
 {assert, cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
 repr = JSON.stringify
 
-arrayValueOf = (x) -> if isSimple x then [x] else x
+array = (x) -> if isSimple x then [x] else x
 
-numericValueOf = (x) ->
+num = (x) ->
   if x.length?
     if x.length isnt 1 then throw Error 'Numeric scalar or singleton expected'
     x = x[0]
   if typeof x isnt 'number' then throw Error 'Numeric scalar or singleton expected'
   x
 
-booleanValueOf = (x) ->
-  x = numericValueOf x
+bool = (x) ->
+  x = num x
   if x isnt 0 and x isnt 1 then throw Error 'Boolean values must be either 0 or 1'
   x
 
@@ -252,7 +252,7 @@ monadic pervasive overloadable named '∣', (x) -> Math.abs x
 dyadic pervasive overloadable named '∣', (x, y) -> y % x
 
 # `⍳` Index generate
-monadic overloadable named '⍳', (a) -> [0 ... Math.floor numericValueOf a]
+monadic overloadable named '⍳', (a) -> [0 ... Math.floor num a]
 
 # `⍳` Index of
 dyadic overloadable named '⍳', (a, b) ->
@@ -266,23 +266,23 @@ dyadic overloadable named '⍳', (a, b) ->
     pos
 
 # `?` Roll
-monadic pervasive overloadable named '?', (x) -> Math.floor Math.random() * Math.max 0, Math.floor numericValueOf x
+monadic pervasive overloadable named '?', (x) -> Math.floor Math.random() * Math.max 0, Math.floor num x
 
 
 # `?` Deal
 dyadic overloadable named '?', (x, y) ->
-  x = Math.max 0, Math.floor numericValueOf x
-  y = Math.max 0, Math.floor numericValueOf y
+  x = Math.max 0, Math.floor num x
+  y = Math.max 0, Math.floor num y
   if x > y then throw Error 'Domain error: left argument of ? must not be greater than its right argument.'
   available = [0...y]
   for [0...x] then available.splice(Math.floor(available.length * Math.random()), 1)[0]
 
 
 # `⋆` Exponentiate
-monadic pervasive overloadable named '⋆', (x) -> Math.exp numericValueOf x
+monadic pervasive overloadable named '⋆', (x) -> Math.exp num x
 
 # `⋆` To the power of
-dyadic pervasive overloadable named '⋆', (x, y) -> Math.pow numericValueOf(x), numericValueOf(y)
+dyadic pervasive overloadable named '⋆', (x, y) -> Math.pow num(x), num(y)
 
 # `⍟` Natural logarithm
 monadic pervasive overloadable named '⍟', (x) -> Math.log x
@@ -315,13 +315,13 @@ dyadic pervasive overloadable named '○', (i, x) ->
 
 # `!` Factorial
 monadic pervasive overloadable named '!', (a) ->
-  n = a = Math.floor numericValueOf a # todo: "Gamma" function for non-integer argument
+  n = a = Math.floor num a # todo: "Gamma" function for non-integer argument
   r = 1; (if n > 1 then for i in [2 .. n] then r *= i); r
 
 # `!` Binomial
 dyadic pervasive overloadable named '!', (a, b) ->
-  k = a = Math.floor numericValueOf a
-  n = b = Math.floor numericValueOf b
+  k = a = Math.floor num a
+  n = b = Math.floor num b
   if not (0 <= k <= n) then return 0 # todo: Special cases for negatives and non-integers
   if 2 * k > n then k = n - k # do less work
   r = 1; (if k > 0 then for i in [1 .. k] then r = r * (n - k + i) / i); r
@@ -384,8 +384,8 @@ monadic overloadable named '∈', (a) ->
 
 # `∈` Membership
 dyadic overloadable named '∈', (a, b) ->
-  a = arrayValueOf a
-  b = arrayValueOf b
+  a = array a
+  b = array b
   withShape a.shape, (for x in a then +(x in b))
 
 # `⍷` Find
@@ -431,7 +431,7 @@ dyadic overloadable named '∪'
 dyadic overloadable named '∩'
 
 # `∼` Not
-monadic pervasive overloadable named '∼', (x) -> +!booleanValueOf(x)
+monadic pervasive overloadable named '∼', (x) -> +!bool(x)
 
 # `∼` Without
 dyadic overloadable named '∼', (a, b) ->
@@ -452,8 +452,8 @@ dyadic overloadable named '∼', (a, b) ->
 
 # `∨` Or
 dyadic pervasive overloadable named '∨', (x, y) ->
-  x = Math.abs numericValueOf x
-  y = Math.abs numericValueOf y
+  x = Math.abs num x
+  y = Math.abs num y
   if x isnt Math.floor(x) or y isnt Math.floor(y)
     throw Error '∨ is defined only for integers'
   if x is 0 and y is 0 then return 0
@@ -463,8 +463,8 @@ dyadic pervasive overloadable named '∨', (x, y) ->
 
 # `∧` And (Greatest Common Divisor)
 dyadic pervasive overloadable named '∧', (x, y) ->
-  x = Math.abs numericValueOf x
-  y = Math.abs numericValueOf y
+  x = Math.abs num x
+  y = Math.abs num y
   if x isnt Math.floor(x) or y isnt Math.floor(y)
     throw Error '∨ is defined only for integers'
   if x is 0 or y is 0 then return 0
@@ -474,10 +474,10 @@ dyadic pervasive overloadable named '∧', (x, y) ->
   p / x # LCM(x, y) = x * y / GCD(x, y)
 
 # `⍱` Nor
-dyadic pervasive overloadable named '⍱', (x, y) -> +!(booleanValueOf(x) || booleanValueOf(y))
+dyadic pervasive overloadable named '⍱', (x, y) -> +!(bool(x) || bool(y))
 
 # `⍲` Nand
-dyadic pervasive overloadable named '⍲', (x, y) -> +!(booleanValueOf(x) && booleanValueOf(y))
+dyadic pervasive overloadable named '⍲', (x, y) -> +!(bool(x) && bool(y))
 
 # `⍴` Shape of
 monadic overloadable named '⍴', shapeOf
@@ -494,7 +494,7 @@ dyadic overloadable named '⍴', (a, b) ->
   withShape a, withPrototypeCopiedFrom b, (for i in [0...prod a] then b[i % b.length])
 
 # `,` Ravel
-monadic overloadable named ',', (a) -> arrayValueOf(a)[0...]
+monadic overloadable named ',', (a) -> array(a)[0...]
 
 # Helper for functions , and ⍪
 catenate = (a, b, axis=-1) ->
@@ -540,7 +540,7 @@ monadic overloadable named '⌽', reverse = (a, _, axis=-1) ->
 
 # `⌽` Rotate
 dyadic overloadable named '⌽', (a, b) ->
-  a = numericValueOf a
+  a = num a
   if a is 0 or isSimple(b) or (b.length <= 1) then return b
   sb = shapeOf b
   n = sb[sb.length - 1]
@@ -552,7 +552,7 @@ monadic overloadable named '⊖', (a, _, axis=0) -> reverse a, undefined, axis
 
 # `⊖` 1st axis rotate
 dyadic overloadable named '⊖', (a, b) ->
-  a = numericValueOf a
+  a = num a
   if a is 0 or isSimple(b) or (b.length <= 1) then return b
   sb = shapeOf b
   n = sb[0]
@@ -577,7 +577,7 @@ monadic overloadable named '⍉', (a) ->
 
 # `↑` First
 monadic overloadable named '↑', (a) ->
-  a = arrayValueOf(a)
+  a = array(a)
   if a.length then a[0] else prototypeOf a
 
 # `↑` Take
@@ -826,9 +826,9 @@ builtins['get_⍬'] = -> []
 reduce = (f, _, axis=-1) -> (a, b) ->
   invokedAsMonadic = not b?
   if invokedAsMonadic then b = a; a = 0
-  a = Math.floor numericValueOf a
+  a = Math.floor num a
   isBackwards = a < 0; if isBackwards then a = -a
-  b = arrayValueOf b
+  b = array b
   sb = shapeOf b
   if axis < 0 then axis += sb.length
   n = sb[axis]
@@ -947,8 +947,8 @@ postfixOperator named '⍀', (a, b, axis=0) ->
 
 # `¨` Each
 postfixOperator named '¨', (f) -> (a, b) ->
-  if not b? then return (for x in arrayValueOf a then f x)
-  if isSimple a then return (for x in arrayValueOf b then f a, x)
+  if not b? then return (for x in array a then f x)
+  if isSimple a then return (for x in array b then f a, x)
   if a.length is b.length then return (for i in [0...a.length] then f a[i], b[i])
   if a.length is 1 then return (for x in b then f a[0], x)
   if b.length is 1 then return (for x in a then f x, b[0])
@@ -960,8 +960,8 @@ prefixOperator named '∘.', outerProduct = (f) ->
   (a, b) ->
     console.info "(a, b) = (#{repr a}, #{repr b})"
     assert b?, 'Operator ∘. (Outer product) works only with dyadic functions'
-    a = arrayValueOf a
-    b = arrayValueOf b
+    a = array a
+    b = array b
     r = []
     for x in a
       for y in b
