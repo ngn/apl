@@ -102,6 +102,7 @@
 # # Utility functions
 
 {assert, cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
+repr = JSON.stringify
 
 arrayValueOf = (x) -> if isSimple x then [x] else x
 
@@ -955,26 +956,17 @@ postfixOperator named '¨', (f) -> (a, b) ->
 
 # `∘.` Outer product
 prefixOperator named '∘.', outerProduct = (f) ->
-  f = cpsify f
-  cps (a, b, _, callback) ->
-    if not b? then return -> callback Error 'Operator ∘. (Outer product) works only with dyadic functions'
+  assert typeof f is 'function'
+  (a, b) ->
+    console.info "(a, b) = (#{repr a}, #{repr b})"
+    assert b?, 'Operator ∘. (Outer product) works only with dyadic functions'
     a = arrayValueOf a
     b = arrayValueOf b
     r = []
-    ia = 0
-    loopA = ->
-      if ia < a.length
-        ib = 0
-        loopB = ->
-          if ib < b.length
-            -> f a[ia], b[ib], null, (err, x) ->
-              if err then return -> callback err
-              r.push x
-              ib++; loopB
-          else
-            ia++; loopA
-      else
-        -> callback null, withShape (shapeOf a).concat(shapeOf b), r
+    for x in a
+      for y in b
+        r.push f x, y
+    withShape (shapeOf a).concat(shapeOf b), r
 
 # `.` Inner product
 # todo: the general formula for higher dimensions is
@@ -989,9 +981,8 @@ infixOperator named '.', (f, g) ->
 
 # `⍣` Power operator
 postfixOperator named '⍣', cps (f, _1, _2, callback) ->
-  if typeof f isnt 'function' then return -> callback0 Error 'Left argument to ⍣ must be a function.'
-  f = cpsify f
-  -> callback null, cps (n, _1, _2, callback1) ->
+  assert typeof f is 'function', 'Left argument to ⍣ must be a function.'
+  -> (n, _1, _2, callback1) ->
     if typeof n isnt 'number' or n < 0 or n isnt Math.floor n then return -> callback Error 'Right argument to ⍣ must be a non-negative integer.'
     -> callback1 null, cps (a, _1, _2, callback2) ->
       i = 0

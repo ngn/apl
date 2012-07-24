@@ -4,50 +4,67 @@
 {inherit, die, assert} = helpers = require './helpers'
 repr = JSON.stringify
 
-predefinedNames =
-  '⍺': '_a'
-  '⍵': '_w'
-  '+': '_add'
-  '-': '_sub'
-  '×': '_mul'
-  '÷': '_div'
-  '!': '_bang'
-  '?': '_ques'
-  '⌷': '_idx'
-  '⍴': '_r'
-  '⍳': '_i'
-  ',': '_cat'
-  '⍪': '_cat1'
-  '⎕': '_q'
-  '⍞': '_qq'
-  '∈': '_e'
-  '⍷': '_eu'
-  '∼': '_tilde'
-  '↑': '_take'
-  '↓': '_drop'
-  '⍉': '_trans'
-  '⊖': '_rot1'
-  '⌽': '_rot'
-  '○': '_circ'
-  '⍬': '_zilde'
-  '⋆': '_pow'
-  '⌈': '_max'
-  '⌊': '_min'
-  '∘.': '_outer'
-  '.': '_inner'
-  '∣': '_mod'
-  '⊤': '_tee'
-  '⊥': '_bot'
-  '∪': '_cup'
-  '∩': '_cap'
-  '⊂': '_enclose'
-  '⊃': '_disclose'
-  '⍒': '_gradeUp'
-  '⍋': '_gradeDown'
-  '⍣': '_powOp'
-  '¨': '_each'
-  '\\': '_bslash'
-  '/': '_slash'
+createHash = (s) ->
+  h = {}
+  for kv in s.split '\n'
+    [k, v] = kv.split /\ +/
+    h[k] = v
+  h
+
+predefinedNames = createHash '''
+  ⍺  _a
+  ⍵  _w
+  +  _add
+  -  _sub
+  ×  _mul
+  ÷  _div
+  !  _bang
+  ?  _ques
+  ⌷  _index
+  ⍴  _r
+  ⍳  _i
+  ,  _cat
+  ⍪  _cat1
+  ⎕  _q
+  ⍞  _qq
+  ∈  _e
+  ⍷  _eu
+  ∼  _tilde
+  ↑  _take
+  ↓  _drop
+  ⍉  _trans
+  ⌽  _rot
+  ⊖  _rot1
+  ⌽  _circ
+  ○  _circ
+  ⍬  _zilde
+  ⋆  _pow
+  ⌈  _max
+  ⌊  _min
+  ∘. _outer
+  .  _inner
+  ∣  _mod
+  ⊤  _tee
+  ⊥  _bot
+  ∪  _cup
+  ∩  _cap
+  ⊂  _enclose
+  ⊃  _disclose
+  ⍒  _gradeUp
+  ⍋  _gradeDown
+  ⍣  _powOp
+  ¨  _each
+  /  _slash
+  ⌿  _slash1
+  \\ _bslash
+  ⍀  _bslash1
+  =  _eq
+  ≠  _ne
+  <  _lt
+  >  _gt
+  ≤  _le
+  ≥  _ge
+'''
 
 ord = (s) -> s.charCodeAt 0
 hex4 = (n) -> s = '0000' + n.toString 16; s[s.length - 4 ...]
@@ -64,8 +81,13 @@ builtinVarInfo =
   ',': {type: 'F'}
   '⍪': {type: 'F'}
   '⍴': {type: 'F'}
+  '⍳': {type: 'F'}
+  '=': {type: 'F'}
+  '∣': {type: 'F'}
   '/': {type: 'F', isPostfixOperator: true}
+  '⌿': {type: 'F', isPostfixOperator: true}
   '⍣': {type: 'F', isInfixOperator: true}
+  '∘.':{type: 'F', isPrefixOperator: true}
   '⍺': {type: 'X'}
   '⍵': {type: 'X'}
   '⍬': {type: 'X', isNiladicFunction: true}
@@ -136,70 +158,70 @@ resolveSeqs = (ast) ->
           assert t2.type is 'X', 'Only data can be used as an index'
           t1
         when 'seq'
-          if node.length is 1
-            {type: 'X'}
-          else
-            a = node[1...]
-            h = for child in a then visit child
+          a = node[1...]
+          a.reverse()
+          h = for child in a then visit child
+          h.reverse()
+          a.reverse()
 
-            # Apply niladic functions
-            for i in [0...a.length]
-              if h[i].isNiladicFunction
-                a[i] = ['niladic', a[i]]
+          # Apply niladic functions
+          for i in [0...a.length]
+            if h[i].isNiladicFunction
+              a[i] = ['niladic', a[i]]
 
-            # Form vectors from sequences of data
-            i = 0
-            while i < a.length - 1
-              if h[i].type is h[i + 1].type is 'X'
-                j = i + 2
-                while j < a.length and h[j].type is 'X' then j++
-                a[i...j] = [['vector'].concat a[i...j]]
-                h[i...j] = [{type: 'X'}]
-              else
-                i++
-
-            # Apply infix operators
-            i = a.length - 2
-            while --i >= 0
-              if h[i].type is h[i + 2].type is 'F' and h[i + 1].isInfixOperator and h[i + 2].type is 'F'
-                a[i...i+3] = [['infixOperator'].concat a[i...i+3]]
-                h[i...i+3] = [{type: 'F'}]
-                i--
-
-            # Apply postfix operators
-            i = 0
-            while i < a.length - 1
-              if h[i].type is 'F' and h[i + 1].isPostfixOperator
-                a[i...i+2] = [['postfixOperator'].concat a[i...i+2]]
-                h[i...i+2] = [{type: 'F'}]
-              else
-                i++
-
-            # Apply prefix operators
-            i = a.length - 1
-            while --i >= 0
-              if h[i].isPrefixOperator and h[i + 1].type is 'F'
-                a[i...i+2] = [['prefixOperator'].concat a[i...i+2]]
-                h[i...i+2] = [{type: 'F'}]
-
-            if h[h.length - 1].type is 'F'
-              assert h.length <= 1, 'Trailing function in expression'
+          # Form vectors from sequences of data
+          i = 0
+          while i < a.length - 1
+            if h[i].type is h[i + 1].type is 'X'
+              j = i + 2
+              while j < a.length and h[j].type is 'X' then j++
+              a[i...j] = [['vector'].concat a[i...j]]
+              h[i...j] = [{type: 'X'}]
             else
-              # Apply monadic and dyadic functions
-              while h.length > 1
-                if h.length is 2 or h[h.length - 3].type is 'F'
-                  a[h.length - 2...] = [['monadic'].concat a[h.length - 2...]]
-                  h[h.length - 2...] = [{type: 'X'}]
-                else
-                  a[h.length - 3...] = [['dyadic'].concat a[h.length - 3...]]
-                  h[h.length - 3...] = [{type: 'X'}]
+              i++
 
-            # Replace `"seq"` node with `a[0]` in the AST
-            node[0...] = a[0]
-            a[0][0] = 'IDIOT'
-            a[0].parent = null
+          # Apply infix operators
+          i = a.length - 2
+          while --i >= 0
+            if h[i].type is h[i + 2].type is 'F' and h[i + 1].isInfixOperator and h[i + 2].type is 'F'
+              a[i...i+3] = [['infixOperator'].concat a[i...i+3]]
+              h[i...i+3] = [{type: 'F'}]
+              i--
 
-            h[0]
+          # Apply postfix operators
+          i = 0
+          while i < a.length - 1
+            if h[i].type is 'F' and h[i + 1].isPostfixOperator
+              a[i...i+2] = [['postfixOperator'].concat a[i...i+2]]
+              h[i...i+2] = [{type: 'F'}]
+            else
+              i++
+
+          # Apply prefix operators
+          i = a.length - 1
+          while --i >= 0
+            if h[i].isPrefixOperator and h[i + 1].type is 'F'
+              a[i...i+2] = [['prefixOperator'].concat a[i...i+2]]
+              h[i...i+2] = [{type: 'F'}]
+
+          if h[h.length - 1].type is 'F'
+            assert h.length <= 1, 'Trailing function in expression'
+          else
+            # Apply monadic and dyadic functions
+            while h.length > 1
+              if h.length is 2 or h[h.length - 3].type is 'F'
+                a[h.length - 2...] = [['monadic'].concat a[h.length - 2...]]
+                h[h.length - 2...] = [{type: 'X'}]
+              else
+                a[h.length - 3...] = [['dyadic'].concat a[h.length - 3...]]
+                h[h.length - 3...] = [{type: 'X'}]
+
+          # Replace `"seq"` node with `a[0]` in the AST
+          node[0...] = a[0]
+          a[0][0] = 'IDIOT'
+          a[0].parent = null
+
+          h[0]
 
         else
           die "Unrecognised node type, '#{node[0]}'"
@@ -258,11 +280,11 @@ toJavaScript = (ast) ->
       when 'niladic'
         "#{visit node[1]}()"
       when 'monadic'
-        "#{visit node[1]}(undefined, #{visit node[2]})"
+        "#{visit node[1]}(#{visit node[2]})"
       when 'dyadic'
         "#{visit node[2]}(#{visit node[1]}, #{visit node[3]})"
       when 'prefixOperator'
-        "#{visit node[1]}(undefined, #{visit node[2]})"
+        "#{visit node[1]}(#{visit node[2]})"
       when 'infixOperator'
         "#{visit node[2]}(#{visit node[1]}, #{visit node[3]})"
       when 'postfixOperator'
@@ -297,14 +319,11 @@ printAST = (x, indent = '') ->
   return
 
 
-console.info 'hello'
-
 do ->
-  console.info 'hallo'
   s = '''
-    f ← {(⍵,(⍴⍵)⍴0)⍪⍵,⍵}
-    S ← {' #'[(f⍣⍵) 1 1 ⍴ 1]}
-    ⎕ ← f f 1 1 ⍴ 1
+    #!/usr/bin/env apl
+    ⍝ Sieve of Eratosthenes
+    ⎕ ← (2=+⌿0=A∘.∣A)/A←⍳200
   '''
   js = compile s, debug: true
   (new Function js) builtins
