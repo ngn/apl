@@ -101,21 +101,21 @@
 
 # # Utility functions
 
-{assert, cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
+{assert, die, cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
 repr = JSON.stringify
 
 array = (x) -> if isSimple x then [x] else x
 
 num = (x) ->
   if x.length?
-    if x.length isnt 1 then throw Error 'Numeric scalar or singleton expected'
+    assert x.length is 1, 'Numeric scalar or singleton expected'
     x = x[0]
-  if typeof x isnt 'number' then throw Error 'Numeric scalar or singleton expected'
+  assert typeof x is 'number', 'Numeric scalar or singleton expected'
   x
 
 bool = (x) ->
   x = num x
-  if x isnt 0 and x isnt 1 then throw Error 'Boolean values must be either 0 or 1'
+  assert x in [0, 1], 'Boolean values must be either 0 or 1'
   x
 
 named = (name, f) ->
@@ -137,7 +137,7 @@ pervasive = (f) -> named f.aplName, (a, b) ->
     else
       sa = shapeOf a; sb = shapeOf b
       for i in [0 ... Math.min sa.length, sb.length]
-        if sa[i] isnt sb[i] then throw Error 'Length error'
+        assert sa[i] is sb[i], 'Length error'
       if sa.length > sb.length
         k = prod sa[sb.length...]
         withShape sa, (for i in [0...a.length] then F a[i], b[Math.floor i / k])
@@ -257,8 +257,7 @@ monadic overloadable named '⍳', (a) -> [0 ... Math.floor num a]
 # `⍳` Index of
 dyadic overloadable named '⍳', (a, b) ->
   if isSimple a then a = [a]
-  else if shapeOf(a).length > 1
-    throw Error 'Left argument to ⍳ must be of rank no more than 1.'
+  else assert shapeOf(a).length <= 1, 'Left argument to ⍳ must be of rank no more than 1.'
   if isSimple b then b = [b]
   for y in b
     pos = a.length
@@ -273,7 +272,7 @@ monadic pervasive overloadable named '?', (x) -> Math.floor Math.random() * Math
 dyadic overloadable named '?', (x, y) ->
   x = Math.max 0, Math.floor num x
   y = Math.max 0, Math.floor num y
-  if x > y then throw Error 'Domain error: left argument of ? must not be greater than its right argument.'
+  assert x <= y, 'Domain error: left argument of ? must not be greater than its right argument.'
   available = [0...y]
   for [0...x] then available.splice(Math.floor(available.length * Math.random()), 1)[0]
 
@@ -311,7 +310,7 @@ dyadic pervasive overloadable named '○', (i, x) ->
     when -5 then Math.log(x + Math.sqrt(x * x + 1)) # arcsinh
     when -6 then Math.log(x + Math.sqrt(x * x - 1)) # arccosh
     when -7 then Math.log((1 + x) / (1 - x)) / 2 # arctanh
-    else throw Error 'Unknown circular or hyperbolic function ' + i
+    else die 'Unknown circular or hyperbolic function ' + i
 
 # `!` Factorial
 monadic pervasive overloadable named '!', (a) ->
@@ -436,8 +435,7 @@ monadic pervasive overloadable named '∼', (x) -> +!bool(x)
 # `∼` Without
 dyadic overloadable named '∼', (a, b) ->
   if isSimple a then a = [a]
-  else if shapeOf(a).length > 1
-    throw Error 'Left argument to ∼ must be of rank no more than 1.'
+  else assert shapeOf(a).length <= 1, 'Left argument to ∼ must be of rank no more than 1.'
   if isSimple b then b = [b]
   r = []
   for x in a
@@ -454,8 +452,7 @@ dyadic overloadable named '∼', (a, b) ->
 dyadic pervasive overloadable named '∨', (x, y) ->
   x = Math.abs num x
   y = Math.abs num y
-  if x isnt Math.floor(x) or y isnt Math.floor(y)
-    throw Error '∨ is defined only for integers'
+  assert x is Math.floor(x) and y is Math.floor(y), '∨ is defined only for integers'
   if x is 0 and y is 0 then return 0
   if x < y then [x, y] = [y, x]
   while y then [x, y] = [y, x % y] # Euclid's algorithm
@@ -465,8 +462,7 @@ dyadic pervasive overloadable named '∨', (x, y) ->
 dyadic pervasive overloadable named '∧', (x, y) ->
   x = Math.abs num x
   y = Math.abs num y
-  if x isnt Math.floor(x) or y isnt Math.floor(y)
-    throw Error '∨ is defined only for integers'
+  assert x is Math.floor(x) and y is Math.floor(y), '∧ is defined only for integers'
   if x is 0 or y is 0 then return 0
   p = x * y
   if x < y then [x, y] = [y, x]
@@ -488,8 +484,7 @@ dyadic overloadable named '⍴', (a, b) ->
   if isSimple b then b = [b]
   a =
     for x in a
-      if not typeof x is 'number'
-        throw Error 'Domain error: Left argument to ⍴ must be a numeric scalar or vector.'
+      assert typeof x is 'number', 'Domain error: Left argument to ⍴ must be a numeric scalar or vector.'
       Math.max 0, Math.floor x
   withShape a, withPrototypeCopiedFrom b, (for i in [0...prod a] then b[i % b.length])
 
@@ -500,10 +495,10 @@ monadic overloadable named ',', (a) -> array(a)[0...]
 catenate = (a, b, axis=-1) ->
   sa = shapeOf a; if sa.length is 0 then sa = [1]; a = [a]
   sb = shapeOf b; if sb.length is 0 then sb = [1]; b = [b]
-  if sa.length isnt sb.length then throw Error 'Length error: Cannot catenate arrays of different ranks'
+  assert sa.length is sb.length, 'Length error: Cannot catenate arrays of different ranks'
   if axis < 0 then axis += sa.length
   for i in [0...sa.length] when sa[i] isnt sb[i] and i isnt axis
-    throw Error 'Length error: Catenated arrays must match at all axes exept the one to catenate on'
+    die 'Length error: Catenated arrays must match at all axes exept the one to catenate on'
   ni = prod sa[...axis]       # number of items across all dimensions before `axis'
   nja = sa[axis]              # number of items across `axis' in `a'
   njb = sb[axis]              # number of items across `axis' in `b'
@@ -527,7 +522,7 @@ monadic overloadable named '⌽', reverse = (a, _, axis=-1) ->
   sa = shapeOf a
   if sa.length is 0 then return a
   if axis < 0 then axis += sa.length
-  if not (0 <= axis < sa.length) then throw Error 'Axis out of bounds'
+  assert 0 <= axis < sa.length, 'Axis out of bounds'
   ni = prod sa[...axis]
   nj = sa[axis]
   nk = prod sa[axis + 1 ...]
@@ -584,12 +579,10 @@ monadic overloadable named '↑', (a) ->
 dyadic overloadable named '↑', (a, b) ->
   if isSimple a then a = [a]
   for x in a
-    if not typeof x is 'number'
-      throw Error 'Domain error: Left argument to ↑ must be a numeric scalar or vector.'
+    assert typeof x is 'number', 'Domain error: Left argument to ↑ must be a numeric scalar or vector.'
   if isSimple(b) and a.length is 1 then b = [b]
   sb = shapeOf b
-  if a.length isnt sb.length
-    throw Error 'Length error: Left argument to ↑ must have as many elements as is the rank of its right argument.'
+  assert a.length is sb.length, 'Length error: Left argument to ↑ must have as many elements as is the rank of its right argument.'
   r = []
   pa = for [0...a.length] then 0
   pa[a.length - 1] = 1
@@ -616,11 +609,11 @@ dyadic overloadable named '↑', (a, b) ->
 dyadic overloadable named '↓', (a, b) ->
   if isSimple a then a = [a]
   for x in a when typeof x isnt 'number' or x isnt Math.floor x
-    throw Error 'Left argument to ↓ must be an integer or a vector of integers.'
+    die 'Left argument to ↓ must be an integer or a vector of integers.'
   if isSimple b then b = withShape (for [0...a.length] then 1), b
   sb = shapeOf b
   if a.length > sb.length
-    throw Error 'The left argument to ↓ must have length less than or equal to the rank of its right argument.'
+    die 'The left argument to ↓ must have length less than or equal to the rank of its right argument.'
   for [a.length...sb.length] then a.push 0
   lims =
     for i in [0...a.length]
@@ -657,7 +650,7 @@ monadic overloadable named '⊃', (a) ->
   for x in a[1...]
     sx = shapeOf x
     if sx.length isnt sr1.length
-      throw Error 'The argument of ⊃ must contain elements of the same rank.' # todo: or scalars
+      die 'The argument of ⊃ must contain elements of the same rank.' # todo: or scalars
     for i in [0...sr1.length]
       sr1[i] = Math.max sr1[i], sx[i]
   sr = shapeOf(a).concat sr1
@@ -687,19 +680,17 @@ dyadic overloadable named '⊃'
 # `(a0 a1 ...)⌷b` is equivalent to `b[a0;a1;...]`
 dyadic overloadable named '⌷', (a, b) ->
   if isSimple a then a = [a]
-  if a.shape and a.shape.length > 1
-    throw Error 'Indices must be a scalar or a vector, not a higher-dimensional array.'
+  assert (not a.shape) or a.shape.length <= 1, 'Indices must be a scalar or a vector, not a higher-dimensional array.'
   sb = shapeOf b
-  if a.length isnt sb.length
-    throw Error 'The number of indices must be equal to the rank of the indexable.'
+  assert a.length is sb.length, 'The number of indices must be equal to the rank of the indexable.'
   a = for x, i in a
         if isSimple x then withShape [], [x]
         else if not x.length then [0...sb[i]]
         else x
   for x, d in a then for y in x when not (typeof y is 'number' and y is Math.floor(y))
-    throw Error 'Indices must be integers'
+    die 'Indices must be integers'
   for x, d in a then for y in x when not (0 <= y < sb[d])
-    throw Error 'Index out of bounds'
+    die 'Index out of bounds'
   sr = []; for x in a then sr = sr.concat shapeOf x
   r = []
   rec = (d, i, n) ->
@@ -714,7 +705,7 @@ grade = (a, b, direction) ->
   if not b? then b = a; a = []
   sa = shapeOf a
   sb = shapeOf b
-  if sa.length is 0 then throw Error 'Left argument to ⍋ or ⍒ must be non-scalar.'
+  assert sa.length, 'Left argument to ⍋ or ⍒ must be non-scalar.'
   if sb.length is 0 then return b
   n = sa[sa.length - 1] # length along last axis
   h = {} # maps a character to its index in the collation
@@ -770,8 +761,7 @@ monadic overloadable named '⊥', (a, b) ->
   sb = shapeOf b
   lastDimA = if sa.length then sa[sa.length - 1] else 1
   firstDimB = if sb.length then sb[0] else 1
-  if lastDimA isnt 1 and firstDimB isnt 1 and lastDimA isnt firstDimB
-    throw Error 'Incompatible shapes for ⊥ ("Decode")'
+  assert lastDimA is 1 or firstDimB is 1 or lastDimA is firstDimB, 'Incompatible shapes for ⊥ ("Decode")'
   if isSimple a then a = [a]
   if isSimple b then b = [b]
   r = []
@@ -853,15 +843,15 @@ reduce = (f, _, axis=-1) -> (a, b) ->
 compressOrReplicate = (a, b, axis=-1) ->
   sb = shapeOf b
   if axis < 0 then axis += sb.length
-  if not (0 <= axis < sb.length) then throw Error 'Axis out of bounds'
+  assert 0 <= axis < sb.length, 'Axis out of bounds'
   sr = sb[0...]
   sr[axis] = 0
-  if shapeOf(a).length > 1 then throw Error 'Left argument to / must be an integer or a vector of integers'
+  assert shapeOf(a).length <= 1, 'Left argument to / must be an integer or a vector of integers'
   if not a.length then a = for [0...sb[axis]] then a
 
   nNonNegative = 0 # number of non-negative elements in a
   for x in a
-    if typeof x isnt 'number' or x isnt Math.floor x then throw Error 'Left argument to / must be an integer or a vector of integers'
+    assert typeof x is 'number' and x is Math.floor x, 'Left argument to / must be an integer or a vector of integers'
     sr[axis] += Math.abs x
     nNonNegative += (x >= 0)
 
@@ -870,11 +860,12 @@ compressOrReplicate = (a, b, axis=-1) ->
     isExtensive = false
     isExpansive = a.length is sb[axis]
     isHyperexpansive = not isExpansive
-    if isHyperexpansive and (nNonNegative isnt sb[axis])
-      throw Error 'For A/B, the length of B along the selected axis ' +
-                  'must be equal either to one, ' +                 # extension
-                  'or the length of A, ' +                          # expansion
-                  'or to the number of non-negative elements in A.' # hyperexpansion
+    assert((not isHyperexpansive) or nNonNegative is sb[axis],
+      'For A/B, the length of B along the selected axis ' +
+      'must be equal either to one, ' +                 # extension
+      'or the length of A, ' +                          # expansion
+      'or to the number of non-negative elements in A.' # hyperexpansion
+    )
   r = []
   ni = prod sb[... axis]
   nj = sb[axis]
@@ -911,7 +902,7 @@ postfixOperator named '⌿', (a, b, axis=0) ->
 
 # Helper for `\` and `⍀` in their operator sense
 scan = (f, _, axis=-1) -> (a, b) ->
-  if b? then throw Error 'Scan can only be applied monadically.'
+  assert not b?, 'Scan can only be applied monadically.'
   sa = shapeOf a
   if sa.length is 0 then return a
   if axis < 0 then axis += sa.length
@@ -952,7 +943,7 @@ postfixOperator named '¨', (f) -> (a, b) ->
   if a.length is b.length then return (for i in [0...a.length] then f a[i], b[i])
   if a.length is 1 then return (for x in b then f a[0], x)
   if b.length is 1 then return (for x in a then f x, b[0])
-  throw Error 'Length error'
+  die 'Length error'
 
 # `∘.` Outer product
 prefixOperator named '∘.', outerProduct = (f) ->
@@ -975,8 +966,7 @@ infixOperator named '.', (f, g) ->
   F = reduce f
   G = outerProduct g
   (a, b) ->
-    if shapeOf(a).length > 1 or shapeOf(b).length > 1
-      throw Error 'Inner product operator (.) is implemented only for arrays of rank no more than 1.'
+    assert shapeOf(a).length <= 1 and shapeOf(b).length <= 1, 'Inner product operator (.) is implemented only for arrays of rank no more than 1.'
     F g a, b
 
 # `⍣` Power operator
