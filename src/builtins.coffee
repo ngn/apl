@@ -99,13 +99,16 @@
 # `0` as an implicit default.
 
 
-# # Utility functions
 
 {assert, die, cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
 {min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin, cos, tan, asin, acos, atan} = Math
 repr = JSON.stringify
 
-array = (x) -> if isSimple x then [x] else x
+
+# # Type coersion helpers
+
+array = (x) ->
+  if isSimple x then [x] else x
 
 num = (x) ->
   if x.length?
@@ -126,6 +129,11 @@ named = (name, f) ->
   assert not f.aplName?
   f.aplName = name
   f
+
+
+
+
+# # DSL for defining functions and operators
 
 # `pervasive(f)` is a decorator which takes a scalar function `f` and makes it
 # propagate through arrays.
@@ -172,10 +180,6 @@ overloadable = (f) ->
     else if y? and typeof y[f.aplName] is 'function' then y[f.aplName](x, args...)
     else f x, y, args...
 
-
-
-# # DSL for defining functions and operators
-#
 # `builtins` will be the prototype of all execution contexts, used by
 # [interpreter.coffee](interpreter.html).
 exports.builtins = builtins = {}
@@ -211,52 +215,52 @@ infixOperator   = (f) -> f.isInfixOperator   = true; builtins[f.aplName] = f
 # # Built-in functions
 
 # `+` Conjugate
-monadic overloadable named '+', (a) -> a
+monadic pervasive overloadable named '+', (x) -> x
 
 # `+` Add
-dyadic pervasive overloadable named '+', (x, y) -> x + y
+dyadic pervasive overloadable named '+', (y, x) -> x + y
 
 # `−` Negate
 monadic pervasive overloadable named '−', (x) -> -x
 
 # `−` Subtract
-dyadic pervasive overloadable named '−', (x, y) -> x - y
+dyadic pervasive overloadable named '−', (y, x) -> x - y
 
 # `×` Sign of
 monadic pervasive overloadable named '×', (x) -> if x < 0 then -1 else if x > 0 then 1 else 0
 
 # `×` Multiply
-dyadic pervasive overloadable named '×', (x, y) -> x * y
+dyadic pervasive overloadable named '×', (y, x) -> x * y
 
 # `÷` Reciprocal
 monadic pervasive overloadable named '÷', (x) -> 1 / x
 
 # `÷` Divide
-dyadic pervasive overloadable named '÷', (x, y) -> x / y
+dyadic pervasive overloadable named '÷', (y, x) -> x / y
 
 # `⌈` Ceiling
 monadic pervasive overloadable named '⌈', (x) -> ceil x
 
 # `⌈` Greater of
-dyadic pervasive overloadable named '⌈', (x, y) -> max x, y
+dyadic pervasive overloadable named '⌈', (y, x) -> max x, y
 
 # `⌊` Floor
 monadic pervasive overloadable named '⌊', (x) -> floor x
 
 # `⌊` Lesser of
-dyadic pervasive overloadable named '⌊', (x, y) -> min x, y
+dyadic pervasive overloadable named '⌊', (y, x) -> min x, y
 
 # `∣` Absolute value
 monadic pervasive overloadable named '∣', (x) -> abs x
 
 # `∣` Residue
-dyadic pervasive overloadable named '∣', (x, y) -> y % x
+dyadic pervasive overloadable named '∣', (y, x) -> y % x
 
 # `⍳` Index generate
-monadic overloadable named '⍳', (a) -> [0 ... floor num a]
+monadic overloadable named '⍳', (x) -> [0 ... floor num x]
 
 # `⍳` Index of
-dyadic overloadable named '⍳', (a, b) ->
+dyadic overloadable named '⍳', (b, a) ->
   if isSimple a then a = [a]
   else assert shapeOf(a).length <= 1, 'Left argument to ⍳ must be of rank no more than 1.'
   if isSimple b then b = [b]
@@ -270,7 +274,7 @@ monadic pervasive overloadable named '?', (x) -> floor random() * max 0, floor n
 
 
 # `?` Deal
-dyadic overloadable named '?', (x, y) ->
+dyadic overloadable named '?', (y, x) ->
   x = max 0, floor num x
   y = max 0, floor num y
   assert x <= y, 'Domain error: left argument of ? must not be greater than its right argument.'
@@ -282,19 +286,19 @@ dyadic overloadable named '?', (x, y) ->
 monadic pervasive overloadable named '⋆', (x) -> exp num x
 
 # `⋆` To the power of
-dyadic pervasive overloadable named '⋆', (x, y) -> pow num(x), num(y)
+dyadic pervasive overloadable named '⋆', (y, x) -> pow num(x), num(y)
 
 # `⍟` Natural logarithm
 monadic pervasive overloadable named '⍟', (x) -> log x
 
 # `⍟` Logarithm to the base
-dyadic pervasive overloadable named '⍟', (x, y) -> log(y) / log(x)
+dyadic pervasive overloadable named '⍟', (y, x) -> log(y) / log(x)
 
 # `○` Pi times
 monadic pervasive overloadable named '○', (x) -> PI * x
 
 # `○` Circular and hyperbolic functions
-dyadic pervasive overloadable named '○', (i, x) ->
+dyadic pervasive overloadable named '○', (x, i) ->
   switch i
     when 0 then sqrt(1 - x * x)
     when 1 then sin x
@@ -319,7 +323,7 @@ monadic pervasive overloadable named '!', (a) ->
   r = 1; (if n > 1 then for i in [2 .. n] then r *= i); r
 
 # `!` Binomial
-dyadic pervasive overloadable named '!', (a, b) ->
+dyadic pervasive overloadable named '!', (b, a) ->
   k = a = floor num a
   n = b = floor num b
   if not (0 <= k <= n) then return 0 # todo: Special cases for negatives and non-integers
@@ -328,28 +332,28 @@ dyadic pervasive overloadable named '!', (a, b) ->
 
 
 # `⌹` Matrix inverse
-monadic overloadable named '⌹'
+monadic overloadable named '⌹' # todo
 
 # `⌹` Matrix divide
-dyadic overloadable named '⌹'
+dyadic overloadable named '⌹' # todo
 
 # `<` Less than
-dyadic pervasive overloadable named '<', (x, y) -> +(x <    y)
+dyadic pervasive overloadable named '<', (y, x) -> +(x <    y)
 
 # `≤` Less than or equal
-dyadic pervasive overloadable named '≤', (x, y) -> +(x <=   y)
+dyadic pervasive overloadable named '≤', (y, x) -> +(x <=   y)
 
 # `=` Equal
-dyadic pervasive overloadable named '=', (x, y) -> +(x is   y)
+dyadic pervasive overloadable named '=', (y, x) -> +(x is   y)
 
 # `>` Greater than
-dyadic pervasive overloadable named '≥', (x, y) -> +(x >=   y)
+dyadic pervasive overloadable named '≥', (y, x) -> +(x >=   y)
 
 # `≥` Greater than or equal
-dyadic pervasive overloadable named '>', (x, y) -> +(x >    y)
+dyadic pervasive overloadable named '>', (y, x) -> +(x >    y)
 
 # `≠` Not equal
-dyadic pervasive overloadable named '≠', (x, y) -> +(x isnt y)
+dyadic pervasive overloadable named '≠', (y, x) -> +(x isnt y)
 
 # `≡` Depth
 monadic overloadable named '≡', depthOf = (a) ->
@@ -357,7 +361,7 @@ monadic overloadable named '≡', depthOf = (a) ->
   r = 0; (for x in a then r = max r, depthOf x); r + 1
 
 # `≡` Match
-dyadic overloadable named '≡', match = (a, b) ->
+dyadic overloadable named '≡', match = (b, a) ->
   if isSimple(a) and isSimple(b) then return +(a is b)
   if isSimple(a) isnt isSimple(b) then return 0
   # Compare by shape
@@ -374,7 +378,7 @@ dyadic overloadable named '≡', match = (a, b) ->
   match prototypeOf(a), prototypeOf(b)
 
 # `≢` Not match
-dyadic overloadable named '≢', (a, b) -> +not match a, b
+dyadic overloadable named '≢', (b, a) -> +not match b, a
 
 # `∈` Enlist
 monadic overloadable named '∈', (a) ->
@@ -383,16 +387,16 @@ monadic overloadable named '∈', (a) ->
   rec a
 
 # `∈` Membership
-dyadic overloadable named '∈', (a, b) ->
+dyadic overloadable named '∈', (b, a) ->
   a = array a
   b = array b
   withShape a.shape, (for x in a then +(x in b))
 
 # `⍷` Find
-dyadic overloadable named '⍷', (a, b) ->
+dyadic overloadable named '⍷', (b, a) ->
   sa = shapeOf a
   sb = shapeOf b
-  if isSimple b then return isSimple(a) and match a, b
+  if isSimple b then return isSimple(a) and match b, a
   if isSimple a then a = [a]
   r = withShape sb, (for [0...b.length] then 0)
   if sa.length > sb.length then return r
@@ -422,19 +426,19 @@ dyadic overloadable named '⍷', (a, b) ->
   r
 
 # `∪` Unique
-monadic overloadable named '∪'
+monadic overloadable named '∪' # todo
 
 # `∪` Union
-dyadic overloadable named '∪'
+dyadic overloadable named '∪' # todo
 
 # `∩` Intersection
-dyadic overloadable named '∩'
+dyadic overloadable named '∩' # todo
 
 # `∼` Not
 monadic pervasive overloadable named '∼', (x) -> +!bool(x)
 
 # `∼` Without
-dyadic overloadable named '∼', (a, b) ->
+dyadic overloadable named '∼', (b, a) ->
   if isSimple a then a = [a]
   else assert shapeOf(a).length <= 1, 'Left argument to ∼ must be of rank no more than 1.'
   if isSimple b then b = [b]
@@ -450,7 +454,7 @@ dyadic overloadable named '∼', (a, b) ->
   r
 
 # `∨` Or
-dyadic pervasive overloadable named '∨', (x, y) ->
+dyadic pervasive overloadable named '∨', (y, x) ->
   x = abs num x
   y = abs num y
   assert x is floor(x) and y is floor(y), '∨ is defined only for integers'
@@ -460,7 +464,7 @@ dyadic pervasive overloadable named '∨', (x, y) ->
   x
 
 # `∧` And (Greatest Common Divisor)
-dyadic pervasive overloadable named '∧', (x, y) ->
+dyadic pervasive overloadable named '∧', (y, x) ->
   x = abs num x
   y = abs num y
   assert x is floor(x) and y is floor(y), '∧ is defined only for integers'
@@ -471,16 +475,16 @@ dyadic pervasive overloadable named '∧', (x, y) ->
   p / x # LCM(x, y) = x * y / GCD(x, y)
 
 # `⍱` Nor
-dyadic pervasive overloadable named '⍱', (x, y) -> +!(bool(x) || bool(y))
+dyadic pervasive overloadable named '⍱', (y, x) -> +!(bool(x) || bool(y))
 
 # `⍲` Nand
-dyadic pervasive overloadable named '⍲', (x, y) -> +!(bool(x) && bool(y))
+dyadic pervasive overloadable named '⍲', (y, x) -> +!(bool(x) && bool(y))
 
 # `⍴` Shape of
 monadic overloadable named '⍴', shapeOf
 
 # `⍴` Reshape
-dyadic overloadable named '⍴', (a, b) ->
+dyadic overloadable named '⍴', (b, a) ->
   if isSimple a then a = [a]
   if isSimple b then b = [b]
   a =
@@ -493,7 +497,7 @@ dyadic overloadable named '⍴', (a, b) ->
 monadic overloadable named ',', (a) -> array(a)[0...]
 
 # Helper for functions , and ⍪
-catenate = (a, b, axis=-1) ->
+catenate = (b, a, axis=-1) ->
   sa = shapeOf a; if sa.length is 0 then sa = [1]; a = [a]
   sb = shapeOf b; if sb.length is 0 then sb = [1]; b = [b]
   assert sa.length is sb.length, 'Length error: Cannot catenate arrays of different ranks'
@@ -516,7 +520,7 @@ catenate = (a, b, axis=-1) ->
 dyadic overloadable named ',', catenate
 
 # `⍪` 1st axis catenate
-dyadic overloadable named '⍪', (a, b) -> catenate a, b, 0
+dyadic overloadable named '⍪', (b, a) -> catenate b, a, 0
 
 # `⌽` Reverse
 monadic overloadable named '⌽', reverse = (a, _, axis=-1) ->
