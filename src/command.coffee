@@ -189,5 +189,6 @@ exports.main = ->
   input.on 'end', ->
     exec code, extraContext: {
       '⍵': for a in argv._ then a.split ''
-      'set_⎕': (x) -> console.info x
+      'set_⎕': (x) -> process.stdout.write format x
     }
+    process.exit 0
