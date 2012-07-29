@@ -94,8 +94,12 @@ builtinVarInfo =
   '⎕': {type: 'X', isNiladicFunction: true}
   'set_⎕': {type: 'F'}
 
+exports.exec = (source, opts) ->
+  h = inherit builtins
+  if opts.extraContext then for k, v of opts.extraContext then h[k] = v
+  (new Function compile source, opts) h
+
 compile = (source, opts = {}) ->
-  console.info 'DEBUG: ' + opts.debug
   if opts.debug then console.info '-----APL SOURCE-----\n' + source
   ast = parse source
   if opts.debug then (console.info '-----RAW AST-----\n'; printAST ast)
@@ -282,11 +286,11 @@ toJavaScript = (ast) ->
       when 'monadic'
         "#{visit node[1]}(#{visit node[2]})"
       when 'dyadic'
-        "#{visit node[2]}(#{visit node[1]}, #{visit node[3]})"
+        "#{visit node[2]}(#{visit node[3]}, #{visit node[1]})"
       when 'prefixOperator'
         "#{visit node[1]}(#{visit node[2]})"
       when 'infixOperator'
-        "#{visit node[2]}(#{visit node[1]}, #{visit node[3]})"
+        "#{visit node[2]}(#{visit node[3]}, #{visit node[1]})"
       when 'postfixOperator'
         "#{visit node[2]}(#{visit node[1]})"
       else
@@ -317,13 +321,3 @@ printAST = (x, indent = '') ->
   else
     console.info indent + JSON.stringify x
   return
-
-
-do ->
-  s = '''
-    #!/usr/bin/env apl
-    ⍝ Sieve of Eratosthenes
-    ⎕ ← (2=+⌿0=A∘.∣A)/A←⍳200
-  '''
-  js = compile s, debug: true
-  (new Function js) builtins

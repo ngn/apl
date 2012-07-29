@@ -105,6 +105,7 @@
 repr = JSON.stringify
 
 
+
 # # Type coersion helpers
 
 array = (x) ->
@@ -122,27 +123,48 @@ bool = (x) ->
   assert x in [0, 1], 'Boolean values must be either 0 or 1'
   x
 
-named = (name, f) ->
-  f ?= -> "Function #{name} is not implemented."
+
+# # DSL for defining built-in symbols
+
+exports.builtins = builtins = {}
+
+tmp = monadic: {}, dyadic: {}, prefixOperator: {}, postfixOperator: {}, infixOperator: {}
+
+def = (h, name, description, f) ->
   assert typeof name is 'string'
+  assert typeof description is 'string'
+  f ?= -> die "Function #{name} #{description} is not implemented."
   assert typeof f is 'function'
-  assert not f.aplName?
-  f.aplName = name
-  f
+  assert not h[name]?, "Redefinition of function #{name} #{description}"
+  h[name] = f
 
+monadic         = (a...) -> def tmp.monadic, a...
+dyadic          = (a...) -> def tmp.dyadic,  a...
+prefixOperator  = (a...) -> def tmp.monadic, a...
+postfixOperator = (a...) -> def tmp.monadic, a...
+infixOperator   = (a...) -> def tmp.dyadic,  a...
 
+ambivalent = (symbol, f1, f2) -> (b, a, args...) ->
+  (
+    if typeof b?[symbol] is 'function' then b[symbol]
+    else if typeof a?[symbol] is 'function' then a[symbol]
+    else if a? then f2
+    else f1
+  ) b, a, args...
 
-
-# # DSL for defining functions and operators
+endOfBuiltins = ->
+  for k, f of tmp.monadic when not tmp.dyadic[k] then builtins[k] = f
+  for k, f of tmp.dyadic when not tmp.monadic[k] then builtins[k] = f
+  for k, f of tmp.monadic when tmp.dyadic[k] then builtins[k] = ambivalent k, f, tmp.dyadic[k]
+  tmp = null
 
 # `pervasive(f)` is a decorator which takes a scalar function `f` and makes it
 # propagate through arrays.
-pervasive = (f) -> named f.aplName, (a, b) ->
-  F = arguments.callee
-  if b? # dyadic pervasiveness
-    if isSimple(a) and isSimple(b) then f a, b
-    else if isSimple a then withShape b.shape, (for x in b then F a, x)
-    else if isSimple b then withShape a.shape, (for x in a then F x, b)
+pervasive = (f) -> F = (b, a) ->
+  if a? # dyadic pervasiveness
+    if isSimple(b) and isSimple(a) then f b, a
+    else if isSimple a then withShape b.shape, (for x in b then F x, a)
+    else if isSimple b then withShape a.shape, (for x in a then F b, x)
     else
       sa = shapeOf a; sb = shapeOf b
       for i in [0 ... min sa.length, sb.length]
@@ -156,111 +178,31 @@ pervasive = (f) -> named f.aplName, (a, b) ->
       else
         withShape sa, (for i in [0...a.length] then F a[i], b[i])
   else # monadic pervasiveness
-    if isSimple a then f a
-    else withShape a.shape, (for x in a then F x)
-
-# `overloadable(f)` decorates a named function `f` so that its arguments can
-# overload its behaviour by providing a method of the same name as the
-# function.  For instance, if `f` is the usual _addition_ (named `'+'`),
-# then:
-#
-#     var x = {
-#         '+': function (y) {
-#             console.info("hello");
-#             return y + 1234;
-#         }
-#     };
-#     return overloadable(f)(x, 1);
-#
-# will print "hello" and return 1235.
-overloadable = (f) ->
-  named f.aplName, (x, y, args...) ->
-    assert f.aplName
-    if typeof x[f.aplName] is 'function' then x[f.aplName](y, args...)
-    else if y? and typeof y[f.aplName] is 'function' then y[f.aplName](x, args...)
-    else f x, y, args...
-
-# `builtins` will be the prototype of all execution contexts, used by
-# [interpreter.coffee](interpreter.html).
-exports.builtins = builtins = {}
-
-ambivalent = (f1, f2) -> # combine a monadic and a dyadic function into one
-  assert(f1.aplName and (f1.aplName is f2.aplName))
-  f = (args...) ->
-    if args[0]?
-      f2 args...
-    else
-      f1 ([args[1], args[0]].concat args[2...])...
-  f.aplName = f1.aplName
-  f
-
-monadic = (f) ->
-  assert typeof f is 'function'
-  assert typeof f.aplName is 'string'
-  if (g = builtins[f.aplName]) then f = ambivalent f, g else f = f
-  builtins[f.aplName] = f
-
-dyadic = (f) ->
-  assert typeof f is 'function'
-  assert typeof f.aplName is 'string'
-  if (g = builtins[f.aplName]) then f = ambivalent g, f else f = f
-  builtins[f.aplName] = f
-
-prefixOperator  = (f) -> f.isPrefixOperator  = true; builtins[f.aplName] = f
-postfixOperator = (f) -> f.isPostfixOperator = true; builtins[f.aplName] = f
-infixOperator   = (f) -> f.isInfixOperator   = true; builtins[f.aplName] = f
+    if isSimple b then f b
+    else withShape b.shape, (for x in b then F x)
 
 
 
 # # Built-in functions
 
-# `+` Conjugate
-monadic pervasive overloadable named '+', (x) -> x
+monadic '+', 'Add',            pervasive (x) -> x
+dyadic  '+', 'Conjugate',      pervasive (y, x) -> x + y
+monadic '−', 'Negate',         pervasive (x) -> -x
+dyadic  '−', 'Subtract',       pervasive (y, x) -> x - y
+monadic '×', 'Sign of',        pervasive (x) -> (x > 0) - (x < 0)
+dyadic  '×', 'Multiply',       pervasive (y, x) -> x * y
+monadic '÷', 'Reciprocal',     pervasive (x) -> 1 / x
+dyadic  '÷', 'Divide',         pervasive (y, x) -> x / y
+monadic '⌈', 'Ceiling',        pervasive (x) -> ceil x
+dyadic  '⌈', 'Greater of',     pervasive (y, x) -> max x, y
+monadic '⌊', 'Floor',          pervasive (x) -> floor x
+dyadic  '⌊', 'Lesser of',      pervasive (y, x) -> min x, y
+monadic '∣', 'Absolute value', pervasive (x) -> abs x
+dyadic  '∣', 'Residue',        pervasive (y, x) -> y % x
 
-# `+` Add
-dyadic pervasive overloadable named '+', (y, x) -> x + y
+monadic '⍳', 'Index generate', (x) -> [0 ... floor num x]
 
-# `−` Negate
-monadic pervasive overloadable named '−', (x) -> -x
-
-# `−` Subtract
-dyadic pervasive overloadable named '−', (y, x) -> x - y
-
-# `×` Sign of
-monadic pervasive overloadable named '×', (x) -> if x < 0 then -1 else if x > 0 then 1 else 0
-
-# `×` Multiply
-dyadic pervasive overloadable named '×', (y, x) -> x * y
-
-# `÷` Reciprocal
-monadic pervasive overloadable named '÷', (x) -> 1 / x
-
-# `÷` Divide
-dyadic pervasive overloadable named '÷', (y, x) -> x / y
-
-# `⌈` Ceiling
-monadic pervasive overloadable named '⌈', (x) -> ceil x
-
-# `⌈` Greater of
-dyadic pervasive overloadable named '⌈', (y, x) -> max x, y
-
-# `⌊` Floor
-monadic pervasive overloadable named '⌊', (x) -> floor x
-
-# `⌊` Lesser of
-dyadic pervasive overloadable named '⌊', (y, x) -> min x, y
-
-# `∣` Absolute value
-monadic pervasive overloadable named '∣', (x) -> abs x
-
-# `∣` Residue
-dyadic pervasive overloadable named '∣', (y, x) -> y % x
-
-# `⍳` Index generate
-monadic overloadable named '⍳', (x) -> [0 ... floor num x]
-
-# `⍳` Index of
-dyadic overloadable named '⍳', (b, a) ->
+dyadic  '⍳', 'Index of', (b, a) ->
   if isSimple a then a = [a]
   else assert shapeOf(a).length <= 1, 'Left argument to ⍳ must be of rank no more than 1.'
   if isSimple b then b = [b]
@@ -269,36 +211,21 @@ dyadic overloadable named '⍳', (b, a) ->
     for x, i in a when match x, y then pos = i; break
     pos
 
-# `?` Roll
-monadic pervasive overloadable named '?', (x) -> floor random() * max 0, floor num x
-
-
-# `?` Deal
-dyadic overloadable named '?', (y, x) ->
+monadic '?', 'Roll', pervasive (x) -> floor random() * max 0, floor num x
+dyadic '?', 'Deal', (y, x) ->
   x = max 0, floor num x
   y = max 0, floor num y
   assert x <= y, 'Domain error: left argument of ? must not be greater than its right argument.'
   available = [0...y]
   for [0...x] then available.splice(floor(available.length * random()), 1)[0]
 
+monadic '⋆', 'Exponentiate', pervasive (x) -> exp num x
+dyadic '⋆', 'To the power of', pervasive (y, x) -> pow num(x), num(y)
+monadic '⍟', 'Natural logarithm', pervasive (x) -> log x
+dyadic '⍟', 'Logarithm to the base', pervasive (y, x) -> log(y) / log(x)
 
-# `⋆` Exponentiate
-monadic pervasive overloadable named '⋆', (x) -> exp num x
-
-# `⋆` To the power of
-dyadic pervasive overloadable named '⋆', (y, x) -> pow num(x), num(y)
-
-# `⍟` Natural logarithm
-monadic pervasive overloadable named '⍟', (x) -> log x
-
-# `⍟` Logarithm to the base
-dyadic pervasive overloadable named '⍟', (y, x) -> log(y) / log(x)
-
-# `○` Pi times
-monadic pervasive overloadable named '○', (x) -> PI * x
-
-# `○` Circular and hyperbolic functions
-dyadic pervasive overloadable named '○', (x, i) ->
+monadic '○', 'Pi times', pervasive (x) -> PI * x
+dyadic '○', 'Circular and hyperbolic functions', pervasive (x, i) ->
   switch i
     when 0 then sqrt(1 - x * x)
     when 1 then sin x
@@ -317,51 +244,32 @@ dyadic pervasive overloadable named '○', (x, i) ->
     when -7 then log((1 + x) / (1 - x)) / 2 # arctanh
     else die 'Unknown circular or hyperbolic function ' + i
 
-# `!` Factorial
-monadic pervasive overloadable named '!', (a) ->
+monadic '!', 'Factorial', pervasive (a) ->
   n = a = floor num a # todo: "Gamma" function for non-integer argument
   r = 1; (if n > 1 then for i in [2 .. n] then r *= i); r
 
-# `!` Binomial
-dyadic pervasive overloadable named '!', (b, a) ->
+dyadic '!', 'Binomial', pervasive (b, a) ->
   k = a = floor num a
   n = b = floor num b
   if not (0 <= k <= n) then return 0 # todo: Special cases for negatives and non-integers
   if 2 * k > n then k = n - k # do less work
   r = 1; (if k > 0 then for i in [1 .. k] then r = r * (n - k + i) / i); r
 
+monadic '⌹', 'Matrix inverse' # todo
+dyadic '⌹', 'Matrix divide' # todo
 
-# `⌹` Matrix inverse
-monadic overloadable named '⌹' # todo
+dyadic '<', 'Less than', pervasive (y, x) -> +(x < y)
+dyadic '≤', 'Less than or equal', pervasive (y, x) -> +(x <= y)
+dyadic '=', 'Equal', pervasive (y, x) -> +(x is y)
+dyadic '>', 'Greater than', pervasive (y, x) -> +(x > y)
+dyadic '≥', 'Greater than or equal', pervasive (y, x) -> +(x >= y)
+dyadic '≠', 'Not equal', pervasive (y, x) -> +(x isnt y)
 
-# `⌹` Matrix divide
-dyadic overloadable named '⌹' # todo
-
-# `<` Less than
-dyadic pervasive overloadable named '<', (y, x) -> +(x <    y)
-
-# `≤` Less than or equal
-dyadic pervasive overloadable named '≤', (y, x) -> +(x <=   y)
-
-# `=` Equal
-dyadic pervasive overloadable named '=', (y, x) -> +(x is   y)
-
-# `>` Greater than
-dyadic pervasive overloadable named '≥', (y, x) -> +(x >=   y)
-
-# `≥` Greater than or equal
-dyadic pervasive overloadable named '>', (y, x) -> +(x >    y)
-
-# `≠` Not equal
-dyadic pervasive overloadable named '≠', (y, x) -> +(x isnt y)
-
-# `≡` Depth
-monadic overloadable named '≡', depthOf = (a) ->
+monadic '≡', 'Depth', depthOf = (a) ->
   if isSimple a then return 0
   r = 0; (for x in a then r = max r, depthOf x); r + 1
 
-# `≡` Match
-dyadic overloadable named '≡', match = (b, a) ->
+dyadic '≡', 'Match', match = (b, a) ->
   if isSimple(a) and isSimple(b) then return +(a is b)
   if isSimple(a) isnt isSimple(b) then return 0
   # Compare by shape
@@ -377,23 +285,19 @@ dyadic overloadable named '≡', match = (b, a) ->
   if not (a.aplPrototype? or b.aplPrototype?) then return 1
   match prototypeOf(a), prototypeOf(b)
 
-# `≢` Not match
-dyadic overloadable named '≢', (b, a) -> +not match b, a
+dyadic '≢', 'Not match', (b, a) -> +not match b, a
 
-# `∈` Enlist
-monadic overloadable named '∈', (a) ->
+monadic '∈', 'Enlist', (a) ->
   r = []
   rec = (x) -> (if isSimple x then r.push x else for y in x then rec y); r
   rec a
 
-# `∈` Membership
-dyadic overloadable named '∈', (b, a) ->
+dyadic '∈', 'Membership', (b, a) ->
   a = array a
   b = array b
   withShape a.shape, (for x in a then +(x in b))
 
-# `⍷` Find
-dyadic overloadable named '⍷', (b, a) ->
+dyadic '⍷', 'Find', (b, a) ->
   sa = shapeOf a
   sb = shapeOf b
   if isSimple b then return isSimple(a) and match b, a
@@ -425,20 +329,11 @@ dyadic overloadable named '⍷', (b, a) ->
   rec 0, 0
   r
 
-# `∪` Unique
-monadic overloadable named '∪' # todo
-
-# `∪` Union
-dyadic overloadable named '∪' # todo
-
-# `∩` Intersection
-dyadic overloadable named '∩' # todo
-
-# `∼` Not
-monadic pervasive overloadable named '∼', (x) -> +!bool(x)
-
-# `∼` Without
-dyadic overloadable named '∼', (b, a) ->
+monadic '∪', 'Unique' # todo
+dyadic '∪', 'Union' # todo
+dyadic '∩', 'Intersection' # todo
+monadic '∼', 'Not', pervasive (x) -> +!bool(x)
+dyadic '∼', 'Without', (b, a) ->
   if isSimple a then a = [a]
   else assert shapeOf(a).length <= 1, 'Left argument to ∼ must be of rank no more than 1.'
   if isSimple b then b = [b]
@@ -453,8 +348,7 @@ dyadic overloadable named '∼', (b, a) ->
       r.push x
   r
 
-# `∨` Or
-dyadic pervasive overloadable named '∨', (y, x) ->
+dyadic '∨', 'Or', pervasive (y, x) ->
   x = abs num x
   y = abs num y
   assert x is floor(x) and y is floor(y), '∨ is defined only for integers'
@@ -463,8 +357,7 @@ dyadic pervasive overloadable named '∨', (y, x) ->
   while y then [x, y] = [y, x % y] # Euclid's algorithm
   x
 
-# `∧` And (Greatest Common Divisor)
-dyadic pervasive overloadable named '∧', (y, x) ->
+dyadic '∧', 'And', pervasive (y, x) ->
   x = abs num x
   y = abs num y
   assert x is floor(x) and y is floor(y), '∧ is defined only for integers'
@@ -474,17 +367,11 @@ dyadic pervasive overloadable named '∧', (y, x) ->
   while y then [x, y] = [y, x % y] # Euclid's algorithm
   p / x # LCM(x, y) = x * y / GCD(x, y)
 
-# `⍱` Nor
-dyadic pervasive overloadable named '⍱', (y, x) -> +!(bool(x) || bool(y))
+dyadic '⍱', 'Nor', pervasive (y, x) -> +!(bool(x) or bool(y))
+dyadic '⍲', 'Nand', pervasive (y, x) -> +!(bool(x) and bool(y))
 
-# `⍲` Nand
-dyadic pervasive overloadable named '⍲', (y, x) -> +!(bool(x) && bool(y))
-
-# `⍴` Shape of
-monadic overloadable named '⍴', shapeOf
-
-# `⍴` Reshape
-dyadic overloadable named '⍴', (b, a) ->
+monadic '⍴', 'Shape of', shapeOf
+dyadic '⍴', 'Reshape', (b, a) ->
   if isSimple a then a = [a]
   if isSimple b then b = [b]
   a =
@@ -493,11 +380,8 @@ dyadic overloadable named '⍴', (b, a) ->
       max 0, floor x
   withShape a, withPrototypeCopiedFrom b, (for i in [0...prod a] then b[i % b.length])
 
-# `,` Ravel
-monadic overloadable named ',', (a) -> array(a)[0...]
-
-# Helper for functions , and ⍪
-catenate = (b, a, axis=-1) ->
+# Helper for functions `,` and `⍪`
+catenate = (b, a, axis = -1) ->
   sa = shapeOf a; if sa.length is 0 then sa = [1]; a = [a]
   sb = shapeOf b; if sb.length is 0 then sb = [1]; b = [b]
   assert sa.length is sb.length, 'Length error: Cannot catenate arrays of different ranks'
@@ -516,30 +400,26 @@ catenate = (b, a, axis=-1) ->
   sr[axis] += sb[axis]
   withShape sr, r
 
-# `,` Catenate
-dyadic overloadable named ',', catenate
+monadic ',', 'Ravel', (a) -> array(a)[0...]
+dyadic ',', 'Catenate', catenate
+dyadic '⍪', '1st axis catenate', (b, a) -> catenate b, a, 0
 
-# `⍪` 1st axis catenate
-dyadic overloadable named '⍪', (b, a) -> catenate b, a, 0
-
-# `⌽` Reverse
-monadic overloadable named '⌽', reverse = (a, _, axis=-1) ->
-  sa = shapeOf a
-  if sa.length is 0 then return a
-  if axis < 0 then axis += sa.length
-  assert 0 <= axis < sa.length, 'Axis out of bounds'
-  ni = prod sa[...axis]
-  nj = sa[axis]
-  nk = prod sa[axis + 1 ...]
+monadic '⌽', 'Reverse', reverse = (b, _1, axis = -1) ->
+  sb = shapeOf b
+  if sb.length is 0 then return b
+  if axis < 0 then axis += sb.length
+_,   assert 0 <= axis < sb.length, 'Axis out of bounds'
+  ni = prod sb[...axis]
+  nj = sb[axis]
+  nk = prod sb[axis + 1 ...]
   r = []
   for i in [0...ni]
     for j in [nj - 1 .. 0] by -1
       for k in [0...nk]
-        r.push a[k + nk*(j + nj*i)]
-  withShape sa, r
+        r.push b[k + nk*(j + nj*i)]
+  withShape sb, r
 
-# `⌽` Rotate
-dyadic overloadable named '⌽', (a, b) ->
+dyadic '⌽', 'Rotate', (b, a) ->
   a = num a
   if a is 0 or isSimple(b) or (b.length <= 1) then return b
   sb = shapeOf b
@@ -547,11 +427,9 @@ dyadic overloadable named '⌽', (a, b) ->
   a %= n; if a < 0 then a += n
   withShape sb, (for i in [0...b.length] then b[i - (i % n) + ((i % n) + a) % n])
 
-# `⊖` 1st axis reverse
-monadic overloadable named '⊖', (a, _, axis=0) -> reverse a, undefined, axis
+monadic '⊖', '1st axis reverse', (b, _1, axis = 0) -> reverse b, undefined, axis
 
-# `⊖` 1st axis rotate
-dyadic overloadable named '⊖', (a, b) ->
+dyadic '⊖', '1st axis rotate', (b, a) ->
   a = num a
   if a is 0 or isSimple(b) or (b.length <= 1) then return b
   sb = shapeOf b
@@ -560,8 +438,7 @@ dyadic overloadable named '⊖', (a, b) ->
   a %= n; if a < 0 then a += n
   withShape sb, (for i in [0...b.length] then b[((floor(i / k) + a) % n) * k + (i % k)])
 
-# `⍉` Transpose
-monadic overloadable named '⍉', (a) ->
+monadic '⍉', 'Transpose', (a) ->
   sa = shapeOf a
   if sa.length <= 1 then return a # has no effect on scalars or vectors
   sr = sa[0...].reverse()
@@ -575,13 +452,11 @@ monadic overloadable named '⍉', (a) ->
   rec 0, 0
   withShape sr, r
 
-# `↑` First
-monadic overloadable named '↑', (a) ->
+monadic '↑', 'First', (a) ->
   a = array(a)
   if a.length then a[0] else prototypeOf a
 
-# `↑` Take
-dyadic overloadable named '↑', (a, b) ->
+dyadic '↑', 'Take', (b, a) ->
   if isSimple a then a = [a]
   for x in a
     assert typeof x is 'number', 'Domain error: Left argument to ↑ must be a numeric scalar or vector.'
@@ -610,8 +485,7 @@ dyadic overloadable named '↑', (a, b) ->
   rec 0, 0, b.length
   withShape a, withPrototype filler, r
 
-# `↓` Drop
-dyadic overloadable named '↓', (a, b) ->
+dyadic '↓', 'Drop', (b, a) ->
   if isSimple a then a = [a]
   for x in a when typeof x isnt 'number' or x isnt floor x
     die 'Left argument to ↓ must be an integer or a vector of integers.'
@@ -639,15 +513,10 @@ dyadic overloadable named '↓', (a, b) ->
   sr = for [lo, hi] in lims then hi - lo
   withShape sr, r
 
-# `⊂` Enclose
-monadic overloadable named '⊂', (a) ->
-  if isSimple a then a else withShape [], [a]
+monadic '⊂', 'Enclose', (a) -> if isSimple a then a else withShape [], [a]
+dyadic '⊂', 'Partition (with axis)' # todo
 
-# `⊂` Partition (with axis)
-dyadic overloadable named '⊂'
-
-# `⊃` Disclose
-monadic overloadable named '⊃', (a) ->
+monadic '⊃', 'Disclose', (a) ->
   if isSimple a then return a
   sa = shapeOf a
   if sa.length is 0 then return a[0]
@@ -677,13 +546,10 @@ monadic overloadable named '⊃', (a) ->
     rec 0, 0, x.length, prod sr1
   withShape sr, r
 
-# `⊃` Pick
-dyadic overloadable named '⊃'
+dyadic '⊃', 'Pick'
 
-# `⌷` Index
-#
-# `(a0 a1 ...)⌷b` is equivalent to `b[a0;a1;...]`
-dyadic overloadable named '⌷', (a, b) ->
+dyadic '⌷', 'Index', (b, a) ->
+  # `(a0 a1 ...)⌷b` is equivalent to `b[a0;a1;...]`
   if isSimple a then a = [a]
   assert (not a.shape) or a.shape.length <= 1, 'Indices must be a scalar or a vector, not a higher-dimensional array.'
   sb = shapeOf b
@@ -705,8 +571,8 @@ dyadic overloadable named '⌷', (a, b) ->
   rec 0, 0, b.length
   if sr.length is 0 then r[0] else withShape sr, r
 
-# Helper for ⍋ and ⍒
-grade = (a, b, direction) ->
+# Helper for `⍋` and `⍒`
+grade = (b, a, direction) ->
   if not b? then b = a; a = []
   sa = shapeOf a
   sb = shapeOf b
@@ -732,14 +598,10 @@ grade = (a, b, direction) ->
     0
   r
 
-# `⍋` Grade up
-monadic overloadable named '⍋', (a, b) -> grade a, b, 1
+monadic '⍋', 'Grade up', (b, a) -> grade b, a, 1
+monadic '⍒', 'Grade down', (b, a) -> grade b, a, -1
 
-# `⍒` Grade down
-monadic overloadable named '⍒', (a, b) -> grade a, b, -1
-
-# `⊤` Encode
-monadic overloadable named '⊤', (a, b) ->
+monadic '⊤', 'Encode', (b, a) ->
   sa = shapeOf a
   sb = shapeOf b
   if isSimple a then a = [a]
@@ -760,8 +622,7 @@ monadic overloadable named '⊤', (a, b) ->
           y = round((y - (y % x)) / x)
   withShape sa.concat(sb), r
 
-# `⊥` Decode
-monadic overloadable named '⊥', (a, b) ->
+monadic '⊥', 'Decode', (b, a) ->
   sa = shapeOf a
   sb = shapeOf b
   lastDimA = if sa.length then sa[sa.length - 1] else 1
@@ -785,40 +646,23 @@ monadic overloadable named '⊥', (a, b) ->
   else
     withShape sa[...-1].concat(sb[1...]), r
 
-# `⍕` Format
-monadic overloadable named '⍕'
-
-# `⍕` Format by example or specification
-dyadic overloadable named '⍕'
-
-# `⍎` Execute
-monadic overloadable named '⍎'
-
-# `⊣` Stop
-monadic overloadable named '⊣'
-
-# `⊣` Left
-dyadic overloadable named '⊣'
-
-# `⊢` Pass
-monadic overloadable named '⊢'
-
-# `⊢` Right
-dyadic overloadable named '⊢'
+monadic '⍕', 'Format'
+dyadic '⍕', 'Format by example or specification'
+monadic '⍎', 'Execute'
+monadic '⊣', 'Stop'
+dyadic '⊣', 'Left'
+monadic '⊢', 'Pass'
+dyadic '⊢', 'Right'
 
 # `⍬` Zilde (niladic function)
-builtins['get_⍬'] = -> []
-
-# Note: Symbols _quad_ (⎕) and _quote-quad_ (⍞) are defined in a
-# platform-specific manner in [browser.coffee](browser.html) (for browsers)
-# and [command.coffee](command.html) (for node.js).
+builtins['get_⍬'] = -> withShape [], []
 
 
 
 # # Built-in operators
 
 # Helper for / and ⌿ in their operator sense
-reduce = (f, _, axis=-1) -> (a, b) ->
+reduce = (f, _, axis = -1) -> (b, a) ->
   invokedAsMonadic = not b?
   if invokedAsMonadic then b = a; a = 0
   a = floor num a
@@ -845,7 +689,7 @@ reduce = (f, _, axis=-1) -> (a, b) ->
   if invokedAsMonadic then r[0] else r
 
 # Helper for / and ⌿ in their function sense
-compressOrReplicate = (a, b, axis=-1) ->
+compressOrReplicate = (b, a, axis = -1) ->
   sb = shapeOf b
   if axis < 0 then axis += sb.length
   assert 0 <= axis < sb.length, 'Axis out of bounds'
@@ -891,23 +735,21 @@ compressOrReplicate = (a, b, axis=-1) ->
 
   withShape sr, r
 
-# `/` Reduce, compress, or replicate
-postfixOperator named '/', (a, b, axis=-1) ->
-  if typeof a is 'function'
-    reduce a, undefined, axis
+postfixOperator '/', 'Reduce, compress, or replicate', (b, a, axis = -1) ->
+  if typeof b is 'function'
+    reduce b, undefined, axis
   else
-    compressOrReplicate a, b, axis
+    compressOrReplicate b, a, axis
 
-# `⌿` 1st axis reduce, compress, or replicate
-postfixOperator named '⌿', (a, b, axis=0) ->
-  if typeof a is 'function'
-    reduce a, undefined, axis
+postfixOperator '⌿', '1st axis reduce, compress, or replicate', (b, a, axis = 0) ->
+  if typeof b is 'function'
+    reduce b, undefined, axis
   else
-    compressOrReplicate a, b, axis
+    compressOrReplicate b, a, axis
 
 # Helper for `\` and `⍀` in their operator sense
-scan = (f, _, axis=-1) -> (a, b) ->
-  assert not b?, 'Scan can only be applied monadically.'
+scan = (f, _, axis = -1) -> (a, _1) ->
+  assert not _1?, 'Scan can only be applied monadically.'
   sa = shapeOf a
   if sa.length is 0 then return a
   if axis < 0 then axis += sa.length
@@ -927,22 +769,19 @@ scan = (f, _, axis=-1) -> (a, b) ->
 expand = ->
   # todo
 
-# `\` Scan or expand
-postfixOperator named '\\', (a, b, axis=-1) ->
-  if typeof a is 'function'
-    scan a, undefined, axis
+postfixOperator '\\', 'Scan or expand', (b, a, axis = -1) ->
+  if typeof b is 'function'
+    scan b, undefined, axis
   else
-    expand a, b, axis
+    expand b, a, axis
 
-# `⍀` 1st axis scan or expand
-postfixOperator named '⍀', (a, b, axis=0) ->
-  if typeof a is 'function'
-    scan a, undefined, axis
+postfixOperator '⍀', '1st axis scan or expand', (b, a, axis = 0) ->
+  if typeof b is 'function'
+    scan b, undefined, axis
   else
-    expand a, b, axis
+    expand b, a, axis
 
-# `¨` Each
-postfixOperator named '¨', (f) -> (a, b) ->
+postfixOperator '¨', 'Each', (f) -> (b, a) ->
   if not b? then return (for x in array a then f x)
   if isSimple a then return (for x in array b then f a, x)
   if a.length is b.length then return (for i in [0...a.length] then f a[i], b[i])
@@ -950,11 +789,9 @@ postfixOperator named '¨', (f) -> (a, b) ->
   if b.length is 1 then return (for x in a then f x, b[0])
   die 'Length error'
 
-# `∘.` Outer product
-prefixOperator named '∘.', outerProduct = (f) ->
+prefixOperator '∘.', 'Outer product', outerProduct = (f) ->
   assert typeof f is 'function'
-  (a, b) ->
-    console.info "(a, b) = (#{repr a}, #{repr b})"
+  (b, a) ->
     assert b?, 'Operator ∘. (Outer product) works only with dyadic functions'
     a = array a
     b = array b
@@ -964,18 +801,16 @@ prefixOperator named '∘.', outerProduct = (f) ->
         r.push f x, y
     withShape (shapeOf a).concat(shapeOf b), r
 
-# `.` Inner product
 # todo: the general formula for higher dimensions is
 # `A f.g B   <=>   f/¨ (⊂[⍴⍴A]A)∘.g ⊂[1]B`
-infixOperator named '.', (f, g) ->
+infixOperator '.', 'Inner product', (f, g) ->
   F = reduce f
   G = outerProduct g
-  (a, b) ->
+  (b, a) ->
     assert shapeOf(a).length <= 1 and shapeOf(b).length <= 1, 'Inner product operator (.) is implemented only for arrays of rank no more than 1.'
-    F g a, b
+    F g b, a
 
-# `⍣` Power operator
-postfixOperator named '⍣', cps (f, _1, _2, callback) ->
+postfixOperator '⍣', 'Power operator', (f, _1, _2, callback) ->
   assert typeof f is 'function', 'Left argument to ⍣ must be a function.'
   -> (n, _1, _2, callback1) ->
     if typeof n isnt 'number' or n < 0 or n isnt floor n then return -> callback Error 'Right argument to ⍣ must be a non-negative integer.'
@@ -988,3 +823,5 @@ postfixOperator named '⍣', cps (f, _1, _2, callback) ->
             a = r; i++; F
         else
           -> callback2 null, a
+
+endOfBuiltins()

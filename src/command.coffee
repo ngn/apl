@@ -1,7 +1,7 @@
 # This file contains the entry point (`main()`) for APL execution on node.js.
 
 fs = require 'fs'
-{exec} = require './interpreter'
+{exec} = require './compiler'
 {builtins} = require './builtins'
 {inherit, cps, trampoline, isSimple, shapeOf, sum, prod, repeat} = require './helpers'
 
@@ -187,18 +187,7 @@ exports.main = ->
   code = ''
   input.on 'data', (chunk) -> code += chunk
   input.on 'end', ->
-
-    # Create a context for APL execution, specific to running on node.js
-    ctx = inherit builtins
-
-    ctx['⍵'] = for a in argv._ then a.split ''
-
-    ctx['get_⎕'] = cps (_1, _2, _3, callback) -> -> getline callback
-
-    ctx['set_⎕'] = cps (x, _1, _2, callback) ->
-      -> process.stdout.write format(x) + '\n', (err) -> trampoline ->
-        if err then return -> callback err
-        -> callback null, 0
-
-    # Go!
-    exec code, ctx, (err) -> if err then throw err else process.exit 0
+    exec code, extraContext: {
+      '⍵': for a in argv._ then a.split ''
+      'set_⎕': (x) -> console.info x
+    }
