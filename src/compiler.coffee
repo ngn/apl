@@ -330,6 +330,4 @@ printAST = (x, indent = '') ->
 
 
 if module is require.main then do ->
-  console.info exec '''
-    2 (+ ⍣ 3) 5
-  ''', debug: true
+  console.info exec '⎕←2(⋆⍣3)2', debug: true

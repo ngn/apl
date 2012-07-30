@@ -818,4 +818,6 @@ infixOperator '⍣', 'Power operator', (f, n) ->
     for [0...n] then y = f y, x
     y
 
+builtins['set_⎕'] = (x) -> console.info x; x
+
 endOfBuiltins()
