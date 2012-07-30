@@ -2,9 +2,10 @@
 
 # Test framework {{{1
 {parser} = require '../lib/parser'
-{exec} = require '../lib/interpreter'
-{trampoline} = require '../lib/helpers'
+{exec} = require '../lib/compiler'
 repr = JSON.stringify
+
+t0 = Date.now()
 
 nTests = 0
 nFailed = 0
@@ -24,29 +25,23 @@ eq = (x, y) ->
 
 fail = (reason, err) -> nFailed++; console.error reason; if err then console.error err.stack
 
-queue = [] # stick some CPS functions here and execute them sequentially at the end
-
-gives = (code, expectedResult) ->
+gives = (code, expected) ->
   nTests++
-  queue.push (next) ->
-    exec code, (err, actualResult) ->
-      trampoline ->
-        if err
-          fail "Test #{repr code} failed with #{err}", err
-        else if not eq expectedResult, actualResult
-          fail "Test #{repr code} failed: expected #{repr expectedResult} but got #{repr actualResult}"
-        next
+  try
+    actual = exec code
+    if not eq actual, expected
+      fail "Test #{repr code} failed: expected #{repr expected} but got #{repr actual}"
+  catch e
+    fail "Test #{repr code} failed with #{e}", e
 
 fails = (code, expectedErrorMessage) ->
   nTests++
-  queue.push (next) ->
-    exec code, (err, _) ->
-      trampoline ->
-        if not err
-          fail "Code #{repr code} should have failed, but didn't"
-        else if expectedErrorMessage and err.message[...expectedErrorMessage.length] isnt expectedErrorMessage
-          fail "Code #{repr code} should have failed with #{repr expectedErrorMessage}, but it failed with #{repr err.message}", err
-        next
+  try
+    exec code
+    fail "Code #{repr code} should have failed, but didn't"
+  catch e
+    if expectedErrorMessage and e.message[...expectedErrorMessage.length] isnt expectedErrorMessage
+      fail "Code #{repr code} should have failed with #{repr expectedErrorMessage}, but it failed with #{repr e.message}", e
 
 S = (s) -> s.split ''
 
@@ -767,12 +762,5 @@ gives(
 
 
 # Execute functions from "queue" sequentially
-t0 = Date.now()
-trampoline (F = ->
-  if queue.length
-    -> queue.shift() F
-  else
-    if nFailed then console.info "#{nFailed} of #{nTests} tests failed."
-    else console.info "All #{nTests} tests passed in #{Date.now() - t0} ms."
-    0
-)
+if nFailed then console.info "#{nFailed} of #{nTests} tests failed."
+else console.info "All #{nTests} tests passed in #{Date.now() - t0} ms."

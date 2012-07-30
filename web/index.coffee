@@ -69,7 +69,7 @@ jQuery ($) ->
 
   # "Execute" button {{{1
   $('#go').closest('form').submit ->
-    {exec} = require './interpreter'
+    {exec} = require './compiler'
     {browserBuiltins} = require './browser'
     {inherit} = require './helpers'
     ctx = inherit browserBuiltins

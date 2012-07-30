@@ -71,35 +71,40 @@ hex4 = (n) -> s = '0000' + n.toString 16; s[s.length - 4 ...]
 jsName = (name) -> predefinedNames[name] or name.replace /[^a-z0-9]/gi, (x) -> '_' + hex4 ord x
 
 builtins = inherit require('./builtins').builtins
-builtins['set_⎕'] = (s) -> console.info s
 
 builtinVarInfo =
-  '+': {type: 'F'}
-  '−': {type: 'F'}
-  '×': {type: 'F'}
-  '÷': {type: 'F'}
-  ',': {type: 'F'}
-  '⍪': {type: 'F'}
-  '⍴': {type: 'F'}
-  '⍳': {type: 'F'}
-  '=': {type: 'F'}
-  '∣': {type: 'F'}
-  '/': {type: 'F', isPostfixOperator: true}
-  '⌿': {type: 'F', isPostfixOperator: true}
-  '⍣': {type: 'F', isInfixOperator: true}
-  '∘.':{type: 'F', isPrefixOperator: true}
   '⍺': {type: 'X'}
   '⍵': {type: 'X'}
-  '⍬': {type: 'X', isNiladicFunction: true}
-  '⎕': {type: 'X', isNiladicFunction: true}
-  'set_⎕': {type: 'F'}
 
-exports.exec = (source, opts) ->
+do ->
+  for k, v of builtins
+    v = builtins[k]
+    console.info 'k, v = ' + repr(k) + ', ' + repr(v)
+    builtinVarInfo[k] =
+      if typeof v isnt 'function'
+        {type: 'X'}
+      else if v.isNiladicFunction
+        {type: 'F', isNiladicFunction: true}
+      else if v.isPrefixOperator
+        {type: 'F', isPrefixOperator: true}
+      else if v.isPostfixOperator
+        {type: 'F', isPostfixOperator: true}
+      else if v.isInfixOperator
+        {type: 'F', isInfixOperator: true}
+      else
+        {type: 'F'}
+
+    if k.match /^[gs]et_.*/
+      builtinVarInfo[k[4...]] = {type: 'X'}
+
+
+exports.exec = (source, opts = {}) ->
   h = inherit builtins
   if opts.extraContext then for k, v of opts.extraContext then h[k] = v
   (new Function compile source, opts) h
 
 compile = (source, opts = {}) ->
+#  opts.debug = true
   if opts.debug then console.info '-----APL SOURCE-----\n' + source
   ast = parse source
   if opts.debug then (console.info '-----RAW AST-----\n'; printAST ast)
@@ -145,7 +150,7 @@ resolveSeqs = (ast) ->
             assert vars[name].type is h.type, "Inconsistent usage of symbol '#{name}', it is assigned both data and functions"
           else
             vars[name] = h
-            scopeNode.varsToDeclare.push name
+            scopeNode.varsToDeclare.push jsName name
           h
         when 'sym'
           name = node[1]

@@ -128,7 +128,7 @@ bool = (x) ->
 
 exports.builtins = builtins = {}
 
-tmp = monadic: {}, dyadic: {}, prefixOperator: {}, postfixOperator: {}, infixOperator: {}
+tmp = monadic: {}, dyadic: {}
 
 def = (h, name, description, f) ->
   assert typeof name is 'string'
@@ -408,7 +408,7 @@ monadic '⌽', 'Reverse', reverse = (b, _1, axis = -1) ->
   sb = shapeOf b
   if sb.length is 0 then return b
   if axis < 0 then axis += sb.length
-_,   assert 0 <= axis < sb.length, 'Axis out of bounds'
+  assert 0 <= axis < sb.length, 'Axis out of bounds'
   ni = prod sb[...axis]
   nj = sb[axis]
   nk = prod sb[axis + 1 ...]

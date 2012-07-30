@@ -11,11 +11,11 @@
 /_/   \_\_|   |_____|  |___________|
 </pre>
 
-An APL interpreter written in [CoffeeScript](http://jashkenas.github.com/coffee-script/)<br/>
+An APL compiler written in [CoffeeScript](http://jashkenas.github.com/coffee-script/)<br/>
 Runs on [node.js](http://nodejs.org/) or in a browser<br/>
 Uses [Jison](http://zaach.github.com/jison/) for parsing
 
-[Literate source code](http://ngn.github.com/apl/docs/interpreter.html)
+[Literate source code](http://ngn.github.com/apl/docs/builtins.html)
 
 [In-browser demo](http://ngn.github.com/apl/web/index.html)
 
@@ -52,13 +52,6 @@ Getter-setter variables:
     ⌊ r c S        ⍝ gives 3 18 28  ("⌊" is the floor function)
     r←5
     ⌊ r c S        ⍝ gives 5 31 78
-
-Continuation-passing style throughout the interpreter:
-
-    // Invocation à la node.js
-    interpreter.exec("1 + 2 ⍝ Some APL code", function (err, result) {
-        // result comes later if APL code does any I/O
-    });
 
 # Goodies
 
