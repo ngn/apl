@@ -140,9 +140,9 @@ def = (h, name, description, f) ->
 
 monadic         = (a...) -> def tmp.monadic, a...
 dyadic          = (a...) -> def tmp.dyadic,  a...
-prefixOperator  = (a...) -> def tmp.monadic, a...
-postfixOperator = (a...) -> def tmp.monadic, a...
-infixOperator   = (a...) -> def tmp.dyadic,  a...
+prefixOperator  = (a...) -> (def tmp.monadic, a...).isPrefixOperator = true
+postfixOperator = (a...) -> (def tmp.monadic, a...).isPostfixOperator = true
+infixOperator   = (a...) -> (def tmp.dyadic,  a...).isInfixOperator = true
 
 ambivalent = (symbol, f1, f2) -> (b, a, args...) ->
   (
@@ -810,18 +810,12 @@ infixOperator '.', 'Inner product', (f, g) ->
     assert shapeOf(a).length <= 1 and shapeOf(b).length <= 1, 'Inner product operator (.) is implemented only for arrays of rank no more than 1.'
     F g b, a
 
-postfixOperator '⍣', 'Power operator', (f, _1, _2, callback) ->
-  assert typeof f is 'function', 'Left argument to ⍣ must be a function.'
-  -> (n, _1, _2, callback1) ->
-    if typeof n isnt 'number' or n < 0 or n isnt floor n then return -> callback Error 'Right argument to ⍣ must be a non-negative integer.'
-    -> callback1 null, cps (a, _1, _2, callback2) ->
-      i = 0
-      F = ->
-        if i < n
-          f a, null, null, (err, r) ->
-            if err then return -> callback2 err
-            a = r; i++; F
-        else
-          -> callback2 null, a
+infixOperator '⍣', 'Power operator', (f, n) ->
+  if typeof f is 'number' and typeof n is 'function'
+    [f, n] = [n, f]
+  else
+  (y, x) ->
+    for [0...n] then y = f y, x
+    y
 
 endOfBuiltins()

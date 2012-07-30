@@ -98,7 +98,7 @@ do ->
       builtinVarInfo[k[4...]] = {type: 'X'}
 
 
-exports.exec = (source, opts = {}) ->
+exports.exec = exec = (source, opts = {}) ->
   h = inherit builtins
   if opts.extraContext then for k, v of opts.extraContext then h[k] = v
   (new Function compile source, opts) h
@@ -192,7 +192,7 @@ resolveSeqs = (ast) ->
           # Apply infix operators
           i = a.length - 2
           while --i >= 0
-            if h[i].type is h[i + 2].type is 'F' and h[i + 1].isInfixOperator and h[i + 2].type is 'F'
+            if h[i + 1].isInfixOperator and (h[i].type is 'F' or h[i + 2].type is 'F')
               a[i...i+3] = [['infixOperator'].concat a[i...i+3]]
               h[i...i+3] = [{type: 'F'}]
               i--
@@ -326,3 +326,10 @@ printAST = (x, indent = '') ->
   else
     console.info indent + JSON.stringify x
   return
+
+
+
+if module is require.main then do ->
+  console.info exec '''
+    2 (+ ⍣ 3) 5
+  ''', debug: true
