@@ -281,7 +281,8 @@ toJavaScript = (ast) ->
               if x.match /^-?0x/i then parseInt x, 16 else parseFloat x
         if a.length is 1 then '' + a[0] else "new Complex(#{a[0]}, #{a[1]})"
       when 'index'
-        "_index(#{visit node[2]}, #{visit node[1]})"
+        closestScope(node).vars['⌷'].used = true
+        "_index(#{visit node[1]}, #{visit node[2]})"
       when 'seq'
         die 'No "seq" nodes are expected at this stage.'
       when 'vector'
@@ -336,4 +337,4 @@ printAST = (x, indent = '') ->
 
 
 if module is require.main then do ->
-  console.info exec '⎕←({⍵+1}⍣5)3', debug: true
+  console.info exec '⎕← (3 5 8 11)[2]', debug: true
