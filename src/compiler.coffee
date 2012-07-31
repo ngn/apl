@@ -79,7 +79,6 @@ builtinVarInfo =
 do ->
   for k, v of builtins
     v = builtins[k]
-    console.info 'k, v = ' + repr(k) + ', ' + repr(v)
     builtinVarInfo[k] =
       if typeof v isnt 'function'
         {type: 'X'}
@@ -97,6 +96,8 @@ do ->
     if k.match /^[gs]et_.*/
       builtinVarInfo[k[4...]] = {type: 'X'}
 
+  builtinVarInfo['set_⎕'].blah = 'qer'
+
 
 exports.exec = exec = (source, opts = {}) ->
   h = inherit builtins
@@ -104,7 +105,6 @@ exports.exec = exec = (source, opts = {}) ->
   (new Function compile source, opts) h
 
 compile = (source, opts = {}) ->
-#  opts.debug = true
   if opts.debug then console.info '-----APL SOURCE-----\n' + source
   ast = parse source
   if opts.debug then (console.info '-----RAW AST-----\n'; printAST ast)
@@ -155,6 +155,7 @@ resolveSeqs = (ast) ->
         when 'sym'
           name = node[1]
           assert vars[name]?, "Symbol '#{name}' referenced before assignment"
+          vars[name].used = true
           vars[name]
         when 'lambda'
           visit node[1]
@@ -257,8 +258,8 @@ toJavaScript = (ast) ->
         r += a.join(';\n')
       when 'assign'
         name = node[1]
-        setter = "set_#{name}"
-        if closestScope(node).vars[setter]?.type is 'F'
+        if (v = closestScope(node).vars[setter = "set_#{name}"])?.type is 'F'
+          v.used = true
           "#{jsName setter}(#{visit node[2]})" # todo: pass-through value
         else
           "#{jsName name} = #{visit node[2]}"
@@ -301,10 +302,15 @@ toJavaScript = (ast) ->
       else
         die "Unrecognised node type, '#{node[0]}'"
 
+  s = visit ast
   """
-    var _apl = arguments[0],
-    #{(for k of builtins then "#{jsName k} = _apl[#{repr k}]").join ',\n    '};
-    #{visit ast}
+    var #{
+      ['_ = arguments[0]'].concat(
+        for k, v of builtinVarInfo when v.used
+          "#{jsName k} = _[#{repr k}]"
+      ).join ',\n    '
+    };
+    #{s}
   """
 
 
