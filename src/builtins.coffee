@@ -814,6 +814,7 @@ infixOperator '⍣', 'Power operator', (f, n) ->
   if typeof f is 'number' and typeof n is 'function'
     [f, n] = [n, f]
   else
+    assert typeof f is 'function' and typeof n is 'number'
   (y, x) ->
     for [0...n] then y = f y, x
     y

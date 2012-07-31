@@ -267,7 +267,7 @@ toJavaScript = (ast) ->
         "#{jsName node[1]}"
       when 'lambda'
         """
-          function (_a, _w) {
+          function (_w, _a) {
             #{visit node[1]}
           }
         """
@@ -336,4 +336,4 @@ printAST = (x, indent = '') ->
 
 
 if module is require.main then do ->
-  console.info exec '⎕←2(⋆⍣3)2', debug: true
+  console.info exec '⎕←({⍵+1}⍣5)3', debug: true
