@@ -663,8 +663,8 @@ builtins['get_⍬'] = -> withShape [], []
 
 # Helper for / and ⌿ in their operator sense
 reduce = (f, _, axis = -1) -> (b, a) ->
-  invokedAsMonadic = not b?
-  if invokedAsMonadic then b = a; a = 0
+  invokedAsMonadic = not a?
+  if invokedAsMonadic then a = 0
   a = floor num a
   isBackwards = a < 0; if isBackwards then a = -a
   b = array b
