@@ -763,7 +763,7 @@ scan = (f, _, axis = -1) -> (a, _1) ->
       x = r[k + nk*nj*i] = a[k + nk*nj*i]
       for j in [1...nj]
         ijk = k + nk * (j + nj * i)
-        x = r[ijk] = f x, a[ijk]
+        x = r[ijk] = f a[ijk], x
   withShape shapeOf(a), r
 
 # Helper for `\` and `⍀` in their function sense
