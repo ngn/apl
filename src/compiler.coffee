@@ -274,7 +274,7 @@ toJavaScript = (ast) ->
       when 'str'
         s = node[1]
         d = s[0] # the delimiter: '"' or "'"
-        d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d
+        d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d + '.split("")'
       when 'num'
         s = node[1].replace /¯/g, '-'
         a = for x in s.split /j/i
@@ -337,4 +337,5 @@ printAST = (x, indent = '') ->
 
 
 if module is require.main then do ->
-  console.info exec '1 1 2 3 ⍴¨ 3 5 8 11', debug: true
+  r = exec '"asdf" = "asdg"', debug: true
+  console.info '-----RESULT-----\n' + r
