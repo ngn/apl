@@ -553,6 +553,7 @@ dyadic '⌷', 'Index', (b, a) ->
   if isSimple a then a = [a]
   assert (not a.shape) or a.shape.length <= 1, 'Indices must be a scalar or a vector, not a higher-dimensional array.'
   sb = shapeOf b
+  if typeof b is 'function' then return (y, x) -> b y, x, a
   assert a.length is sb.length, 'The number of indices must be equal to the rank of the indexable.'
   a = for x, i in a
         if isSimple x then withShape [], [x]
