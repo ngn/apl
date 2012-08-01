@@ -782,11 +782,11 @@ postfixOperator '⍀', '1st axis scan or expand', (b, a, axis = 0) ->
     expand b, a, axis
 
 postfixOperator '¨', 'Each', (f) -> (b, a) ->
-  if not b? then return (for x in array a then f x)
-  if isSimple a then return (for x in array b then f a, x)
-  if a.length is b.length then return (for i in [0...a.length] then f a[i], b[i])
-  if a.length is 1 then return (for x in b then f a[0], x)
-  if b.length is 1 then return (for x in a then f x, b[0])
+  if not a? then return (for x in array b then f x)
+  if isSimple a then return (for x in array b then f x, a)
+  if a.length is b.length then return (for i in [0...a.length] then f b[i], a[i])
+  if a.length is 1 then return (for x in b then f x, a[0])
+  if b.length is 1 then return (for x in a then f b[0], x)
   die 'Length error'
 
 prefixOperator '∘.', 'Outer product', outerProduct = (f) ->

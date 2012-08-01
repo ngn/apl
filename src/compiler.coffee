@@ -337,4 +337,4 @@ printAST = (x, indent = '') ->
 
 
 if module is require.main then do ->
-  console.info exec '+/ 3 5 8 11', debug: true
+  console.info exec '1 1 2 3 ⍴¨ 3 5 8 11', debug: true
