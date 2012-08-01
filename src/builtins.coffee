@@ -656,7 +656,7 @@ monadic '⊢', 'Pass'
 dyadic '⊢', 'Right'
 
 # `⍬` Zilde (niladic function)
-builtins['get_⍬'] = -> withShape [], []
+builtins['⍬'] = withShape [], []
 
 
 
