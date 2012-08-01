@@ -574,7 +574,7 @@ dyadic '⌷', 'Index', (b, a) ->
 
 # Helper for `⍋` and `⍒`
 grade = (b, a, direction) ->
-  if not b? then b = a; a = []
+  if not a? then a = []
   sa = shapeOf a
   sb = shapeOf b
   assert sa.length, 'Left argument to ⍋ or ⍒ must be non-scalar.'
