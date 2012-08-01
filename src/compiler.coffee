@@ -167,6 +167,8 @@ resolveSeqs = (ast) ->
           t2 = visit node[2]
           assert t2.type is 'X', 'Only data can be used as an index'
           t1
+        when 'embedded'
+          {type: 'X'}
         when 'seq'
           a = node[1...]
           a.reverse()
@@ -300,6 +302,8 @@ toJavaScript = (ast) ->
         "#{visit node[2]}(#{visit node[3]}, #{visit node[1]})"
       when 'postfixOperator'
         "#{visit node[2]}(#{visit node[1]})"
+      when 'embedded'
+        "(#{node[1].replace /(^«|»$)/g, ''})"
       else
         die "Unrecognised node type, '#{node[0]}'"
 
