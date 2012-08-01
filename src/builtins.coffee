@@ -387,7 +387,7 @@ catenate = (b, a, axis = -1) ->
   assert sa.length is sb.length, 'Length error: Cannot catenate arrays of different ranks'
   if axis < 0 then axis += sa.length
   for i in [0...sa.length] when sa[i] isnt sb[i] and i isnt axis
-    die 'Length error: Catenated arrays must match at all axes exept the one to catenate on'
+    die 'Length error: Catenated arrays must match at all axes except the one to catenate on'
   ni = prod sa[...axis]       # number of items across all dimensions before `axis'
   nja = sa[axis]              # number of items across `axis' in `a'
   njb = sb[axis]              # number of items across `axis' in `b'
@@ -683,10 +683,10 @@ reduce = (f, _, axis = -1) -> (b, a) ->
   r =
     if isBackwards
       for i in [0 ... n - a + 1]
-        x = items[i + a - 1]; (for j in [i + a - 2 ... i - 1] by -1 then x = f x, items[j]); x
+        x = items[i + a - 1]; (for j in [i + a - 2 ... i - 1] by -1 then x = f items[j], x); x
     else
       for i in [0 ... n - a + 1]
-        x = items[i]; (for j in [i + 1 ... i + a] by 1 then x = f x, items[j]); x
+        x = items[i]; (for j in [i + 1 ... i + a] by 1 then x = f items[j], x); x
   if invokedAsMonadic then r[0] else r
 
 # Helper for / and ⌿ in their function sense

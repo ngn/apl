@@ -341,5 +341,9 @@ printAST = (x, indent = '') ->
 
 
 if module is require.main then do ->
-  r = exec '"asdf" = "asdg"', debug: true
-  console.info '-----RESULT-----\n' + r
+  r = exec '''
+
+    "ab", "cd"
+
+  ''', debug: true
+  console.info '-----RESULT-----\n' + repr r
