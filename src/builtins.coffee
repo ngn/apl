@@ -185,8 +185,8 @@ pervasive = (f) -> F = (b, a) ->
 
 # # Built-in functions
 
-monadic '+', 'Add',            pervasive (x) -> x
-dyadic  '+', 'Conjugate',      pervasive (y, x) -> x + y
+monadic '+', 'Conjugate',      pervasive (x) -> x
+dyadic  '+', 'Add',            pervasive (y, x) -> x + y
 monadic '−', 'Negate',         pervasive (x) -> -x
 dyadic  '−', 'Subtract',       pervasive (y, x) -> x - y
 monadic '×', 'Sign of',        pervasive (x) -> (x > 0) - (x < 0)
