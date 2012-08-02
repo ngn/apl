@@ -143,6 +143,9 @@ resolveSeqs = (ast) ->
           node.vars = inherit vars
           queue.push node
           null
+        when 'guard'
+          visit node[1]
+          visit node[2]
         when 'assign'
           name = node[1]
           h = visit node[2]
@@ -258,6 +261,9 @@ toJavaScript = (ast) ->
         a = for child in node[1...] then visit child
         a[a.length - 1] = 'return ' + a[a.length - 1] + ';'
         r += a.join(';\n')
+      when 'guard'
+        alternative = if node.type is 'X' then '0' else '(function () {return 0;})'
+        "(#{visit node[1]}) ? (#{visit node[2]}) : #{alternative}"
       when 'assign'
         name = node[1]
         if (v = closestScope(node).vars[setter = "set_#{name}"])?.type is 'F'
