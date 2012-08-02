@@ -793,13 +793,11 @@ postfixOperator '¨', 'Each', (f) -> (b, a) ->
 prefixOperator '∘.', 'Outer product', outerProduct = (f) ->
   assert typeof f is 'function'
   (b, a) ->
-    assert b?, 'Operator ∘. (Outer product) works only with dyadic functions'
+    assert a?, 'Operator ∘. (Outer product) works only with dyadic functions'
     a = array a
     b = array b
     r = []
-    for x in a
-      for y in b
-        r.push f x, y
+    for x in a then for y in b then r.push f y, x
     withShape (shapeOf a).concat(shapeOf b), r
 
 # todo: the general formula for higher dimensions is
