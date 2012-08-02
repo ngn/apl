@@ -346,10 +346,8 @@ printAST = (x, indent = '') ->
 
 
 
-if module is require.main then do ->
-  r = exec '''
-
-    "ab", "cd"
-
-  ''', debug: true
-  console.info '-----RESULT-----\n' + repr r
+#do ->
+#  r = exec '''
+#    +/ (1 3 5 7) = 2 3 6 7
+#  ''', debug: true
+#  console.info '-----RESULT-----\n' + repr r

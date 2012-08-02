@@ -804,9 +804,8 @@ prefixOperator '∘.', 'Outer product', outerProduct = (f) ->
 
 # todo: the general formula for higher dimensions is
 # `A f.g B   <=>   f/¨ (⊂[⍴⍴A]A)∘.g ⊂[1]B`
-infixOperator '.', 'Inner product', (f, g) ->
+infixOperator '.', 'Inner product', (g, f) ->
   F = reduce f
-  G = outerProduct g
   (b, a) ->
     assert shapeOf(a).length <= 1 and shapeOf(b).length <= 1, 'Inner product operator (.) is implemented only for arrays of rank no more than 1.'
     F g b, a
