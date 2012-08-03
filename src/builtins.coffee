@@ -144,18 +144,23 @@ prefixOperator  = (a...) -> (def tmp.monadic, a...).isPrefixOperator = true
 postfixOperator = (a...) -> (def tmp.monadic, a...).isPostfixOperator = true
 infixOperator   = (a...) -> (def tmp.dyadic,  a...).isInfixOperator = true
 
+overloadable = (symbol, f) ->
+  F = (b, a, args...) ->
+    if typeof b?[symbol] is 'function' then b[symbol] a, args...
+    else if typeof a?[symbol] is 'function' then a[symbol] a, args...
+    else f b, a, args...
+  F.isPrefixOperator = f.isPrefixOperator
+  F.isPostfixOperator = f.isPostfixOperator
+  F.isInfixOperator = f.isInfixOperator
+  F
+
 ambivalent = (symbol, f1, f2) -> (b, a, args...) ->
-  (
-    if typeof b?[symbol] is 'function' then b[symbol]
-    else if typeof a?[symbol] is 'function' then a[symbol]
-    else if a? then f2
-    else f1
-  ) b, a, args...
+  if a? then f2 b, a, args... else f1 b, a, args...
 
 endOfBuiltins = ->
-  for k, f of tmp.monadic when not tmp.dyadic[k] then builtins[k] = f
-  for k, f of tmp.dyadic when not tmp.monadic[k] then builtins[k] = f
-  for k, f of tmp.monadic when tmp.dyadic[k] then builtins[k] = ambivalent k, f, tmp.dyadic[k]
+  for k, f of tmp.monadic when not tmp.dyadic[k] then builtins[k] = overloadable k, f
+  for k, f of tmp.dyadic when not tmp.monadic[k] then builtins[k] = overloadable k, f
+  for k, f of tmp.monadic when tmp.dyadic[k] then builtins[k] = overloadable k, ambivalent k, f, tmp.dyadic[k]
   tmp = null
 
 # `pervasive(f)` is a decorator which takes a scalar function `f` and makes it

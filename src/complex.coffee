@@ -1,6 +1,10 @@
+{die, assert} = require './helpers'
+
 exports.Complex = class Complex
 
   constructor: (@re = 0, @im = 0) ->
+    assert typeof @re is 'number'
+    assert typeof @im is 'number'
     if not @im then return @re
 
   toString: ->

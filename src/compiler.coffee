@@ -71,6 +71,7 @@ hex4 = (n) -> s = '0000' + n.toString 16; s[s.length - 4 ...]
 jsName = (name) -> predefinedNames[name] or name.replace /[^a-z0-9]/gi, (x) -> '_' + hex4 ord x
 
 builtins = inherit require('./builtins').builtins
+builtins.Complex = require('./complex').Complex
 
 builtinVarInfo =
   '⍺': {type: 'X'}
@@ -288,7 +289,7 @@ toJavaScript = (ast) ->
         s = node[1].replace /¯/g, '-'
         a = for x in s.split /j/i
               if x.match /^-?0x/i then parseInt x, 16 else parseFloat x
-        if a.length is 1 then '' + a[0] else "new Complex(#{a[0]}, #{a[1]})"
+        if a.length is 1 then '' + a[0] else "new _.Complex(#{a[0]}, #{a[1]})"
       when 'index'
         closestScope(node).vars['⌷'].used = true
         "_index(#{visit node[1]}, [#{
@@ -352,8 +353,8 @@ printAST = (x, indent = '') ->
 
 
 
-do ->
-  r = exec '''
-    a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]
-  ''', debug: true
-  console.info '-----RESULT-----\n' + repr r
+#do ->
+#  r = exec '''
+#    (1j¯2 + ¯2j3) = ¯1j1
+#  ''', debug: true
+#  console.info '-----RESULT-----\n' + repr r
