@@ -116,7 +116,7 @@ compile = (source, opts = {}) ->
   output
 
 assignParents = (node) ->
-  for child in node[1...]
+  for child in node[1...] when child
     assignParents child
     child.parent = node
   return
@@ -167,8 +167,9 @@ resolveSeqs = (ast) ->
           {type: 'X'}
         when 'index'
           t1 = visit node[1]
-          t2 = visit node[2]
-          assert t2.type is 'X', 'Only data can be used as an index'
+          for c in node[2...] when c isnt null
+            t = visit c
+            assert t.type is 'X', 'Only data can be used as an index'
           t1
         when 'embedded'
           {type: 'X'}
@@ -290,7 +291,12 @@ toJavaScript = (ast) ->
         if a.length is 1 then '' + a[0] else "new Complex(#{a[0]}, #{a[1]})"
       when 'index'
         closestScope(node).vars['⌷'].used = true
-        "_index(#{visit node[1]}, #{visit node[2]})"
+        "_index(#{visit node[1]}, [#{
+          (
+            for c in node[2...]
+              if c is null then '[]' else visit c
+          ).join ', '
+        }])"
       when 'seq'
         die 'No "seq" nodes are expected at this stage.'
       when 'vector'
@@ -330,7 +336,7 @@ closestScope = (node) ->
   while node[0] isnt 'body' then node = node.parent
   node
 
-isArray = (x) -> x.length? and typeof x isnt 'string'
+isArray = (x) -> x?.length? and typeof x isnt 'string'
 
 printAST = (x, indent = '') ->
   if isArray x
@@ -346,8 +352,8 @@ printAST = (x, indent = '') ->
 
 
 
-#do ->
-#  r = exec '''
-#    +/ (1 3 5 7) = 2 3 6 7
-#  ''', debug: true
-#  console.info '-----RESULT-----\n' + repr r
+do ->
+  r = exec '''
+    a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]
+  ''', debug: true
+  console.info '-----RESULT-----\n' + repr r
