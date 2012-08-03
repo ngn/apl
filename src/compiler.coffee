@@ -78,6 +78,7 @@ builtinVarInfo =
   '⍵': {type: 'X'}
 
 do ->
+  builtinVarInfo['∇'] = {type: 'F'}
   for k, v of builtins
     v = builtins[k]
     builtinVarInfo[k] =
@@ -96,9 +97,6 @@ do ->
 
     if k.match /^[gs]et_.*/
       builtinVarInfo[k[4...]] = {type: 'X'}
-
-  builtinVarInfo['set_⎕'].blah = 'qer'
-
 
 exports.exec = exec = (source, opts = {}) ->
   h = inherit builtins
@@ -253,43 +251,61 @@ resolveSeqs = (ast) ->
 # Convert AST to JavaScript code
 toJavaScript = (ast) ->
 
-
   visit = (node) ->
     switch node[0]
+
       when 'body'
         r = ''
-        if node.varsToDeclare.length
-          r += 'var ' + node.varsToDeclare.join(', ') + ';\n'
-        a = for child in node[1...] then visit child
-        a[a.length - 1] = 'return ' + a[a.length - 1] + ';'
-        r += a.join(';\n')
+        if node.length is 1
+          'return [];\n'
+        else
+          if node.varsToDeclare.length
+            r += 'var ' + node.varsToDeclare.join(', ') + ';\n'
+          a = for child in node[1...] then visit child
+          a[a.length - 1] = 'return ' + a[a.length - 1] + ';'
+          r += a.join(';\n')
+
       when 'guard'
-        alternative = if node.type is 'X' then '0' else '(function () {return 0;})'
-        "(#{visit node[1]}) ? (#{visit node[2]}) : #{alternative}"
+        """
+          if (#{visit node[1]}) {
+            return #{visit node[2]};
+          }
+        """
+
       when 'assign'
         name = node[1]
+        assert name isnt '∇', 'Assignment to ∇ is not allowed.'
         if (v = closestScope(node).vars[setter = "set_#{name}"])?.type is 'F'
           v.used = true
           "#{jsName setter}(#{visit node[2]})" # todo: pass-through value
         else
           "#{jsName name} = #{visit node[2]}"
+
       when 'sym'
-        "#{jsName node[1]}"
+        name = node[1]
+        if name is '∇'
+          'arguments.callee'
+        else
+          "#{jsName name}"
+
       when 'lambda'
         """
           function (_w, _a) {
             #{visit node[1]}
           }
         """
+
       when 'str'
         s = node[1]
         d = s[0] # the delimiter: '"' or "'"
         d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d + '.split("")'
+
       when 'num'
         s = node[1].replace /¯/g, '-'
         a = for x in s.split /j/i
               if x.match /^-?0x/i then parseInt x, 16 else parseFloat x
         if a.length is 1 then '' + a[0] else "new _.Complex(#{a[0]}, #{a[1]})"
+
       when 'index'
         closestScope(node).vars['⌷'].used = true
         "_index(#{visit node[1]}, [#{
@@ -298,25 +314,35 @@ toJavaScript = (ast) ->
               if c is null then '[]' else visit c
           ).join ', '
         }])"
+
       when 'seq'
         die 'No "seq" nodes are expected at this stage.'
+
       when 'vector'
         n = node.length - 1
         "[#{(for child in node[1...] then visit child).join ', '}]"
+
       when 'niladic'
         "#{visit node[1]}()"
+
       when 'monadic'
         "#{visit node[1]}(#{visit node[2]})"
+
       when 'dyadic'
         "#{visit node[2]}(#{visit node[3]}, #{visit node[1]})"
+
       when 'prefixOperator'
         "#{visit node[1]}(#{visit node[2]})"
+
       when 'infixOperator'
         "#{visit node[2]}(#{visit node[3]}, #{visit node[1]})"
+
       when 'postfixOperator'
         "#{visit node[2]}(#{visit node[1]})"
+
       when 'embedded'
-        "(#{node[1].replace /(^«|»$)/g, ''})"
+        "_.aplify(#{node[1].replace /(^«|»$)/g, ''})"
+
       else
         die "Unrecognised node type, '#{node[0]}'"
 
@@ -355,6 +381,9 @@ printAST = (x, indent = '') ->
 
 #do ->
 #  r = exec '''
-#    (1j¯2 + ¯2j3) = ¯1j1
+#    x ← «{'⍟': function (y) {
+#      console.info('y =' + y);
+#      return y + 1234;
+#    }}» ◇ x ⍟ 1
 #  ''', debug: true
 #  console.info '-----RESULT-----\n' + repr r

@@ -147,7 +147,7 @@ infixOperator   = (a...) -> (def tmp.dyadic,  a...).isInfixOperator = true
 overloadable = (symbol, f) ->
   F = (b, a, args...) ->
     if typeof b?[symbol] is 'function' then b[symbol] a, args...
-    else if typeof a?[symbol] is 'function' then a[symbol] a, args...
+    else if typeof a?[symbol] is 'function' then a[symbol] b, args...
     else f b, a, args...
   F.isPrefixOperator = f.isPrefixOperator
   F.isPostfixOperator = f.isPostfixOperator
@@ -661,7 +661,7 @@ monadic '⊢', 'Pass'
 dyadic '⊢', 'Right'
 
 # `⍬` Zilde (niladic function)
-builtins['⍬'] = withShape [], []
+builtins['⍬'] = []
 
 
 
@@ -823,5 +823,12 @@ infixOperator '⍣', 'Power operator', (f, n) ->
     y
 
 builtins['set_⎕'] = (x) -> console.info x; x
+
+builtins.aplify = (x) ->
+  assert x isnt null
+  assert typeof x isnt 'undefined'
+  if typeof x is 'string'
+    x = x.split ''
+  x
 
 endOfBuiltins()
