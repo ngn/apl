@@ -100,7 +100,7 @@
 
 
 
-{assert, die, cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
+{assert, die, inherit, cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
 {min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin, cos, tan, asin, acos, atan} = Math
 repr = JSON.stringify
 
@@ -140,51 +140,80 @@ def = (h, name, description, f) ->
 
 monadic         = (a...) -> def tmp.monadic, a...
 dyadic          = (a...) -> def tmp.dyadic,  a...
-prefixOperator  = (a...) -> (def tmp.monadic, a...).isPrefixOperator = true
-postfixOperator = (a...) -> (def tmp.monadic, a...).isPostfixOperator = true
-infixOperator   = (a...) -> (def tmp.dyadic,  a...).isInfixOperator = true
+prefixOperator  = (a...) -> ((def tmp.monadic, a...).aplMetaInfo ?= {}).isPrefixOperator = true
+postfixOperator = (a...) -> ((def tmp.monadic, a...).aplMetaInfo ?= {}).isPostfixOperator = true
+infixOperator   = (a...) -> ((def tmp.dyadic,  a...).aplMetaInfo ?= {}).isInfixOperator = true
+
+withMetaInfoFrom = (f, g) ->
+  assert typeof f is 'function'
+  assert typeof g is 'function'
+  g.aplMetaInfo = if f.aplMetaInfo then inherit f.aplMetaInfo else {}
+  g
 
 overloadable = (symbol, f) ->
-  F = (b, a, args...) ->
-    if typeof b?[symbol] is 'function' then b[symbol] a, args...
-    else if typeof a?[symbol] is 'function' then a[symbol] b, args...
-    else f b, a, args...
-  F.isPrefixOperator = f.isPrefixOperator
-  F.isPostfixOperator = f.isPostfixOperator
-  F.isInfixOperator = f.isInfixOperator
-  F
+  assert typeof symbol is 'string'
+  assert typeof f is 'function'
+  withMetaInfoFrom f,
+    (b, a, args...) ->
+      if typeof b?[symbol] is 'function' then b[symbol] a, args...
+      else if typeof a?[symbol] is 'function' then a[symbol] b, args...
+      else f b, a, args...
 
-ambivalent = (symbol, f1, f2) -> (b, a, args...) ->
-  if a? then f2 b, a, args... else f1 b, a, args...
+ambivalent = (symbol, f1, f2) ->
+  assert typeof symbol is 'string'
+  if not (f1 and f2) then return f1 or f2
+  assert typeof f1 is 'function'
+  assert typeof f2 is 'function'
+  F = (b, a, args...) -> if a? then f2 b, a, args... else f1 b, a, args...
 
 endOfBuiltins = ->
-  for k, f of tmp.monadic when not tmp.dyadic[k] then builtins[k] = overloadable k, f
-  for k, f of tmp.dyadic when not tmp.monadic[k] then builtins[k] = overloadable k, f
-  for k, f of tmp.monadic when tmp.dyadic[k] then builtins[k] = overloadable k, ambivalent k, f, tmp.dyadic[k]
+  ks = (for k of tmp.monadic then k).concat(for k of tmp.dyadic when not tmp.monadic[k]? then k)
+  for k in ks
+    f1 = tmp.monadic[k]
+    if f1?
+      f1 = overloadable k, f1
+      f1 = maybeMakePervasive f1
+    f2 = tmp.dyadic[k]
+    if f2?
+      f2 = overloadable k, f2
+      f2 = maybeMakePervasive f2
+    builtins[k] = ambivalent(k, f1, f2)
   tmp = null
 
-# `pervasive(f)` is a decorator which takes a scalar function `f` and makes it
-# propagate through arrays.
-pervasive = (f) -> F = (b, a) ->
-  if a? # dyadic pervasiveness
-    if isSimple(b) and isSimple(a) then f b, a
-    else if isSimple a then withShape b.shape, (for x in b then F x, a)
-    else if isSimple b then withShape a.shape, (for x in a then F b, x)
-    else
-      sa = shapeOf a; sb = shapeOf b
-      for i in [0 ... min sa.length, sb.length]
-        assert sa[i] is sb[i], 'Length error'
-      if sa.length > sb.length
-        k = prod sa[sb.length...]
-        withShape sa, (for i in [0...a.length] then F a[i], b[floor i / k])
-      else if sa.length < sb.length
-        k = prod sb[sa.length...]
-        withShape sb, (for i in [0...b.length] then F a[floor i / k], b[i])
-      else
-        withShape sa, (for i in [0...a.length] then F a[i], b[i])
-  else # monadic pervasiveness
-    if isSimple b then f b
-    else withShape b.shape, (for x in b then F x)
+# Just mark `f` as pervasive for now, it will be made pervasive in `endOfBuiltins()
+pervasive = (f) ->
+  assert typeof f is 'function'
+  (f.aplMetaInfo ?= {}).isPervasive = true
+  f
+
+# `maybeMakePervasive(f)` is a decorator which takes a scalar function `f` and makes it
+# propagate through arrays, if it has `f.aplMetaInfo.isPervasive`.
+maybeMakePervasive = (f) ->
+  assert typeof f is 'function'
+  if not f.aplMetaInfo?.isPervasive
+    f
+  else
+    withMetaInfoFrom f, (F = (b, a) ->
+      if a? # dyadic pervasiveness
+        if isSimple(b) and isSimple(a) then f b, a
+        else if isSimple a then withShape b.shape, (for x in b then F x, a)
+        else if isSimple b then withShape a.shape, (for x in a then F b, x)
+        else
+          sa = shapeOf a; sb = shapeOf b
+          for i in [0 ... min sa.length, sb.length]
+            assert sa[i] is sb[i], 'Length error'
+          if sa.length > sb.length
+            k = prod sa[sb.length...]
+            withShape sa, (for i in [0...a.length] then F b[floor i / k], a[i])
+          else if sa.length < sb.length
+            k = prod sb[sa.length...]
+            withShape sb, (for i in [0...b.length] then F b[i], a[floor i / k])
+          else
+            withShape sa, (for i in [0...a.length] then F b[i], a[i])
+      else # monadic pervasiveness
+        if isSimple b then f b
+        else withShape b.shape, (for x in b then F x)
+    )
 
 
 
@@ -254,8 +283,8 @@ monadic '!', 'Factorial', pervasive (a) ->
   r = 1; (if n > 1 then for i in [2 .. n] then r *= i); r
 
 dyadic '!', 'Binomial', pervasive (b, a) ->
-  k = a = floor num a
-  n = b = floor num b
+  k = floor num a
+  n = floor num b
   if not (0 <= k <= n) then return 0 # todo: Special cases for negatives and non-integers
   if 2 * k > n then k = n - k # do less work
   r = 1; (if k > 0 then for i in [1 .. k] then r = r * (n - k + i) / i); r

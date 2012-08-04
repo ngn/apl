@@ -84,13 +84,13 @@ do ->
     builtinVarInfo[k] =
       if typeof v isnt 'function'
         {type: 'X'}
-      else if v.isNiladicFunction
+      else if v.aplMetaInfo?.isNiladicFunction
         {type: 'F', isNiladicFunction: true}
-      else if v.isPrefixOperator
+      else if v.aplMetaInfo?.isPrefixOperator
         {type: 'F', isPrefixOperator: true}
-      else if v.isPostfixOperator
+      else if v.aplMetaInfo?.isPostfixOperator
         {type: 'F', isPostfixOperator: true}
-      else if v.isInfixOperator
+      else if v.aplMetaInfo?.isInfixOperator
         {type: 'F', isInfixOperator: true}
       else
         {type: 'F'}
@@ -156,9 +156,14 @@ resolveSeqs = (ast) ->
           h
         when 'sym'
           name = node[1]
-          assert vars[name]?, "Symbol '#{name}' referenced before assignment"
-          vars[name].used = true
-          vars[name]
+          if (v = vars["get_#{name}"])?.type is 'F'
+            v.used = true
+            {type: 'X'}
+          else
+            v = vars[name]
+            assert v, "Symbol '#{name}' referenced before assignment"
+            v.used = true
+            v
         when 'lambda'
           visit node[1]
           {type: 'F'}
@@ -233,8 +238,8 @@ resolveSeqs = (ast) ->
 
           # Replace `"seq"` node with `a[0]` in the AST
           node[0...] = a[0]
-          a[0][0] = 'IDIOT'
           a[0].parent = null
+          for c in node[1...] when c then c.parent = node
 
           h[0]
 
@@ -285,6 +290,9 @@ toJavaScript = (ast) ->
         name = node[1]
         if name is '∇'
           'arguments.callee'
+        else if (v = closestScope(node).vars[getter = "get_#{name}"])?.type is 'F'
+          v.used = true
+          "#{jsName getter}()"
         else
           "#{jsName name}"
 
@@ -382,7 +390,14 @@ printAST = (x, indent = '') ->
 
 #do ->
 #  r = exec '''
-#    ⍳0
-#    ""
+#    radius ← 3
+#    get_circumference ← {2 × ○ radius}
+#    get_surface ← {○ radius ⋆ 2}
+
+#    before ← 0.01× ⌊ 100× radius circumference surface
+#    radius ← radius + 1
+#    after  ← 0.01× ⌊ 100× radius circumference surface
+
+#    before after
 #  ''', debug: true
 #  console.info '-----RESULT-----\n', r
