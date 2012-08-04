@@ -19,3 +19,5 @@ jQuery ($) ->
   $('#editor img').live 'tap', (e) -> $(@).remove(); false
   $('#editor img').live 'taphold', (e) -> $(@).css 'border', 'dashed green 1px'; false
 
+
+

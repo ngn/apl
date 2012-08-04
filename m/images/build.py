@@ -1,16 +1,25 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 from subprocess import call
+from PIL import Image
 
-n = 8 # number of icons in the sprite
-w = h = 18 # size of an icon
-for i in range(n):
-    call([
-        'inkscape', 'symbols.svg',
-        '-e', 'apl%d.png' % i,
-        '-a', '%d:%d:%d:%d' % (i * w, 0, (i + 1) * w, h)
-    ])
+# size of an icon
+w = h = 18
+
+call(['inkscape', 'symbols.svg', '-e', 'symbols.png'])
+im = Image.open('symbols.png')
+cols = im.size[0] // w
+rows = im.size[1] // h
+
+for i in range(rows * cols):
+    r = i // cols
+    c = i % cols
+    x0 = c * w
+    y0 = r * h
+    x1 = x0 + w
+    y1 = y0 + h
+    im.crop((x0, y0, x1, y1)).save('apl%d.png' % i, 'PNG')
 
 with open('symbols.css', 'w') as f:
-    for i in range(n):
+    for i in range(rows * cols):
         f.write('.ui-icon-apl%d { background-image: url("apl%d.png"); }' % (i, i))
