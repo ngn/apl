@@ -101,23 +101,22 @@
       return false;
     });
     $('#go').closest('form').submit(function() {
-      var browserBuiltins, ctx, exec, inherit;
+      var browserBuiltins, ctx, exec, inherit, result;
       exec = require('./compiler').exec;
       browserBuiltins = require('./browser').browserBuiltins;
       inherit = require('./helpers').inherit;
       ctx = inherit(browserBuiltins);
-      exec($('#code').val(), ctx, function(err, result) {
-        if (err) {
-          if (typeof console !== "undefined" && console !== null) {
-            if (typeof console.error === "function") {
-              console.error(err);
-            }
+      try {
+        result = exec($('#code').val());
+        $('#result').html(formatAsHTML(result));
+      } catch (err) {
+        if (typeof console !== "undefined" && console !== null) {
+          if (typeof console.error === "function") {
+            console.error(err);
           }
-          return $('#result').html("<div class='error'>" + (escHard(err.message)) + "</div>");
-        } else {
-          return $('#result').html(formatAsHTML(result));
         }
-      });
+        $('#result').html("<div class='error'>" + (escHard(err.message)) + "</div>");
+      }
       return false;
     });
     symbolDefs = [
