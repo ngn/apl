@@ -2,8 +2,32 @@
 (function() {
 
   jQuery(function($) {
-    return $('#aplButtons .sym').on('click', function() {
-      $('#editor').append("<img src='images/" + ($(this).data('icon')) + ".png' />");
+    $('#aplButtons .sym').live('tap', function() {
+      $("<img src='images/" + ($(this).data('icon')) + ".png' />").appendTo('#editor');
+      return false;
+    });
+    $('#aplButtons .sym').bind('taphold', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      $("<img src='images/" + ($(this).data('icon')) + ".png' />").css({
+        border: 'solid red 1px'
+      }).appendTo('#editor');
+      return false;
+    });
+    $('#aplButtons img').live('taphold', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      $("<img src='" + ($(this).attr('src')) + "' />").css({
+        border: 'solid red 1px'
+      }).appendTo('#editor');
+      return false;
+    });
+    $('#editor img').live('tap', function(e) {
+      $(this).remove();
+      return false;
+    });
+    return $('#editor img').live('taphold', function(e) {
+      $(this).css('border', 'dashed green 1px');
       return false;
     });
   });
