@@ -298,7 +298,8 @@ toJavaScript = (ast) ->
       when 'str'
         s = node[1]
         d = s[0] # the delimiter: '"' or "'"
-        d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d + '.split("")'
+        "_.aplify(#{d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d})"
+
 
       when 'num'
         s = node[1].replace /¯/g, '-'
@@ -381,9 +382,7 @@ printAST = (x, indent = '') ->
 
 #do ->
 #  r = exec '''
-#    x ← «{'⍟': function (y) {
-#      console.info('y =' + y);
-#      return y + 1234;
-#    }}» ◇ x ⍟ 1
+#    ⍳0
+#    ""
 #  ''', debug: true
-#  console.info '-----RESULT-----\n' + repr r
+#  console.info '-----RESULT-----\n', r

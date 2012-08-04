@@ -828,7 +828,7 @@ builtins.aplify = (x) ->
   assert x isnt null
   assert typeof x isnt 'undefined'
   if typeof x is 'string'
-    x = x.split ''
+    x = withPrototype ' ', x.split ''
   x
 
 endOfBuiltins()
