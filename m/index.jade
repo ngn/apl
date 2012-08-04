@@ -1,0 +1,69 @@
+!!!5
+html
+  head
+    title NGN APL
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css')
+    link(rel='stylesheet', href='images/symbols.css')
+
+    // APL core
+    script(src='../web/examples.js')
+    script(src='../web/fake-exports.js')
+    script(src='../lib/helpers.js')
+    script(src='../lib/parser.js')
+    script(src='../lib/builtins.js')
+    script(src='../lib/complex.js')
+    script(src='../lib/compiler.js')
+    script(src='../lib/browser.js')
+
+    // jQuery Mobile
+    script(src='http://code.jquery.com/jquery-1.7.1.min.js')
+    script(src='http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js')
+
+    // Custom scripts
+    script(src='index.js')
+    script(src='editor.js')
+
+  body
+    div(data-role='page')
+      div(data-role='header'): h1 NGN APL
+      #editor(data-role='content')
+        img#cursor(src='images/cursor.png')
+      #aplButtons(data-role="footer", data-id="foo1", data-position="fixed")
+        a.sym(href="#", data-role="button", data-icon="apl0", data-iconpos="notext") Conjugate / Add
+        a.sym(href="#", data-role="button", data-icon="apl1", data-iconpos="notext") Negate / Subtract
+        a.sym(href="#", data-role="button", data-icon="apl2", data-iconpos="notext") Sign of / Multiply
+        a.sym(href="#", data-role="button", data-icon="apl3", data-iconpos="notext") Reciprocal / Delete
+        a.sym(href="#", data-role="button", data-icon="apl4", data-iconpos="notext") Reciprocal / Delete
+        a.sym(href="#", data-role="button", data-icon="apl5", data-iconpos="notext") Reciprocal / Delete
+        a.sym(href="#", data-role="button", data-icon="apl6", data-iconpos="notext") Reciprocal / Delete
+        a.sym(href="#", data-role="button", data-icon="apl7", data-iconpos="notext") Reciprocal / Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
+        a.sym(href="#", data-role="button", data-icon="delete", data-iconpos="notext") Delete
