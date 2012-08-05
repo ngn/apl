@@ -23,3 +23,6 @@ for i in range(rows * cols):
 with open('symbols.css', 'w') as f:
     for i in range(rows * cols):
         f.write('.ui-icon-apl%d { background-image: url("apl%d.png"); }\n' % (i, i))
+
+# Export cursor
+call(['inkscape', 'cursor.svg', '-e', 'cursor.png'])

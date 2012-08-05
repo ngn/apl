@@ -2,32 +2,15 @@
 (function() {
 
   jQuery(function($) {
+    setInterval(function() {
+      return $('#cursor').css('visibility', $('#cursor').css('visibility') === 'hidden' ? 'visible' : 'hidden');
+    }, 500);
     $('#aplButtons .sym').live('tap', function() {
-      $("<img src='images/" + ($(this).data('icon')) + ".png' />").appendTo('#editor');
+      $("<img src='images/" + ($(this).data('icon')) + ".png' />").insertBefore('#cursor');
       return false;
     });
-    $('#aplButtons .sym').bind('taphold', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      $("<img src='images/" + ($(this).data('icon')) + ".png' />").css({
-        border: 'solid red 1px'
-      }).appendTo('#editor');
-      return false;
-    });
-    $('#aplButtons img').live('taphold', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      $("<img src='" + ($(this).attr('src')) + "' />").css({
-        border: 'solid red 1px'
-      }).appendTo('#editor');
-      return false;
-    });
-    $('#editor img').live('tap', function(e) {
-      $(this).remove();
-      return false;
-    });
-    return $('#editor img').live('taphold', function(e) {
-      $(this).css('border', 'dashed green 1px');
+    return $('#editor img').live('tap', function(e) {
+      $('#cursor').insertAfter(this);
       return false;
     });
   });
