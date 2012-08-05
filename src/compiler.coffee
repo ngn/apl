@@ -385,19 +385,3 @@ printAST = (x, indent = '') ->
   else
     console.info indent + JSON.stringify x
   return
-
-
-
-#do ->
-#  r = exec '''
-#    radius ← 3
-#    get_circumference ← {2 × ○ radius}
-#    get_surface ← {○ radius ⋆ 2}
-
-#    before ← 0.01× ⌊ 100× radius circumference surface
-#    radius ← radius + 1
-#    after  ← 0.01× ⌊ 100× radius circumference surface
-
-#    before after
-#  ''', debug: true
-#  console.info '-----RESULT-----\n', r
