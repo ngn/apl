@@ -1,14 +1,32 @@
-jQuery ($) ->
+$ ->
 
   setInterval(
     -> $('#cursor').css 'visibility', if $('#cursor').css('visibility') is 'hidden' then 'visible' else 'hidden'
     500
   )
 
-  $('#aplButtons .sym').live 'tap', ->
-    $("<img src='images/#{$(@).data 'icon'}.png' />").insertBefore '#cursor'
-    false
+  syms = '''
+      +−×÷←◇⍳⍴
+      ⍺⍵∈⍷⌈⌊∣?
+      !⋆⍟⊖⌽⍉○⌹
+      ∨∧∇∆⍒⍋∪∩
+      ⊤⊥⊢⊣.,⊂⊃
+      ⍕⍎<>∘⍪/\
+      =≠≤≥≡≢⌿⍀
+      ¨⍣
+  '''.replace /[ \t\n\r]+/g, ''
 
-  $('#editor img').live 'tap', (e) ->
+  for sym, i in syms
+    $("<img class='sym button' data-sym='#{sym}' src='images/apl#{i}.png' />").appendTo '#syms'
+
+  $('#footer .sym').live 'click', ->
+    $("<img data-sym='#{$(@).data 'sym'}' src='#{$(@).attr 'src'}' />").insertBefore '#cursor'
+
+  $('#backspace').click ->
+    $('#cursor').prev().remove()
+
+  $('#exec').click ->
+    console.info ($('#editor img').map -> $(@).data 'sym').get().join('')
+
+  $('#editor img').live 'click', ->
     $('#cursor').insertAfter @
-    false

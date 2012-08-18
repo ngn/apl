@@ -3,11 +3,48 @@ html
   head
     title NGN APL
     meta(charset='utf-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(rel='stylesheet', href='http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css')
-    link(rel='stylesheet', href='images/symbols.css')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
     style
-      body { -webkit-touch-callout: none !important; }
+
+      @font-face {
+        font-family: 'blah';
+        font-style: normal;
+        font-weight: 400;
+        src:
+          local('blah'),
+          url(http://themes.googleusercontent.com/static/fonts/permanentmarker/v2/9vYsg5VgPHKK8SXYbf3sMupm9E4gBdgiUiSJePew_SQ.woff)
+          format('woff');
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+      }
+
+      h1 {
+        font-family: 'blah', serif;
+        font-size: 50px;
+      }
+
+      #editor {
+        cursor: text;
+        padding: 10px;
+      }
+
+      #footer {
+        background-color: black;
+        padding: 5px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+
+      .button {
+        border: solid #555 3px;
+        border-color: #555 #bbb #bbb #555;
+        margin-right: 3px;
+        cursor: pointer;
+      }
 
     // APL core
     script(src='../web/examples.js')
@@ -19,28 +56,18 @@ html
     script(src='../lib/compiler.js')
     script(src='../lib/browser.js')
 
-    // jQuery Mobile
-    script(src='http://code.jquery.com/jquery-1.7.1.min.js')
-    script(src='http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js')
+    // jQuery
+    script(src='jq/jquery-1.7.2.min.js')
 
-    // Custom scripts
+    // Editor scripts
     script(src='index.js')
-    script(src='editor.js')
 
   body
-    div(data-role='page')
-      div(data-role='header'): h1 NGN APL
-      #editor(data-role='content')
-        img#cursor(src='images/cursor.png')
-      #aplButtons(data-role="footer", data-id="foo1", data-position="fixed")
-        div
-          a.sym(href="#", data-role="button", data-icon="apl0", data-iconpos="notext") Conjugate / Add
-          a.sym(href="#", data-role="button", data-icon="apl1", data-iconpos="notext") Negate / Subtract
-          a.sym(href="#", data-role="button", data-icon="apl2", data-iconpos="notext") Sign of / Multiply
-          a.sym(href="#", data-role="button", data-icon="apl3", data-iconpos="notext") Reciprocal / Delete
-          a.sym(href="#", data-role="button", data-icon="apl4", data-iconpos="notext") Assign
-          a.sym(href="#", data-role="button", data-icon="apl5", data-iconpos="notext") Equals
-          a.sym(href="#", data-role="button", data-icon="apl6", data-iconpos="notext") Index Generate / Index of
-          a.sym(href="#", data-role="button", data-icon="apl7", data-iconpos="notext") Shape of / Reshape
-          a.sym(href="#", data-role="button", data-icon="apl8", data-iconpos="notext") Alpha
-          a.sym(href="#", data-role="button", data-icon="apl9", data-iconpos="notext") Omega
+    h1 NGN APL
+    #editor(data-role='content')
+      img#cursor(src='images/cursor.png')
+    #footer
+      #syms
+      a#backspace.button(href="#", data-role="button", data-icon="delete") Backspace
+      a#exec.button(href="#", data-role="button", data-icon="check") Exec
+      a#enter.button(href="#", data-role="button", data-icon="") Enter

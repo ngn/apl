@@ -3,11 +3,47 @@
   <head>
     <title>NGN APL</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css">
-    <link rel="stylesheet" href="images/symbols.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <style>
-      body { -webkit-touch-callout: none !important; }
+      @font-face {
+        font-family: 'blah';
+        font-style: normal;
+        font-weight: 400;
+        src:
+          local('blah'),
+          url(http://themes.googleusercontent.com/static/fonts/permanentmarker/v2/9vYsg5VgPHKK8SXYbf3sMupm9E4gBdgiUiSJePew_SQ.woff)
+          format('woff');
+      }
+      
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      
+      h1 {
+        font-family: 'blah', serif;
+        font-size: 50px;
+      }
+      
+      #editor {
+        cursor: text;
+        padding: 10px;
+      }
+      
+      #footer {
+        background-color: black;
+        padding: 5px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+      
+      .button {
+        border: solid #555 3px;
+        border-color: #555 #bbb #bbb #555;
+        margin-right: 3px;
+        cursor: pointer;
+      }
       
     </style>
     <!-- APL core-->
@@ -19,22 +55,16 @@
     <script src="../lib/complex.js"></script>
     <script src="../lib/compiler.js"></script>
     <script src="../lib/browser.js"></script>
-    <!-- jQuery Mobile-->
-    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
-    <!-- Custom scripts-->
+    <!-- jQuery-->
+    <script src="jq/jquery-1.7.2.min.js"></script>
+    <!-- Editor scripts-->
     <script src="index.js"></script>
-    <script src="editor.js"></script>
   </head>
   <body>
-    <div data-role="page">
-      <div data-role="header">
-        <h1>NGN APL</h1>
-      </div>
-      <div id="editor" data-role="content"><img id="cursor" src="images/cursor.png"></div>
-      <div id="aplButtons" data-role="footer" data-id="foo1" data-position="fixed">
-        <div><a href="#" data-role="button" data-icon="apl0" data-iconpos="notext" class="sym">Conjugate / Add</a><a href="#" data-role="button" data-icon="apl1" data-iconpos="notext" class="sym">Negate / Subtract</a><a href="#" data-role="button" data-icon="apl2" data-iconpos="notext" class="sym">Sign of / Multiply</a><a href="#" data-role="button" data-icon="apl3" data-iconpos="notext" class="sym">Reciprocal / Delete</a><a href="#" data-role="button" data-icon="apl4" data-iconpos="notext" class="sym">Assign</a><a href="#" data-role="button" data-icon="apl5" data-iconpos="notext" class="sym">Equals</a><a href="#" data-role="button" data-icon="apl6" data-iconpos="notext" class="sym">Index Generate / Index of</a><a href="#" data-role="button" data-icon="apl7" data-iconpos="notext" class="sym">Shape of / Reshape</a><a href="#" data-role="button" data-icon="apl8" data-iconpos="notext" class="sym">Alpha</a><a href="#" data-role="button" data-icon="apl9" data-iconpos="notext" class="sym">Omega</a></div>
-      </div>
+    <h1>NGN APL</h1>
+    <div id="editor" data-role="content"><img id="cursor" src="images/cursor.png"></div>
+    <div id="footer">
+      <div id="syms"></div><a id="backspace" href="#" data-role="button" data-icon="delete" class="button">Backspace</a><a id="exec" href="#" data-role="button" data-icon="check" class="button">Exec</a><a id="enter" href="#" data-role="button" data-icon="" class="button">Enter</a>
     </div>
   </body>
 </html>
