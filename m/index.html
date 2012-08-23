@@ -1,51 +1,93 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>NGN APL</title>
+    <title>NGN APL
+    </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <style>
-      @font-face {
-        font-family: 'blah';
-        font-style: normal;
-        font-weight: 400;
-        src:
-          local('blah'),
-          url(http://themes.googleusercontent.com/static/fonts/permanentmarker/v2/9vYsg5VgPHKK8SXYbf3sMupm9E4gBdgiUiSJePew_SQ.woff)
-          format('woff');
-      }
-      
-      body {
-        padding: 0;
-        margin: 0;
-      }
-      
-      h1 {
-        font-family: 'blah', serif;
-        font-size: 50px;
-      }
-      
-      #editor {
-        cursor: text;
-        padding: 10px;
-      }
-      
-      #footer {
-        background-color: black;
-        padding: 5px;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-      }
-      
-      .button {
-        border: solid #555 3px;
-        border-color: #555 #bbb #bbb #555;
-        margin-right: 3px;
-        cursor: pointer;
-      }
-      
-    </style>
+    <style>@import url('index.css');
+@font-face {
+  font-family: 'apl';
+  font-style: normal;
+  font-weight: 400;
+  src: local('apl'), url('') format('woff');
+}
+
+</style>
+  </head>
+  <body>
+    <div id="editor" data-role="content"><img id="cursor" src="images/cursor.png">
+    </div>
+    <table class="keyboard">
+      <tr>
+        <td colSpan="2" class="key">q
+        </td>
+        <td colSpan="2" class="key">w
+        </td>
+        <td colSpan="2" class="key">e
+        </td>
+        <td colSpan="2" class="key">r
+        </td>
+        <td colSpan="2" class="key">t
+        </td>
+        <td colSpan="2" class="key">y
+        </td>
+        <td colSpan="2" class="key">u
+        </td>
+        <td colSpan="2" class="key">i
+        </td>
+        <td colSpan="2" class="key">o
+        </td>
+        <td colSpan="2" class="key">p
+        </td>
+      </tr>
+      <tr>
+        <td>
+        </td>
+        <td colSpan="2" class="key">a
+        </td>
+        <td colSpan="2" class="key">s
+        </td>
+        <td colSpan="2" class="key">d
+        </td>
+        <td colSpan="2" class="key">f
+        </td>
+        <td colSpan="2" class="key">g
+        </td>
+        <td colSpan="2" class="key">h
+        </td>
+        <td colSpan="2" class="key">j
+        </td>
+        <td colSpan="2" class="key">k
+        </td>
+        <td colSpan="2" class="key">l
+        </td>
+        <td>
+        </td>
+      </tr>
+      <tr>
+        <td>
+        </td>
+        <td colSpan="2" class="key">
+        </td>
+        <td colSpan="2" class="key">z
+        </td>
+        <td colSpan="2" class="key">x
+        </td>
+        <td colSpan="2" class="key">c
+        </td>
+        <td colSpan="2" class="key">v
+        </td>
+        <td colSpan="2" class="key">b
+        </td>
+        <td colSpan="2" class="key">n
+        </td>
+        <td colSpan="2" class="key">m
+        </td>
+        <td colSpan="3" class="key backspace">Backspace
+        </td>
+      </tr>
+    </table>
     <!-- APL core-->
     <script src="../web/examples.js"></script>
     <script src="../web/fake-exports.js"></script>
@@ -59,12 +101,5 @@
     <script src="jq/jquery-1.7.2.min.js"></script>
     <!-- Editor scripts-->
     <script src="index.js"></script>
-  </head>
-  <body>
-    <h1>NGN APL</h1>
-    <div id="editor" data-role="content"><img id="cursor" src="images/cursor.png"></div>
-    <div id="footer">
-      <div id="syms"></div><a id="backspace" href="#" data-role="button" data-icon="delete" class="button">Backspace</a><a id="exec" href="#" data-role="button" data-icon="check" class="button">Exec</a><a id="enter" href="#" data-role="button" data-icon="" class="button">Enter</a>
-    </div>
   </body>
 </html>

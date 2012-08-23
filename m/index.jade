@@ -5,46 +5,53 @@ html
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
     style
-
+      @import url('index.css');
       @font-face {
-        font-family: 'blah';
+        font-family: 'apl';
         font-style: normal;
         font-weight: 400;
-        src:
-          local('blah'),
-          url(http://themes.googleusercontent.com/static/fonts/permanentmarker/v2/9vYsg5VgPHKK8SXYbf3sMupm9E4gBdgiUiSJePew_SQ.woff)
-          format('woff');
+        src: local('apl'), url('') format('woff');
       }
 
-      body {
-        padding: 0;
-        margin: 0;
-      }
+  body
+    #editor(data-role='content')
+      img#cursor(src='images/cursor.png')
 
-      h1 {
-        font-family: 'blah', serif;
-        font-size: 50px;
-      }
-
-      #editor {
-        cursor: text;
-        padding: 10px;
-      }
-
-      #footer {
-        background-color: black;
-        padding: 5px;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-      }
-
-      .button {
-        border: solid #555 3px;
-        border-color: #555 #bbb #bbb #555;
-        margin-right: 3px;
-        cursor: pointer;
-      }
+    table.keyboard
+      tr
+        td.key(colSpan=2) q
+        td.key(colSpan=2) w
+        td.key(colSpan=2) e
+        td.key(colSpan=2) r
+        td.key(colSpan=2) t
+        td.key(colSpan=2) y
+        td.key(colSpan=2) u
+        td.key(colSpan=2) i
+        td.key(colSpan=2) o
+        td.key(colSpan=2) p
+      tr
+        td
+        td.key(colSpan=2) a
+        td.key(colSpan=2) s
+        td.key(colSpan=2) d
+        td.key(colSpan=2) f
+        td.key(colSpan=2) g
+        td.key(colSpan=2) h
+        td.key(colSpan=2) j
+        td.key(colSpan=2) k
+        td.key(colSpan=2) l
+        td
+      tr
+        td
+        td.key(colSpan=2)
+        td.key(colSpan=2) z
+        td.key(colSpan=2) x
+        td.key(colSpan=2) c
+        td.key(colSpan=2) v
+        td.key(colSpan=2) b
+        td.key(colSpan=2) n
+        td.key(colSpan=2) m
+        td.key.backspace(colSpan=3) Backspace
 
     // APL core
     script(src='../web/examples.js')
@@ -61,13 +68,3 @@ html
 
     // Editor scripts
     script(src='index.js')
-
-  body
-    h1 NGN APL
-    #editor(data-role='content')
-      img#cursor(src='images/cursor.png')
-    #footer
-      #syms
-      a#backspace.button(href="#", data-role="button", data-icon="delete") Backspace
-      a#exec.button(href="#", data-role="button", data-icon="check") Exec
-      a#enter.button(href="#", data-role="button", data-icon="") Enter

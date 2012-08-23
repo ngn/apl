@@ -1,0 +1,34 @@
+body {
+  padding: 0;
+  margin: 0; }
+
+#editor {
+  cursor: text;
+  padding: 10px; }
+
+.button {
+  border: solid #555555 3px;
+  border-color: #555555 #bbbbbb #bbbbbb #555555;
+  margin-right: 3px;
+  cursor: pointer; }
+
+.keyboard {
+  width: 100%;
+  background-color: black;
+  padding: 5px;
+  position: fixed;
+  bottom: 0; }
+  .keyboard .key {
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    border: outset #888888 5px;
+    background-color: #222222; }
+  .keyboard .key.down {
+    border: inset #888888 5px; }
+  .keyboard td {
+    width: 5%; }
+  .keyboard td.key {
+    width: 10%; }
+  .keyboard td.key.backspace {
+    width: 15%; }
