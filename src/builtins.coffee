@@ -645,9 +645,9 @@ monadic '⊤', 'Encode', (b, a) ->
   n = if sa.length then sa[0] else 1
   m = a.length / n
   for i in [0...m]
-    for j in [0...b.length]
-      y = b[j]
-      for k in [n - 1 .. 0]
+    for y, j in b
+      if isNeg = (y < 0) then y = -y
+      for k in [n - 1 .. 0] by -1
         x = a[k * m + i]
         if x is 0
           r[(k * m + i) * b.length + j] = y

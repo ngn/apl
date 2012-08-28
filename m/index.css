@@ -1,16 +1,11 @@
 body {
   padding: 0;
-  margin: 0; }
+  margin: 0;
+  font-family: sans-serif; }
 
 #editor {
   cursor: text;
   padding: 10px; }
-
-.button {
-  border: solid #555555 3px;
-  border-color: #555555 #bbbbbb #bbbbbb #555555;
-  margin-right: 3px;
-  cursor: pointer; }
 
 .keyboard {
   width: 100%;
@@ -22,10 +17,13 @@ body {
     text-align: center;
     color: white;
     cursor: pointer;
-    border: outset #888888 5px;
+    border-style: solid;
+    border-color: #999999 #777777 #777777 #999999;
+    border-width: 3px;
     background-color: #222222; }
   .keyboard .key.down {
-    border: inset #888888 5px; }
+    border-color: #777777 #999999 #999999 #777777;
+    background-color: #111111; }
   .keyboard td {
     width: 5%; }
   .keyboard td.key {
