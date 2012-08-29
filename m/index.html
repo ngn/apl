@@ -1,117 +1,66 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>NGN APL
-    </title>
+    <title>NGN APL</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <style>@import url('index.css');
-@font-face {
-  font-family: 'apl';
-  font-style: normal;
-  font-weight: 400;
-  src: local('apl'), url('') format('woff');
-}
-
-</style>
+    <style>
+      @import url('index.css');
+      @font-face {
+        font-family: 'apl';
+        font-style: normal;
+        font-weight: 400;
+        src: local('apl'), url('') format('woff');
+      }
+      
+    </style>
   </head>
   <body>
-    <div id="editor" data-role="content"><img id="cursor" src="images/cursor.png">
-    </div>
+    <div id="editor" data-role="content"><img id="cursor" src="images/cursor.png"></div>
     <table class="keyboard">
       <tr>
-        <td colSpan="2" class="key">
-        </td>
-        <!-- q-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- w-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- e-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- r-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- t-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- y-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- u-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- i-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- o-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- p-->
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
       </tr>
       <tr>
-        <td>
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <!-- a-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- s-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- d-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- f-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- g-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- h-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- j-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- k-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- l-->
-        <td>
-        </td>
+        <td></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td></td>
       </tr>
       <tr>
-        <td>
-        </td>
-        <td colSpan="2" class="key layoutSwitch">A/⍎
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <!-- z-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- x-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- c-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- v-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- b-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- n-->
-        <td colSpan="2" class="key">
-        </td>
-        <!-- m-->
-        <td colSpan="3" class="key backspace">Backspace
-        </td>
+        <td colSpan="3" class="key special capsLock">Caps</td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="3" class="key special backspace">Bksp</td>
+      </tr>
+      <tr>
+        <td colSpan="3" class="key special layoutSwitch">A/⍎</td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="2" class="key">/</td>
+        <td colSpan="6" class="key special space"></td>
+        <td colSpan="2" class="key"></td>
+        <td colSpan="5" class="key special enter">Enter</td>
       </tr>
     </table>
     <!-- APL core-->

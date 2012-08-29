@@ -6,7 +6,7 @@
   };
 
   $(function() {
-    var layoutIndex, layouts, setLayout;
+    var isCapsOn, layoutIndex, layouts, updateLayout;
     setInterval((function() {
       return $('#cursor').toggleVisibility();
     }), 500);
@@ -25,27 +25,37 @@
         return $(_this).removeClass('down');
       }), 500);
     });
-    layouts = ['qwertyuiopasdfghjklzxcvbnm', 'QWERTYUIOPASDFGHJKLZXCVBNM', ' ⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣', ' ⌽⍷ ⍉  ⌷⍬⍟⊖   ⍒⍋ ÷⍞  ⍝ ⍎⍕ '];
+    layouts = [['qwertyuiopasdfghjklzxcvbnm', 'QWERTYUIOPASDFGHJKLZXCVBNM'], [' ⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣', ' ⌽⍷ ⍉  ⌷⍬⍟⊖   ⍒⍋ ÷⍞  ⍝ ⍎⍕ ']];
     layoutIndex = 0;
-    setLayout = function(layout) {
-      $('.keyboard .key:not(.layoutSwitch, .backspace, .enter)').each(function(i, e) {
+    isCapsOn = false;
+    updateLayout = function() {
+      var layout;
+      layout = layouts[layoutIndex][+isCapsOn];
+      $('.keyboard .key:not(.special)').each(function(i, e) {
         return $(e).text(layout[i]);
       });
     };
-    setLayout(layouts[0]);
-    return $('.key').live('aplkeypress', function() {
-      if ($(this).hasClass('enter')) {
-        $('<br>').insertBefore('#cursor');
-      } else if ($(this).hasClass('backspace')) {
-        $('#cursor').prev().remove();
-      } else if ($(this).hasClass('layoutSwitch')) {
-        layoutIndex++;
-        layoutIndex %= layouts.length;
-        setLayout(layouts[layoutIndex]);
-      } else {
-        $('<span>').text($(this).text().replace(/[\ \t\r\n]+/g, '')).insertBefore('#cursor');
-      }
-      return false;
+    updateLayout();
+    $('.enter').on('aplkeypress', function() {
+      return $('<br>').insertBefore('#cursor');
+    });
+    $('.space').on('aplkeypress', function() {
+      return $('<span> </span>').insertBefore('#cursor');
+    });
+    $('.backspace').on('aplkeypress', function() {
+      return $('#cursor').prev().remove();
+    });
+    $('.layoutSwitch').on('aplkeypress', function() {
+      layoutIndex = (layoutIndex + 1) % layouts.length;
+      return updateLayout();
+    });
+    $('.capsLock').on('aplkeypress', function() {
+      isCapsOn = !isCapsOn;
+      $(this).toggleClass('isOn', isCapsOn);
+      return updateLayout();
+    });
+    return $('.key:not(.special)').live('aplkeypress', function() {
+      return $('<span>').text($(this).text().replace(/[\ \t\r\n]+/g, '')).insertBefore('#cursor');
     });
   });
 

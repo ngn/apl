@@ -16,29 +16,31 @@ $ ->
     setTimeout (=> $(@).removeClass 'down'), 500
 
   layouts = [
-    'qwertyuiopasdfghjklzxcvbnm'
-    'QWERTYUIOPASDFGHJKLZXCVBNM'
-    ' ⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣'
-    ' ⌽⍷ ⍉  ⌷⍬⍟⊖   ⍒⍋ ÷⍞  ⍝ ⍎⍕ '
+    ['qwertyuiopasdfghjklzxcvbnm', 'QWERTYUIOPASDFGHJKLZXCVBNM']
+    [' ⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣', ' ⌽⍷ ⍉  ⌷⍬⍟⊖   ⍒⍋ ÷⍞  ⍝ ⍎⍕ ']
   ]
   layoutIndex = 0
+  isCapsOn = false
 
-  setLayout = (layout) ->
-    $('.keyboard .key:not(.layoutSwitch, .backspace, .enter)')
-      .each (i, e) -> $(e).text layout[i]
+  updateLayout = ->
+    layout = layouts[layoutIndex][+isCapsOn]
+    $('.keyboard .key:not(.special)').each (i, e) -> $(e).text layout[i]
     return
 
-  setLayout layouts[0]
+  updateLayout()
 
-  $('.key').live 'aplkeypress', ->
-    if $(@).hasClass 'enter'
-      $('<br>').insertBefore '#cursor'
-    else if $(@).hasClass 'backspace'
-      $('#cursor').prev().remove()
-    else if $(@).hasClass 'layoutSwitch'
-      layoutIndex++
-      layoutIndex %= layouts.length
-      setLayout layouts[layoutIndex]
-    else
-      $('<span>').text($(@).text().replace /[\ \t\r\n]+/g, '').insertBefore '#cursor'
-    false
+  $('.enter').on 'aplkeypress', -> $('<br>').insertBefore '#cursor'
+  $('.space').on 'aplkeypress', -> $('<span> </span>').insertBefore '#cursor'
+  $('.backspace').on 'aplkeypress', -> $('#cursor').prev().remove()
+
+  $('.layoutSwitch').on 'aplkeypress', ->
+    layoutIndex = (layoutIndex + 1) % layouts.length
+    updateLayout()
+
+  $('.capsLock').on 'aplkeypress', ->
+    isCapsOn = not isCapsOn
+    $(@).toggleClass 'isOn', isCapsOn
+    updateLayout()
+
+  $('.key:not(.special)').live 'aplkeypress', ->
+    $('<span>').text($(@).text().replace /[\ \t\r\n]+/g, '').insertBefore '#cursor'

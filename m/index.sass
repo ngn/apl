@@ -9,6 +9,7 @@ body
 
 .keyboard
   width: 100%
+  height: 25%
   background-color: black
   padding: 5px
   position: fixed
@@ -21,11 +22,17 @@ body
     border-style: solid
     border-color: #999 #777 #777 #999
     border-width: 3px
+    border-radius: 20%
     background-color: #222
+    overflow: hidden
+    text-overflow: ellipsis
 
   .key.down
     border-color: #777 #999 #999 #777
     background-color: #111
+
+  .capsLock.isOn
+    background-color: #331
 
   td
     width: 5%

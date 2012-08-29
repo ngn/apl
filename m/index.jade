@@ -19,39 +19,25 @@ html
 
     table.keyboard
       tr
-        td.key(colSpan=2) // q
-        td.key(colSpan=2) // w
-        td.key(colSpan=2) // e
-        td.key(colSpan=2) // r
-        td.key(colSpan=2) // t
-        td.key(colSpan=2) // y
-        td.key(colSpan=2) // u
-        td.key(colSpan=2) // i
-        td.key(colSpan=2) // o
-        td.key(colSpan=2) // p
+        - for (var i = 0; i < 10; i++)
+            td.key(colSpan=2)
       tr
         td
-        td.key(colSpan=2) // a
-        td.key(colSpan=2) // s
-        td.key(colSpan=2) // d
-        td.key(colSpan=2) // f
-        td.key(colSpan=2) // g
-        td.key(colSpan=2) // h
-        td.key(colSpan=2) // j
-        td.key(colSpan=2) // k
-        td.key(colSpan=2) // l
+        - for (var i = 0; i < 9; i++)
+            td.key(colSpan=2)
         td
       tr
-        td
-        td.key.layoutSwitch(colSpan=2) A/⍎
-        td.key(colSpan=2) // z
-        td.key(colSpan=2) // x
-        td.key(colSpan=2) // c
-        td.key(colSpan=2) // v
-        td.key(colSpan=2) // b
-        td.key(colSpan=2) // n
-        td.key(colSpan=2) // m
-        td.key.backspace(colSpan=3) Backspace
+        td.key.special.capsLock(colSpan=3) Caps
+        - for (var i = 0; i < 7; i++)
+            td.key(colSpan=2)
+        td.key.special.backspace(colSpan=3) Bksp
+      tr
+        td.key.special.layoutSwitch(colSpan=3) A/⍎
+        td.key(colSpan=2)
+        td.key(colSpan=2) /
+        td.key.special.space(colSpan=6)
+        td.key(colSpan=2) .
+        td.key.special.enter(colSpan=5) Enter
 
     // APL core
     script(src='../web/examples.js')
