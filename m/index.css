@@ -29,7 +29,8 @@ body {
     border-color: #777777 #999999 #999999 #777777;
     background-color: #111111; }
   .keyboard .capsLock.isOn {
-    background-color: #333311; }
+    border-color: #777777 #999999 #999999 #777777;
+    background: #111111 right top url("images/button-lock-light.png") no-repeat; }
   .keyboard td {
     width: 5%; }
   .keyboard td.key {
