@@ -34,7 +34,7 @@
 #       - A zero-rank APL array is a JavaScript array of size one with a
 #       `shape` property of `[]`, e.g. created by:
 #
-#               var a = []; a.shape = [];
+#               var a = [123]; a.shape = [];
 #
 #   * An APL vector is a JavaScript array.
 #
@@ -56,7 +56,7 @@
 #               return cube;
 #           }
 #
-#       A vector's representation, as opposed to that of higher-dimension
+#       A vector's representation, as opposed to that of higher-dimensional
 #       arrays, is not required to have a `shape` property.  The shape of a
 #       vector `v` is assumed to be `[v.length]`, by convention.  Similarly, we
 #       could say that a scalar's shape is `[]` by convention.
