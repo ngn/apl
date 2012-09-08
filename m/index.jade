@@ -4,14 +4,8 @@ html
     title NGN APL
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
-    style
-      @import url('index.css');
-      @font-face {
-        font-family: 'apl';
-        font-style: normal;
-        font-weight: 400;
-        src: local('apl'), url('') format('woff');
-      }
+    style: @font-face { font-family: apl; src: url('fonts/apl385.ttf') format('truetype'); }
+    style: @import url('index.css');
 
   body
     #editor(data-role='content')
