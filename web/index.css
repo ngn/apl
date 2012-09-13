@@ -1,21 +1,21 @@
 WARNING on line 35 of /home/nick/gh/apl/web/index.sass:
 This selector doesn't have any properties and will not be rendered.
 DEPRECATION WARNING:
-On line 95, character 3 of '/home/nick/gh/apl/web/index.sass'
+On line 93, character 3 of '/home/nick/gh/apl/web/index.sass'
 Setting variables with = has been deprecated and will be removed in version 3.2.
 Use "$kbdDark: black" instead.
 
 You can use `sass-convert --in-place --from sass2 file.sass' to convert files automatically.
 
 DEPRECATION WARNING:
-On line 96, character 3 of '/home/nick/gh/apl/web/index.sass'
+On line 94, character 3 of '/home/nick/gh/apl/web/index.sass'
 Setting variables with = has been deprecated and will be removed in version 3.2.
 Use "$kbdNormal: #333333" instead.
 
 You can use `sass-convert --in-place --from sass2 file.sass' to convert files automatically.
 
 DEPRECATION WARNING:
-On line 97, character 3 of '/home/nick/gh/apl/web/index.sass'
+On line 95, character 3 of '/home/nick/gh/apl/web/index.sass'
 Setting variables with = has been deprecated and will be removed in version 3.2.
 Use "$kbdLight: #444444" instead.
 
@@ -23,7 +23,8 @@ You can use `sass-convert --in-place --from sass2 file.sass' to convert files au
 
 body {
   width: 1000px;
-  margin: 10px auto; }
+  margin: 10px auto;
+  font-family: apl monospace; }
 
 h1 {
   font-family: monospace; }
@@ -38,7 +39,7 @@ a:hover {
   background-color: khaki; }
 
 #symbols {
-  font-family: monospace;
+  font-family: apl monospace;
   font-size: 20px; }
 
 #code {
@@ -52,7 +53,6 @@ a:hover {
   vertical-align: bottom; }
 
 #result {
-  font-family: monospace;
   margin-top: 20px; }
   #result .character {
     color: #884400;
@@ -85,12 +85,10 @@ a:hover {
   #tooltip .symbol {
     background-color: white;
     font-size: 48px;
-    padding: 0 10px;
-    font-family: monospace; }
+    padding: 0 10px; }
   #tooltip .keys {
     float: right;
-    padding: 5px;
-    font-family: monospace; }
+    padding: 5px; }
     #tooltip .keys .key {
       padding: 3px 5px;
       background-color: #dddddd;
@@ -141,11 +139,9 @@ a:hover {
       height: 50%;
       text-align: center; }
     .keyboard .key td.upperAPLRegister {
-      color: #ff6644;
-      font-family: monospace; }
+      color: #ff6644; }
     .keyboard .key td.lowerAPLRegister {
       color: #88aaff;
-      font-family: monospace;
       text-shadow: 0 0 12px; }
   .keyboard .key.tabKey, .keyboard .key.backspaceKey {
     width: 75px; }

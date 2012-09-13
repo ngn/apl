@@ -3,9 +3,10 @@ html
   head
     meta(charset='UTF-8')
     title ngn/apl demo
-    style @import url(index.css);
-  body
+    style: @font-face { font-family: apl; src: url('../fonts/apl385.ttf') format('truetype'); }
+    style: @import url(index.css);
 
+  body
     h1 ngn/apl demo
     #symbols
     #keyboardSwitch: div.switchText: a(href='#keyboard') Show keyboard mapping
