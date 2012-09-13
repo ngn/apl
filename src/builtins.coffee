@@ -234,7 +234,16 @@ dyadic  '⌊', 'Lesser of',      pervasive (y, x) -> min x, y
 monadic '∣', 'Absolute value', pervasive (x) -> abs x
 dyadic  '∣', 'Residue',        pervasive (y, x) -> y % x
 
-monadic '⍳', 'Index generate', (x) -> [0 ... floor num x]
+monadic '⍳', 'Index generate', (a) ->
+  if typeof a is 'number' then return [0...a]
+  else for x in a then assert typeof x is 'number'
+  if a.length is 1 then return [0...a[0]]
+  r = []
+  rec = (d, indices) ->
+    if d >= a.length then r.push indices
+    else for i in [0...a[d]] then rec d + 1, indices.concat [i]
+  rec 0, []
+  r
 
 dyadic  '⍳', 'Index of', (b, a) ->
   if isSimple a then a = [a]
