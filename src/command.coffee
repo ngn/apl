@@ -1,9 +1,7 @@
 # This file contains the entry point (`main()`) for APL execution on node.js.
 
-fs = require 'fs'
 {exec} = require './compiler'
-{builtins} = require './builtins'
-{inherit, cps, trampoline, isSimple, shapeOf, sum, prod, repeat} = require './helpers'
+{isSimple, shapeOf, sum, prod, repeat} = require './helpers'
 
 # TTY colours
 makeColour =
@@ -133,27 +131,6 @@ vpad = (rect, height) ->
 
 
 
-# `getline = createGetline(input)` will create a line iterator CPS function
-# `getline` attached to an input stream `input`.
-# To implement line iteration, some buffering is required---either callbacks
-# must wait for input, or buffered content must wait for a calls to consume it.
-createGetline = (input) ->
-  buf = ''
-  callbacks = []
-
-  feedCallbacks = ->
-    loop
-      i = buf.indexOf '\n'
-      if i is -1 or not callbacks.length then break
-      s = buf[...i]
-      buf = buf[i + 1 ...]
-      trampoline -> callbacks.shift() null, s.split ''
-
-  input.on 'data', (chunk) -> buf += chunk; feedCallbacks(); 0
-  (callback) -> callbacks.push callback; feedCallbacks(); 0
-
-
-
 # The entry point
 exports.main = ->
 
@@ -171,24 +148,32 @@ exports.main = ->
     optimist.showHelp()
     return
 
-  # cast these spells on `stdin` to be able to read from it properly
-  process.stdin.resume()
-  process.stdin.setEncoding 'utf8'
+  ctx =
+    '⍵': for a in argv._ then a.split ''
+    'set_⎕': (x) -> process.stdout.write format x
+    'get_⎕': -> [1, 2, 3]
 
-  # `input` is our stream, `getline` is our line iterator function
   if filename is '-'
-    input = process.stdin
-    getline = (callback) -> trampoline -> callback Error 'Symbols ⎕ and ⍞ cannot be read when APL source code is read from stdin.'
-  else
-    input = fs.createReadStream filename
-    getline = createGetline process.stdin
+    readline = require 'readline'
+    rl = readline.createInterface process.stdin, process.stdout
+    rl.setPrompt 'APL> '
 
-  # Read all of the input as `code`
-  code = ''
-  input.on 'data', (chunk) -> code += chunk
-  input.on 'end', ->
-    exec code, extraContext: {
-      '⍵': for a in argv._ then a.split ''
-      'set_⎕': (x) -> process.stdout.write format x
-    }
-    process.exit 0
+    rl.on 'line', (line) ->
+      try
+        if not line.match /^[\ \t\f\r\n]*$/
+          result = exec line, extraContext: ctx
+          process.stdout.write format(result) + '\n'
+      catch e
+        console.error e
+      rl.prompt()
+
+    rl.on 'close', ->
+      process.stdout.write '\n'
+      process.exit 0
+
+    rl.prompt()
+
+  else
+    fs = require 'fs'
+    code = new String fs.readFileSync filename
+    exec code, extraContext: ctx
