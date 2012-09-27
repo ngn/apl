@@ -30,6 +30,7 @@ t 'NUMBER', ///
   (?:
     0[xX][\da-fA-F]+             # hexadecimal
     | \d*\.?\d+(?:[eE][+¯]?\d+)? # possibly scientific notation
+    | ¯                          # infinity
   )
   (?:
     [jJ]                         # imaginary part for complex numbers
@@ -37,6 +38,7 @@ t 'NUMBER', ///
     (?:
       0[xX][\da-fA-F]+
       | \d*\.?\d+(?:[eE][+¯]?\d+)?
+      | ¯                        # infinity
     )
   ) ?
 ///

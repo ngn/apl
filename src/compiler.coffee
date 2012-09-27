@@ -311,8 +311,16 @@ toJavaScript = (ast) ->
 
       when 'num'
         s = node[1].replace /¯/g, '-'
-        a = for x in s.split /j/i
-              if x.match /^-?0x/i then parseInt x, 16 else parseFloat x
+        a =
+          for x in s.split /j/i
+            if x is '-'
+              'Infinity'
+            else if x is '--'
+              '-Infinity'
+            else if x.match /^-?0x/i
+              parseInt x, 16
+            else
+              parseFloat x
         if a.length is 1 then '' + a[0] else "new _.Complex(#{a[0]}, #{a[1]})"
 
       when 'index'

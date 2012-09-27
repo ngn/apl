@@ -132,6 +132,12 @@
 
   gives("(1j¯2 × ¯2j3) = 4j7", 1);
 
+  gives("¯", Infinity);
+
+  gives("¯¯", -Infinity);
+
+  gives("−¯", -Infinity);
+
   gives('  \'Let\'\'s parse it!\'  ', S('Let\'s parse it!'));
 
   gives('  "0x22\'s the code for ""."  ', S('0x22\'s the code for ".'));
