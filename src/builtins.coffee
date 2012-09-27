@@ -100,7 +100,7 @@
 
 
 
-{assert, die, inherit, cps, cpsify, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
+{assert, die, inherit, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
 {min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin, cos, tan, asin, acos, atan} = Math
 repr = JSON.stringify
 
