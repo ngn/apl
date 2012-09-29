@@ -76,9 +76,9 @@ builtins.Complex = require('./complex').Complex
 builtinVarInfo =
   '⍺': {type: 'X'}
   '⍵': {type: 'X'}
+  '∇': {type: 'F'}
 
 do ->
-  builtinVarInfo['∇'] = {type: 'F'}
   for k, v of builtins
     v = builtins[k]
     builtinVarInfo[k] =
