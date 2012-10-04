@@ -99,10 +99,8 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 # `0` as an implicit default.
 
 define ['./helpers'], (helpers) ->
-
-  {assert, die, inherit, isSimple, shapeOf, withShape, sum, prod, repeat, prototypeOf, withPrototype, withPrototypeCopiedFrom} = helpers
+  {assert, die, inherit, isSimple, shapeOf, withShape, prod, prototypeOf, withPrototype, withPrototypeCopiedFrom} = helpers
   {min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin, cos, tan, asin, acos, atan} = Math
-  repr = JSON.stringify
 
 
 
