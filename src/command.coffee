@@ -1,7 +1,7 @@
 # This file contains the entry point (`main()`) for APL execution on node.js.
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
-define ['./compiler', './helpers'], (compiler, helpers) ->
+define ['./compiler', './helpers', 'optimist'], (compiler, helpers, optimist) ->
   {exec} = compiler
   {isSimple, shapeOf, sum, prod, repeat} = helpers
 
@@ -136,7 +136,7 @@ define ['./compiler', './helpers'], (compiler, helpers) ->
   # The entry point
   main = ->
 
-    {argv} = optimist = require('optimist')
+    {argv} = optimist
       .boolean(['h', 'help'])
       .usage '''
           Usage: apl [ FILENAME [ ARGS... ] ]

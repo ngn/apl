@@ -5,9 +5,10 @@ define ['./builtins', './helpers'], (builtinsModule, helpers) ->
   {builtins} = builtinsModule
   {inherit} = helpers
 
-  exports.browserBuiltins = ctx = inherit builtins
+  browserBuiltins = ctx = inherit builtins
   ctx['⍵'] = ('' + location).split ''
   ctx['get_⎕'] = -> (prompt('⎕:') or '').split ''
   ctx['set_⎕'] = (x) -> alert x
   ctx['get_⍞'] = -> (prompt() or '').split ''
   ctx['set_⍞'] = (x) -> alert x
+  {browserBuiltins}

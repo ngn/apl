@@ -18,19 +18,14 @@ html
 
     #result
     script(src='examples.js')
-    script(src='../node_modules/requirejs/require.js')
-    script(src='../lib/helpers.js')
     script(src='../lib/parser.js')
-    script(src='../lib/builtins.js')
-    script(src='../lib/complex.js')
-    script(src='../lib/compiler.js')
-    script(src='../lib/browser.js')
     script(src='jquery-1.7.2.min.js')
     script(src='jquery.fieldselection.min.js')
     script(src='jquery.retype.min.js')
     script(src='jquery.dimensions.js')
     script(src='jquery.tooltip.js')
-    script(src='index.js')
+    script(src='../node_modules/requirejs/require.js', data-main='./index.js')
+    //script(src='index.js')
     script
       var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
       document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));

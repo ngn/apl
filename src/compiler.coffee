@@ -1,7 +1,7 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
-define ['../lib/parser', './helpers'], (parser, helpers) ->
-  {parse} = parser
+define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, builtinsModule, complex) ->
+  parser ?= window.parser
   {inherit, die, assert} = helpers
   repr = JSON.stringify
 
@@ -71,8 +71,8 @@ define ['../lib/parser', './helpers'], (parser, helpers) ->
   hex4 = (n) -> s = '0000' + n.toString 16; s[s.length - 4 ...]
   jsName = (name) -> predefinedNames[name] or name.replace /[^a-z0-9]/gi, (x) -> '_' + hex4 ord x
 
-  builtins = inherit require('./builtins').builtins
-  builtins.Complex = require('./complex').Complex
+  builtins = inherit builtinsModule.builtins
+  builtins.Complex = complex.Complex
 
   builtinVarInfo =
     '⍺': {type: 'X'}
@@ -106,7 +106,7 @@ define ['../lib/parser', './helpers'], (parser, helpers) ->
 
   compile = (source, opts = {}) ->
     if opts.debug then console.info '-----APL SOURCE-----\n' + source
-    ast = parse source
+    ast = parser.parse source
     if opts.debug then (console.info '-----RAW AST-----\n'; printAST ast)
     assignParents ast
     resolveSeqs ast
