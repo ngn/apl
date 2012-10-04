@@ -452,6 +452,12 @@ gives '⊃ (1 2 3) "AB"', [1, 2, 3, 'A', 'B', ' ']
 gives '⍴⊃ (1 2 3) "AB"', [2, 3]
 gives '⊃123', 123
 
+# ∪ Union {{{1
+gives '1 2 ∪ 2 3', [1, 2, 3]
+gives '"SHOCK" ∪ "CHOCOLATE"', S 'SHOCKLATE'
+gives '"lentils" "bulghur" (3 4 5) ∪ "lentils" "rice"',
+        [S('lentils'), S('bulghur'), [3, 4, 5], S('rice')]
+
 # ⌷ Index {{{1
 gives '1 ⌷ 3 5 8', 5
 gives '(3 5 8)[1]', 5

@@ -371,7 +371,18 @@ define ['./helpers'], (helpers) ->
     r
 
   monadic '∪', 'Unique' # todo
-  dyadic '∪', 'Union' # todo
+
+  dyadic '∪', 'Union', (b, a) ->
+    a = array a
+    b = array b
+    r = for x in a then x
+    for x in b
+      found = false
+      for y in a when match x, y then (found = true; break)
+      if not found
+        r.push x
+    r
+
   dyadic '∩', 'Intersection' # todo
   monadic '∼', 'Not', pervasive (x) -> +!bool(x)
   dyadic '∼', 'Without', (b, a) ->
