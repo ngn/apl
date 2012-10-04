@@ -12,6 +12,7 @@ generates <code>../lib/parser.js</code>.</p>             </td>             <td c
   <span class="p">(</span><span class="o">?:</span>
     <span class="mi">0</span><span class="p">[</span><span class="nx">xX</span><span class="p">][</span><span class="err">\</span><span class="nx">da</span><span class="o">-</span><span class="nx">fA</span><span class="o">-</span><span class="nx">F</span><span class="p">]</span><span class="o">+</span>             <span class="c1"># hexadecimal</span>
     <span class="o">|</span> <span class="err">\</span><span class="nx">d</span><span class="o">*</span><span class="err">\</span><span class="p">.</span><span class="o">?</span><span class="err">\</span><span class="nx">d</span><span class="o">+</span><span class="p">(</span><span class="o">?:</span><span class="p">[</span><span class="nx">eE</span><span class="p">][</span><span class="o">+</span><span class="err">¯</span><span class="p">]</span><span class="o">?</span><span class="err">\</span><span class="nx">d</span><span class="o">+</span><span class="p">)</span><span class="o">?</span> <span class="c1"># possibly scientific notation</span>
+    <span class="o">|</span> <span class="err">¯</span>                          <span class="c1"># infinity</span>
   <span class="p">)</span>
   <span class="p">(</span><span class="o">?:</span>
     <span class="p">[</span><span class="nx">jJ</span><span class="p">]</span>                         <span class="c1"># imaginary part for complex numbers</span>
@@ -19,6 +20,7 @@ generates <code>../lib/parser.js</code>.</p>             </td>             <td c
     <span class="p">(</span><span class="o">?:</span>
       <span class="mi">0</span><span class="p">[</span><span class="nx">xX</span><span class="p">][</span><span class="err">\</span><span class="nx">da</span><span class="o">-</span><span class="nx">fA</span><span class="o">-</span><span class="nx">F</span><span class="p">]</span><span class="o">+</span>
       <span class="o">|</span> <span class="err">\</span><span class="nx">d</span><span class="o">*</span><span class="err">\</span><span class="p">.</span><span class="o">?</span><span class="err">\</span><span class="nx">d</span><span class="o">+</span><span class="p">(</span><span class="o">?:</span><span class="p">[</span><span class="nx">eE</span><span class="p">][</span><span class="o">+</span><span class="err">¯</span><span class="p">]</span><span class="o">?</span><span class="err">\</span><span class="nx">d</span><span class="o">+</span><span class="p">)</span><span class="o">?</span>
+      <span class="o">|</span> <span class="err">¯</span>                        <span class="c1"># infinity</span>
     <span class="p">)</span>
   <span class="p">)</span> <span class="o">?</span>
 <span class="err">///</span>
