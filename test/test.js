@@ -563,6 +563,10 @@ gives('"SHOCK" ∪ "CHOCOLATE"', S('SHOCKLATE'));
 
 gives('"lentils" "bulghur" (3 4 5) ∪ "lentils" "rice"', [S('lentils'), S('bulghur'), [3, 4, 5], S('rice')]);
 
+gives('"ABRA"∩"CAR"', S('ARA'));
+
+gives('1 "PLUS" 2 ∩ ⍳5', [1, 2]);
+
 gives('1 ⌷ 3 5 8', 5);
 
 gives('(3 5 8)[1]', 5);

@@ -372,19 +372,23 @@ define ['./helpers'], (helpers) ->
 
   monadic '∪', 'Unique' # todo
 
+  contains = (a, x) -> # a helper
+    for y in a when match x, y then return true
+    false
+
   dyadic '∪', 'Union', (b, a) ->
     a = array a
     b = array b
-    r = for x in a then x
-    for x in b
-      found = false
-      for y in a when match x, y then (found = true; break)
-      if not found
-        r.push x
-    r
+    a.concat(for x in b when not contains a, x then x)
 
-  dyadic '∩', 'Intersection' # todo
-  monadic '∼', 'Not', pervasive (x) -> +!bool(x)
+  dyadic '∩', 'Intersection', (b, a) ->
+    a = array a
+    b = array b
+    for x in a when contains b, x then x
+
+  monadic '∼', 'Not', pervasive (x) ->
+    +!bool(x)
+
   dyadic '∼', 'Without', (b, a) ->
     if isSimple a then a = [a]
     else assert shapeOf(a).length <= 1, 'Left argument to ∼ must be of rank no more than 1.'
