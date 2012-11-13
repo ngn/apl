@@ -33,45 +33,54 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
     };
     formatAsHTML = function(x) {
       var i, nPlanes, nc, nr, planeSize, planes, rx, sx, y, _ref;
-      if (typeof x === 'string') {
-        return "<span class='character'>" + (esc(x).replace(' ', '&nbsp;', 'g')) + "</span>";
-      } else if (typeof x === 'number') {
-        return "<span class='number'>" + (x < 0 ? '¯' + (-x) : '' + x) + "</span>";
-      } else if (typeof x === 'function') {
-        return "<span class='function'>" + (x.isPrefixOperator || x.isInfixOperator || x.isPostfixOperator ? 'operator' : 'function') + (x.aplName ? ' ' + x.aplName : '') + "</span>";
-      } else if (!(x.length != null)) {
-        return "<span class='unknown'>" + (esc('' + x)) + "</span>";
-      } else if (x.shape && x.shape.length > 2) {
-        sx = x.shape;
-        rx = sx.length;
-        planeSize = sx[rx - 2] * sx[rx - 1];
-        nPlanes = x.length / planeSize;
-        planes = (function() {
-          var _i, _results;
-          _results = [];
-          for (i = _i = 0; 0 <= nPlanes ? _i < nPlanes : _i > nPlanes; i = 0 <= nPlanes ? ++_i : --_i) {
-            _results.push(formatHTMLTable(x.slice(i * planeSize, (i + 1) * planeSize), sx[rx - 1], sx[rx - 2], 'subarray'));
+      try {
+        if (typeof x === 'string') {
+          return "<span class='character'>" + (esc(x).replace(' ', '&nbsp;', 'g')) + "</span>";
+        } else if (typeof x === 'number') {
+          return "<span class='number'>" + (x < 0 ? '¯' + (-x) : '' + x) + "</span>";
+        } else if (typeof x === 'function') {
+          return "<span class='function'>" + (x.isPrefixOperator || x.isInfixOperator || x.isPostfixOperator ? 'operator' : 'function') + (x.aplName ? ' ' + x.aplName : '') + "</span>";
+        } else if (!(x.length != null)) {
+          return "<span class='unknown'>" + (esc('' + x)) + "</span>";
+        } else if (x.shape && x.shape.length > 2) {
+          sx = x.shape;
+          rx = sx.length;
+          planeSize = sx[rx - 2] * sx[rx - 1];
+          nPlanes = x.length / planeSize;
+          planes = (function() {
+            var _i, _results;
+            _results = [];
+            for (i = _i = 0; 0 <= nPlanes ? _i < nPlanes : _i > nPlanes; i = 0 <= nPlanes ? ++_i : --_i) {
+              _results.push(formatHTMLTable(x.slice(i * planeSize, (i + 1) * planeSize), sx[rx - 1], sx[rx - 2], 'subarray'));
+            }
+            return _results;
+          })();
+          nc = sx[rx - 3];
+          nr = nPlanes / nc;
+          return formatHTMLTable(planes, nr, nc, 'array');
+        } else {
+          if (x.length === 0) {
+            return "<table class='array empty'><tr><td>empty</table>";
           }
-          return _results;
-        })();
-        nc = sx[rx - 3];
-        nr = nPlanes / nc;
-        return formatHTMLTable(planes, nr, nc, 'array');
-      } else {
-        if (x.length === 0) {
-          return "<table class='array empty'><tr><td>empty</table>";
+          _ref = x.shape || [1, x.length], nr = _ref[0], nc = _ref[1];
+          x = (function() {
+            var _i, _len, _results;
+            _results = [];
+            for (_i = 0, _len = x.length; _i < _len; _i++) {
+              y = x[_i];
+              _results.push(formatAsHTML(y));
+            }
+            return _results;
+          })();
+          return formatHTMLTable(x, nr, nc, 'array');
         }
-        _ref = x.shape || [1, x.length], nr = _ref[0], nc = _ref[1];
-        x = (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = x.length; _i < _len; _i++) {
-            y = x[_i];
-            _results.push(formatAsHTML(y));
+      } catch (e) {
+        if (typeof console !== "undefined" && console !== null) {
+          if (typeof console.error === "function") {
+            console.error(e);
           }
-          return _results;
-        })();
-        return formatHTMLTable(x, nr, nc, 'array');
+        }
+        return '<span class="error">Presentation error</span>';
       }
     };
     formatHTMLTable = function(a, nr, nc, cssClass) {
@@ -103,8 +112,17 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
     $('#go').closest('form').submit(function() {
       var ctx, result;
       ctx = inherit(browserBuiltins);
-      result = exec($('#code').val());
-      $('#result').html(formatAsHTML(result));
+      try {
+        result = exec($('#code').val());
+        $('#result').html(formatAsHTML(result));
+      } catch (err) {
+        if (typeof console !== "undefined" && console !== null) {
+          if (typeof console.error === "function") {
+            console.error(err);
+          }
+        }
+        $('#result').html("<div class='error'>" + (escHard(err.message)) + "</div>");
+      }
       return false;
     });
     symbolDefs = [

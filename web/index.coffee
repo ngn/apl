@@ -16,7 +16,7 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
     formatAsHTML = (x) ->
       # Supports arrays of up 4 dimensions
       # Higher-rank arrays are displayed as if 4-dimensional
-#      try
+      try
         if typeof x is 'string'
           "<span class='character'>#{esc(x).replace(' ', '&nbsp;', 'g')}</span>"
         else if typeof x is 'number'
@@ -45,9 +45,9 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
           [nr, nc] = x.shape or [1, x.length]
           x = for y in x then formatAsHTML y
           formatHTMLTable x, nr, nc, 'array'
-#      catch e
-#        console?.error?(e)
-#        '<span class="error">Presentation error</span>'
+      catch e
+        console?.error?(e)
+        '<span class="error">Presentation error</span>'
 
     formatHTMLTable = (a, nr, nc, cssClass) ->
       s = "<table class='#{cssClass}'>"
@@ -77,12 +77,12 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
     # "Execute" button {{{1
     $('#go').closest('form').submit ->
       ctx = inherit browserBuiltins
-#      try
-      result = exec $('#code').val()
-      $('#result').html formatAsHTML result
-#      catch err
-#        console?.error?(err)
-#        $('#result').html "<div class='error'>#{escHard err.message}</div>"
+      try
+        result = exec $('#code').val()
+        $('#result').html formatAsHTML result
+      catch err
+        console?.error?(err)
+        $('#result').html "<div class='error'>#{escHard err.message}</div>"
       false
 
 
