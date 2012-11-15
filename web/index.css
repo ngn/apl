@@ -52,20 +52,27 @@ a:hover {
 
 #tooltip {
   position: absolute;
-  z-index: 3000;
-  border: 1px solid #111111;
-  background-color: khaki;
-  padding: 5px;
-  width: 200px; }
+  z-index: 100000;
+  border: 0 solid #111111;
+  padding: 0;
+  text-align: center;
+  font-family: sans-serif; }
+  #tooltip .content {
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 8px; }
   #tooltip h3, #tooltip div {
     margin: 0; }
   #tooltip .symbol {
     background-color: white;
+    color: black;
     font-size: 48px;
     padding: 0 10px; }
   #tooltip .keys {
     float: right;
-    padding: 5px; }
+    padding: 5px;
+    color: black; }
     #tooltip .keys .key {
       padding: 3px 5px;
       background-color: #dddddd;
@@ -73,6 +80,16 @@ a:hover {
       border-radius: 7px; }
   #tooltip .description {
     clear: both; }
+  #tooltip .arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid black;
+    font-size: 0;
+    line-height: 0;
+    text-align: center;
+    margin-left: 50%; }
 
 .ui-keyboard {
   position: fixed !important;

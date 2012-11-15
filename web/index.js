@@ -11,7 +11,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
   browserBuiltins = browser.browserBuiltins;
   inherit = helpers.inherit;
   return jQuery(function($) {
-    var a, c, ch, code, esc, escHard, escT, execute, formatAsHTML, formatHTMLTable, hSymbolDefs, hashParams, href, i, k, mapping, name, nameValue, rMapping, symbolDef, symbolDefs, symbolsHTML, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+    var a, code, esc, escHard, escT, execute, formatAsHTML, formatHTMLTable, hSymbolDefs, hashParams, hideTooltip, i, k, mapping, name, nameValue, rMapping, symbolDef, symbolDefs, tid, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
     escT = {
       '<': 'lt',
       '>': 'gt',
@@ -145,48 +145,10 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       rMapping[v] = k;
     }
     hSymbolDefs = {};
-    symbolsHTML = '';
     for (_k = 0, _len1 = symbolDefs.length; _k < _len1; _k++) {
       symbolDef = symbolDefs[_k];
-      ch = symbolDef[0];
-      hSymbolDefs[ch] = symbolDef;
-      href = '#' + ((function() {
-        var _l, _len2, _results;
-        _results = [];
-        for (_l = 0, _len2 = ch.length; _l < _len2; _l++) {
-          c = ch[_l];
-          _results.push('U+' + ('000' + c.charCodeAt(0).toString(16).toUpperCase()).slice(-4));
-        }
-        return _results;
-      })()).join(',');
-      symbolsHTML += "<a href='" + href + "'>" + (esc(ch)) + "</a>";
+      hSymbolDefs[symbolDef[0]] = symbolDef;
     }
-    $('#symbols').html("<p>" + symbolsHTML + "</p>");
-    $('#symbols a').live('click', function() {
-      $('#code').focus().replaceSelection($(this).text());
-      return false;
-    });
-    $('#symbols a').tooltip({
-      showURL: false,
-      bodyHandler: function() {
-        var description, opts, s, _ref3;
-        _ref3 = hSymbolDefs[$(this).text()], ch = _ref3[0], description = _ref3[1], opts = _ref3[2];
-        return "<span class='keys' style=\"float: right\">" + (((function() {
-          var _l, _len2, _ref4, _results;
-          _ref4 = (opts != null ? opts.keys : void 0) || rMapping[ch] || '';
-          _results = [];
-          for (_l = 0, _len2 = _ref4.length; _l < _len2; _l++) {
-            k = _ref4[_l];
-            s = "<span class='key'>" + k + "</span>";
-            if (k !== k.toLowerCase()) {
-              s = "<span class='key'>Shift&nbsp;⇧</span>" + s;
-            }
-            _results.push(s);
-          }
-          return _results;
-        })()).join(' ')) + "</span>\n<span class='symbol'>" + ch + "</span>\n<p class='description'>" + description + "</p>";
-      }
-    });
     $('#code').keydown(function(event) {
       if (event.keyCode === 13 && event.ctrlKey) {
         $('#go').click();
@@ -211,11 +173,37 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       customLayout: {
         "default": ['1 2 3 4 5 6 7 8 9 0 - =', 'q w e r t y u i o p [ ]', 'a s d f g h j k l {enter}', '{shift} z x c v b n m , . {bksp}', '{alt} {space} {exec!!}'],
         shift: ['! @ # $ % ^ & * ( ) _ +', 'Q W E R T Y U I O P { }', 'A S D F G H J K L {enter}', '{shift} Z X C V B N M < > {bksp}', '{alt} {space} {exec!!}'],
-        alt: ['¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ − ×', '░ ⍵ ∈ ⍴ ∼ ↑ ⍳ ↓ ○ ⋆ ← ░', '⍺ ⌈ ⌊ ░ ∇ ∆ ∘ ░ ⎕ {enter}', '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ░ {bksp}', '{alt} {space} {exec!!}'],
+        alt: ['¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ − ×', '░ ⍵ ∈ ⍴ ∼ ↑ ↓ ⍳ ○ ⋆ ← ░', '⍺ ⌈ ⌊ ░ ∇ ∆ ∘ ░ ⎕ {enter}', '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ░ {bksp}', '{alt} {space} {exec!!}'],
         'alt-shift': ['⍣ ░ ░ ░ ░ ░ ░ ░ ⍱ ⍲ ≡ ░', '░ ⌽ ⍷ ░ ⍉ ░ ░ ⌷ ⍬ ⍟ ░ ░', '⊖ ░ ░ ░ ⍒ ⍋ ░ ░ ⍞ {enter}', '{shift} ░ ░ ⍝ ░ ⍎ ⍕ ░ « » {bksp}', '{alt} {space} {exec!!}']
       }
     });
     $.keyboard.keyaction.exec = execute;
+    tid = null;
+    $('body').on('mouseover', '.ui-keyboard-button', function(event) {
+      clearTimeout(tid);
+      return tid = setTimeout(function() {
+        var $e, ch, description, opts, p, sd;
+        if ((sd = hSymbolDefs[$(event.target).text()])) {
+          ch = sd[0], description = sd[1], opts = sd[2];
+          $e = $(event.target).closest('.ui-keyboard-button');
+          p = $e.offset();
+          $('#tooltip .content').html(description);
+          $('#tooltip').show().css({
+            left: p.left - ($('#tooltip').width() - $e.width()) / 2,
+            top: p.top - $('#tooltip').height()
+          });
+        }
+        return tid = null;
+      }, 500);
+    });
+    hideTooltip = function() {
+      $('#tooltip').hide();
+      clearTimeout(tid);
+      return tid = null;
+    };
+    $('body').on('mouseout', '.ui-keyboard-button', hideTooltip);
+    $('#code').blur(hideTooltip);
+    $('#tooltip').mouseout(hideTooltip);
     _ref3 = window.examples;
     for (i = _l = 0, _len2 = _ref3.length; _l < _len2; i = ++_l) {
       _ref4 = _ref3[i], name = _ref4[0], code = _ref4[1];

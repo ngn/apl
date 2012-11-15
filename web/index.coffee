@@ -173,35 +173,9 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
     for i in [0 ... a.length / 2]
       k = a[2 * i]; v = a[2 * i + 1]; mapping[k] = v; rMapping[v] = k
 
-
-
     hSymbolDefs = {} # indexed by symbol
-    symbolsHTML = ''
     for symbolDef in symbolDefs
-      ch = symbolDef[0]
-      hSymbolDefs[ch] = symbolDef
-      href = '#' + (
-        for c in ch
-          'U+' + ('000' + c.charCodeAt(0).toString(16).toUpperCase())[-4...]
-      ).join ','
-      symbolsHTML += "<a href='#{href}'>#{esc ch}</a>"
-    $('#symbols').html "<p>#{symbolsHTML}</p>"
-    $('#symbols a').live 'click', -> $('#code').focus().replaceSelection $(@).text(); false
-
-    $('#symbols a').tooltip
-      showURL: false
-      bodyHandler: ->
-        [ch, description, opts] = hSymbolDefs[$(@).text()]
-        """
-          <span class='keys' style="float: right">#{(
-              for k in (opts?.keys or rMapping[ch] or '')
-                s = "<span class='key'>#{k}</span>"
-                if k isnt k.toLowerCase() then s = "<span class='key'>Shift&nbsp;⇧</span>" + s
-                s
-          ).join(' ')}</span>
-          <span class='symbol'>#{ch}</span>
-          <p class='description'>#{description}</p>
-        """
+      hSymbolDefs[symbolDef[0]] = symbolDef
 
     $('#code').keydown (event) -> if event.keyCode is 13 and event.ctrlKey then $('#go').click(); false
     $('#code').retype 'on', {mapping}
@@ -237,7 +211,7 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
         ]
         alt: [
           '¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ − ×'
-          '░ ⍵ ∈ ⍴ ∼ ↑ ⍳ ↓ ○ ⋆ ← ░'
+          '░ ⍵ ∈ ⍴ ∼ ↑ ↓ ⍳ ○ ⋆ ← ░'
           '⍺ ⌈ ⌊ ░ ∇ ∆ ∘ ░ ⎕ {enter}'
           '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ░ {bksp}'
           '{alt} {space} {exec!!}'
@@ -251,6 +225,31 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
         ]
 
     $.keyboard.keyaction.exec = execute
+
+    tid = null
+    $('body').on 'mouseover', '.ui-keyboard-button', (event) ->
+      clearTimeout tid
+      tid = setTimeout(
+        ->
+          if (sd = hSymbolDefs[$(event.target).text()])
+            [ch, description, opts] = sd
+            $e = $(event.target).closest('.ui-keyboard-button')
+            p = $e.offset()
+            $('#tooltip .content').html description
+            $('#tooltip').show().css(
+              left: p.left - ($('#tooltip').width() - $e.width()) / 2
+              top: p.top - $('#tooltip').height()
+            )
+
+          tid = null
+        500
+      )
+
+    hideTooltip = -> $('#tooltip').hide(); clearTimeout tid; tid = null
+    $('body').on 'mouseout', '.ui-keyboard-button', hideTooltip
+    $('#code').blur hideTooltip
+    $('#tooltip').mouseout hideTooltip
+
 
 
 
