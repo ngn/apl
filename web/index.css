@@ -1,26 +1,3 @@
-WARNING on line 35 of /home/nick/gh/apl/web/index.sass:
-This selector doesn't have any properties and will not be rendered.
-DEPRECATION WARNING:
-On line 93, character 3 of '/home/nick/gh/apl/web/index.sass'
-Setting variables with = has been deprecated and will be removed in version 3.2.
-Use "$kbdDark: black" instead.
-
-You can use `sass-convert --in-place --from sass2 file.sass' to convert files automatically.
-
-DEPRECATION WARNING:
-On line 94, character 3 of '/home/nick/gh/apl/web/index.sass'
-Setting variables with = has been deprecated and will be removed in version 3.2.
-Use "$kbdNormal: #333333" instead.
-
-You can use `sass-convert --in-place --from sass2 file.sass' to convert files automatically.
-
-DEPRECATION WARNING:
-On line 95, character 3 of '/home/nick/gh/apl/web/index.sass'
-Setting variables with = has been deprecated and will be removed in version 3.2.
-Use "$kbdLight: #444444" instead.
-
-You can use `sass-convert --in-place --from sass2 file.sass' to convert files automatically.
-
 body {
   width: 1000px;
   margin: 10px auto;
