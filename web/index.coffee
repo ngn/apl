@@ -75,7 +75,7 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
 
 
     # "Execute" button {{{1
-    $('#go').closest('form').submit ->
+    execute = ->
       ctx = inherit browserBuiltins
       try
         result = exec $('#code').val()
@@ -83,7 +83,9 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
       catch err
         console?.error?(err)
         $('#result').html "<div class='error'>#{escHard err.message}</div>"
-      false
+      return
+
+    $('#go').closest('form').submit -> execute(); false
 
 
 
@@ -206,57 +208,51 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
 
 
 
-    # Keyboard visualisation {{{1
-    renderKey = (lowerRegister, upperRegister) -> """
-      <td>
-        <table class='key'>
-          <tr>
-            <td class='upperRegister'>#{esc upperRegister}</td>
-            <td class='upperAPLRegister'>#{esc mapping['`' + upperRegister]}</td>
-          </tr>
-          <tr>
-            <td class='lowerRegister'>#{esc lowerRegister}</td>
-            <td class='lowerAPLRegister'>#{esc mapping['`' + lowerRegister]}</td>
-          </tr>
-        </table>
-      </td>
-    """
+    # Keyboard {{{1
+    $('textarea').keyboard
+      layout: 'custom'
+      useCombos: false
+      display:
+        bksp: 'Bksp'
+        shift: '⇧'
+        alt: 'Alt'
+        enter: 'Enter'
+        exec: 'GO'
+      autoAccept: true
+      usePreview: false
+      customLayout:
+        default: [
+          '1 2 3 4 5 6 7 8 9 0 - ='
+          'q w e r t y u i o p [ ]'
+          'a s d f g h j k l {enter}'
+          '{shift} z x c v b n m , . {bksp}'
+          '{alt} {space} {exec!!}'
+        ]
+        shift: [
+          '! @ # $ % ^ & * ( ) _ +'
+          'Q W E R T Y U I O P { }'
+          'A S D F G H J K L {enter}'
+          '{shift} Z X C V B N M < > {bksp}'
+          '{alt} {space} {exec!!}'
+        ]
+        alt: [
+          '¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ − ×'
+          '░ ⍵ ∈ ⍴ ∼ ↑ ⍳ ↓ ○ ⋆ ← ░'
+          '⍺ ⌈ ⌊ ░ ∇ ∆ ∘ ░ ⎕ {enter}'
+          '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ░ {bksp}'
+          '{alt} {space} {exec!!}'
+        ]
+        'alt-shift': [
+          '⍣ ░ ░ ░ ░ ░ ░ ░ ⍱ ⍲ ≡ ░'
+          '░ ⌽ ⍷ ░ ⍉ ░ ░ ⌷ ⍬ ⍟ ░ ░'
+          '⊖ ░ ░ ░ ⍒ ⍋ ░ ░ ⍞ {enter}'
+          '{shift} ░ ░ ⍝ ░ ⍎ ⍕ ░ « » {bksp}'
+          '{alt} {space} {exec!!}'
+        ]
 
-    renderKeys = (keysDescription) ->
-      (for x in keysDescription.split ' ' then renderKey x[0], x[1]).join ''
+    $.keyboard.keyaction.exec = execute
 
-    renderKeyboard = (mapping) -> """
-      <div class="keyboard">
-        <div class="help">Prepend a backquote (`) to get the symbols in blue or red.</div>
-        <table class="row"><tr>
-          #{renderKeys '`~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) -_ =+'}
-          <td><table class="key backspaceKey"><tr><td>Backspace<br/>⟵</td></tr></table></td>
-        </tr></table>
-        <table class="row"><tr>
-          <td><table class="key tabKey"><tr><td>Tab<br/>↹</td></tr></table></td>
-          #{renderKeys 'qQ wW eE rR tT yY uU iI oO pP [{ ]} \\|'}
-        </tr></table>
-        <table class="row"><tr>
-          <td><table class="key capsLockKey"><tr><td>Caps Lock</td></tr></table></td>
-          #{renderKeys 'aA sS dD fF gG hH jJ kK lL ;: \'"'}
-          <td><table class="key enterKey"><tr><td>Enter<br/>⏎</td></tr></table></td>
-        </tr></table>
-        <table class="row"><tr>
-          <td><table class="key leftShiftKey"><tr><td>Shift&nbsp;⇧</td></tr></table></td>
-          #{renderKeys 'zZ xX cC vV bB nN mM ,< .> /?'}
-          <td><table class="key rightShiftKey"><tr><td>Shift&nbsp;⇧</td></tr></table></td>
-        </tr></table>
-      </div>
-    """
 
-    isKeyboardShown = false
-    $keyboard = null
-    $('#keyboardSwitch a').live 'click', (event) ->
-      isKeyboardShown = not isKeyboardShown
-      $keyboard ?= $(renderKeyboard()).appendTo '#keyboardSwitch'
-      $keyboard.toggle isKeyboardShown
-      $(@).text(if isKeyboardShown then 'Hide keyboard mapping' else 'Show keyboard mapping')
-      false
 
     # Examples {{{1
     for [name, code], i in window.examples

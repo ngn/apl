@@ -74,62 +74,34 @@ a:hover {
   #tooltip .description {
     clear: both; }
 
-#keyboardSwitch {
-  float: right; }
-  #keyboardSwitch .switchText {
-    margin: 0;
-    text-align: right; }
+.ui-keyboard {
+  position: absolute !important;
+  top: auto !important;
+  bottom: 0 !important;
+  left: 50% !important;
+  right: auto !important;
+  margin-left: -12em !important;
+  background-color: #999999;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border: solid #777777 1px;
+  border-width: 1px 1px 0 1px; }
 
-.keyboard {
-  background-color: #333333;
-  border: solid black 5px;
-  border-color: black #444444 #444444 black;
-  padding: 3px;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px; }
-  .keyboard .help {
-    text-align: center;
-    font-family: serif;
-    font-style: italic;
-    color: #888888;
-    padding-bottom: 3px; }
-  .keyboard table.row {
-    border-collapse: collapse;
-    border-width: 0; }
-  .keyboard td {
-    padding: 0;
-    margin: 0; }
-  .keyboard .key {
-    width: 50px;
-    height: 50px;
-    padding: 0;
-    margin: 0;
-    background-color: #333333;
-    border-style: solid;
-    border-width: 5px;
-    border-color: #444444 black black #444444;
-    border-radius: 7px;
-    color: #999977;
-    font-family: sans-serif; }
-    .keyboard .key td {
-      width: 50%;
-      height: 50%;
-      text-align: center; }
-    .keyboard .key td.upperAPLRegister {
-      color: #ff6644; }
-    .keyboard .key td.lowerAPLRegister {
-      color: #88aaff;
-      text-shadow: 0 0 12px; }
-  .keyboard .key.tabKey, .keyboard .key.backspaceKey {
-    width: 75px; }
-  .keyboard .key.enterKey {
-    width: 85px; }
-  .keyboard .key.capsLockKey {
-    width: 90px; }
-  .keyboard .key.leftShiftKey {
-    width: 106px; }
-  .keyboard .key.rightShiftKey {
-    width: 119px; }
-  .keyboard .key.tabKey, .keyboard .key.backspaceKey, .keyboard .key.enterKey, .keyboard .key.capsLockKey, .keyboard .key.leftShiftKey, .keyboard .key.rightShiftKey {
-    font-size: 12px;
-    height: 54px; }
+.ui-keyboard-space {
+  min-width: 16em !important;
+  width: auto !important; }
+
+.ui-keyboard-shift, .ui-keyboard-alt {
+  background-color: #ffdd88;
+  border-color: #ffdd88;
+  border-radius: 4px; }
+
+.ui-keyboard-shift.ui-state-active, .ui-keyboard-alt.ui-state-active {
+  background-color: #ddbb66;
+  border-color: #ddbb66;
+  border-style: inset; }
+
+.ui-keyboard-exec {
+  background-color: #88ff88;
+  border-color: #88ff88;
+  border-radius: 4px; }

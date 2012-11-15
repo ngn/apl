@@ -4,19 +4,16 @@
     <meta charset="UTF-8">
     <title>ngn/apl demo
     </title>
-    <style>@font-face { font-family: apl; src: url('../fonts/apl385.ttf') format('truetype'); }
-</style>
-    <style>@import url(index.css);
+    <style>@import url(keyboard.css);
+@import url(index.css);
+@font-face { font-family: apl; src: url('../fonts/apl385.ttf') format('truetype'); }
+
 </style>
   </head>
   <body>
     <h1>ngn/apl demo
     </h1>
     <div id="symbols">
-    </div>
-    <div id="keyboardSwitch">
-      <div class="switchText"><a href="#keyboard">Show keyboard mapping</a>
-      </div>
     </div>
     <div id="examples">Examples:
     </div><a id="permalink" href="#" title="A bookmarkable link to the source code below">Permalink</a>
@@ -35,6 +32,7 @@
     <script src="jquery.retype.min.js"></script>
     <script src="jquery.dimensions.js"></script>
     <script src="jquery.tooltip.js"></script>
+    <script src="jquery.keyboard.min.js"></script>
     <script src="require.js" data-main="./index.js"></script>
     <!--script(src='index.js')-->
     <script>var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

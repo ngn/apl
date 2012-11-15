@@ -85,80 +85,34 @@ a:hover
   .description
     clear: both
 
+.ui-keyboard
+  position: absolute !important
+  top: auto          !important
+  bottom: 0          !important
+  left: 50%          !important
+  right: auto        !important
+  margin-left: -12em !important
+  background-color: #999
+  border-top-left-radius:  6px
+  border-top-right-radius: 6px
+  border: solid #777 1px
+  border-width: 1px 1px 0 1px
 
+.ui-keyboard-space
+  min-width: 16em    !important
+  width: auto        !important
 
-$kbdDark:   #000
-$kbdNormal: #333
-$kbdLight:  #444
-#keyboardSwitch
-  float: right
-  .switchText
-    margin: 0
-    text-align: right
+.ui-keyboard-shift, .ui-keyboard-alt
+  background-color: #fd8
+  border-color: #fd8
+  border-radius: 4px
 
-.keyboard
-  background-color: $kbdNormal
-  border: solid $kbdDark 5px
-  border-color: $kbdDark $kbdLight $kbdLight $kbdDark
-  padding: 3px
-  border-top-left-radius:       12px
-  border-top-right-radius:      12px
+.ui-keyboard-shift.ui-state-active, .ui-keyboard-alt.ui-state-active
+  background-color: #db6
+  border-color: #db6
+  border-style: inset
 
-  .help
-    text-align: center
-    font-family: serif
-    font-style: italic
-    color: #888
-    padding-bottom: 3px
-
-  table.row
-    border-collapse: collapse
-    border-width: 0
-
-  td
-    padding: 0
-    margin: 0
-
-  .key
-    width: 50px
-    height: 50px
-    padding: 0
-    margin: 0
-    background-color: $kbdNormal
-    border-style: solid
-    border-width: 5px
-    border-color: $kbdLight $kbdDark $kbdDark $kbdLight
-    border-radius: 7px
-    color: #997
-    font-family: sans-serif
-
-    td
-      width: 50%
-      height: 50%
-      text-align: center
-
-    td.upperAPLRegister
-      color: #f64
-
-    td.lowerAPLRegister
-      color: #8af
-      text-shadow: 0 0 12px
-
-  .key.tabKey, .key.backspaceKey
-    width: 75px
-
-  .key.enterKey
-    width: 85px
-
-  .key.capsLockKey
-    width: 90px
-
-  .key.leftShiftKey
-    width: 106px
-
-  .key.rightShiftKey
-    width: 119px
-
-  .key.tabKey, .key.backspaceKey, .key.enterKey, .key.capsLockKey, .key.leftShiftKey, .key.rightShiftKey
-    font-size: 12px
-    height: 54px
+.ui-keyboard-exec
+  background-color: #8f8
+  border-color: #8f8
+  border-radius: 4px

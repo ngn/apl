@@ -3,13 +3,14 @@ html
   head
     meta(charset='UTF-8')
     title ngn/apl demo
-    style: @font-face { font-family: apl; src: url('../fonts/apl385.ttf') format('truetype'); }
-    style: @import url(index.css);
+    style
+      @import url(keyboard.css);
+      @import url(index.css);
+      @font-face { font-family: apl; src: url('../fonts/apl385.ttf') format('truetype'); }
 
   body
     h1 ngn/apl demo
     #symbols
-    #keyboardSwitch: div.switchText: a(href='#keyboard') Show keyboard mapping
     #examples Examples:
     a#permalink(href='#', title='A bookmarkable link to the source code below') Permalink
     form: p
@@ -24,6 +25,7 @@ html
     script(src='jquery.retype.min.js')
     script(src='jquery.dimensions.js')
     script(src='jquery.tooltip.js')
+    script(src='jquery.keyboard.min.js')
     script(src='require.js', data-main='./index.js')
     //script(src='index.js')
     script

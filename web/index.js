@@ -11,7 +11,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
   browserBuiltins = browser.browserBuiltins;
   inherit = helpers.inherit;
   return jQuery(function($) {
-    var $keyboard, a, c, ch, code, esc, escHard, escT, formatAsHTML, formatHTMLTable, hSymbolDefs, hashParams, href, i, isKeyboardShown, k, mapping, name, nameValue, rMapping, renderKey, renderKeyboard, renderKeys, symbolDef, symbolDefs, symbolsHTML, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+    var a, c, ch, code, esc, escHard, escT, execute, formatAsHTML, formatHTMLTable, hSymbolDefs, hashParams, href, i, k, mapping, name, nameValue, rMapping, symbolDef, symbolDefs, symbolsHTML, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
     escT = {
       '<': 'lt',
       '>': 'gt',
@@ -109,7 +109,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       $(this).attr('href', '#code=' + escape($('#code').val()));
       return false;
     });
-    $('#go').closest('form').submit(function() {
+    execute = function() {
       var ctx, result;
       ctx = inherit(browserBuiltins);
       try {
@@ -123,6 +123,9 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
         }
         $('#result').html("<div class='error'>" + (escHard(err.message)) + "</div>");
       }
+    };
+    $('#go').closest('form').submit(function() {
+      execute();
       return false;
     });
     symbolDefs = [
@@ -193,36 +196,26 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
     $('#code').retype('on', {
       mapping: mapping
     });
-    renderKey = function(lowerRegister, upperRegister) {
-      return "<td>\n  <table class='key'>\n    <tr>\n      <td class='upperRegister'>" + (esc(upperRegister)) + "</td>\n      <td class='upperAPLRegister'>" + (esc(mapping['`' + upperRegister])) + "</td>\n    </tr>\n    <tr>\n      <td class='lowerRegister'>" + (esc(lowerRegister)) + "</td>\n      <td class='lowerAPLRegister'>" + (esc(mapping['`' + lowerRegister])) + "</td>\n    </tr>\n  </table>\n</td>";
-    };
-    renderKeys = function(keysDescription) {
-      var x;
-      return ((function() {
-        var _l, _len2, _ref3, _results;
-        _ref3 = keysDescription.split(' ');
-        _results = [];
-        for (_l = 0, _len2 = _ref3.length; _l < _len2; _l++) {
-          x = _ref3[_l];
-          _results.push(renderKey(x[0], x[1]));
-        }
-        return _results;
-      })()).join('');
-    };
-    renderKeyboard = function(mapping) {
-      return "<div class=\"keyboard\">\n  <div class=\"help\">Prepend a backquote (`) to get the symbols in blue or red.</div>\n  <table class=\"row\"><tr>\n    " + (renderKeys('`~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) -_ =+')) + "\n    <td><table class=\"key backspaceKey\"><tr><td>Backspace<br/>⟵</td></tr></table></td>\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key tabKey\"><tr><td>Tab<br/>↹</td></tr></table></td>\n    " + (renderKeys('qQ wW eE rR tT yY uU iI oO pP [{ ]} \\|')) + "\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key capsLockKey\"><tr><td>Caps Lock</td></tr></table></td>\n    " + (renderKeys('aA sS dD fF gG hH jJ kK lL ;: \'"')) + "\n    <td><table class=\"key enterKey\"><tr><td>Enter<br/>⏎</td></tr></table></td>\n  </tr></table>\n  <table class=\"row\"><tr>\n    <td><table class=\"key leftShiftKey\"><tr><td>Shift&nbsp;⇧</td></tr></table></td>\n    " + (renderKeys('zZ xX cC vV bB nN mM ,< .> /?')) + "\n    <td><table class=\"key rightShiftKey\"><tr><td>Shift&nbsp;⇧</td></tr></table></td>\n  </tr></table>\n</div>";
-    };
-    isKeyboardShown = false;
-    $keyboard = null;
-    $('#keyboardSwitch a').live('click', function(event) {
-      isKeyboardShown = !isKeyboardShown;
-      if ($keyboard == null) {
-        $keyboard = $(renderKeyboard()).appendTo('#keyboardSwitch');
+    $('textarea').keyboard({
+      layout: 'custom',
+      useCombos: false,
+      display: {
+        bksp: 'Bksp',
+        shift: '⇧',
+        alt: 'Alt',
+        enter: 'Enter',
+        exec: 'GO'
+      },
+      autoAccept: true,
+      usePreview: false,
+      customLayout: {
+        "default": ['1 2 3 4 5 6 7 8 9 0 - =', 'q w e r t y u i o p [ ]', 'a s d f g h j k l {enter}', '{shift} z x c v b n m , . {bksp}', '{alt} {space} {exec!!}'],
+        shift: ['! @ # $ % ^ & * ( ) _ +', 'Q W E R T Y U I O P { }', 'A S D F G H J K L {enter}', '{shift} Z X C V B N M < > {bksp}', '{alt} {space} {exec!!}'],
+        alt: ['¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ − ×', '░ ⍵ ∈ ⍴ ∼ ↑ ⍳ ↓ ○ ⋆ ← ░', '⍺ ⌈ ⌊ ░ ∇ ∆ ∘ ░ ⎕ {enter}', '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ░ {bksp}', '{alt} {space} {exec!!}'],
+        'alt-shift': ['⍣ ░ ░ ░ ░ ░ ░ ░ ⍱ ⍲ ≡ ░', '░ ⌽ ⍷ ░ ⍉ ░ ░ ⌷ ⍬ ⍟ ░ ░', '⊖ ░ ░ ░ ⍒ ⍋ ░ ░ ⍞ {enter}', '{shift} ░ ░ ⍝ ░ ⍎ ⍕ ░ « » {bksp}', '{alt} {space} {exec!!}']
       }
-      $keyboard.toggle(isKeyboardShown);
-      $(this).text(isKeyboardShown ? 'Hide keyboard mapping' : 'Show keyboard mapping');
-      return false;
     });
+    $.keyboard.keyaction.exec = execute;
     _ref3 = window.examples;
     for (i = _l = 0, _len2 = _ref3.length; _l < _len2; i = ++_l) {
       _ref4 = _ref3[i], name = _ref4[0], code = _ref4[1];
