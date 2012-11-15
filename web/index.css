@@ -70,8 +70,7 @@ a:hover {
       padding: 3px 5px;
       background-color: #dddddd;
       border: outset #dddddd 5px;
-      border-radius: 7px;
-      -moz-border-radius: 7px; }
+      border-radius: 7px; }
   #tooltip .description {
     clear: both; }
 
@@ -85,7 +84,9 @@ a:hover {
   background-color: #333333;
   border: solid black 5px;
   border-color: black #444444 #444444 black;
-  padding: 3px; }
+  padding: 3px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px; }
   .keyboard .help {
     text-align: center;
     font-family: serif;
@@ -108,7 +109,6 @@ a:hover {
     border-width: 5px;
     border-color: #444444 black black #444444;
     border-radius: 7px;
-    -moz-border-radius: 7px;
     color: #999977;
     font-family: sans-serif; }
     .keyboard .key td {
