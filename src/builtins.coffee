@@ -388,7 +388,10 @@ define ['./helpers'], (helpers) ->
     rec 0, 0
     r
 
-  monadic '∪', 'Unique' # todo
+  monadic '∪', 'Unique', (a) ->
+    r = []
+    for x in array a when not contains r, x then r.push x
+    r
 
   contains = (a, x) -> # a helper
     for y in a when match x, y then return true

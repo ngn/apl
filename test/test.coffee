@@ -458,6 +458,12 @@ gives '"SHOCK" ∪ "CHOCOLATE"', S 'SHOCKLATE'
 gives '"lentils" "bulghur" (3 4 5) ∪ "lentils" "rice"',
         [S('lentils'), S('bulghur'), [3, 4, 5], S('rice')]
 
+# ∪ Unique {{{1
+gives '∪ 3 17 17 17 ¯3 17 0', [3, 17, -3, 0]
+gives '∪ 3 17', [3, 17]
+gives '∪ 17', [17]
+gives '∪ ⍬', []
+
 # ∩ Intersection {{{1
 gives '"ABRA"∩"CAR"', S 'ARA'
 gives '1 "PLUS" 2 ∩ ⍳5', [1, 2]
