@@ -11,7 +11,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
   browserBuiltins = browser.browserBuiltins;
   inherit = helpers.inherit;
   return jQuery(function($) {
-    var a, code, esc, escHard, escT, execute, formatAsHTML, formatHTMLTable, hSymbolDefs, hashParams, hideTooltip, i, k, mapping, name, nameValue, rMapping, symbolDef, symbolDefs, tid, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+    var a, code, esc, escHard, escT, execute, fTipsyTitle, formatAsHTML, formatHTMLTable, hSymbolDefs, hashParams, i, k, mapping, name, nameValue, rMapping, symbolDef, symbolDefs, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
     escT = {
       '<': 'lt',
       '>': 'gt',
@@ -178,32 +178,22 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       }
     });
     $.keyboard.keyaction.exec = execute;
-    tid = null;
-    $('body').on('mouseover', '.ui-keyboard-button', function(event) {
-      clearTimeout(tid);
-      return tid = setTimeout(function() {
-        var $e, ch, description, opts, p, sd;
-        if ((sd = hSymbolDefs[$(event.target).text()])) {
-          ch = sd[0], description = sd[1], opts = sd[2];
-          $e = $(event.target).closest('.ui-keyboard-button');
-          p = $e.offset();
-          $('#tooltip .content').html(description);
-          $('#tooltip').show().css({
-            left: p.left - ($('#tooltip').width() - $e.width()) / 2,
-            top: p.top - $('#tooltip').height()
-          });
-        }
-        return tid = null;
-      }, 500);
-    });
-    hideTooltip = function() {
-      $('#tooltip').hide();
-      clearTimeout(tid);
-      return tid = null;
+    $('textarea').focus();
+    fTipsyTitle = function() {
+      return (hSymbolDefs[$(this).text()] || {})[1] || '';
     };
-    $('body').on('mouseout', '.ui-keyboard-button', hideTooltip);
-    $('#code').blur(hideTooltip);
-    $('#tooltip').mouseout(hideTooltip);
+    $('.ui-keyboard').on('mouseover', '.ui-keyboard-button', function(event) {
+      var $b;
+      $b = $(event.target).closest('.ui-keyboard-button');
+      if (!$b.data('tipsyInitialised')) {
+        $b.data('tipsyInitialised', true).tipsy({
+          title: fTipsyTitle,
+          gravity: 's',
+          delayIn: 1000
+        }).tipsy('show');
+      }
+      return false;
+    });
     _ref3 = window.examples;
     for (i = _l = 0, _len2 = _ref3.length; _l < _len2; i = ++_l) {
       _ref4 = _ref3[i], name = _ref4[0], code = _ref4[1];

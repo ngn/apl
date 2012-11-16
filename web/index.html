@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <title>ngn/apl demo
     </title>
-    <style>@import url(keyboard.css);
-@import url(index.css);
+    <style>@import url(index.css);
+@import url(keyboard.css);
+@import url(tipsy.css);
 @font-face { font-family: apl; src: url('../fonts/apl385.ttf') format('truetype'); }
 
 </style>
@@ -23,19 +24,13 @@
     </form>
     <div id="result">
     </div>
-    <div id="tooltip" style="display:none">
-      <div class="content">
-      </div>
-      <div class="arrow-down">
-      </div>
-    </div>
     <script src="examples.js"></script>
     <script src="../lib/parser.js"></script>
     <script src="jquery-1.8.2.min.js"></script>
     <script src="jquery.fieldselection.min.js"></script>
     <script src="jquery.retype.min.js"></script>
-    <script src="jquery.tooltip.js"></script>
     <script src="jquery.keyboard.min.js"></script>
+    <script src="jquery.tipsy.js"></script>
     <script src="require.js" data-main="./index.js"></script>
     <script>var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));

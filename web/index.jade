@@ -4,8 +4,9 @@ html
     meta(charset='UTF-8')
     title ngn/apl demo
     style
-      @import url(keyboard.css);
       @import url(index.css);
+      @import url(keyboard.css);
+      @import url(tipsy.css);
       @font-face { font-family: apl; src: url('../fonts/apl385.ttf') format('truetype'); }
 
   body
@@ -18,17 +19,13 @@ html
 
     #result
 
-    #tooltip(style="display:none")
-      .content
-      .arrow-down
-
     script(src='examples.js')
     script(src='../lib/parser.js')
     script(src='jquery-1.8.2.min.js')
     script(src='jquery.fieldselection.min.js')
     script(src='jquery.retype.min.js')
-    script(src='jquery.tooltip.js')
     script(src='jquery.keyboard.min.js')
+    script(src='jquery.tipsy.js')
     script(src='require.js', data-main='./index.js')
     script
       var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

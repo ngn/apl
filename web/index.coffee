@@ -226,30 +226,16 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
 
     $.keyboard.keyaction.exec = execute
 
-    tid = null
-    $('body').on 'mouseover', '.ui-keyboard-button', (event) ->
-      clearTimeout tid
-      tid = setTimeout(
-        ->
-          if (sd = hSymbolDefs[$(event.target).text()])
-            [ch, description, opts] = sd
-            $e = $(event.target).closest('.ui-keyboard-button')
-            p = $e.offset()
-            $('#tooltip .content').html description
-            $('#tooltip').show().css(
-              left: p.left - ($('#tooltip').width() - $e.width()) / 2
-              top: p.top - $('#tooltip').height()
-            )
+    $('textarea').focus()
 
-          tid = null
-        500
-      )
-
-    hideTooltip = -> $('#tooltip').hide(); clearTimeout tid; tid = null
-    $('body').on 'mouseout', '.ui-keyboard-button', hideTooltip
-    $('#code').blur hideTooltip
-    $('#tooltip').mouseout hideTooltip
-
+    fTipsyTitle = -> (hSymbolDefs[$(@).text()] or {})[1] or ''
+    $('.ui-keyboard').on 'mouseover', '.ui-keyboard-button', (event) ->
+      $b = $(event.target).closest '.ui-keyboard-button'
+      if not $b.data 'tipsyInitialised'
+        $b.data('tipsyInitialised', true)
+          .tipsy(title: fTipsyTitle, gravity: 's', delayIn: 1000)
+          .tipsy 'show'
+      false
 
 
 
