@@ -20,7 +20,7 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
         if typeof x is 'string'
           "<span class='character'>#{esc(x).replace(' ', '&nbsp;', 'g')}</span>"
         else if typeof x is 'number'
-          "<span class='number'>#{if x < 0 then '¯' + (-x) else '' + x}</span>"
+          "<span class='number'>#{('' + x).replace /-|Infinity/g, '¯'}</span>"
         else if typeof x is 'function'
           "<span class='function'>#{
             if x.isPrefixOperator or x.isInfixOperator or x.isPostfixOperator then 'operator' else 'function'

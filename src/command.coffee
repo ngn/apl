@@ -41,7 +41,8 @@ define ['./compiler', './helpers', 'optimist'], (compiler, helpers, optimist) ->
     if typeof a is 'undefined' then ColouredRect 'undefined', specialColour
     else if a is null then ColouredRect 'null', specialColour
     else if typeof a is 'string' then ColouredRect a, stringColour
-    else if typeof a is 'number' then ColouredRect (if a < 0 then '¯' + (-a) else '' + a), numberColour
+    else if typeof a is 'number'
+      ColouredRect ('' + a).replace(/-|Infinity/g, '¯'), numberColour
     else if typeof a is 'function'
       s = if a.isPrefixOperator or a.isInfixOperator or a.isPostfixOperator then 'operator' else 'function'
       if a.aplName then s += ' ' + a.aplName

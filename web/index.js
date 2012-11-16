@@ -37,7 +37,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
         if (typeof x === 'string') {
           return "<span class='character'>" + (esc(x).replace(' ', '&nbsp;', 'g')) + "</span>";
         } else if (typeof x === 'number') {
-          return "<span class='number'>" + (x < 0 ? '¯' + (-x) : '' + x) + "</span>";
+          return "<span class='number'>" + (('' + x).replace(/-|Infinity/g, '¯')) + "</span>";
         } else if (typeof x === 'function') {
           return "<span class='function'>" + (x.isPrefixOperator || x.isInfixOperator || x.isPostfixOperator ? 'operator' : 'function') + (x.aplName ? ' ' + x.aplName : '') + "</span>";
         } else if (!(x.length != null)) {
