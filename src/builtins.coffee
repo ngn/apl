@@ -298,7 +298,7 @@ define ['./helpers'], (helpers) ->
     return sqrt(2 * PI) * pow(t, x + 0.5) * exp(-t) * a
 
   monadic '!', 'Factorial', pervasive (x) ->
-    if 0 <= x < 20 and x == floor x
+    if 0 <= x < 25 and x == floor x
       r = 1; i = 2; (while i <= x then r *= i++); r
     else if x < -150
       0
