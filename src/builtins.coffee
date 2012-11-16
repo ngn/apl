@@ -297,8 +297,8 @@ define ['./helpers'], (helpers) ->
       a += p[i] / (x + i)
     return sqrt(2 * PI) * pow(t, x + 0.5) * exp(-t) * a
 
-  monadic '!', 'Factorial', pervasive (x) ->
-    if 0 <= x < 25 and x == floor x
+  monadic '!', 'Factorial', pervasive factorial = (x) ->
+    if 0 <= x < 25 and x is floor x
       r = 1; i = 2; (while i <= x then r *= i++); r
     else if x < -150
       0
@@ -307,12 +307,15 @@ define ['./helpers'], (helpers) ->
     else
       Gamma(x + 1)
 
-  dyadic '!', 'Binomial', pervasive (b, a) ->
-    k = floor num a
-    n = floor num b
-    if not (0 <= k <= n) then return 0 # todo: Special cases for negatives and non-integers
-    if 2 * k > n then k = n - k # do less work
-    r = 1; (if k > 0 then for i in [1 .. k] then r = r * (n - k + i) / i); r
+  dyadic '!', 'Binomial', pervasive (n, k) ->
+    if 0 <= k < 100 and 0 <= n < 100 and n is floor(n) and k is floor(k)
+      if n < k then return 0
+      if 2 * k > n then k = n - k # do less work
+      u = v = 1
+      for i in [0...k] by 1 then (u *= n - i; v *= i + 1)
+      u / v
+    else
+      factorial(n) / (factorial(k) * factorial(n - k))
 
   monadic '⌹', 'Matrix inverse' # todo
   dyadic '⌹', 'Matrix divide' # todo
