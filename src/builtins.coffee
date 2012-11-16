@@ -285,9 +285,27 @@ define ['./helpers'], (helpers) ->
       when -7 then log((1 + x) / (1 - x)) / 2 # arctanh
       else die 'Unknown circular or hyperbolic function ' + i
 
-  monadic '!', 'Factorial', pervasive (a) ->
-    n = a = floor num a # todo: "Gamma" function for non-integer argument
-    r = 1; (if n > 1 then for i in [2 .. n] then r *= i); r
+  Gamma = (x) ->
+    p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+         771.32342877765313, -176.61502916214059, 12.507343278686905,
+         -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7]
+    if x < 0.5 then return PI / (sin(PI * x) * Gamma(1 - x))
+    x--
+    a = p[0]
+    t = x + 7.5
+    for i in [1...p.length]
+      a += p[i] / (x + i)
+    return sqrt(2 * PI) * pow(t, x + 0.5) * exp(-t) * a
+
+  monadic '!', 'Factorial', pervasive (x) ->
+    if 0 <= x < 20 and x == floor x
+      r = 1; i = 2; (while i <= x then r *= i++); r
+    else if x < -150
+      0
+    else if x > 150
+      1 / 0
+    else
+      Gamma(x + 1)
 
   dyadic '!', 'Binomial', pervasive (b, a) ->
     k = floor num a
