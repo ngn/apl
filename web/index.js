@@ -105,7 +105,11 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       }
     }
     $('#code').text(hashParams.code || '').focus();
-    $('#permalink').bind('mouseover focus', function() {
+    $('#permalink').tipsy({
+      gravity: 'e',
+      opacity: 1,
+      delayIn: 1000
+    }).bind('mouseover focus', function() {
       $(this).attr('href', '#code=' + escape($('#code').val()));
       return false;
     });
@@ -124,7 +128,11 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
         $('#result').html("<div class='error'>" + (escHard(err.message)) + "</div>");
       }
     };
-    $('#go').closest('form').submit(function() {
+    $('#go').tipsy({
+      gravity: 'e',
+      opacity: 1,
+      delayIn: 1000
+    }).closest('form').submit(function() {
       execute();
       return false;
     });
@@ -166,7 +174,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
         shift: '⇧',
         alt: 'Alt',
         enter: 'Enter',
-        exec: 'GO'
+        exec: '⍎'
       },
       autoAccept: true,
       usePreview: false,

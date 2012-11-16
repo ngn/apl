@@ -13,21 +13,25 @@ a {
   color: #000088; }
 
 a:hover {
-  background-color: khaki; }
+  background-color: #ffdd88; }
 
-#symbols {
-  font-family: apl monospace;
-  font-size: 20px; }
+#permalink {
+  float: right; }
 
 #code {
   font-size: 28px;
   vertical-align: bottom;
   height: 200px;
-  width: 900px; }
+  width: 100%; }
 
 #go {
+  float: right;
+  width: 100px;
   font-size: 48px;
-  vertical-align: bottom; }
+  background-color: #aaccff;
+  border-color: #aaccff;
+  border-radius: 4px;
+  cursor: pointer; }
 
 #result {
   margin-top: 20px; }
@@ -78,6 +82,8 @@ a:hover {
   border-style: inset; }
 
 .ui-keyboard-exec {
-  background-color: #88ff88;
-  border-color: #88ff88;
-  border-radius: 4px; }
+  background-color: #aaccff !important;
+  border-color: #aaccff !important;
+  border-radius: 4px !important;
+  min-width: 4em !important;
+  width: auto !important; }

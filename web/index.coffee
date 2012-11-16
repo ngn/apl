@@ -68,9 +68,10 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
         hashParams[name] = unescape value
     $('#code').text(hashParams.code or '').focus()
 
-    $('#permalink').bind 'mouseover focus', ->
-      $(@).attr 'href', '#code=' + escape $('#code').val()
-      false
+    $('#permalink').tipsy(gravity: 'e', opacity: 1, delayIn: 1000)
+      .bind 'mouseover focus', ->
+        $(@).attr 'href', '#code=' + escape $('#code').val()
+        false
 
 
 
@@ -85,7 +86,8 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
         $('#result').html "<div class='error'>#{escHard err.message}</div>"
       return
 
-    $('#go').closest('form').submit -> execute(); false
+    $('#go').tipsy(gravity: 'e', opacity: 1, delayIn: 1000)
+      .closest('form').submit -> execute(); false
 
 
 
@@ -191,7 +193,7 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
         shift: '⇧'
         alt: 'Alt'
         enter: 'Enter'
-        exec: 'GO'
+        exec: '⍎'
       autoAccept: true
       usePreview: false
       customLayout:
