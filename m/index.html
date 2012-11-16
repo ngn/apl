@@ -4,109 +4,133 @@
     <title>NGN APL
     </title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>@font-face { font-family: apl; src: url(../fonts/apl385.ttf) format(truetype); }
 </style>
     <style>@import url(index.css);
 </style>
   </head>
   <body>
-    <div id="editor" data-role="content"><img id="cursor" src="images/cursor.png">
+    <div id="pageInput">
+      <div id="editor"><img id="cursor" src="images/cursor.png">
+      </div>
+      <table class="keyboard">
+        <tr>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+        </tr>
+        <tr>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+        </tr>
+        <tr>
+          <td>
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td colSpan="3" class="key special shift">Shift
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="2" class="key">
+          </td>
+          <td colSpan="3" class="key special bksp">Bksp
+          </td>
+        </tr>
+        <tr>
+          <td colSpan="3" class="key special alt">Alt
+          </td>
+          <td colSpan="10" class="key special space">
+          </td>
+          <td colSpan="3" class="key special enter">Enter
+          </td>
+          <td colSpan="4" class="key special exec">Exec
+          </td>
+        </tr>
+      </table>
+      <script src="../web/examples.js"></script>
+      <script src="../web/jquery-1.8.2.min.js"></script>
+      <script src="../web/require.js" data-main="./index.js"></script>
+      <script>var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+      <script>var pageTracker = _gat._getTracker("UA-23946726-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+
+</script>
     </div>
-    <table class="keyboard">
-      <tr>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-      </tr>
-      <tr>
-        <td>
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td>
-        </td>
-      </tr>
-      <tr>
-        <td colSpan="3" class="key special capsLock">Caps
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="3" class="key special backspace">Bksp
-        </td>
-      </tr>
-      <tr>
-        <td colSpan="3" class="key special layoutSwitch">A/⍎
-        </td>
-        <td colSpan="2" class="key">
-        </td>
-        <td colSpan="2" class="key">/
-        </td>
-        <td colSpan="6" class="key special space">
-        </td>
-        <td colSpan="2" class="key">.
-        </td>
-        <td colSpan="5" class="key special enter">Enter
-        </td>
-      </tr>
-    </table>
-    <!-- APL core-->
-    <script src="../web/examples.js"></script>
-    <script src="../node_modules/requirejs/require.js"></script>
-    <script src="../lib/helpers.js"></script>
-    <script src="../lib/parser.js"></script>
-    <script src="../lib/builtins.js"></script>
-    <script src="../lib/complex.js"></script>
-    <script src="../lib/compiler.js"></script>
-    <script src="../lib/browser.js"></script>
-    <!-- jQuery-->
-    <script src="jq/jquery-1.7.2.min.js"></script>
-    <!-- Editor scripts-->
-    <script src="index.js"></script>
+    <div id="pageOutput" style="display:none">
+      <button id="closeOutputButton">Close
+      </button>
+      <div id="result">
+      </div>
+    </div>
   </body>
 </html>

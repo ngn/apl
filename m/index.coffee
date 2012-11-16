@@ -1,46 +1,122 @@
-$.fn.toggleVisibility = ->
-  @css 'visibility', if @css('visibility') is 'hidden' then '' else 'hidden'
+if typeof define isnt 'function' then define = require('amdefine')(module)
 
-$ ->
-  setInterval (-> $('#cursor').toggleVisibility()), 500
+define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, browser, helpers) ->
+  {exec} = compiler
+  {browserBuiltins} = browser
+  {inherit} = helpers
 
-  $('#editor span').live 'mousedown', (e) ->
-    if e.pageX < $(e.target).position().left + $(e.target).width() / 2
-      $('#cursor').insertBefore @
-    else
-      $('#cursor').insertAfter @
-    false
+  # Result formatting {{{1
 
-  $('.key').live 'mousedown', ->
-    $(@).addClass('down').trigger 'aplkeypress'
-    setTimeout (=> $(@).removeClass 'down'), 500
+  escT = {'<': 'lt', '>': 'gt', '&': 'amp', "'": 'apos', '"': 'quot'}
+  esc = (s) -> if s then s.replace /[<>&'"]/g, (x) -> "&#{escT[x]};" else ''
+  escHard = (s) -> esc(s).replace(/\ /g, '&nbsp;').replace(/\n/g, '<br/>')
 
-  layouts = [
-    ['qwertyuiopasdfghjklzxcvbnm', 'QWERTYUIOPASDFGHJKLZXCVBNM']
-    [' ⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣', ' ⌽⍷ ⍉  ⌷⍬⍟⊖   ⍒⍋ ÷⍞  ⍝ ⍎⍕ ']
-  ]
-  layoutIndex = 0
-  isCapsOn = false
+  formatAsHTML = (x) ->
+    # Supports arrays of up 4 dimensions
+    # Higher-rank arrays are displayed as if 4-dimensional
+    try
+      if typeof x is 'string'
+        "<span class='character'>#{esc(x).replace(' ', '&nbsp;', 'g')}</span>"
+      else if typeof x is 'number'
+        "<span class='number'>#{('' + x).replace /-|Infinity/g, '¯'}</span>"
+      else if typeof x is 'function'
+        "<span class='function'>#{
+          if x.isPrefixOperator or x.isInfixOperator or x.isPostfixOperator then 'operator' else 'function'
+        }#{
+          if x.aplName then ' ' + x.aplName else ''
+        }</span>"
+      else if not x.length?
+        "<span class='unknown'>#{esc('' + x)}</span>"
+      else if x.shape and x.shape.length > 2
+        # Slice into planes
+        sx = x.shape # shape of x
+        rx = sx.length # rank of x
+        planeSize = sx[rx - 2] * sx[rx - 1]
+        nPlanes = x.length / planeSize
+        planes = for i in [0...nPlanes]
+          formatHTMLTable x[i * planeSize ... (i + 1) * planeSize], sx[rx - 1], sx[rx - 2], 'subarray'
+        nc = sx[rx - 3]
+        nr = nPlanes / nc
+        formatHTMLTable planes, nr, nc, 'array'
+      else
+        if x.length is 0 then return "<table class='array empty'><tr><td>empty</table>"
+        [nr, nc] = x.shape or [1, x.length]
+        x = for y in x then formatAsHTML y
+        formatHTMLTable x, nr, nc, 'array'
+    catch e
+      console?.error?(e)
+      '<span class="error">Presentation error</span>'
 
-  updateLayout = ->
-    layout = layouts[layoutIndex][+isCapsOn]
-    $('.keyboard .key:not(.special)').each (i, e) -> $(e).text layout[i]
-    return
+  formatHTMLTable = (a, nr, nc, cssClass) ->
+    s = "<table class='#{cssClass}'>"
+    for r in [0...nr]
+      s += '<tr>'
+      for c in [0...nc]
+        s += "<td>#{a[nc * r + c]}</td>"
+      s += '</tr>'
+    s += '</table>'
 
-  updateLayout()
+  # }}}
 
-  $('.enter').on 'aplkeypress', -> $('<br>').insertBefore '#cursor'
-  $('.space').on 'aplkeypress', -> $('<span> </span>').insertBefore '#cursor'
-  $('.backspace').on 'aplkeypress', -> $('#cursor').prev().remove()
+  $.fn.toggleVisibility = ->
+    @css 'visibility', if @css('visibility') is 'hidden' then '' else 'hidden'
 
-  $('.layoutSwitch').on 'aplkeypress', ->
-    layoutIndex = (layoutIndex + 1) % layouts.length
+  jQuery ($) ->
+    setInterval (-> $('#cursor').toggleVisibility()), 500
+
+    $('#editor').on 'mousedown touchstart', 'span', (e) ->
+      e.preventDefault()
+      if e.pageX < $(e.target).position().left + $(e.target).width() / 2
+        $('#cursor').insertBefore @
+      else
+        $('#cursor').insertAfter @
+      false
+
+    $('.key').bind 'mousedown touchstart', (event) ->
+      event.preventDefault()
+      $(@).addClass('down').trigger 'aplkeypress'
+      false
+
+    $('.key').bind 'mouseup touchend', (event) ->
+      event.preventDefault()
+      $(@).removeClass 'down'
+      false
+
+    layouts = [
+      '1234567890qwertyuiopasdfghjklzxcvbnm'
+      '!@#$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM'
+      '¨¯<≤=≥>≠∨∧←⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣'
+      '⍣[]{}«» ⍱⍲ ⌽⍷ ⍉  ⌷⍬⍟⊖   ⍒⍋ ÷⍞  ⍝ ⍎⍕ '
+    ]
+    alt = shift = 0
+
+    updateLayout = ->
+      layout = layouts[2 * alt + shift]
+      $('.keyboard .key:not(.special)').each (i) -> $(@).text layout[i]
+      return
+
     updateLayout()
 
-  $('.capsLock').on 'aplkeypress', ->
-    isCapsOn = not isCapsOn
-    $(@).toggleClass 'isOn', isCapsOn
-    updateLayout()
+    $('.key:not(.special)').on 'aplkeypress', ->
+      $('<span>').text($(@).text()).insertBefore '#cursor'
+    $('.enter').on 'aplkeypress', -> $('<br>').insertBefore '#cursor'
+    $('.space').on 'aplkeypress', -> $('<span> </span>').insertBefore '#cursor'
+    $('.bksp' ).on 'aplkeypress', -> $('#cursor').prev().remove()
+    $('.shift').on 'aplkeypress', -> $(@).toggleClass 'isOn', (shift = 1 - shift); updateLayout()
+    $('.alt'  ).on 'aplkeypress', -> $(@).toggleClass 'isOn', (alt   = 1 - alt  ); updateLayout()
+    $('.exec' ).on 'aplkeypress', ->
+      ctx = inherit browserBuiltins
+      try
+        $('#result').html formatAsHTML exec $('#editor').text()
+      catch err
+        console?.error?(err)
+        $('#result').html "<div class='error'>#{escHard err.message}</div>"
+      $('#pageInput').hide()
+      $('#pageOutput').show()
+      return
 
-  $('.key:not(.special)').live 'aplkeypress', ->
-    $('<span>').text($(@).text().replace /[\ \t\r\n]+/g, '').insertBefore '#cursor'
+    $('#closeOutputButton').bind 'mousedown touchstart', (event) ->
+      event.preventDefault()
+      $('#pageInput').show()
+      $('#pageOutput').hide()
+      false

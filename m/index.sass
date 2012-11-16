@@ -9,31 +9,27 @@ body
 
 .keyboard
   width: 100%
-  height: 33%
+  height: 40%
   background-color: black
-  padding: 5px
+  padding: 3px 0 0 0
   position: fixed
   bottom: 0
 
   .key
     text-align: center
-    color: white
+    color: #dda
     cursor: pointer
     border-style: solid
-    border-color: #999 #777 #777 #999
-    border-width: 3px
-    border-radius: 20%
-    background-color: #222
+    border-color: #555 #333 #333 #555
+    border-width: 2px
+    border-radius: 10px
+    background-color: #444
     overflow: hidden
     text-overflow: ellipsis
 
-  .key.down
-    border-color: #777 #999 #999 #777
-    background-color: #111
-
-  .capsLock.isOn
-    border-color: #777 #999 #999 #777
-    background: #111 right top url("images/button-lock-light.png") no-repeat
+  .key.down, .alt.isOn, .shift.isOn
+    border-color: #222 #444 #444 #222
+    background-color: #333
 
   td
     width: 5%
@@ -41,5 +37,43 @@ body
   td.key
     width: 10%
 
-  td.key.backspace
+  td.key.bksp
     width: 15%
+
+#closeOutputButton
+  position: fixed
+  bottom: 0
+  width: 100%
+  font-size: 3ex
+  color: #dda
+  cursor: pointer
+  border-style: solid
+  border-color: #555 #333 #333 #555
+  border-width: 2px
+  border-radius: 10px
+  background-color: #444
+
+#result
+  .character
+    color: #840
+    font-weight: bold
+
+  .function
+    color: green
+    font-style: italic
+
+  .unknown
+    color: red
+
+  .array
+    border: solid black 1px
+
+  .empty
+    color: #aaa
+    font-style: italic
+
+  .error
+    color: red
+    border: solid #fdd 1px
+    background-color: #fee
+    padding: 10px
