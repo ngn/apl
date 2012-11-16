@@ -228,13 +228,16 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
 
     $('textarea').focus()
 
-    fTipsyTitle = -> (hSymbolDefs[$(@).text()] or {})[1] or ''
+    tipsyOpts =
+      title: -> (hSymbolDefs[$(@).text()] or {})[1] or ''
+      gravity: 's'
+      delayIn: 1000
+      opacity: 1
+
     $('.ui-keyboard').on 'mouseover', '.ui-keyboard-button', (event) ->
       $b = $(event.target).closest '.ui-keyboard-button'
       if not $b.data 'tipsyInitialised'
-        $b.data('tipsyInitialised', true)
-          .tipsy(title: fTipsyTitle, gravity: 's', delayIn: 1000)
-          .tipsy 'show'
+        $b.data('tipsyInitialised', true).tipsy(tipsyOpts).tipsy 'show'
       false
 
 

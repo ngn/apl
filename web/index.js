@@ -11,7 +11,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
   browserBuiltins = browser.browserBuiltins;
   inherit = helpers.inherit;
   return jQuery(function($) {
-    var a, code, esc, escHard, escT, execute, fTipsyTitle, formatAsHTML, formatHTMLTable, hSymbolDefs, hashParams, i, k, mapping, name, nameValue, rMapping, symbolDef, symbolDefs, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+    var a, code, esc, escHard, escT, execute, formatAsHTML, formatHTMLTable, hSymbolDefs, hashParams, i, k, mapping, name, nameValue, rMapping, symbolDef, symbolDefs, tipsyOpts, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
     escT = {
       '<': 'lt',
       '>': 'gt',
@@ -179,18 +179,19 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
     });
     $.keyboard.keyaction.exec = execute;
     $('textarea').focus();
-    fTipsyTitle = function() {
-      return (hSymbolDefs[$(this).text()] || {})[1] || '';
+    tipsyOpts = {
+      title: function() {
+        return (hSymbolDefs[$(this).text()] || {})[1] || '';
+      },
+      gravity: 's',
+      delayIn: 1000,
+      opacity: 1
     };
     $('.ui-keyboard').on('mouseover', '.ui-keyboard-button', function(event) {
       var $b;
       $b = $(event.target).closest('.ui-keyboard-button');
       if (!$b.data('tipsyInitialised')) {
-        $b.data('tipsyInitialised', true).tipsy({
-          title: fTipsyTitle,
-          gravity: 's',
-          delayIn: 1000
-        }).tipsy('show');
+        $b.data('tipsyInitialised', true).tipsy(tipsyOpts).tipsy('show');
       }
       return false;
     });
