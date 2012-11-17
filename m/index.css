@@ -5,7 +5,8 @@ body {
 
 #editor {
   cursor: text;
-  padding: 10px; }
+  padding: 10px;
+  font-size: 24px; }
 
 .keyboard {
   width: 100%;
@@ -28,6 +29,16 @@ body {
   .keyboard .key.down, .keyboard .alt.isOn, .keyboard .shift.isOn {
     border-color: #222222 #444444 #444444 #222222;
     background-color: #333333; }
+  .keyboard .key.exec {
+    background-color: #447744;
+    border-color: #62a562 #284628 #284628 #62a562; }
+  .keyboard .key.alt, .keyboard td.key.shift {
+    background-color: #776633;
+    border-color: #ad944a #41381c #41381c #ad944a; }
+  .keyboard .key.alt.isOn, .keyboard td.key.shift.isOn {
+    color: #aaaa88;
+    background-color: #41381c;
+    border-color: #0c0a05 #534724 #534724 #0c0a05; }
   .keyboard td {
     width: 5%; }
   .keyboard td.key {
@@ -35,10 +46,32 @@ body {
   .keyboard td.key.bksp {
     width: 15%; }
 
+#result {
+  margin: 15px 15px 60px 15px; }
+  #result .character {
+    color: #884400;
+    font-weight: bold; }
+  #result .function {
+    color: green;
+    font-style: italic; }
+  #result .unknown {
+    color: red; }
+  #result .array {
+    border: solid black 1px; }
+  #result .empty {
+    color: #aaaaaa;
+    font-style: italic; }
+  #result .error {
+    color: red;
+    border: solid #ffdddd 1px;
+    background-color: #ffeeee;
+    padding: 10px; }
+
 #closeOutputButton {
   position: fixed;
   bottom: 0;
   width: 100%;
+  height: 10%;
   font-size: 3ex;
   color: #ddddaa;
   cursor: pointer;
@@ -47,22 +80,3 @@ body {
   border-width: 2px;
   border-radius: 10px;
   background-color: #444444; }
-
-#result .character {
-  color: #884400;
-  font-weight: bold; }
-#result .function {
-  color: green;
-  font-style: italic; }
-#result .unknown {
-  color: red; }
-#result .array {
-  border: solid black 1px; }
-#result .empty {
-  color: #aaaaaa;
-  font-style: italic; }
-#result .error {
-  color: red;
-  border: solid #ffdddd 1px;
-  background-color: #ffeeee;
-  padding: 10px; }

@@ -6,6 +6,7 @@ body
 #editor
   cursor: text
   padding: 10px
+  font-size: 24px
 
 .keyboard
   width: 100%
@@ -31,6 +32,21 @@ body
     border-color: #222 #444 #444 #222
     background-color: #333
 
+  $execBG: #474
+  .key.exec
+    background-color: $execBG
+    border-color: lighten($execBG, 15%) darken($execBG, 15%) darken($execBG, 15%) lighten($execBG, 15%)
+
+  $modBG: #763
+  .key.alt, td.key.shift
+    background-color: $modBG
+    border-color: lighten($modBG, 15%) darken($modBG, 15%) darken($modBG, 15%) lighten($modBG, 15%)
+
+  .key.alt.isOn, td.key.shift.isOn
+    color: #aa8
+    background-color: darken($modBG, 15%)
+    border-color: darken($modBG, 30%) darken($modBG, 10%) darken($modBG, 10%) darken($modBG, 30%)
+
   td
     width: 5%
 
@@ -40,20 +56,9 @@ body
   td.key.bksp
     width: 15%
 
-#closeOutputButton
-  position: fixed
-  bottom: 0
-  width: 100%
-  font-size: 3ex
-  color: #dda
-  cursor: pointer
-  border-style: solid
-  border-color: #555 #333 #333 #555
-  border-width: 2px
-  border-radius: 10px
-  background-color: #444
-
 #result
+  margin: 15px 15px 60px 15px
+
   .character
     color: #840
     font-weight: bold
@@ -77,3 +82,17 @@ body
     border: solid #fdd 1px
     background-color: #fee
     padding: 10px
+
+#closeOutputButton
+  position: fixed
+  bottom: 0
+  width: 100%
+  height: 10%
+  font-size: 3ex
+  color: #dda
+  cursor: pointer
+  border-style: solid
+  border-color: #555 #333 #333 #555
+  border-width: 2px
+  border-radius: 10px
+  background-color: #444

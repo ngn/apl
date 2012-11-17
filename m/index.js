@@ -6,7 +6,7 @@ if (typeof define !== 'function') {
 }
 
 define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compiler, browser, helpers) {
-  var browserBuiltins, esc, escHard, escT, exec, formatAsHTML, formatHTMLTable, inherit;
+  var browserBuiltins, esc, escHard, escT, exec, extractTextFromDOM, formatAsHTML, formatHTMLTable, inherit;
   exec = compiler.exec;
   browserBuiltins = browser.browserBuiltins;
   inherit = helpers.inherit;
@@ -96,14 +96,34 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
   $.fn.toggleVisibility = function() {
     return this.css('visibility', this.css('visibility') === 'hidden' ? '' : 'hidden');
   };
+  extractTextFromDOM = function(e) {
+    var c, r, _ref;
+    if ((_ref = e.nodeType) === 3 || _ref === 4) {
+      return e.nodeValue;
+    } else if (e.nodeType === 1) {
+      if (e.nodeName.toLowerCase() === 'br') {
+        return '\n';
+      } else {
+        c = e.firstChild;
+        r = '';
+        while (c) {
+          r += extractTextFromDOM(c);
+          c = c.nextSibling;
+        }
+        return r;
+      }
+    }
+  };
   return jQuery(function($) {
     var alt, layouts, shift, updateLayout;
     setInterval((function() {
       return $('#cursor').toggleVisibility();
     }), 500);
     $('#editor').on('mousedown touchstart', 'span', function(e) {
+      var x, _ref, _ref1, _ref2;
       e.preventDefault();
-      if (e.pageX < $(e.target).position().left + $(e.target).width() / 2) {
+      x = ((_ref = (_ref1 = e.originalEvent) != null ? (_ref2 = _ref1.touches) != null ? _ref2[0] : void 0 : void 0) != null ? _ref : e).pageX;
+      if (x < $(e.target).position().left + $(e.target).width() / 2) {
         $('#cursor').insertBefore(this);
       } else {
         $('#cursor').insertAfter(this);
@@ -120,7 +140,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       $(this).removeClass('down');
       return false;
     });
-    layouts = ['1234567890qwertyuiopasdfghjklzxcvbnm', '!@#$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM', '¨¯<≤=≥>≠∨∧←⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣', '⍣[]{}«» ⍱⍲ ⌽⍷ ⍉  ⌷⍬⍟⊖   ⍒⍋ ÷⍞  ⍝ ⍎⍕ '];
+    layouts = ['1234567890qwertyuiopasdfghjklzxcvbnm', '!@#$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM', '¨¯<≤=≥>≠∨∧←⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣', '⍣[]{}«»;⍱⍲ ⌽⍷\\⍉\'"⌷⍬⍟⊖+−×⍒⍋/÷⍞⌿⍀⍝ ⍎⍕:'];
     alt = shift = 0;
     updateLayout = function() {
       var layout;
@@ -137,7 +157,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       return $('<br>').insertBefore('#cursor');
     });
     $('.space').on('aplkeypress', function() {
-      return $('<span> </span>').insertBefore('#cursor');
+      return $('<span>&nbsp;</span>').insertBefore('#cursor');
     });
     $('.bksp').on('aplkeypress', function() {
       return $('#cursor').prev().remove();
@@ -154,7 +174,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       var ctx;
       ctx = inherit(browserBuiltins);
       try {
-        $('#result').html(formatAsHTML(exec($('#editor').text())));
+        $('#result').html(formatAsHTML(exec(extractTextFromDOM(document.getElementById('editor')).replace(/\xa0/g, ' '))));
       } catch (err) {
         if (typeof console !== "undefined" && console !== null) {
           if (typeof console.error === "function") {

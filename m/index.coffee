@@ -61,12 +61,27 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
   $.fn.toggleVisibility = ->
     @css 'visibility', if @css('visibility') is 'hidden' then '' else 'hidden'
 
+  extractTextFromDOM = (e) ->
+    if e.nodeType in [3, 4]
+      e.nodeValue
+    else if e.nodeType is 1
+      if e.nodeName.toLowerCase() is 'br'
+        '\n'
+      else
+        c = e.firstChild
+        r = ''
+        while c
+          r += extractTextFromDOM c
+          c = c.nextSibling
+        r
+
   jQuery ($) ->
     setInterval (-> $('#cursor').toggleVisibility()), 500
 
     $('#editor').on 'mousedown touchstart', 'span', (e) ->
       e.preventDefault()
-      if e.pageX < $(e.target).position().left + $(e.target).width() / 2
+      x = (e.originalEvent?.touches?[0] ? e).pageX
+      if x < $(e.target).position().left + $(e.target).width() / 2
         $('#cursor').insertBefore @
       else
         $('#cursor').insertAfter @
@@ -86,7 +101,7 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
       '1234567890qwertyuiopasdfghjklzxcvbnm'
       '!@#$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM'
       '¨¯<≤=≥>≠∨∧←⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣'
-      '⍣[]{}«» ⍱⍲ ⌽⍷ ⍉  ⌷⍬⍟⊖   ⍒⍋ ÷⍞  ⍝ ⍎⍕ '
+      '⍣[]{}«»;⍱⍲ ⌽⍷\\⍉\'"⌷⍬⍟⊖+−×⍒⍋/÷⍞⌿⍀⍝ ⍎⍕:'
     ]
     alt = shift = 0
 
@@ -100,14 +115,14 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
     $('.key:not(.special)').on 'aplkeypress', ->
       $('<span>').text($(@).text()).insertBefore '#cursor'
     $('.enter').on 'aplkeypress', -> $('<br>').insertBefore '#cursor'
-    $('.space').on 'aplkeypress', -> $('<span> </span>').insertBefore '#cursor'
+    $('.space').on 'aplkeypress', -> $('<span>&nbsp;</span>').insertBefore '#cursor'
     $('.bksp' ).on 'aplkeypress', -> $('#cursor').prev().remove()
     $('.shift').on 'aplkeypress', -> $(@).toggleClass 'isOn', (shift = 1 - shift); updateLayout()
     $('.alt'  ).on 'aplkeypress', -> $(@).toggleClass 'isOn', (alt   = 1 - alt  ); updateLayout()
     $('.exec' ).on 'aplkeypress', ->
       ctx = inherit browserBuiltins
       try
-        $('#result').html formatAsHTML exec $('#editor').text()
+        $('#result').html formatAsHTML exec extractTextFromDOM(document.getElementById 'editor').replace /\xa0/g, ' '
       catch err
         console?.error?(err)
         $('#result').html "<div class='error'>#{escHard err.message}</div>"
