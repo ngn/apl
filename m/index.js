@@ -134,7 +134,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       var $k;
       event.preventDefault();
       $k = $(this);
-      $k.addClass('down').trigger('aplkeypress');
+      $k.addClass('down');
       if ($k.hasClass('repeatable')) {
         $k.data('timeoutId', setTimeout(function() {
           $k.data('timeoutId', null);
@@ -147,14 +147,18 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       return false;
     });
     $('.key').bind('mouseup touchend', function(event) {
-      var $k;
+      var $k, iid;
       event.preventDefault();
       $k = $(this);
       $k.removeClass('down');
       clearTimeout($k.data('timeoutId'));
       $k.data('timeoutId', null);
-      clearInterval($k.data('intervalId'));
-      $k.data('intervalId', null);
+      if ((iid = $k.data('intervalId')) != null) {
+        clearInterval(iid);
+        $k.data('intervalId', null);
+      } else {
+        $k.trigger('aplkeypress');
+      }
       return false;
     });
     layouts = ['1234567890qwertyuiopasdfghjklzxcvbnm', '!@#$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM', '¨¯<≤=≥>≠∨∧←⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣', '⍣[]{}«»;⍱⍲ ⌽⍷\\⍉\'"⌷⍬⍟⊖+−×⍒⍋/÷⍞⌿⍀⍝.⍎⍕:'];

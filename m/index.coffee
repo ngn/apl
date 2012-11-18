@@ -90,7 +90,7 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
     $('.key').bind 'mousedown touchstart', (event) ->
       event.preventDefault()
       $k = $ @
-      $k.addClass('down').trigger 'aplkeypress'
+      $k.addClass 'down'
       if $k.hasClass 'repeatable'
         $k.data 'timeoutId', setTimeout(
           ->
@@ -108,8 +108,11 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
       $k.removeClass 'down'
       clearTimeout $k.data 'timeoutId'
       $k.data 'timeoutId', null
-      clearInterval $k.data 'intervalId'
-      $k.data 'intervalId', null
+      if (iid = $k.data 'intervalId')?
+        clearInterval iid
+        $k.data 'intervalId', null
+      else
+        $k.trigger 'aplkeypress'
       false
 
     layouts = [
