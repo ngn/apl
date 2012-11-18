@@ -101,7 +101,7 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
       '1234567890qwertyuiopasdfghjklzxcvbnm'
       '!@#$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM'
       '¨¯<≤=≥>≠∨∧←⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣'
-      '⍣[]{}«»;⍱⍲ ⌽⍷\\⍉\'"⌷⍬⍟⊖+−×⍒⍋/÷⍞⌿⍀⍝ ⍎⍕:'
+      '⍣[]{}«»;⍱⍲ ⌽⍷\\⍉\'"⌷⍬⍟⊖+−×⍒⍋/÷⍞⌿⍀⍝.⍎⍕:'
     ]
     alt = shift = 0
 
