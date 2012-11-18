@@ -131,13 +131,30 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       return false;
     });
     $('.key').bind('mousedown touchstart', function(event) {
+      var $k;
       event.preventDefault();
-      $(this).addClass('down').trigger('aplkeypress');
+      $k = $(this);
+      $k.addClass('down').trigger('aplkeypress');
+      if ($k.hasClass('repeatable')) {
+        $k.data('timeoutId', setTimeout(function() {
+          $k.data('timeoutId', null);
+          $k.trigger('aplkeypress');
+          $k.data('intervalId', setInterval((function() {
+            return $k.trigger('aplkeypress');
+          }), 200));
+        }, 500));
+      }
       return false;
     });
     $('.key').bind('mouseup touchend', function(event) {
+      var $k;
       event.preventDefault();
-      $(this).removeClass('down');
+      $k = $(this);
+      $k.removeClass('down');
+      clearTimeout($k.data('timeoutId'));
+      $k.data('timeoutId', null);
+      clearInterval($k.data('intervalId'));
+      $k.data('intervalId', null);
       return false;
     });
     layouts = ['1234567890qwertyuiopasdfghjklzxcvbnm', '!@#$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM', '¨¯<≤=≥>≠∨∧←⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣', '⍣[]{}«»;⍱⍲ ⌽⍷\\⍉\'"⌷⍬⍟⊖+−×⍒⍋/÷⍞⌿⍀⍝.⍎⍕:'];

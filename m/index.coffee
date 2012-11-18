@@ -89,12 +89,27 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
 
     $('.key').bind 'mousedown touchstart', (event) ->
       event.preventDefault()
-      $(@).addClass('down').trigger 'aplkeypress'
+      $k = $ @
+      $k.addClass('down').trigger 'aplkeypress'
+      if $k.hasClass 'repeatable'
+        $k.data 'timeoutId', setTimeout(
+          ->
+            $k.data 'timeoutId', null
+            $k.trigger 'aplkeypress'
+            $k.data 'intervalId', setInterval (-> $k.trigger 'aplkeypress'), 200
+            return
+          500
+        )
       false
 
     $('.key').bind 'mouseup touchend', (event) ->
       event.preventDefault()
-      $(@).removeClass 'down'
+      $k = $ @
+      $k.removeClass 'down'
+      clearTimeout $k.data 'timeoutId'
+      $k.data 'timeoutId', null
+      clearInterval $k.data 'intervalId'
+      $k.data 'intervalId', null
       false
 
     layouts = [
@@ -114,11 +129,13 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
 
     $('.key:not(.special)').on 'aplkeypress', ->
       $('<span>').text($(@).text()).insertBefore '#cursor'
+
     $('.enter').on 'aplkeypress', -> $('<br>').insertBefore '#cursor'
     $('.space').on 'aplkeypress', -> $('<span>&nbsp;</span>').insertBefore '#cursor'
     $('.bksp' ).on 'aplkeypress', -> $('#cursor').prev().remove()
     $('.shift').on 'aplkeypress', -> $(@).toggleClass 'isOn', (shift = 1 - shift); updateLayout()
     $('.alt'  ).on 'aplkeypress', -> $(@).toggleClass 'isOn', (alt   = 1 - alt  ); updateLayout()
+
     $('.exec' ).on 'aplkeypress', ->
       ctx = inherit browserBuiltins
       try
