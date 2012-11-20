@@ -3,7 +3,7 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 # This file contains an implementation of APL's built-in functions and
 # operators.
 
-# # APL objects
+# # JavaScript representation of APL arrays
 
 # APL's data structures are multidimensional arrays:
 #
@@ -19,7 +19,7 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 #
 #   * (rank 3+) Cubes, etc
 #
-# APL arrays are not necessarily heterogenous, they may contain data of mixed
+# APL arrays are not necessarily homogenous, they may contain data of mixed
 # types.
 #
 # An array in APL is aware of its own dimensions, so there is an essential
@@ -31,7 +31,7 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 #       - Simple scalars: APL numbers are JavaScript numbers and APL characters
 #       are JavaScript one-character strings.
 #
-#       - A zero-rank APL array is a JavaScript array of size one with a
+#       - A rank-zero APL array is a JavaScript array of size one with a
 #       `shape` property of `[]`, e.g. created by:
 #
 #               var a = [123]; a.shape = [];
@@ -60,10 +60,8 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 #       arrays, is not required to have a `shape` property.  The shape of a
 #       vector `v` is assumed to be `[v.length]`, by convention.  Similarly, we
 #       could say that a scalar's shape is `[]` by convention.
-
-
-
-# # APL prototypes
+#
+# ## APL prototypes
 #
 # Every object in APL, including empty arrays, has a _prototype_ used whenever
 # "padding material" is needed, such as in the _take_ function:
@@ -178,7 +176,8 @@ define ['./helpers'], (helpers) ->
       builtins[k] = ambivalent(k, f1, f2)
     tmp = null
 
-  # Just mark `f` as pervasive for now, it will be made pervasive in `endOfBuiltins()
+  # `pervasive(f)` only marks `f` as pervasive.  It will actually be made
+  # pervasive later in `endOfBuiltins()`.
   pervasive = (f) ->
     assert typeof f is 'function'
     (f.aplMetaInfo ?= {}).isPervasive = true
