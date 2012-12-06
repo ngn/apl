@@ -115,7 +115,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
     }
   };
   return jQuery(function($) {
-    var alt, layouts, shift, updateLayout;
+    var actions, alt, layouts, shift, updateLayout;
     setInterval((function() {
       return $('#cursor').toggleVisibility();
     }), 500);
@@ -171,18 +171,41 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       });
     };
     updateLayout();
+    actions = {
+      insert: function(c) {
+        return $('<span>').text(c.replace(/\ /g, '\xa0')).insertBefore('#cursor');
+      },
+      enter: function() {
+        return $('<br>').insertBefore('#cursor');
+      },
+      backspace: function() {
+        return $('#cursor').prev().remove();
+      },
+      exec: function() {
+        var ctx;
+        ctx = inherit(browserBuiltins);
+        try {
+          $('#result').html(formatAsHTML(exec(extractTextFromDOM(document.getElementById('editor')).replace(/\xa0/g, ' '))));
+        } catch (err) {
+          if (typeof console !== "undefined" && console !== null) {
+            if (typeof console.error === "function") {
+              console.error(err);
+            }
+          }
+          $('#result').html("<div class='error'>" + (escHard(err.message)) + "</div>");
+        }
+        $('#pageInput').hide();
+        $('#pageOutput').show();
+      }
+    };
     $('.key:not(.special)').on('aplkeypress', function() {
-      return $('<span>').text($(this).text()).insertBefore('#cursor');
+      return actions.insert($(this).text());
     });
-    $('.enter').on('aplkeypress', function() {
-      return $('<br>').insertBefore('#cursor');
-    });
+    $('.enter').on('aplkeypress', actions.enter);
     $('.space').on('aplkeypress', function() {
       return $('<span>&nbsp;</span>').insertBefore('#cursor');
     });
-    $('.bksp').on('aplkeypress', function() {
-      return $('#cursor').prev().remove();
-    });
+    $('.bksp').on('aplkeypress', actions.backspace);
     $('.shift').on('aplkeypress', function() {
       $(this).toggleClass('isOn', (shift = 1 - shift));
       return updateLayout();
@@ -191,23 +214,23 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       $(this).toggleClass('isOn', (alt = 1 - alt));
       return updateLayout();
     });
-    $('.exec').on('aplkeypress', function() {
-      var ctx;
-      ctx = inherit(browserBuiltins);
-      try {
-        $('#result').html(formatAsHTML(exec(extractTextFromDOM(document.getElementById('editor')).replace(/\xa0/g, ' '))));
-      } catch (err) {
-        if (typeof console !== "undefined" && console !== null) {
-          if (typeof console.error === "function") {
-            console.error(err);
-          }
-        }
-        $('#result').html("<div class='error'>" + (escHard(err.message)) + "</div>");
+    $('.exec').on('aplkeypress', actions.exec);
+    $('body').keypress(function(event) {
+      if (event.keyCode === 10) {
+        actions.exec();
+      } else if (event.keyCode === 13) {
+        actions.enter();
+      } else {
+        actions.insert(String.fromCharCode(event.charCode));
       }
-      $('#pageInput').hide();
-      $('#pageOutput').show();
+      return false;
     });
-    return $('#closeOutputButton').bind('mousedown touchstart', function(event) {
+    $('body').keydown(function(event) {
+      if (event.keyCode === 8) {
+        actions.backspace();
+      }
+    });
+    return $('#closeOutputButton').bind('mouseup touchend', function(event) {
       event.preventDefault();
       $('#pageInput').show();
       $('#pageOutput').hide();

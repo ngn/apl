@@ -130,27 +130,43 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
 
     updateLayout()
 
-    $('.key:not(.special)').on 'aplkeypress', ->
-      $('<span>').text($(@).text()).insertBefore '#cursor'
+    actions =
+      insert: (c) -> $('<span>').text(c.replace /\ /g, '\xa0').insertBefore '#cursor'
+      enter: -> $('<br>').insertBefore '#cursor'
+      backspace: -> $('#cursor').prev().remove()
+      exec: ->
+        ctx = inherit browserBuiltins
+        try
+          $('#result').html formatAsHTML exec extractTextFromDOM(document.getElementById 'editor').replace /\xa0/g, ' '
+        catch err
+          console?.error?(err)
+          $('#result').html "<div class='error'>#{escHard err.message}</div>"
+        $('#pageInput').hide()
+        $('#pageOutput').show()
+        return
 
-    $('.enter').on 'aplkeypress', -> $('<br>').insertBefore '#cursor'
+    $('.key:not(.special)').on 'aplkeypress', -> actions.insert $(@).text()
+    $('.enter').on 'aplkeypress', actions.enter
     $('.space').on 'aplkeypress', -> $('<span>&nbsp;</span>').insertBefore '#cursor'
-    $('.bksp' ).on 'aplkeypress', -> $('#cursor').prev().remove()
+    $('.bksp' ).on 'aplkeypress', actions.backspace
     $('.shift').on 'aplkeypress', -> $(@).toggleClass 'isOn', (shift = 1 - shift); updateLayout()
     $('.alt'  ).on 'aplkeypress', -> $(@).toggleClass 'isOn', (alt   = 1 - alt  ); updateLayout()
+    $('.exec' ).on 'aplkeypress', actions.exec
 
-    $('.exec' ).on 'aplkeypress', ->
-      ctx = inherit browserBuiltins
-      try
-        $('#result').html formatAsHTML exec extractTextFromDOM(document.getElementById 'editor').replace /\xa0/g, ' '
-      catch err
-        console?.error?(err)
-        $('#result').html "<div class='error'>#{escHard err.message}</div>"
-      $('#pageInput').hide()
-      $('#pageOutput').show()
+    $('body').keypress (event) ->
+      if event.keyCode is 10
+        actions.exec()
+      else if event.keyCode is 13
+        actions.enter()
+      else
+        actions.insert String.fromCharCode event.charCode
+      false
+
+    $('body').keydown (event) ->
+      if event.keyCode is 8 then actions.backspace()
       return
 
-    $('#closeOutputButton').bind 'mousedown touchstart', (event) ->
+    $('#closeOutputButton').bind 'mouseup touchend', (event) ->
       event.preventDefault()
       $('#pageInput').show()
       $('#pageOutput').hide()
