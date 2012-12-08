@@ -232,15 +232,17 @@ define ['./helpers'], (helpers) ->
   dyadic  '∣', 'Residue',        pervasive (y, x) -> y % x
 
   monadic '⍳', 'Index generate', (a) ->
-    if typeof a is 'number' then return [0...a]
+    if typeof a is 'number' then return (for i in [0...a] by 1 then i)
     for x in a then assert typeof x is 'number'
-    if a.length is 1 then return [0...a[0]]
     r = []
-    rec = (d, indices) ->
-      if d >= a.length then r.push indices
-      else for i in [0...a[d]] then rec d + 1, indices.concat [i]
-    rec 0, []
-    withShape a, r
+    indices = for i in [0...a.length] by 1 then 0
+    i = 0
+    while i >= 0
+      for v in indices then r.push v
+      i = a.length - 1
+      while i >= 0 and ++indices[i] is a[i]
+        indices[i--] = 0
+    withShape a.concat(shapeOf a), r
 
   dyadic  '⍳', 'Index of', (b, a) ->
     if isSimple a then a = [a]
