@@ -788,6 +788,11 @@ gives(
       0, 0, 0, 0, 1, 0, 0
       0, 0, 0, 0, 0, 0, 0 ] ]
 )
+
+# ⎕IO Index origin
+gives '⎕IO', 0
+fails '⎕IO←1'
+
 # }}}1
 
 

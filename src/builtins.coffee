@@ -738,6 +738,8 @@ define ['./helpers'], (helpers) ->
 
   # `⍬` Zilde (niladic function)
   builtins['⍬'] = []
+  builtins['get_⎕IO'] = -> 0
+  builtins['set_⎕IO'] = -> throw Error 'Assignment to the index origin (⎕IO) is not supported.'
 
 
 

@@ -82,6 +82,10 @@ execution environment, namely the ubiquitous JavaScript.
 
 # Some unorthodox additions
 
+    ⍝ The index origin is fixed at 0
+    ⎕IO                    ⍝ returns 0
+    ⎕IO ← 1                ⍝ gives an error
+
     ⍝ Embedded JavaScript:
     3 + «Math.sqrt(25)»    ⍝ returns 8
 
