@@ -66,8 +66,8 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 # Every object in APL, including empty arrays, has a _prototype_ used whenever
 # "padding material" is needed, such as in the _take_ function:
 #
-#     5 ↑ 1 2 3     ⍝ gives      1 2 3 0 0
-#     5 ↑ 'abc'     ⍝ gives      'abc  '
+#     5 ↑ 1 2 3     ⍝ returns      1 2 3 0 0
+#     5 ↑ 'abc'     ⍝ returns      'abc  '
 #
 # Prototypes are defined recursively:
 #
@@ -216,8 +216,26 @@ define ['./helpers'], (helpers) ->
 
   # # Built-in functions
 
+  # Conjugate (`+`)
+  #
+  #     +4              ⍝ returns 4
+  #     ++4             ⍝ returns 4
+  #     + 4 5           ⍝ returns 4 5
+  #     +((5 6) (7 1))  ⍝ returns (5 6) (7 1)
+  #     + (5 6) (7 1)   ⍝ returns (5 6) (7 1)
   monadic '+', 'Conjugate',      pervasive (x) -> x
+
+  # Add (`+`)
+  #
+  #     1 + 2                           ⍝ returns 3
+  #     2 3 + 5 8                       ⍝ returns 7 11
+  #     (2 3 ⍴ 1 2 3 4 5 6) +       ¯2  ⍝ returns 2 3 ⍴ ¯1 0 1 2 3 4
+  #     (2 3 ⍴ 1 2 3 4 5 6) +   2 ⍴ ¯2  ⍝ returns 2 3 ⍴ ¯1 0 1 2 3 4
+  #     (2 3 ⍴ 1 2 3 4 5 6) + 2 3 ⍴ ¯2  ⍝ returns 2 3 ⍴ ¯1 0 1 2 3 4
+  #     1 2 3 + 4 5                     ⍝ fails 'Length error'
+  #     (2 3⍴⍳6) + 3 2⍴⍳6               ⍝ fails 'Length error'
   dyadic  '+', 'Add',            pervasive (y, x) -> x + y
+
   monadic '−', 'Negate',         pervasive (x) -> -x
   dyadic  '−', 'Subtract',       pervasive (y, x) -> x - y
   monadic '×', 'Sign of',        pervasive (x) -> (x > 0) - (x < 0)
