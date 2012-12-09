@@ -13,41 +13,61 @@ define ['./helpers'], (helpers) ->
     toString: ->
       "#{@re}J#{@im}".replace /-/g, '¯'
 
+    # Compare (`=`)
+    #
+    #     2j3 = 2j3   ⍝ returns 1
+    #     2j3 = 3j2   ⍝ returns 0
     '=': (x) ->
       +((x instanceof Complex) and x.re is @re and x.im is @im)
 
+    # Match (`≡`)
+    '≡': (x) ->
+      @['='] x
+
+    # Add / Conjugate (`+`)
+    #
+    #     1j¯2 + ¯2j3   ⍝ returns ¯1j1
+    #     +1j¯2         ⍝ returns 1j2
     '+': (x) ->
-      if x? # dyadic: Add
+      if x?
         if typeof x is 'number' then new Complex @re + x, @im
         else if x instanceof Complex then new Complex @re + x.re, @im + x.im
         else throw Error 'Unsupported operation'
-      else # monadic: Conjugate
+      else
         new Complex @re, -@im
 
+    # Subtract / Negate (`−`)
     '−': (x) ->
-      if x? # dyadic: Subtract
+      if x?
         if typeof x is 'number' then new Complex @re - x, @im
         else if x instanceof Complex then new Complex @re - x.re, @im - x.im
         else throw Error 'Unsupported operation'
-      else # monadic: Negate
+      else
         new Complex -@re, -@im
 
+    # Multiply / Sign of (`×`)
+    #
+    #     1j¯2 × ¯2j3   ⍝ returns 4j7
+    #     × 1j¯2        ⍝ fails
     '×': (x) ->
-      if x? # dyadic: Multiply
+      if x?
         if typeof x is 'number' then new Complex x * @re, x * @im
         else if x instanceof Complex then new Complex @re * x.re - @im * x.im, @re * x.im + @im * x.re
         else throw Error 'Unsupported operation'
-      else # monadic: Sign of
+      else
         throw Error 'Unsupported operation'
 
+    # Divide / Reciprocal (`÷`)
+    #
+    #     4j7 ÷ 1j¯2   ⍝ returns ¯2j3
     '÷': (x) ->
-      if x? # dyadic: Divide
+      if x?
         if typeof x is 'number' then new Complex @re / x, @im / x
         else if x instanceof Complex
-          d = x.re * x.re + x.im * x.im
-          new Complex((@re * x.re + @im * x.im) / d, (@im * x.re - @re * x.im) / d)
+          d = @re * @re + @im * @im
+          new Complex (@re * x.re + @im * x.im) / d, (@re * x.im - @im * x.re) / d
         else throw Error 'Unsupported operation'
-      else # monadic: Reciprocal
+      else
         d = @re * @re + @im * @im
         new Complex @re / d, -@im / d
 

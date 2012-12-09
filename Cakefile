@@ -37,9 +37,11 @@ task 'test', ->
       cont()
 
   f ->
-    console.info 'Running tests...'
+    console.info 'Running traditional tests...'
     exec 'node', ['test.js'], {cwd: 'test'}, ->
-      console.info 'Done'
+      console.info 'Running doctests...'
+      exec 'node', ['doctest.js'], {cwd: 'test'}, ->
+        console.info 'Done'
 
 task 'docs', ->
   filenames = for f in readdirSync 'src' when f.match(/^\w.*\.coffee$/) and newer('src/' + f, 'docs/' + f.replace(/\.coffee$/, '.html')) then 'src/' + f

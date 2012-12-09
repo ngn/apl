@@ -127,10 +127,6 @@ fails('"a\nb"');
 
 fails('"a');
 
-gives("(1j¯2 + ¯2j3) = ¯1j1", 1);
-
-gives("(1j¯2 × ¯2j3) = 4j7", 1);
-
 gives("¯", Infinity);
 
 gives("¯¯", -Infinity);

@@ -69,10 +69,6 @@ gives '"\\f\\t\\n\\r\\u1234\\xff"', S '\f\t\n\r\u1234\xff'
 fails '"a\nb"'
 fails '"a'
 
-# Complex numbers {{{1
-gives "(1j¯2 + ¯2j3) = ¯1j1", 1
-gives "(1j¯2 × ¯2j3) = 4j7", 1
-
 # Infinities {{{1
 gives "¯", Infinity
 gives "¯¯", -Infinity
