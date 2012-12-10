@@ -161,7 +161,7 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       }
       return false;
     });
-    layouts = ['1234567890qwertyuiopasdfghjklzxcvbnm', '!@#$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM', '¨¯<≤=≥>≠∨∧←⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊ ∇∆∘◇⎕⊂⊃∩∪⊥⊤∣', '⍣[]{}«»;⍱⍲,⌽⍷\\⍉\'"⌷⍬⍟⊖+−×⍒⍋/÷⍞⌿⍀⍝.⍎⍕:'];
+    layouts = ['1234567890qwertyuiopasdfghjklzxcvbnm', '!@#$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM', '¨¯<≤=≥>≠∨∧←⍵∈⍴∼↑↓⍳○⋆⍺⌈⌊⍪∇∆∘◇⎕⊂⊃∩∪⊥⊤∣', '⍣[]{}«»;⍱⍲,⌽⍷\\⍉\'"⌷⍬⍟⊖+−×⍒⍋/÷⍞⌿⍀⍝.⍎⍕:'];
     alt = shift = 0;
     updateLayout = function() {
       var layout;
