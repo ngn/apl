@@ -364,39 +364,79 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
   <span class="nx">dyadic</span> <span class="s1">&#39;⌹&#39;</span><span class="p">,</span> <span class="s1">&#39;Matrix divide&#39;</span> <span class="c1"># todo</span>
 
   <span class="nx">dyadic</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;Less than&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">y</span><span class="p">)</span>
-  <span class="nx">dyadic</span> <span class="s1">&#39;≤&#39;</span><span class="p">,</span> <span class="s1">&#39;Less than or equal&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="o">&lt;=</span> <span class="nx">y</span><span class="p">)</span>
-  <span class="nx">dyadic</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;Equal&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="o">is</span> <span class="nx">y</span><span class="p">)</span>
+  <span class="nx">dyadic</span> <span class="s1">&#39;≤&#39;</span><span class="p">,</span> <span class="s1">&#39;Less than or equal&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="o">&lt;=</span> <span class="nx">y</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <p>Equals (<code>=</code>)</p>
+
+<pre><code>12 = 12               ⍝ returns 1
+2 = 12                ⍝ returns 0
+"Q" = "Q"             ⍝ returns ,1
+1 = "1"               ⍝ returns ,0
+"1" = 1               ⍝ returns ,0
+11 7 2 9 = 11 3 2 6   ⍝ returns 1 0 1 0
+"STOAT" = "TOAST"     ⍝ returns 0 0 0 0 1
+8 = 2 + 2 + 2 + 2     ⍝ returns 1
+(2 3⍴1 2 3 4 5 6) = 2 3⍴3 3 3 5 5 5   ⍝ returns 2 3 ⍴ 0 0 1 0 1 0
+3 = 2 3⍴1 2 3 4 5 6   ⍝ returns 2 3 ⍴ 0 0 1 0 0 0
+3 = (2 3⍴1 2 3 4 5 6) (2 3⍴3 3 3 5 5 5)   ⍝ returns (2 3 ⍴ 0 0 1 0 0 0) (2 3 ⍴ 1 1 1 0 0 0)
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;Equal&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="o">is</span> <span class="nx">y</span><span class="p">)</span>
+
   <span class="nx">dyadic</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;Greater than&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="o">&gt;</span> <span class="nx">y</span><span class="p">)</span>
   <span class="nx">dyadic</span> <span class="s1">&#39;≥&#39;</span><span class="p">,</span> <span class="s1">&#39;Greater than or equal&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="o">&gt;=</span> <span class="nx">y</span><span class="p">)</span>
-  <span class="nx">dyadic</span> <span class="s1">&#39;≠&#39;</span><span class="p">,</span> <span class="s1">&#39;Not equal&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="o">isnt</span> <span class="nx">y</span><span class="p">)</span>
+  <span class="nx">dyadic</span> <span class="s1">&#39;≠&#39;</span><span class="p">,</span> <span class="s1">&#39;Not equal&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="o">isnt</span> <span class="nx">y</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <p>Depth (<code>≡</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;≡&#39;</span><span class="p">,</span> <span class="s1">&#39;Depth&#39;</span><span class="p">,</span> <span class="nv">depthOf = </span><span class="nf">(a) -&gt;</span>
+<pre><code>≡4                             ⍝ returns 0
+≡⍳4                            ⍝ returns 1
+≡2 2⍴⍳4                        ⍝ returns 1
+≡"abc" 1 2 3 (23 55)           ⍝ returns 2
+≡"abc" (2 4⍴("abc" 2 3 "k"))   ⍝ returns 3
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;≡&#39;</span><span class="p">,</span> <span class="s1">&#39;Depth&#39;</span><span class="p">,</span> <span class="nv">depthOf = </span><span class="nf">(a) -&gt;</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span>
-    <span class="nv">r = </span><span class="mi">0</span><span class="p">;</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">then</span> <span class="nv">r = </span><span class="nx">max</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">depthOf</span> <span class="nx">x</span><span class="p">);</span> <span class="nx">r</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="nv">r = </span><span class="mi">0</span><span class="p">;</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">then</span> <span class="nv">r = </span><span class="nx">max</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">depthOf</span> <span class="nx">x</span><span class="p">);</span> <span class="nx">r</span> <span class="o">+</span> <span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <p>Match (<code>≡</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;≡&#39;</span><span class="p">,</span> <span class="s1">&#39;Match&#39;</span><span class="p">,</span> <span class="nv">match = </span><span class="nf">(b, a) -&gt;</span>
+<pre><code>3≡3                       ⍝ returns 1
+3≡,3                      ⍝ returns 0
+4 7.1 8 ≡ 4 7.2 8         ⍝ returns 0
+(3 4⍴⍳12) ≡ 3 4⍴⍳12       ⍝ returns 1
+(3 4⍴⍳12) ≡ ⊂3 4⍴⍳12      ⍝ returns 0
+("ABC" "DEF") ≡ "ABCDEF"  ⍝ returns 0
+(⍳0)≡""                   ⍝ returns 0
+(2 0⍴0)≡(0 2⍴0)           ⍝ returns 0
+(0⍴1 2 3)≡0⍴⊂2 2⍴⍳4       ⍝ returns 0
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;≡&#39;</span><span class="p">,</span> <span class="s1">&#39;Match&#39;</span><span class="p">,</span> <span class="nv">match = </span><span class="nf">(b, a) -&gt;</span>
     <span class="k">if</span> <span class="nx">isSimple</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="o">and</span> <span class="nx">isSimple</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="k">then</span> <span class="k">return</span> <span class="o">+</span><span class="p">(</span><span class="nx">a</span> <span class="o">is</span> <span class="nx">b</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nx">isSimple</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="o">isnt</span> <span class="nx">isSimple</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span></pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <p>Compare by shape</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
+    <span class="k">if</span> <span class="nx">isSimple</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="o">isnt</span> <span class="nx">isSimple</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span></pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <p>Compare by shape</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="k">if</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="o">isnt</span> <span class="nx">sb</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">sa</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="k">when</span> <span class="nx">sa</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">isnt</span> <span class="nx">sb</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span></pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <p>Compare by elements</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">isnt</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="k">then</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">match</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span></pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <p>Compare by prototype</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">sa</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="k">when</span> <span class="nx">sa</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">isnt</span> <span class="nx">sb</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span></pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <p>Compare by elements</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">isnt</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="k">then</span> <span class="k">if</span> <span class="o">not</span> <span class="nx">match</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span></pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>               <p>Compare by prototype</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="o">not</span> <span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">aplPrototype</span><span class="o">?</span> <span class="o">or</span> <span class="nx">b</span><span class="p">.</span><span class="nx">aplPrototype</span><span class="o">?</span><span class="p">)</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span>
-    <span class="nx">match</span> <span class="nx">prototypeOf</span><span class="p">(</span><span class="nx">a</span><span class="p">),</span> <span class="nx">prototypeOf</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+    <span class="nx">match</span> <span class="nx">prototypeOf</span><span class="p">(</span><span class="nx">a</span><span class="p">),</span> <span class="nx">prototypeOf</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <p>Not match (<code>≢</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;≢&#39;</span><span class="p">,</span> <span class="s1">&#39;Not match&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span> <span class="o">+not</span> <span class="nx">match</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span>
+<pre><code>3≢3   ⍝ returns 0
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;≢&#39;</span><span class="p">,</span> <span class="s1">&#39;Not match&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span> <span class="o">+not</span> <span class="nx">match</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span></pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <p>Enlist (<code>∈</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;∈&#39;</span><span class="p">,</span> <span class="s1">&#39;Enlist&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
+<pre><code>∈ 17                        ⍝ returns ,17
+⍴ ∈ (1 2 3) "ABC" (4 5 6)   ⍝ returns ,9
+∈ 2 2⍴(1 + 2 2⍴⍳4) "DEF" (1 + 2 3⍴⍳6) (7 8 9)   ⍝ returns 1 2 3 4,'DEF',1 2 3 4 5 6 7 8 9
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;∈&#39;</span><span class="p">,</span> <span class="s1">&#39;Enlist&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
     <span class="nv">r = </span><span class="p">[]</span>
     <span class="nv">rec = </span><span class="nf">(x) -&gt;</span> <span class="p">(</span><span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">x</span> <span class="k">then</span> <span class="nx">r</span><span class="p">.</span><span class="nx">push</span> <span class="nx">x</span> <span class="k">else</span> <span class="k">for</span> <span class="nx">y</span> <span class="k">in</span> <span class="nx">x</span> <span class="k">then</span> <span class="nx">rec</span> <span class="nx">y</span><span class="p">);</span> <span class="nx">r</span>
-    <span class="nx">rec</span> <span class="nx">a</span>
+    <span class="nx">rec</span> <span class="nx">a</span></pre></div>             </td>           </tr>                               <tr id="section-38">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>               <p>Membership (<code>∈</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;∈&#39;</span><span class="p">,</span> <span class="s1">&#39;Membership&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>2 3 4 5 6 ∈ 1 2 3 5 8 13 21   ⍝ returns 1 1 0 1 0
+5 ∈ 1 2 3 5 8 13 21           ⍝ returns ,1
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;∈&#39;</span><span class="p">,</span> <span class="s1">&#39;Membership&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">a = </span><span class="nx">array</span> <span class="nx">a</span>
     <span class="nv">b = </span><span class="nx">array</span> <span class="nx">b</span>
-    <span class="nx">withShape</span> <span class="nx">a</span><span class="p">.</span><span class="nx">shape</span><span class="p">,</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">then</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="k">in</span> <span class="nx">b</span><span class="p">))</span>
+    <span class="nx">withShape</span> <span class="nx">a</span><span class="p">.</span><span class="nx">shape</span><span class="p">,</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">then</span> <span class="o">+</span><span class="p">(</span><span class="nx">x</span> <span class="k">in</span> <span class="nx">b</span><span class="p">))</span></pre></div>             </td>           </tr>                               <tr id="section-39">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-39">&#182;</a>               </div>               <p>Find (<code>⍷</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;⍷&#39;</span><span class="p">,</span> <span class="s1">&#39;Find&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>"AN"⍷"BANANA"                          ⍝ returns 0 1 0 1 0 0
+"BIRDS" "NEST"⍷"BIRDS" "NEST" "SOUP"   ⍝ returns 1 0 0
+"ME"⍷"HOME AGAIN"                      ⍝ returns 0 0 1 0 0 0 0 0 0 0
+"DAY"⍷7 9⍴"SUNDAY   MONDAY   TUESDAY  WEDNESDAYTHURSDAY FRIDAY   SATURDAY "   ⍝ returns 7 9 ⍴ 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+(2 2⍴"ABCD")⍷"ABCD"   ⍝ returns 4 ⍴ 0
+(1 2) (3 4) ⍷ "START" (1 2 3) (1 2) (3 4)   ⍝ returns 0 0 1 0
+(2 2⍴7 8 12 13)⍷ 1+ 4 5⍴⍳20   ⍝ returns 4 5 ⍴ 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;⍷&#39;</span><span class="p">,</span> <span class="s1">&#39;Find&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">b</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">isSimple</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="o">and</span> <span class="nx">match</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span>
@@ -426,31 +466,47 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
         <span class="nx">match</span> <span class="nx">a</span><span class="p">[</span><span class="nx">ia</span><span class="p">],</span> <span class="nx">b</span><span class="p">[</span><span class="nx">ib</span><span class="p">]</span>
 
     <span class="nx">rec</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
-    <span class="nx">r</span>
+    <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-40">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-40">&#182;</a>               </div>               <p>Unique (<code>∪</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;∪&#39;</span><span class="p">,</span> <span class="s1">&#39;Unique&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
+<pre><code>∪ 3 17 17 17 ¯3 17 0   ⍝ returns 3 17 ¯3 0
+∪ 3 17                 ⍝ returns 3 17
+∪ 17                   ⍝ returns ,17
+∪ ⍬                    ⍝ returns ⍬
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;∪&#39;</span><span class="p">,</span> <span class="s1">&#39;Unique&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
     <span class="nv">r = </span><span class="p">[]</span>
     <span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">array</span> <span class="nx">a</span> <span class="k">when</span> <span class="o">not</span> <span class="nx">contains</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">x</span> <span class="k">then</span> <span class="nx">r</span><span class="p">.</span><span class="nx">push</span> <span class="nx">x</span>
     <span class="nx">r</span>
 
   <span class="nv">contains = </span><span class="nf">(a, x) -&gt;</span> <span class="c1"># a helper</span>
     <span class="k">for</span> <span class="nx">y</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">when</span> <span class="nx">match</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span> <span class="k">then</span> <span class="k">return</span> <span class="kc">true</span>
-    <span class="kc">false</span>
+    <span class="kc">false</span></pre></div>             </td>           </tr>                               <tr id="section-41">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-41">&#182;</a>               </div>               <p>Union (<code>∪</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;∪&#39;</span><span class="p">,</span> <span class="s1">&#39;Union&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>1 2 ∪ 2 3   ⍝ returns 1 2 3
+'SHOCK' ∪ 'CHOCOLATE'   ⍝ returns 'SHOCKLATE'
+'lentils' 'bulghur' (3 4 5) ∪ 'lentils' 'rice'   ⍝ returns 'lentils' 'bulghur' (3 4 5) 'rice'
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;∪&#39;</span><span class="p">,</span> <span class="s1">&#39;Union&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">a = </span><span class="nx">array</span> <span class="nx">a</span>
     <span class="nv">b = </span><span class="nx">array</span> <span class="nx">b</span>
-    <span class="nx">a</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">b</span> <span class="k">when</span> <span class="o">not</span> <span class="nx">contains</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">x</span> <span class="k">then</span> <span class="nx">x</span><span class="p">)</span>
+    <span class="nx">a</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">b</span> <span class="k">when</span> <span class="o">not</span> <span class="nx">contains</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">x</span> <span class="k">then</span> <span class="nx">x</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-42">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-42">&#182;</a>               </div>               <p>Intersection (<code>∩</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;∩&#39;</span><span class="p">,</span> <span class="s1">&#39;Intersection&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>'ABRA'∩'CAR'      ⍝ returns 'ARA'
+1 'PLUS' 2 ∩ ⍳5   ⍝ returns 1 2
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;∩&#39;</span><span class="p">,</span> <span class="s1">&#39;Intersection&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">a = </span><span class="nx">array</span> <span class="nx">a</span>
     <span class="nv">b = </span><span class="nx">array</span> <span class="nx">b</span>
     <span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">when</span> <span class="nx">contains</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">x</span> <span class="k">then</span> <span class="nx">x</span>
 
   <span class="nx">monadic</span> <span class="s1">&#39;∼&#39;</span><span class="p">,</span> <span class="s1">&#39;Not&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(x) -&gt;</span>
-    <span class="o">+!</span><span class="nx">bool</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+    <span class="o">+!</span><span class="nx">bool</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-43">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-43">&#182;</a>               </div>               <p>Without (<code>∼</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;∼&#39;</span><span class="p">,</span> <span class="s1">&#39;Without&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ∼ "AEIOU"   ⍝ returns 'BCDFGHJKLMNPQRSTVWXYZ'
+1 2 3 4 5 6 ∼ 2 4 6                ⍝ returns 1 3 5
+"THIS IS TEXT" ∼ " "               ⍝ returns 'THISISTEXT'
+"THIS" "AND" "THAT" ∼ "T"          ⍝ returns 'THIS' 'AND' 'THAT'
+"THIS" "AND" "THAT" ∼ "AND"        ⍝ returns 'THIS' 'AND' 'THAT'
+"THIS" "AND" "THAT" ∼ ⊂"AND"       ⍝ returns 'THIS' 'THAT'
+"THIS" "AND" "THAT" ∼ "TH" "AND"   ⍝ returns 'THIS' 'THAT'
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;∼&#39;</span><span class="p">,</span> <span class="s1">&#39;Without&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="nv">a = </span><span class="p">[</span><span class="nx">a</span><span class="p">]</span>
     <span class="k">else</span> <span class="nx">assert</span> <span class="nx">shapeOf</span><span class="p">(</span><span class="nx">a</span><span class="p">).</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Left argument to ∼ must be of rank no more than 1.&#39;</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">b</span> <span class="k">then</span> <span class="nv">b = </span><span class="p">[</span><span class="nx">b</span><span class="p">]</span>
@@ -463,18 +519,39 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
           <span class="k">break</span>
       <span class="k">if</span> <span class="o">not</span> <span class="nx">excluded</span>
         <span class="nx">r</span><span class="p">.</span><span class="nx">push</span> <span class="nx">x</span>
-    <span class="nx">r</span>
+    <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-44">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-44">&#182;</a>               </div>               <p>Or (LCM) (<code>∨</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;∨&#39;</span><span class="p">,</span> <span class="s1">&#39;Or&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span>
+<pre><code>1∨1                ⍝ returns 1
+1∨0                ⍝ returns 1
+0∨1                ⍝ returns 1
+0∨0                ⍝ returns 0
+0 0 1 1 ∨ 0 1 0 1  ⍝ returns 0 1 1 1
+12∨18              ⍝ returns 6   # 12=2×2×3, 18=2×3×3
+299∨323            ⍝ returns 1   # 299=13×23, 323=17×19
+12345∨12345        ⍝ returns 12345
+0∨123              ⍝ returns 123
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;∨&#39;</span><span class="p">,</span> <span class="s1">&#39;Or&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span>
     <span class="nv">x = </span><span class="nx">abs</span> <span class="nx">num</span> <span class="nx">x</span>
     <span class="nv">y = </span><span class="nx">abs</span> <span class="nx">num</span> <span class="nx">y</span>
     <span class="nx">assert</span> <span class="nx">x</span> <span class="o">is</span> <span class="nx">floor</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">and</span> <span class="nx">y</span> <span class="o">is</span> <span class="nx">floor</span><span class="p">(</span><span class="nx">y</span><span class="p">),</span> <span class="s1">&#39;∨ is defined only for integers&#39;</span>
     <span class="k">if</span> <span class="nx">x</span> <span class="o">is</span> <span class="mi">0</span> <span class="o">and</span> <span class="nx">y</span> <span class="o">is</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">y</span> <span class="k">then</span> <span class="p">[</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">y</span><span class="p">,</span> <span class="nx">x</span><span class="p">]</span>
     <span class="k">while</span> <span class="nx">y</span> <span class="k">then</span> <span class="p">[</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">y</span><span class="p">,</span> <span class="nx">x</span> <span class="o">%</span> <span class="nx">y</span><span class="p">]</span> <span class="c1"># Euclid&#39;s algorithm</span>
-    <span class="nx">x</span>
+    <span class="nx">x</span></pre></div>             </td>           </tr>                               <tr id="section-45">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-45">&#182;</a>               </div>               <p>And (GCD) (<code>∧</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;∧&#39;</span><span class="p">,</span> <span class="s1">&#39;And&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span>
+<pre><code>1∧1                                     ⍝ returns 1
+1∧0                                     ⍝ returns 0
+0∧1                                     ⍝ returns 0
+0∧0                                     ⍝ returns 0
+0 0 1 1 ∧ 0 1 0 1                       ⍝ returns 0 0 0 1
+0 0 0 1 1 ∧ 1 1 1 1 0                   ⍝ returns 0 0 0 1 0
+t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  1 ∧ t   ⍝ returns 3 3 ⍴ 1 1 1 0 0 0 1 0 1
+t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  ∧/ t    ⍝ returns 1 0 0
+12∧18                                   ⍝ returns 36    # 12=2×2×3, 18=2×3×3
+299∧323                                 ⍝ returns 96577 # 299=13×23, 323=17×19
+12345∧12345                             ⍝ returns 12345
+0∧123                                   ⍝ returns 0
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;∧&#39;</span><span class="p">,</span> <span class="s1">&#39;And&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span>
     <span class="nv">x = </span><span class="nx">abs</span> <span class="nx">num</span> <span class="nx">x</span>
     <span class="nv">y = </span><span class="nx">abs</span> <span class="nx">num</span> <span class="nx">y</span>
     <span class="nx">assert</span> <span class="nx">x</span> <span class="o">is</span> <span class="nx">floor</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">and</span> <span class="nx">y</span> <span class="o">is</span> <span class="nx">floor</span><span class="p">(</span><span class="nx">y</span><span class="p">),</span> <span class="s1">&#39;∧ is defined only for integers&#39;</span>
@@ -487,15 +564,20 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
   <span class="nx">dyadic</span> <span class="s1">&#39;⍱&#39;</span><span class="p">,</span> <span class="s1">&#39;Nor&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+!</span><span class="p">(</span><span class="nx">bool</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">or</span> <span class="nx">bool</span><span class="p">(</span><span class="nx">y</span><span class="p">))</span>
   <span class="nx">dyadic</span> <span class="s1">&#39;⍲&#39;</span><span class="p">,</span> <span class="s1">&#39;Nand&#39;</span><span class="p">,</span> <span class="nx">pervasive</span> <span class="nf">(y, x) -&gt;</span> <span class="o">+!</span><span class="p">(</span><span class="nx">bool</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">and</span> <span class="nx">bool</span><span class="p">(</span><span class="nx">y</span><span class="p">))</span>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;⍴&#39;</span><span class="p">,</span> <span class="s1">&#39;Shape of&#39;</span><span class="p">,</span> <span class="nx">shapeOf</span>
-  <span class="nx">dyadic</span> <span class="s1">&#39;⍴&#39;</span><span class="p">,</span> <span class="s1">&#39;Reshape&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+  <span class="nx">monadic</span> <span class="s1">&#39;⍴&#39;</span><span class="p">,</span> <span class="s1">&#39;Shape of&#39;</span><span class="p">,</span> <span class="nx">shapeOf</span></pre></div>             </td>           </tr>                               <tr id="section-46">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-46">&#182;</a>               </div>               <p>Reshape (<code>⍴</code>)</p>
+
+<pre><code>⍴ 1 2 3 ⍴ 0    ⍝ returns 1 2 3
+⍴ ⍴ 1 2 3 ⍴ 0  ⍝ returns ,3
+3 3 ⍴ ⍳ 4      ⍝ returns 3 3 ⍴ 0 1 2 3 0 1 2 3 0
+⍴ 3 3 ⍴ ⍳ 4    ⍝ returns 3 3
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;⍴&#39;</span><span class="p">,</span> <span class="s1">&#39;Reshape&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="nv">a = </span><span class="p">[</span><span class="nx">a</span><span class="p">]</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">b</span> <span class="k">then</span> <span class="nv">b = </span><span class="p">[</span><span class="nx">b</span><span class="p">]</span>
     <span class="nv">a =</span>
       <span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span>
         <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">is</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;Domain error: Left argument to ⍴ must be a numeric scalar or vector.&#39;</span>
         <span class="nx">max</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">floor</span> <span class="nx">x</span>
-    <span class="nx">withShape</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">withPrototypeCopiedFrom</span> <span class="nx">b</span><span class="p">,</span> <span class="p">(</span><span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">prod</span> <span class="nx">a</span><span class="p">]</span> <span class="k">then</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span> <span class="o">%</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span><span class="p">])</span></pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <p>Helper for functions <code>,</code> and <code>⍪</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">catenate = </span><span class="nf">(b, a, axis = -1) -&gt;</span>
+    <span class="nx">withShape</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">withPrototypeCopiedFrom</span> <span class="nx">b</span><span class="p">,</span> <span class="p">(</span><span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">prod</span> <span class="nx">a</span><span class="p">]</span> <span class="k">then</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span> <span class="o">%</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span><span class="p">])</span></pre></div>             </td>           </tr>                               <tr id="section-47">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-47">&#182;</a>               </div>               <p>Helper for functions <code>,</code> and <code>⍪</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">catenate = </span><span class="nf">(b, a, axis = -1) -&gt;</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span><span class="p">;</span> <span class="k">if</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span> <span class="k">then</span> <span class="nv">sa = </span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="nv">a = </span><span class="p">[</span><span class="nx">a</span><span class="p">]</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span><span class="p">;</span> <span class="k">if</span> <span class="nx">sb</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span> <span class="k">then</span> <span class="nv">sb = </span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="nv">b = </span><span class="p">[</span><span class="nx">b</span><span class="p">]</span>
     <span class="nx">assert</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="nx">sb</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="s1">&#39;Length error: Cannot catenate arrays of different ranks&#39;</span>
@@ -512,13 +594,18 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
       <span class="k">for</span> <span class="nx">j</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">njb</span><span class="p">]</span> <span class="k">then</span> <span class="k">for</span> <span class="nx">k</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">nk</span><span class="p">]</span> <span class="k">then</span> <span class="nx">r</span><span class="p">.</span><span class="nx">push</span> <span class="nx">b</span><span class="p">[</span><span class="nx">k</span> <span class="o">+</span> <span class="nx">nk</span> <span class="o">*</span> <span class="p">(</span><span class="nx">j</span> <span class="o">+</span> <span class="nx">njb</span> <span class="o">*</span> <span class="nx">i</span><span class="p">)]</span>
     <span class="nv">sr = </span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">sa</span> <span class="k">then</span> <span class="nx">x</span>
     <span class="nx">sr</span><span class="p">[</span><span class="nx">axis</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">sb</span><span class="p">[</span><span class="nx">axis</span><span class="p">]</span>
-    <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span>
+    <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-48">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-48">&#182;</a>               </div>               <p>Ravel (<code>,</code>)</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;Ravel&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span> <span class="nx">array</span><span class="p">(</span><span class="nx">a</span><span class="p">)[</span><span class="mi">0</span><span class="p">...]</span></pre></div>             </td>           </tr>                               <tr id="section-49">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-49">&#182;</a>               </div>               <p>Catenate (<code>,</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;Ravel&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span> <span class="nx">array</span><span class="p">(</span><span class="nx">a</span><span class="p">)[</span><span class="mi">0</span><span class="p">...]</span>
-  <span class="nx">dyadic</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;Catenate&#39;</span><span class="p">,</span> <span class="nx">catenate</span>
-  <span class="nx">dyadic</span> <span class="s1">&#39;⍪&#39;</span><span class="p">,</span> <span class="s1">&#39;1st axis catenate&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span> <span class="nx">catenate</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="mi">0</span>
+<pre><code>10,66                ⍝ returns 10, 66
+'10 ','MAY ','1985'  ⍝ returns '10 MAY 1985'
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;Catenate&#39;</span><span class="p">,</span> <span class="nx">catenate</span></pre></div>             </td>           </tr>                               <tr id="section-50">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-50">&#182;</a>               </div>               <p>1st axis catenate (<code>⍪</code>)</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;⍪&#39;</span><span class="p">,</span> <span class="s1">&#39;1st axis catenate&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span> <span class="nx">catenate</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="mi">0</span></pre></div>             </td>           </tr>                               <tr id="section-51">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-51">&#182;</a>               </div>               <p>Reverse (<code>⌽</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;⌽&#39;</span><span class="p">,</span> <span class="s1">&#39;Reverse&#39;</span><span class="p">,</span> <span class="nv">reverse = </span><span class="nf">(b, _1, axis = -1) -&gt;</span>
+<pre><code>⌽ 1 2 3 4 5 6                    ⍝ returns 6 5 4 3 2 1
+⌽ (1 2) (3 4) (5 6)              ⍝ returns (5 6) (3 4) (1 2)
+⌽ "BOB WON POTS"                 ⍝ returns 'STOP NOW BOB'
+⌽    2 5 ⍴ 1 2 3 4 5 6 7 8 9 0   ⍝ returns 2 5 ⍴ 5 4 3 2 1 0 9 8 7 6
+⌽[0] 2 5 ⍴ 1 2 3 4 5 6 7 8 9 0   ⍝ returns 2 5 ⍴ 6 7 8 9 0 1 2 3 4 5
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⌽&#39;</span><span class="p">,</span> <span class="s1">&#39;Reverse&#39;</span><span class="p">,</span> <span class="nv">reverse = </span><span class="nf">(b, _1, axis = -1) -&gt;</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="k">if</span> <span class="nx">sb</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">b</span>
     <span class="k">if</span> <span class="nx">axis</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">then</span> <span class="nx">axis</span> <span class="o">+=</span> <span class="nx">sb</span><span class="p">.</span><span class="nx">length</span>
@@ -531,28 +618,43 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
       <span class="k">for</span> <span class="nx">j</span> <span class="k">in</span> <span class="p">[</span><span class="nx">nj</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">..</span> <span class="mi">0</span><span class="p">]</span> <span class="k">by</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">for</span> <span class="nx">k</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">nk</span><span class="p">]</span>
           <span class="nx">r</span><span class="p">.</span><span class="nx">push</span> <span class="nx">b</span><span class="p">[</span><span class="nx">k</span> <span class="o">+</span> <span class="nx">nk</span><span class="o">*</span><span class="p">(</span><span class="nx">j</span> <span class="o">+</span> <span class="nx">nj</span><span class="o">*</span><span class="nx">i</span><span class="p">)]</span>
-    <span class="nx">withShape</span> <span class="nx">sb</span><span class="p">,</span> <span class="nx">r</span>
+    <span class="nx">withShape</span> <span class="nx">sb</span><span class="p">,</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-52">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-52">&#182;</a>               </div>               <p>Rotate (<code>⌽</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;⌽&#39;</span><span class="p">,</span> <span class="s1">&#39;Rotate&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>1 ⌽ 1 2 3 4 5 6                   ⍝ returns 2 3 4 5 6 1
+3 ⌽ 'ABCDEFGH'                    ⍝ returns 'DEFGHABC'
+3 ⌽ 2 5 ⍴  1 2 3 4 5  6 7 8 9 0   ⍝ returns 2 5 ⍴ 4 5 1 2 3 9 0 6 7 8
+¯2 ⌽ "ABCDEFGH"                   ⍝ returns 'GHABCDEF'
+1 ⌽ 3 3 ⍴ ⍳ 9                     ⍝ returns 3 3 ⍴ 1 2 0 4 5 3 7 8 6
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;⌽&#39;</span><span class="p">,</span> <span class="s1">&#39;Rotate&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">a = </span><span class="nx">num</span> <span class="nx">a</span>
     <span class="k">if</span> <span class="nx">a</span> <span class="o">is</span> <span class="mi">0</span> <span class="o">or</span> <span class="nx">isSimple</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">or</span> <span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">b</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="nv">n = </span><span class="nx">sb</span><span class="p">[</span><span class="nx">sb</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
     <span class="nx">a</span> <span class="o">%=</span> <span class="nx">n</span><span class="p">;</span> <span class="k">if</span> <span class="nx">a</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">then</span> <span class="nx">a</span> <span class="o">+=</span> <span class="nx">n</span>
-    <span class="nx">withShape</span> <span class="nx">sb</span><span class="p">,</span> <span class="p">(</span><span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">b</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="k">then</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span> <span class="o">-</span> <span class="p">(</span><span class="nx">i</span> <span class="o">%</span> <span class="nx">n</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="nx">i</span> <span class="o">%</span> <span class="nx">n</span><span class="p">)</span> <span class="o">+</span> <span class="nx">a</span><span class="p">)</span> <span class="o">%</span> <span class="nx">n</span><span class="p">])</span>
+    <span class="nx">withShape</span> <span class="nx">sb</span><span class="p">,</span> <span class="p">(</span><span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">b</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="k">then</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span> <span class="o">-</span> <span class="p">(</span><span class="nx">i</span> <span class="o">%</span> <span class="nx">n</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="nx">i</span> <span class="o">%</span> <span class="nx">n</span><span class="p">)</span> <span class="o">+</span> <span class="nx">a</span><span class="p">)</span> <span class="o">%</span> <span class="nx">n</span><span class="p">])</span></pre></div>             </td>           </tr>                               <tr id="section-53">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-53">&#182;</a>               </div>               <p>1st axis reverse (<code>⊖</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;⊖&#39;</span><span class="p">,</span> <span class="s1">&#39;1st axis reverse&#39;</span><span class="p">,</span> <span class="nf">(b, _1, axis = 0) -&gt;</span> <span class="nx">reverse</span> <span class="nx">b</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">axis</span>
+<pre><code>⊖ 1 2 3 4 5 6                   ⍝ returns 6 5 4 3 2 1
+⊖ (1 2) (3 4) (5 6)             ⍝ returns (5 6) (3 4) (1 2)
+⊖ 'BOB WON POTS'                ⍝ returns 'STOP NOW BOB'
+⊖    2 5 ⍴ 1 2 3 4 5 6 7 8 9 0  ⍝ returns 2 5 ⍴ 6 7 8 9 0 1 2 3 4 5
+⊖[1] 2 5 ⍴ 1 2 3 4 5 6 7 8 9 0  ⍝ returns 2 5 ⍴ 5 4 3 2 1 0 9 8 7 6
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⊖&#39;</span><span class="p">,</span> <span class="s1">&#39;1st axis reverse&#39;</span><span class="p">,</span> <span class="nf">(b, _1, axis = 0) -&gt;</span> <span class="nx">reverse</span> <span class="nx">b</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">axis</span></pre></div>             </td>           </tr>                               <tr id="section-54">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-54">&#182;</a>               </div>               <p>1st axis rotate (<code>⊖</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;⊖&#39;</span><span class="p">,</span> <span class="s1">&#39;1st axis rotate&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>1 ⊖ 3 3 ⍴ ⍳ 9   ⍝ returns 3 3 ⍴ 3 4 5 6 7 8 0 1 2
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;⊖&#39;</span><span class="p">,</span> <span class="s1">&#39;1st axis rotate&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">a = </span><span class="nx">num</span> <span class="nx">a</span>
     <span class="k">if</span> <span class="nx">a</span> <span class="o">is</span> <span class="mi">0</span> <span class="o">or</span> <span class="nx">isSimple</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">or</span> <span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">b</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="nv">n = </span><span class="nx">sb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nv">k = </span><span class="nx">b</span><span class="p">.</span><span class="nx">length</span> <span class="err">/ n</span>
     <span class="nx">a</span> <span class="o">%=</span> <span class="nx">n</span><span class="p">;</span> <span class="k">if</span> <span class="nx">a</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">then</span> <span class="nx">a</span> <span class="o">+=</span> <span class="nx">n</span>
-    <span class="nx">withShape</span> <span class="nx">sb</span><span class="p">,</span> <span class="p">(</span><span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">b</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="k">then</span> <span class="nx">b</span><span class="p">[((</span><span class="nx">floor</span><span class="p">(</span><span class="nx">i</span> <span class="err">/ k) + a) % n) * k + (i % k)])</span>
+    <span class="nx">withShape</span> <span class="nx">sb</span><span class="p">,</span> <span class="p">(</span><span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">b</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="k">then</span> <span class="nx">b</span><span class="p">[((</span><span class="nx">floor</span><span class="p">(</span><span class="nx">i</span> <span class="err">/ k) + a) % n) * k + (i % k)])</span></pre></div>             </td>           </tr>                               <tr id="section-55">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-55">&#182;</a>               </div>               <p>Transpose (<code>⍉</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;⍉&#39;</span><span class="p">,</span> <span class="s1">&#39;Transpose&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
+<pre><code>⍉ 2 3 ⍴ 1 2 3 6 7 8     ⍝ returns 3 2 ⍴ 1 6 2 7 3 8
+⍴ ⍉ 2 3 ⍴ 1 2 3 6 7 8   ⍝ returns 3 2
+⍉ 1 2 3                 ⍝ returns 1 2 3
+⍉ 2 3 4 ⍴ ⍳ 24          ⍝ returns 4 3 2 ⍴ 0 12 4 16 8 20 1 13 5 17 9 21 2 14 6 18 10 22 3 15 7 19 11 23
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⍉&#39;</span><span class="p">,</span> <span class="s1">&#39;Transpose&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="k">if</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">a</span> <span class="c1"># has no effect on scalars or vectors</span>
     <span class="nv">sr = </span><span class="nx">sa</span><span class="p">[</span><span class="mi">0</span><span class="p">...].</span><span class="nx">reverse</span><span class="p">()</span>
@@ -568,9 +670,23 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
 
   <span class="nx">monadic</span> <span class="s1">&#39;↑&#39;</span><span class="p">,</span> <span class="s1">&#39;First&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
     <span class="nv">a = </span><span class="nx">array</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="nx">prototypeOf</span> <span class="nx">a</span>
+    <span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="nx">prototypeOf</span> <span class="nx">a</span></pre></div>             </td>           </tr>                               <tr id="section-56">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-56">&#182;</a>               </div>               <p>Take (<code>↑</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;↑&#39;</span><span class="p">,</span> <span class="s1">&#39;Take&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>5 ↑ 'ABCDEFGH'           ⍝ returns 'ABCDE'
+¯3 ↑ 'ABCDEFGH'          ⍝ returns 'FGH'
+3 ↑ 22 2 19 12           ⍝ returns 22 2 19
+¯1 ↑ 22 2 19 12          ⍝ returns ,12
+⍴ 1 ↑ (2 2 ⍴ ⍳ 4) (⍳ 10) ⍝ returns ,1
+5 ↑ 40 92 11             ⍝ returns 40 92 11 0 0
+¯5 ↑ 40 92 11            ⍝ returns 0 0 40 92 11
+3 3 ↑ 1 1 ⍴ 0            ⍝ returns 3 3 ⍴ 0 0 0 0 0 0 0 0 0
+5 ↑ "abc"                ⍝ returns 'abc  '
+¯5 ↑ "abc"               ⍝ returns '  abc'
+3 3 ↑ 1 1 ⍴ "a"          ⍝ returns 3 3 ⍴ 'a        '
+2 3 ↑ 1 + 4 3 ⍴ ⍳ 12     ⍝ returns 2 3 ⍴ 1 2 3 4 5 6
+¯1 3 ↑ 1 + 4 3 ⍴ ⍳ 12    ⍝ returns 1 3 ⍴ 10 11 12
+1 2 ↑ 1 + 4 3 ⍴ ⍳ 12     ⍝ returns 1 2 ⍴ 1 2
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;↑&#39;</span><span class="p">,</span> <span class="s1">&#39;Take&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="nv">a = </span><span class="p">[</span><span class="nx">a</span><span class="p">]</span>
     <span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span>
       <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">is</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;Domain error: Left argument to ↑ must be a numeric scalar or vector.&#39;</span>
@@ -597,9 +713,24 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
           <span class="k">for</span> <span class="nx">j</span> <span class="k">in</span> <span class="p">[</span><span class="nx">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">sb</span><span class="p">[</span><span class="nx">d</span><span class="p">]</span> <span class="o">+</span> <span class="nx">a</span><span class="p">[</span><span class="nx">d</span><span class="p">])</span> <span class="p">...</span> <span class="nx">sb</span><span class="p">[</span><span class="nx">d</span><span class="p">]]</span> <span class="k">then</span> <span class="nx">rec</span> <span class="nx">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">i</span> <span class="o">+</span> <span class="nx">j</span> <span class="o">*</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">k</span>
       <span class="mi">0</span>
     <span class="nx">rec</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span>
-    <span class="nx">withShape</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">withPrototype</span> <span class="nx">filler</span><span class="p">,</span> <span class="nx">r</span>
+    <span class="nx">withShape</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">then</span> <span class="nx">abs</span> <span class="nx">x</span><span class="p">),</span> <span class="nx">withPrototype</span> <span class="nx">filler</span><span class="p">,</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-57">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-57">&#182;</a>               </div>               <p>Drop (<code>↓</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;↓&#39;</span><span class="p">,</span> <span class="s1">&#39;Drop&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>4↓'OVERBOARD'              ⍝ returns 'BOARD'
+¯5↓'OVERBOARD'             ⍝ returns 'OVER'
+⍴10↓'OVERBOARD'            ⍝ returns ,0
+0 ¯2↓ 3 3 ⍴ 'ONEFATFLY'    ⍝ returns 3 1 ⍴ 'OFF'
+¯2 ¯1↓ 3 3 ⍴ 'ONEFATFLY'   ⍝ returns 1 2 ⍴ 'ON'
+1↓ 3 3 ⍴ 'ONEFATFLY'       ⍝ returns 2 3 ⍴ 'FATFLY'
+1 1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"    ⍝ returns 1 2 4 ⍴ 'QRSTUVWX'
+¯1 ¯1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"  ⍝ returns 1 2 4 ⍴ 'ABCDEFGH'
+</code></pre>
+
+<p>TODO: more tests</p>
+
+<pre><code>//#gives '1 ↓[1] 2 3 4⍴1+⍳24', [5..12].concat [17..24] # todo: drop with axis specification
+//#gives '1 ↓[2] 2 3 4⍴1+⍳24', [3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24] # todo
+//#gives '1 ↓[2 1] 2 3 4⍴1+⍳24', [7, 8, 11, 12, 19, 20, 23, 24] # todo
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;↓&#39;</span><span class="p">,</span> <span class="s1">&#39;Drop&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="nv">a = </span><span class="p">[</span><span class="nx">a</span><span class="p">]</span>
     <span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">when</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">isnt</span> <span class="s1">&#39;number&#39;</span> <span class="o">or</span> <span class="nx">x</span> <span class="o">isnt</span> <span class="nx">floor</span> <span class="nx">x</span>
       <span class="nx">die</span> <span class="s1">&#39;Left argument to ↓ must be an integer or a vector of integers.&#39;</span>
@@ -625,12 +756,20 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
       <span class="mi">0</span>
     <span class="nx">rec</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span>
     <span class="nv">sr = </span><span class="k">for</span> <span class="p">[</span><span class="nx">lo</span><span class="p">,</span> <span class="nx">hi</span><span class="p">]</span> <span class="k">in</span> <span class="nx">lims</span> <span class="k">then</span> <span class="nx">hi</span> <span class="o">-</span> <span class="nx">lo</span>
-    <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span>
+    <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-58">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-58">&#182;</a>               </div>               <p>Enclose (<code>⊂</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;⊂&#39;</span><span class="p">,</span> <span class="s1">&#39;Enclose&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span> <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="nx">a</span> <span class="k">else</span> <span class="nx">withShape</span> <span class="p">[],</span> <span class="p">[</span><span class="nx">a</span><span class="p">]</span>
-  <span class="nx">dyadic</span> <span class="s1">&#39;⊂&#39;</span><span class="p">,</span> <span class="s1">&#39;Partition (with axis)&#39;</span> <span class="c1"># todo</span>
+<pre><code>⍴ ⊂ 2 3⍴⍳6    ⍝ returns ⍬
+⍴⍴ ⊂ 2 3⍴⍳6   ⍝ returns ,0
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⊂&#39;</span><span class="p">,</span> <span class="s1">&#39;Enclose&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span> <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="nx">a</span> <span class="k">else</span> <span class="nx">withShape</span> <span class="p">[],</span> <span class="p">[</span><span class="nx">a</span><span class="p">]</span></pre></div>             </td>           </tr>                               <tr id="section-59">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-59">&#182;</a>               </div>               <p>Partition (with axis) (<code>⊂</code>)</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;⊂&#39;</span><span class="p">,</span> <span class="s1">&#39;Partition (with axis)&#39;</span> <span class="c1"># TODO</span></pre></div>             </td>           </tr>                               <tr id="section-60">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-60">&#182;</a>               </div>               <p>Disclose (<code>⊃</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;⊃&#39;</span><span class="p">,</span> <span class="s1">&#39;Disclose&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
+<pre><code>⊃ (1 2 3) (4 5 6)   ⍝ returns 2 3 ⍴ 1 2 3 4 5 6
+⍴⊃ (1 2 3) (4 5 6)  ⍝ returns 2 3
+⊃ (1 2) (3 4 5)     ⍝ returns 2 3 ⍴ 1 2 0 3 4 5
+⍴⊃ (1 2) (3 4 5)    ⍝ returns 2 3
+⊃ (1 2 3) "AB"      ⍝ returns 2 3 ⍴ 1 2 3,'AB '
+⍴⊃ (1 2 3) "AB"     ⍝ returns 2 3
+⊃123                ⍝ returns 123
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⊃&#39;</span><span class="p">,</span> <span class="s1">&#39;Disclose&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">a</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="k">if</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -660,9 +799,13 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
       <span class="nx">rec</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">x</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="nx">prod</span> <span class="nx">sr1</span>
     <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;⊃&#39;</span><span class="p">,</span> <span class="s1">&#39;Pick&#39;</span>
+  <span class="nx">dyadic</span> <span class="s1">&#39;⊃&#39;</span><span class="p">,</span> <span class="s1">&#39;Pick&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-61">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-61">&#182;</a>               </div>               <p>Index (<code>⌷</code>)</p>
 
-  <span class="nx">dyadic</span> <span class="s1">&#39;⌷&#39;</span><span class="p">,</span> <span class="s1">&#39;Index&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <p><code>(a0 a1 ...)⌷b</code> is equivalent to <code>b[a0;a1;...]</code></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="nv">a = </span><span class="p">[</span><span class="nx">a</span><span class="p">]</span>
+<p>1 ⌷ 3 5 8                ⍝ returns 5
+   (3 5 8)[1]               ⍝ returns 5
+   ⌷←{⍺+¨⍵}  ◇  (3 5 8)[1]  ⍝ returns 4 6 9
+   (2 2 0) (1 2) ⌷ 3 3⍴⍳9   ⍝ returns 3 2 ⍴ 7 8 7 8 1 2
+   ¯1 ⌷ 3 5 8               ⍝ fails</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;⌷&#39;</span><span class="p">,</span> <span class="s1">&#39;Index&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-62">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-62">&#182;</a>               </div>               <p><code>(a0 a1 ...)⌷b</code> is equivalent to <code>b[a0;a1;...]</code></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="nv">a = </span><span class="p">[</span><span class="nx">a</span><span class="p">]</span>
     <span class="nx">assert</span> <span class="p">(</span><span class="o">not</span> <span class="nx">a</span><span class="p">.</span><span class="nx">shape</span><span class="p">)</span> <span class="o">or</span> <span class="nx">a</span><span class="p">.</span><span class="nx">shape</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Indices must be a scalar or a vector, not a higher-dimensional array.&#39;</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="k">if</span> <span class="k">typeof</span> <span class="nx">b</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span> <span class="k">then</span> <span class="k">return</span> <span class="nf">(y, x) -&gt;</span> <span class="nx">b</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">a</span>
@@ -682,7 +825,7 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
       <span class="k">else</span> <span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span><span class="p">[</span><span class="nx">d</span><span class="p">]</span> <span class="k">then</span> <span class="nx">rec</span> <span class="nx">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">i</span> <span class="o">+</span> <span class="p">(</span><span class="nx">x</span> <span class="o">*</span> <span class="nx">n</span> <span class="sr">/ sb[d]), n /</span> <span class="nx">sb</span><span class="p">[</span><span class="nx">d</span><span class="p">]</span>
       <span class="mi">0</span>
     <span class="nx">rec</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span>
-    <span class="k">if</span> <span class="nx">sr</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span> <span class="k">then</span> <span class="nx">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>               <p>Helper for <code>⍋</code> and <code>⍒</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">grade = </span><span class="nf">(b, a, direction) -&gt;</span>
+    <span class="k">if</span> <span class="nx">sr</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span> <span class="k">then</span> <span class="nx">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-63">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-63">&#182;</a>               </div>               <p>Helper for <code>⍋</code> and <code>⍒</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">grade = </span><span class="nf">(b, a, direction) -&gt;</span>
     <span class="k">if</span> <span class="o">not</span> <span class="nx">a</span><span class="o">?</span> <span class="k">then</span> <span class="nv">a = </span><span class="p">[]</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
@@ -706,12 +849,34 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
         <span class="k">if</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">y</span> <span class="k">then</span> <span class="k">return</span> <span class="o">-</span><span class="nx">direction</span>
         <span class="k">if</span> <span class="nx">x</span> <span class="o">&gt;</span> <span class="nx">y</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">direction</span>
       <span class="mi">0</span>
-    <span class="nx">r</span>
+    <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-64">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-64">&#182;</a>               </div>               <p>Grade up/down (<code>⍋</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;⍋&#39;</span><span class="p">,</span> <span class="s1">&#39;Grade up&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span> <span class="nx">grade</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="mi">1</span>
-  <span class="nx">monadic</span> <span class="s1">&#39;⍒&#39;</span><span class="p">,</span> <span class="s1">&#39;Grade down&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span> <span class="nx">grade</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+<pre><code>⍋13 8 122 4                          ⍝ returns 3 1 0 2
+a←13 8 122 4  ◇  a[⍋a]               ⍝ returns 4 8 13 122
+⍋"ZAMBIA"                            ⍝ returns 1 5 3 4 2 0
+s←"ZAMBIA"  ◇  s[⍋s]                 ⍝ returns 'AABIMZ'
+t←3 3⍴"BOBALFZAK"  ◇  ⍋t             ⍝ returns 1 0 2
+t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  ⍋t       ⍝ returns 2 1 0
+t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  t[⍋t;]   ⍝ returns 3 3 ⍴ 1 1 2 1 1 3 4 5 6
+a←3 2 3⍴2 3 4 0 1 0 1 1 3 4 5 6 1 1 2 10 11 12  ◇  a[⍋a;;]   ⍝ returns 3 2 3 ⍴ 1 1 2 10 11 12 1 1 3 4 5 6 2 3 4 0 1 0
+a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]   ⍝ returns 3 2 5 ⍴ 'bob  jonesbob  zwartjoe  doe  '
+"ZYXWVUTSRQPONMLKJIHGFEDCBA"⍋"ZAMBIA"   ⍝ returns 0 2 4 3 1 5
+⎕A←"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ◇ (⌽⎕A)⍋3 3⍴"BOBALFZAK"   ⍝ returns 2 0 1
+data←6 4⍴"ABLEaBLEACREABELaBELACES" ◇ coll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" ◇ data[coll⍋data;]   ⍝ returns 6 4 ⍴ 'ABELaBELABLEaBLEACESACRE'
+data←6 4⍴"ABLEaBLEACREABELaBELACES" ◇ coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz" ◇ data[coll1⍋data;]   ⍝ returns 6 4 ⍴ 'ABELABLEACESACREaBELaBLE'
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⍋&#39;</span><span class="p">,</span> <span class="s1">&#39;Grade up&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span> <span class="nx">grade</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-65">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-65">&#182;</a>               </div>               <p>Grade down (<code>⍒</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;⊤&#39;</span><span class="p">,</span> <span class="s1">&#39;Encode&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>⍒3 1 8   ⍝ returns 2 0 1
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⍒&#39;</span><span class="p">,</span> <span class="s1">&#39;Grade down&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span> <span class="nx">grade</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-66">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-66">&#182;</a>               </div>               <p>Encode (<code>⊤</code>)</p>
+
+<pre><code>1760 3 12⊤75          ⍝ returns 2 0 3
+3 12⊤75               ⍝ returns 0 3
+100000 12⊤75          ⍝ returns 6 3
+16 16 16 16⊤100       ⍝ returns 0 0 6 4
+1760 3 12⊤75.3        ⍝ returns 2 0 (75.3−72)
+0 1⊤75.3              ⍝ returns 75 (75.3−75)
+2 2 2 2 2⊤1 2 3 4 5   ⍝ returns 5 5 ⍴ 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 1 0 0 1 0 1 0 1
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⊤&#39;</span><span class="p">,</span> <span class="s1">&#39;Encode&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="nv">a = </span><span class="p">[</span><span class="nx">a</span><span class="p">]</span>
@@ -730,9 +895,21 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
           <span class="k">else</span>
             <span class="nx">r</span><span class="p">[(</span><span class="nx">k</span> <span class="o">*</span> <span class="nx">m</span> <span class="o">+</span> <span class="nx">i</span><span class="p">)</span> <span class="o">*</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span> <span class="o">+</span> <span class="nx">j</span><span class="p">]</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">%</span> <span class="nx">x</span>
             <span class="nv">y = </span><span class="nx">round</span><span class="p">((</span><span class="nx">y</span> <span class="o">-</span> <span class="p">(</span><span class="nx">y</span> <span class="o">%</span> <span class="nx">x</span><span class="p">))</span> <span class="o">/</span> <span class="nx">x</span><span class="p">)</span>
-    <span class="nx">withShape</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">sb</span><span class="p">),</span> <span class="nx">r</span>
+    <span class="nx">withShape</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">sb</span><span class="p">),</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-67">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-67">&#182;</a>               </div>               <p>Decode (<code>⊥</code>)</p>
 
-  <span class="nx">monadic</span> <span class="s1">&#39;⊥&#39;</span><span class="p">,</span> <span class="s1">&#39;Decode&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>10 ⊥ 3 2 6 9                        ⍝ returns 3269
+8 ⊥ 3 1                             ⍝ returns 25
+1760 3 12 ⊥ 1 2 8                   ⍝ returns 68
+2 2 2 ⊥ 1                           ⍝ returns 7
+0 20 12 4 ⊥ 2 15 6 3                ⍝ returns 2667
+1760 3 12 ⊥ 3 3⍴1 1 1 2 0 3 0 1 8   ⍝ returns 60 37 80
+60 60 ⊥ 3 13                        ⍝ returns 193
+0 60 ⊥ 3 13                         ⍝ returns 193
+60 ⊥ 3 13                           ⍝ returns 193
+2 ⊥ 1 0 1 0                         ⍝ returns 10
+2 ⊥ 1 2 3 4                         ⍝ returns 26
+3 ⊥ 1 2 3 4                         ⍝ returns 58
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⊥&#39;</span><span class="p">,</span> <span class="s1">&#39;Decode&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="nv">lastDimA = </span><span class="k">if</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="nx">sa</span><span class="p">[</span><span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="mi">1</span>
@@ -762,9 +939,15 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
   <span class="nx">monadic</span> <span class="s1">&#39;⊣&#39;</span><span class="p">,</span> <span class="s1">&#39;Stop&#39;</span>
   <span class="nx">dyadic</span> <span class="s1">&#39;⊣&#39;</span><span class="p">,</span> <span class="s1">&#39;Left&#39;</span>
   <span class="nx">monadic</span> <span class="s1">&#39;⊢&#39;</span><span class="p">,</span> <span class="s1">&#39;Pass&#39;</span>
-  <span class="nx">dyadic</span> <span class="s1">&#39;⊢&#39;</span><span class="p">,</span> <span class="s1">&#39;Right&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <p><code>⍬</code> Zilde (niladic function)</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">builtins</span><span class="p">[</span><span class="s1">&#39;⍬&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-  <span class="nx">builtins</span><span class="p">[</span><span class="s1">&#39;get_⎕IO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> <span class="mi">0</span>
-  <span class="nx">builtins</span><span class="p">[</span><span class="s1">&#39;set_⎕IO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> <span class="k">throw</span> <span class="nb">Error</span> <span class="s1">&#39;Assignment to the index origin (⎕IO) is not supported.&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <h1>Built-in operators</h1>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-38">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>               <p>Helper for <code>/</code> and <code>⌿</code> in their operator sense</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">reduce = </span><span class="nf">(f, _, axis = -1) -&gt;</span> <span class="nf">(b, a) -&gt;</span>
+  <span class="nx">dyadic</span> <span class="s1">&#39;⊢&#39;</span><span class="p">,</span> <span class="s1">&#39;Right&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-68">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-68">&#182;</a>               </div>               <p><code>⍬</code> Zilde (niladic function)</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">builtins</span><span class="p">[</span><span class="s1">&#39;⍬&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></pre></div>             </td>           </tr>                               <tr id="section-69">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-69">&#182;</a>               </div>               <p>Index origin (<code>⎕IO</code>)</p>
+
+<p>It can only be read, but not assigned.
+TODO: allow assigning zero</p>
+
+<pre><code>⎕IO     ⍝ returns 0
+⎕IO←1   ⍝ fails
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">builtins</span><span class="p">[</span><span class="s1">&#39;get_⎕IO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+  <span class="nx">builtins</span><span class="p">[</span><span class="s1">&#39;set_⎕IO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> <span class="k">throw</span> <span class="nb">Error</span> <span class="s1">&#39;Assignment to the index origin (⎕IO) is not supported.&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-70">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-70">&#182;</a>               </div>               <h1>Built-in operators</h1>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-71">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-71">&#182;</a>               </div>               <p>Helper for <code>/</code> and <code>⌿</code> in their operator sense</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">reduce = </span><span class="nf">(f, _, axis = -1) -&gt;</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">invokedAsMonadic = </span><span class="o">not</span> <span class="nx">a</span><span class="o">?</span>
     <span class="k">if</span> <span class="nx">invokedAsMonadic</span> <span class="k">then</span> <span class="nv">a = </span><span class="mi">0</span>
     <span class="nv">a = </span><span class="nx">floor</span> <span class="nx">num</span> <span class="nx">a</span>
@@ -788,7 +971,7 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
       <span class="k">else</span>
         <span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span> <span class="p">...</span> <span class="nx">n</span> <span class="o">-</span> <span class="nx">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
           <span class="nv">x = </span><span class="nx">items</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span> <span class="p">(</span><span class="k">for</span> <span class="nx">j</span> <span class="k">in</span> <span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">...</span> <span class="nx">i</span> <span class="o">+</span> <span class="nx">a</span><span class="p">]</span> <span class="k">by</span> <span class="mi">1</span> <span class="k">then</span> <span class="nv">x = </span><span class="nx">f</span> <span class="nx">items</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">x</span><span class="p">);</span> <span class="nx">x</span>
-    <span class="k">if</span> <span class="nx">invokedAsMonadic</span> <span class="k">then</span> <span class="nx">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-39">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-39">&#182;</a>               </div>               <p>Helper for <code>/</code> and <code>⌿</code> in their function sense</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">compressOrReplicate = </span><span class="nf">(b, a, axis = -1) -&gt;</span>
+    <span class="k">if</span> <span class="nx">invokedAsMonadic</span> <span class="k">then</span> <span class="nx">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-72">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-72">&#182;</a>               </div>               <p>Helper for <code>/</code> and <code>⌿</code> in their function sense</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">compressOrReplicate = </span><span class="nf">(b, a, axis = -1) -&gt;</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="k">if</span> <span class="nx">axis</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">then</span> <span class="nx">axis</span> <span class="o">+=</span> <span class="nx">sb</span><span class="p">.</span><span class="nx">length</span>
     <span class="nx">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nx">axis</span> <span class="o">&lt;</span> <span class="nx">sb</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="s1">&#39;Axis out of bounds&#39;</span>
@@ -832,19 +1015,68 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
             <span class="nx">r</span><span class="p">.</span><span class="nx">push</span> <span class="nx">filler</span>
           <span class="nx">j</span> <span class="o">+=</span> <span class="nx">isExpansive</span>
 
-    <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span>
+    <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-73">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-73">&#182;</a>               </div>               <p>Reduce, compress, or replicate (<code>/</code>)</p>
 
-  <span class="nx">postfixOperator</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;Reduce, compress, or replicate&#39;</span><span class="p">,</span> <span class="nf">(b, a, axis = -1) -&gt;</span>
+<p>Reduce</p>
+
+<pre><code>+/ 3                       ⍝ returns 3
++/ 3 5 8                   ⍝ returns 16
++/ 2 4 6                   ⍝ returns 12
+⌈/ 82 66 93 13             ⍝ returns 93
+×/ 2 3 ⍴ 1 2 3 4 5 6       ⍝ returns 6 120
+2 ,/ 'AB' 'CD' 'EF' 'HI'   ⍝ returns 'ABCD' 'CDEF' 'EFHI'
+3 ,/ 'AB' 'CD' 'EF' 'HI'   ⍝ returns 'ABCDEF' 'CDEFHI'
+</code></pre>
+
+<p>N-Wise reduce</p>
+
+<pre><code>2 +/ 1 + ⍳10    ⍝ returns 3 5 7 9 11 13 15 17 19
+5 +/ 1 + ⍳10    ⍝ returns 15 20 25 30 35 40
+10 +/ 1 + ⍳10   ⍝ returns ,55
+11 +/ 1 + ⍳10   ⍝ returns ⍬
+2 −/ 3 4 9 7    ⍝ returns ¯1 ¯5 2
+¯2 −/ 3 4 9 7   ⍝ returns 1 5 ¯2
+</code></pre>
+
+<p>Compress</p>
+
+<pre><code>0 1 0 1 / 'ABCD'                                ⍝ returns 'BD'
+1 1 1 1 0 / 12 14 16 18 20                      ⍝ returns 12 14 16 18
+MARKS←45 60 33 50 66 19 ◇ (MARKS≥50)/MARKS      ⍝ returns 60 50 66
+MARKS←45 60 33 50 66 19 ◇ (MARKS=50)/⍳↑⍴MARKS   ⍝ returns ,3
+1/"FREDERIC"                                    ⍝ returns 'FREDERIC'
+0/"FREDERIC"                                    ⍝ returns ⍬
+0 1 0  / 1+2 3⍴⍳6                               ⍝ returns 2 1 ⍴ 2 5
+1 0 /[0] 1+2 3⍴⍳6                               ⍝ returns 1 3 ⍴ 1 2 3
+1 0 ⌿    1+2 3⍴⍳6                               ⍝ returns 1 3 ⍴ 1 2 3
+</code></pre>
+
+<p>Replicate</p>
+
+<pre><code>2 ¯2 2 / 1+2 3⍴⍳6                 ⍝ returns 2 6 ⍴  1 1 0 0 3 3  4 4 0 0 6 6
+2 ¯2 2 ¯2 2 / 1+2 3⍴⍳6            ⍝ returns 2 10 ⍴  1 1 0 0 2 2 0 0 3 3  4 4 0 0 5 5 0 0 6 6
+1 1 ¯2 1 1 / 1 2 (2 2⍴⍳4) 3 4     ⍝ returns 1 2 (2 2⍴0) (2 2⍴0) 3 4
+1 1 ¯2 1 1 1 / 1 2 (2 2⍴⍳4) 3 4   ⍝ returns 1 2 0 0 (2 2⍴0 1 2 3) 3 4
+2 3 2 / "ABC"                     ⍝ returns 'AABBBCC'
+2 / "DEF"                         ⍝ returns 'DDEEFF'
+5 0 5 / 1 2 3                     ⍝ returns 1 1 1 1 1 3 3 3 3 3
+2 / 1+2 3⍴⍳6                      ⍝ returns 2 6 ⍴  1 1 2 2 3 3  4 4 5 5 6 6
+2 ⌿ 1+2 3⍴⍳6                      ⍝ returns 4 3 ⍴  1 2 3  1 2 3  4 5 6  4 5 6
+2 3 / 3 1⍴"ABC"                   ⍝ returns 3 5 ⍴ 'AAAAABBBBBCCCCC'
+2 ¯1 2 /[1] 3 1⍴(7 8 9)           ⍝ returns 3 5 ⍴ 7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
+2 ¯1 2 /[1] 3 1⍴"ABC"             ⍝ returns 3 5 ⍴ 'AA AABB BBCC CC'
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">postfixOperator</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;Reduce, compress, or replicate&#39;</span><span class="p">,</span> <span class="nf">(b, a, axis = -1) -&gt;</span>
     <span class="k">if</span> <span class="k">typeof</span> <span class="nx">b</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span>
       <span class="nx">reduce</span> <span class="nx">b</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">axis</span>
     <span class="k">else</span>
-      <span class="nx">compressOrReplicate</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">axis</span>
+      <span class="nx">compressOrReplicate</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">axis</span></pre></div>             </td>           </tr>                               <tr id="section-74">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-74">&#182;</a>               </div>               <p>1st axis reduce, compress, or replicate (<code>⌿</code>)</p>
 
-  <span class="nx">postfixOperator</span> <span class="s1">&#39;⌿&#39;</span><span class="p">,</span> <span class="s1">&#39;1st axis reduce, compress, or replicate&#39;</span><span class="p">,</span> <span class="nf">(b, a, axis = 0) -&gt;</span>
+<pre><code>+⌿ 2 3 ⍴ 1 2 3 10 20 30   ⍝ returns 11 22 33
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">postfixOperator</span> <span class="s1">&#39;⌿&#39;</span><span class="p">,</span> <span class="s1">&#39;1st axis reduce, compress, or replicate&#39;</span><span class="p">,</span> <span class="nf">(b, a, axis = 0) -&gt;</span>
     <span class="k">if</span> <span class="k">typeof</span> <span class="nx">b</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span>
       <span class="nx">reduce</span> <span class="nx">b</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">axis</span>
     <span class="k">else</span>
-      <span class="nx">compressOrReplicate</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">axis</span></pre></div>             </td>           </tr>                               <tr id="section-40">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-40">&#182;</a>               </div>               <p>Helper for <code>\</code> and <code>⍀</code> in their operator sense</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">scan = </span><span class="nf">(f, _, axis = -1) -&gt;</span> <span class="nf">(a, _1) -&gt;</span>
+      <span class="nx">compressOrReplicate</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">axis</span></pre></div>             </td>           </tr>                               <tr id="section-75">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-75">&#182;</a>               </div>               <p>Helper for <code>\</code> and <code>⍀</code> in their operator sense</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">scan = </span><span class="nf">(f, _, axis = -1) -&gt;</span> <span class="nf">(a, _1) -&gt;</span>
     <span class="nx">assert</span> <span class="o">not</span> <span class="nx">_1</span><span class="o">?</span><span class="p">,</span> <span class="s1">&#39;Scan can only be applied monadically.&#39;</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="k">if</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">a</span>
@@ -859,19 +1091,48 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
         <span class="k">for</span> <span class="nx">j</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">...</span><span class="nx">nj</span><span class="p">]</span>
           <span class="nv">ijk = </span><span class="nx">k</span> <span class="o">+</span> <span class="nx">nk</span> <span class="o">*</span> <span class="p">(</span><span class="nx">j</span> <span class="o">+</span> <span class="nx">nj</span> <span class="o">*</span> <span class="nx">i</span><span class="p">)</span>
           <span class="nv">x = </span><span class="nx">r</span><span class="p">[</span><span class="nx">ijk</span><span class="p">]</span> <span class="o">=</span> <span class="nx">f</span> <span class="nx">a</span><span class="p">[</span><span class="nx">ijk</span><span class="p">],</span> <span class="nx">x</span>
-    <span class="nx">withShape</span> <span class="nx">shapeOf</span><span class="p">(</span><span class="nx">a</span><span class="p">),</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-41">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-41">&#182;</a>               </div>               <p>Helper for <code>\</code> and <code>⍀</code> in their function sense</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">expand = </span><span class="o">-&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-42">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-42">&#182;</a>               </div>               <p>todo</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">postfixOperator</span> <span class="s1">&#39;\\&#39;</span><span class="p">,</span> <span class="s1">&#39;Scan or expand&#39;</span><span class="p">,</span> <span class="nf">(b, a, axis = -1) -&gt;</span>
+    <span class="nx">withShape</span> <span class="nx">shapeOf</span><span class="p">(</span><span class="nx">a</span><span class="p">),</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-76">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-76">&#182;</a>               </div>               <p>Helper for <code>\</code> and <code>⍀</code> in their function sense</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">expand = </span><span class="o">-&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-77">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-77">&#182;</a>               </div>               <p>todo</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-78">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-78">&#182;</a>               </div>               <p>Scan or expand (<code>\</code>)</p>
+
+<pre><code>+\ 20 10 ¯5 7              ⍝ returns 20 30 25 32
+,\ "AB" "CD" "EF"          ⍝ returns 'AB' 'ABCD' 'ABCDEF'
+×\ 2 3⍴5 2 3 4 7 6         ⍝ returns 2 3 ⍴ 5 10 30 4 28 168
+∧\ 1 1 1 0 1 1             ⍝ returns 1 1 1 0 0 0
+</code></pre>
+
+<p>//#gives '−\1 2 3 4', [1, -1, 2, -2] # todo
+    ∨\ 0 0 1 0 0 1 0           ⍝ returns 0 0 1 1 1 1 1
+    +\ 1 2 3 4 5               ⍝ returns 1 3 6 10 15
+    +\ (1 2 3)(4 5 6)(7 8 9)   ⍝ returns (1 2 3) (5 7 9) (12 15 18)
+    M←2 3⍴1 2 3 4 5 6 ◇ +\M    ⍝ returns 2 3 ⍴ 1 3 6 4 9 15
+    M←2 3⍴1 2 3 4 5 6 ◇ +⍀M    ⍝ returns 2 3 ⍴ 1 2 3 5 7 9</p>
+
+<h1>gives 'M←2 3⍴1 2 3 4 5 6 ◇ +[0]M', [1, 2, 3, 5, 7, 9] # todo</h1>
+
+<pre><code>,\ 'ABC'                   ⍝ returns (↑'A') 'AB' 'ABC'
+T←"ONE(TWO) BOOK(S)" ◇ ≠\T∈"()"   ⍝ returns 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
+T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK'
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">postfixOperator</span> <span class="s1">&#39;\\&#39;</span><span class="p">,</span> <span class="s1">&#39;Scan or expand&#39;</span><span class="p">,</span> <span class="nf">(b, a, axis = -1) -&gt;</span>
     <span class="k">if</span> <span class="k">typeof</span> <span class="nx">b</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span>
       <span class="nx">scan</span> <span class="nx">b</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">axis</span>
     <span class="k">else</span>
-      <span class="nx">expand</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">axis</span>
-
-  <span class="nx">postfixOperator</span> <span class="s1">&#39;⍀&#39;</span><span class="p">,</span> <span class="s1">&#39;1st axis scan or expand&#39;</span><span class="p">,</span> <span class="nf">(b, a, axis = 0) -&gt;</span>
+      <span class="nx">expand</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">axis</span></pre></div>             </td>           </tr>                               <tr id="section-79">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-79">&#182;</a>               </div>               <p>1st axis scan or expand (<code>⍀</code>)</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">postfixOperator</span> <span class="s1">&#39;⍀&#39;</span><span class="p">,</span> <span class="s1">&#39;1st axis scan or expand&#39;</span><span class="p">,</span> <span class="nf">(b, a, axis = 0) -&gt;</span>
     <span class="k">if</span> <span class="k">typeof</span> <span class="nx">b</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span>
       <span class="nx">scan</span> <span class="nx">b</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">axis</span>
     <span class="k">else</span>
-      <span class="nx">expand</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">axis</span>
+      <span class="nx">expand</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">axis</span></pre></div>             </td>           </tr>                               <tr id="section-80">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-80">&#182;</a>               </div>               <p>Each (<code>¨</code>)</p>
 
-  <span class="nx">postfixOperator</span> <span class="s1">&#39;¨&#39;</span><span class="p">,</span> <span class="s1">&#39;Each&#39;</span><span class="p">,</span> <span class="nf">(f) -&gt;</span> <span class="nf">(b, a) -&gt;</span>
+<pre><code>⍴¨ (0 0 0 0) (0 0 0)                 ⍝ returns (,4) (,3)
+⍴¨ "MONDAY" "TUESDAY"                ⍝ returns (,6) (,7)
+⍴    (2 2⍴⍳4) (⍳10) 97.3 (3 4⍴"K")   ⍝ returns ,4
+⍴¨   (2 2⍴⍳4) (⍳10) 97.3 (3 4⍴"K")   ⍝ returns (2 2) (,10) ⍬ (3 4)
+⍴⍴¨  (2 2⍴⍳4) (⍳10) 97.3 (3 4⍴"K")   ⍝ returns ,4
+⍴¨⍴¨ (2 2⍴⍳4) (⍳10) 97.3 (3 4⍴"K")   ⍝ returns (,2) (,1) (,0) (,2)
+(1 2 3) ,¨ 4 5 6                     ⍝ returns (1 4) (2 5) (3 6)
+2 3 ↑¨ 'MONDAY' 'TUESDAY'            ⍝ returns 'MO' 'TUE'
+2 ↑¨ 'MONDAY' 'TUESDAY'              ⍝ returns 'MO' 'TU'
+2 3 ⍴¨ 1 2                           ⍝ returns (1 1) (2 2 2)
+4 5 ⍴¨ "THE" "CAT"                   ⍝ returns 'THET' 'CATCA'
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">postfixOperator</span> <span class="s1">&#39;¨&#39;</span><span class="p">,</span> <span class="s1">&#39;Each&#39;</span><span class="p">,</span> <span class="nf">(f) -&gt;</span> <span class="nf">(b, a) -&gt;</span>
     <span class="k">if</span> <span class="o">not</span> <span class="nx">a</span><span class="o">?</span> <span class="k">then</span> <span class="k">return</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">array</span> <span class="nx">b</span> <span class="k">then</span> <span class="nx">f</span> <span class="nx">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="k">return</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">array</span> <span class="nx">b</span> <span class="k">then</span> <span class="nx">f</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="k">return</span> <span class="p">(</span><span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="k">then</span> <span class="nx">f</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span>
@@ -887,8 +1148,15 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
       <span class="nv">b = </span><span class="nx">array</span> <span class="nx">b</span>
       <span class="nv">r = </span><span class="p">[]</span>
       <span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">then</span> <span class="k">for</span> <span class="nx">y</span> <span class="k">in</span> <span class="nx">b</span> <span class="k">then</span> <span class="nx">r</span><span class="p">.</span><span class="nx">push</span> <span class="nx">f</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">x</span>
-      <span class="nx">withShape</span> <span class="p">(</span><span class="nx">shapeOf</span> <span class="nx">a</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">shapeOf</span> <span class="nx">b</span><span class="p">),</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-43">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-43">&#182;</a>               </div>               <p>todo: the general formula for higher dimensions is
-<code>A f.g B   &lt;=&gt;   f/¨ (⊂[⍴⍴A]A)∘.g ⊂[1]B</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">infixOperator</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;Inner product&#39;</span><span class="p">,</span> <span class="nf">(g, f) -&gt;</span>
+      <span class="nx">withShape</span> <span class="p">(</span><span class="nx">shapeOf</span> <span class="nx">a</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">shapeOf</span> <span class="nx">b</span><span class="p">),</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-81">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-81">&#182;</a>               </div>               <p>Inner product (<code>.</code>)</p>
+
+<p>TODO: the general formula for higher dimensions is
+<code>A f.g B   &lt;=&gt;   f/¨ (⊂[⍴⍴A]A)∘.g ⊂[1]B</code></p>
+
+<pre><code>(1 3 5 7) +.= 2 3 6 7   ⍝ returns 2
+(1 3 5 7) ∧.= 2 3 6 7   ⍝ returns 0
+(1 3 5 7) ∧.= 1 3 5 7   ⍝ returns 1
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">infixOperator</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;Inner product&#39;</span><span class="p">,</span> <span class="nf">(g, f) -&gt;</span>
     <span class="nv">F = </span><span class="nx">reduce</span> <span class="nx">f</span>
     <span class="nf">(b, a) -&gt;</span>
       <span class="nx">assert</span> <span class="nx">shapeOf</span><span class="p">(</span><span class="nx">a</span><span class="p">).</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="o">and</span> <span class="nx">shapeOf</span><span class="p">(</span><span class="nx">b</span><span class="p">).</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Inner product operator (.) is implemented only for arrays of rank no more than 1.&#39;</span>

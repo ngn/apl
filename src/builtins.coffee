@@ -434,15 +434,48 @@ define ['./helpers'], (helpers) ->
 
   dyadic '<', 'Less than', pervasive (y, x) -> +(x < y)
   dyadic '≤', 'Less than or equal', pervasive (y, x) -> +(x <= y)
+
+  # Equals (`=`)
+  #
+  #     12 = 12               ⍝ returns 1
+  #     2 = 12                ⍝ returns 0
+  #     "Q" = "Q"             ⍝ returns ,1
+  #     1 = "1"               ⍝ returns ,0
+  #     "1" = 1               ⍝ returns ,0
+  #     11 7 2 9 = 11 3 2 6   ⍝ returns 1 0 1 0
+  #     "STOAT" = "TOAST"     ⍝ returns 0 0 0 0 1
+  #     8 = 2 + 2 + 2 + 2     ⍝ returns 1
+  #     (2 3⍴1 2 3 4 5 6) = 2 3⍴3 3 3 5 5 5   ⍝ returns 2 3 ⍴ 0 0 1 0 1 0
+  #     3 = 2 3⍴1 2 3 4 5 6   ⍝ returns 2 3 ⍴ 0 0 1 0 0 0
+  #     3 = (2 3⍴1 2 3 4 5 6) (2 3⍴3 3 3 5 5 5)   ⍝ returns (2 3 ⍴ 0 0 1 0 0 0) (2 3 ⍴ 1 1 1 0 0 0)
   dyadic '=', 'Equal', pervasive (y, x) -> +(x is y)
+
   dyadic '>', 'Greater than', pervasive (y, x) -> +(x > y)
   dyadic '≥', 'Greater than or equal', pervasive (y, x) -> +(x >= y)
   dyadic '≠', 'Not equal', pervasive (y, x) -> +(x isnt y)
 
+  # Depth (`≡`)
+  #
+  #     ≡4                             ⍝ returns 0
+  #     ≡⍳4                            ⍝ returns 1
+  #     ≡2 2⍴⍳4                        ⍝ returns 1
+  #     ≡"abc" 1 2 3 (23 55)           ⍝ returns 2
+  #     ≡"abc" (2 4⍴("abc" 2 3 "k"))   ⍝ returns 3
   monadic '≡', 'Depth', depthOf = (a) ->
     if isSimple a then return 0
     r = 0; (for x in a then r = max r, depthOf x); r + 1
 
+  # Match (`≡`)
+  #
+  #     3≡3                       ⍝ returns 1
+  #     3≡,3                      ⍝ returns 0
+  #     4 7.1 8 ≡ 4 7.2 8         ⍝ returns 0
+  #     (3 4⍴⍳12) ≡ 3 4⍴⍳12       ⍝ returns 1
+  #     (3 4⍴⍳12) ≡ ⊂3 4⍴⍳12      ⍝ returns 0
+  #     ("ABC" "DEF") ≡ "ABCDEF"  ⍝ returns 0
+  #     (⍳0)≡""                   ⍝ returns 0
+  #     (2 0⍴0)≡(0 2⍴0)           ⍝ returns 0
+  #     (0⍴1 2 3)≡0⍴⊂2 2⍴⍳4       ⍝ returns 0
   dyadic '≡', 'Match', match = (b, a) ->
     if isSimple(a) and isSimple(b) then return +(a is b)
     if isSimple(a) isnt isSimple(b) then return 0
@@ -459,18 +492,39 @@ define ['./helpers'], (helpers) ->
     if not (a.aplPrototype? or b.aplPrototype?) then return 1
     match prototypeOf(a), prototypeOf(b)
 
+  # Not match (`≢`)
+  #
+  #     3≢3   ⍝ returns 0
   dyadic '≢', 'Not match', (b, a) -> +not match b, a
 
+  # Enlist (`∈`)
+  #
+  #     ∈ 17                        ⍝ returns ,17
+  #     ⍴ ∈ (1 2 3) "ABC" (4 5 6)   ⍝ returns ,9
+  #     ∈ 2 2⍴(1 + 2 2⍴⍳4) "DEF" (1 + 2 3⍴⍳6) (7 8 9)   ⍝ returns 1 2 3 4,'DEF',1 2 3 4 5 6 7 8 9
   monadic '∈', 'Enlist', (a) ->
     r = []
     rec = (x) -> (if isSimple x then r.push x else for y in x then rec y); r
     rec a
 
+  # Membership (`∈`)
+  #
+  #     2 3 4 5 6 ∈ 1 2 3 5 8 13 21   ⍝ returns 1 1 0 1 0
+  #     5 ∈ 1 2 3 5 8 13 21           ⍝ returns ,1
   dyadic '∈', 'Membership', (b, a) ->
     a = array a
     b = array b
     withShape a.shape, (for x in a then +(x in b))
 
+  # Find (`⍷`)
+  #
+  #     "AN"⍷"BANANA"                          ⍝ returns 0 1 0 1 0 0
+  #     "BIRDS" "NEST"⍷"BIRDS" "NEST" "SOUP"   ⍝ returns 1 0 0
+  #     "ME"⍷"HOME AGAIN"                      ⍝ returns 0 0 1 0 0 0 0 0 0 0
+  #     "DAY"⍷7 9⍴"SUNDAY   MONDAY   TUESDAY  WEDNESDAYTHURSDAY FRIDAY   SATURDAY "   ⍝ returns 7 9 ⍴ 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+  #     (2 2⍴"ABCD")⍷"ABCD"   ⍝ returns 4 ⍴ 0
+  #     (1 2) (3 4) ⍷ "START" (1 2 3) (1 2) (3 4)   ⍝ returns 0 0 1 0
+  #     (2 2⍴7 8 12 13)⍷ 1+ 4 5⍴⍳20   ⍝ returns 4 5 ⍴ 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
   dyadic '⍷', 'Find', (b, a) ->
     sa = shapeOf a
     sb = shapeOf b
@@ -503,6 +557,12 @@ define ['./helpers'], (helpers) ->
     rec 0, 0
     r
 
+  # Unique (`∪`)
+  #
+  #     ∪ 3 17 17 17 ¯3 17 0   ⍝ returns 3 17 ¯3 0
+  #     ∪ 3 17                 ⍝ returns 3 17
+  #     ∪ 17                   ⍝ returns ,17
+  #     ∪ ⍬                    ⍝ returns ⍬
   monadic '∪', 'Unique', (a) ->
     r = []
     for x in array a when not contains r, x then r.push x
@@ -512,11 +572,20 @@ define ['./helpers'], (helpers) ->
     for y in a when match x, y then return true
     false
 
+  # Union (`∪`)
+  #
+  #     1 2 ∪ 2 3   ⍝ returns 1 2 3
+  #     'SHOCK' ∪ 'CHOCOLATE'   ⍝ returns 'SHOCKLATE'
+  #     'lentils' 'bulghur' (3 4 5) ∪ 'lentils' 'rice'   ⍝ returns 'lentils' 'bulghur' (3 4 5) 'rice'
   dyadic '∪', 'Union', (b, a) ->
     a = array a
     b = array b
     a.concat(for x in b when not contains a, x then x)
 
+  # Intersection (`∩`)
+  #
+  #     'ABRA'∩'CAR'      ⍝ returns 'ARA'
+  #     1 'PLUS' 2 ∩ ⍳5   ⍝ returns 1 2
   dyadic '∩', 'Intersection', (b, a) ->
     a = array a
     b = array b
@@ -525,6 +594,15 @@ define ['./helpers'], (helpers) ->
   monadic '∼', 'Not', pervasive (x) ->
     +!bool(x)
 
+  # Without (`∼`)
+  #
+  #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ∼ "AEIOU"   ⍝ returns 'BCDFGHJKLMNPQRSTVWXYZ'
+  #     1 2 3 4 5 6 ∼ 2 4 6                ⍝ returns 1 3 5
+  #     "THIS IS TEXT" ∼ " "               ⍝ returns 'THISISTEXT'
+  #     "THIS" "AND" "THAT" ∼ "T"          ⍝ returns 'THIS' 'AND' 'THAT'
+  #     "THIS" "AND" "THAT" ∼ "AND"        ⍝ returns 'THIS' 'AND' 'THAT'
+  #     "THIS" "AND" "THAT" ∼ ⊂"AND"       ⍝ returns 'THIS' 'THAT'
+  #     "THIS" "AND" "THAT" ∼ "TH" "AND"   ⍝ returns 'THIS' 'THAT'
   dyadic '∼', 'Without', (b, a) ->
     if isSimple a then a = [a]
     else assert shapeOf(a).length <= 1, 'Left argument to ∼ must be of rank no more than 1.'
@@ -540,6 +618,17 @@ define ['./helpers'], (helpers) ->
         r.push x
     r
 
+  # Or (LCM) (`∨`)
+  #
+  #     1∨1                ⍝ returns 1
+  #     1∨0                ⍝ returns 1
+  #     0∨1                ⍝ returns 1
+  #     0∨0                ⍝ returns 0
+  #     0 0 1 1 ∨ 0 1 0 1  ⍝ returns 0 1 1 1
+  #     12∨18              ⍝ returns 6   # 12=2×2×3, 18=2×3×3
+  #     299∨323            ⍝ returns 1   # 299=13×23, 323=17×19
+  #     12345∨12345        ⍝ returns 12345
+  #     0∨123              ⍝ returns 123
   dyadic '∨', 'Or', pervasive (y, x) ->
     x = abs num x
     y = abs num y
@@ -549,6 +638,20 @@ define ['./helpers'], (helpers) ->
     while y then [x, y] = [y, x % y] # Euclid's algorithm
     x
 
+  # And (GCD) (`∧`)
+  #
+  #     1∧1                                     ⍝ returns 1
+  #     1∧0                                     ⍝ returns 0
+  #     0∧1                                     ⍝ returns 0
+  #     0∧0                                     ⍝ returns 0
+  #     0 0 1 1 ∧ 0 1 0 1                       ⍝ returns 0 0 0 1
+  #     0 0 0 1 1 ∧ 1 1 1 1 0                   ⍝ returns 0 0 0 1 0
+  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  1 ∧ t   ⍝ returns 3 3 ⍴ 1 1 1 0 0 0 1 0 1
+  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  ∧/ t    ⍝ returns 1 0 0
+  #     12∧18                                   ⍝ returns 36    # 12=2×2×3, 18=2×3×3
+  #     299∧323                                 ⍝ returns 96577 # 299=13×23, 323=17×19
+  #     12345∧12345                             ⍝ returns 12345
+  #     0∧123                                   ⍝ returns 0
   dyadic '∧', 'And', pervasive (y, x) ->
     x = abs num x
     y = abs num y
@@ -563,6 +666,13 @@ define ['./helpers'], (helpers) ->
   dyadic '⍲', 'Nand', pervasive (y, x) -> +!(bool(x) and bool(y))
 
   monadic '⍴', 'Shape of', shapeOf
+
+  # Reshape (`⍴`)
+  #
+  #     ⍴ 1 2 3 ⍴ 0    ⍝ returns 1 2 3
+  #     ⍴ ⍴ 1 2 3 ⍴ 0  ⍝ returns ,3
+  #     3 3 ⍴ ⍳ 4      ⍝ returns 3 3 ⍴ 0 1 2 3 0 1 2 3 0
+  #     ⍴ 3 3 ⍴ ⍳ 4    ⍝ returns 3 3
   dyadic '⍴', 'Reshape', (b, a) ->
     if isSimple a then a = [a]
     if isSimple b then b = [b]
@@ -592,10 +702,25 @@ define ['./helpers'], (helpers) ->
     sr[axis] += sb[axis]
     withShape sr, r
 
+  # Ravel (`,`)
   monadic ',', 'Ravel', (a) -> array(a)[0...]
+
+  # Catenate (`,`)
+  #
+  #     10,66                ⍝ returns 10, 66
+  #     '10 ','MAY ','1985'  ⍝ returns '10 MAY 1985'
   dyadic ',', 'Catenate', catenate
+
+  # 1st axis catenate (`⍪`)
   dyadic '⍪', '1st axis catenate', (b, a) -> catenate b, a, 0
 
+  # Reverse (`⌽`)
+  #
+  #     ⌽ 1 2 3 4 5 6                    ⍝ returns 6 5 4 3 2 1
+  #     ⌽ (1 2) (3 4) (5 6)              ⍝ returns (5 6) (3 4) (1 2)
+  #     ⌽ "BOB WON POTS"                 ⍝ returns 'STOP NOW BOB'
+  #     ⌽    2 5 ⍴ 1 2 3 4 5 6 7 8 9 0   ⍝ returns 2 5 ⍴ 5 4 3 2 1 0 9 8 7 6
+  #     ⌽[0] 2 5 ⍴ 1 2 3 4 5 6 7 8 9 0   ⍝ returns 2 5 ⍴ 6 7 8 9 0 1 2 3 4 5
   monadic '⌽', 'Reverse', reverse = (b, _1, axis = -1) ->
     sb = shapeOf b
     if sb.length is 0 then return b
@@ -611,6 +736,13 @@ define ['./helpers'], (helpers) ->
           r.push b[k + nk*(j + nj*i)]
     withShape sb, r
 
+  # Rotate (`⌽`)
+  #
+  #     1 ⌽ 1 2 3 4 5 6                   ⍝ returns 2 3 4 5 6 1
+  #     3 ⌽ 'ABCDEFGH'                    ⍝ returns 'DEFGHABC'
+  #     3 ⌽ 2 5 ⍴  1 2 3 4 5  6 7 8 9 0   ⍝ returns 2 5 ⍴ 4 5 1 2 3 9 0 6 7 8
+  #     ¯2 ⌽ "ABCDEFGH"                   ⍝ returns 'GHABCDEF'
+  #     1 ⌽ 3 3 ⍴ ⍳ 9                     ⍝ returns 3 3 ⍴ 1 2 0 4 5 3 7 8 6
   dyadic '⌽', 'Rotate', (b, a) ->
     a = num a
     if a is 0 or isSimple(b) or (b.length <= 1) then return b
@@ -619,8 +751,18 @@ define ['./helpers'], (helpers) ->
     a %= n; if a < 0 then a += n
     withShape sb, (for i in [0...b.length] then b[i - (i % n) + ((i % n) + a) % n])
 
+  # 1st axis reverse (`⊖`)
+  #
+  #     ⊖ 1 2 3 4 5 6                   ⍝ returns 6 5 4 3 2 1
+  #     ⊖ (1 2) (3 4) (5 6)             ⍝ returns (5 6) (3 4) (1 2)
+  #     ⊖ 'BOB WON POTS'                ⍝ returns 'STOP NOW BOB'
+  #     ⊖    2 5 ⍴ 1 2 3 4 5 6 7 8 9 0  ⍝ returns 2 5 ⍴ 6 7 8 9 0 1 2 3 4 5
+  #     ⊖[1] 2 5 ⍴ 1 2 3 4 5 6 7 8 9 0  ⍝ returns 2 5 ⍴ 5 4 3 2 1 0 9 8 7 6
   monadic '⊖', '1st axis reverse', (b, _1, axis = 0) -> reverse b, undefined, axis
 
+  # 1st axis rotate (`⊖`)
+  #
+  #     1 ⊖ 3 3 ⍴ ⍳ 9   ⍝ returns 3 3 ⍴ 3 4 5 6 7 8 0 1 2
   dyadic '⊖', '1st axis rotate', (b, a) ->
     a = num a
     if a is 0 or isSimple(b) or (b.length <= 1) then return b
@@ -630,6 +772,12 @@ define ['./helpers'], (helpers) ->
     a %= n; if a < 0 then a += n
     withShape sb, (for i in [0...b.length] then b[((floor(i / k) + a) % n) * k + (i % k)])
 
+  # Transpose (`⍉`)
+  #
+  #     ⍉ 2 3 ⍴ 1 2 3 6 7 8     ⍝ returns 3 2 ⍴ 1 6 2 7 3 8
+  #     ⍴ ⍉ 2 3 ⍴ 1 2 3 6 7 8   ⍝ returns 3 2
+  #     ⍉ 1 2 3                 ⍝ returns 1 2 3
+  #     ⍉ 2 3 4 ⍴ ⍳ 24          ⍝ returns 4 3 2 ⍴ 0 12 4 16 8 20 1 13 5 17 9 21 2 14 6 18 10 22 3 15 7 19 11 23
   monadic '⍉', 'Transpose', (a) ->
     sa = shapeOf a
     if sa.length <= 1 then return a # has no effect on scalars or vectors
@@ -648,6 +796,22 @@ define ['./helpers'], (helpers) ->
     a = array(a)
     if a.length then a[0] else prototypeOf a
 
+  # Take (`↑`)
+  #
+  #     5 ↑ 'ABCDEFGH'           ⍝ returns 'ABCDE'
+  #     ¯3 ↑ 'ABCDEFGH'          ⍝ returns 'FGH'
+  #     3 ↑ 22 2 19 12           ⍝ returns 22 2 19
+  #     ¯1 ↑ 22 2 19 12          ⍝ returns ,12
+  #     ⍴ 1 ↑ (2 2 ⍴ ⍳ 4) (⍳ 10) ⍝ returns ,1
+  #     5 ↑ 40 92 11             ⍝ returns 40 92 11 0 0
+  #     ¯5 ↑ 40 92 11            ⍝ returns 0 0 40 92 11
+  #     3 3 ↑ 1 1 ⍴ 0            ⍝ returns 3 3 ⍴ 0 0 0 0 0 0 0 0 0
+  #     5 ↑ "abc"                ⍝ returns 'abc  '
+  #     ¯5 ↑ "abc"               ⍝ returns '  abc'
+  #     3 3 ↑ 1 1 ⍴ "a"          ⍝ returns 3 3 ⍴ 'a        '
+  #     2 3 ↑ 1 + 4 3 ⍴ ⍳ 12     ⍝ returns 2 3 ⍴ 1 2 3 4 5 6
+  #     ¯1 3 ↑ 1 + 4 3 ⍴ ⍳ 12    ⍝ returns 1 3 ⍴ 10 11 12
+  #     1 2 ↑ 1 + 4 3 ⍴ ⍳ 12     ⍝ returns 1 2 ⍴ 1 2
   dyadic '↑', 'Take', (b, a) ->
     if isSimple a then a = [a]
     for x in a
@@ -675,8 +839,24 @@ define ['./helpers'], (helpers) ->
           for j in [max(0, sb[d] + a[d]) ... sb[d]] then rec d + 1, i + j * k, k
       0
     rec 0, 0, b.length
-    withShape a, withPrototype filler, r
+    withShape (for x in a then abs x), withPrototype filler, r
 
+  # Drop (`↓`)
+  #
+  #     4↓'OVERBOARD'              ⍝ returns 'BOARD'
+  #     ¯5↓'OVERBOARD'             ⍝ returns 'OVER'
+  #     ⍴10↓'OVERBOARD'            ⍝ returns ,0
+  #     0 ¯2↓ 3 3 ⍴ 'ONEFATFLY'    ⍝ returns 3 1 ⍴ 'OFF'
+  #     ¯2 ¯1↓ 3 3 ⍴ 'ONEFATFLY'   ⍝ returns 1 2 ⍴ 'ON'
+  #     1↓ 3 3 ⍴ 'ONEFATFLY'       ⍝ returns 2 3 ⍴ 'FATFLY'
+  #     1 1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"    ⍝ returns 1 2 4 ⍴ 'QRSTUVWX'
+  #     ¯1 ¯1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"  ⍝ returns 1 2 4 ⍴ 'ABCDEFGH'
+  #
+  # TODO: more tests
+  #
+  #     //#gives '1 ↓[1] 2 3 4⍴1+⍳24', [5..12].concat [17..24] # todo: drop with axis specification
+  #     //#gives '1 ↓[2] 2 3 4⍴1+⍳24', [3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24] # todo
+  #     //#gives '1 ↓[2 1] 2 3 4⍴1+⍳24', [7, 8, 11, 12, 19, 20, 23, 24] # todo
   dyadic '↓', 'Drop', (b, a) ->
     if isSimple a then a = [a]
     for x in a when typeof x isnt 'number' or x isnt floor x
@@ -705,9 +885,24 @@ define ['./helpers'], (helpers) ->
     sr = for [lo, hi] in lims then hi - lo
     withShape sr, r
 
+  # Enclose (`⊂`)
+  #
+  #     ⍴ ⊂ 2 3⍴⍳6    ⍝ returns ⍬
+  #     ⍴⍴ ⊂ 2 3⍴⍳6   ⍝ returns ,0
   monadic '⊂', 'Enclose', (a) -> if isSimple a then a else withShape [], [a]
-  dyadic '⊂', 'Partition (with axis)' # todo
 
+  # Partition (with axis) (`⊂`)
+  dyadic '⊂', 'Partition (with axis)' # TODO
+
+  # Disclose (`⊃`)
+  #
+  #     ⊃ (1 2 3) (4 5 6)   ⍝ returns 2 3 ⍴ 1 2 3 4 5 6
+  #     ⍴⊃ (1 2 3) (4 5 6)  ⍝ returns 2 3
+  #     ⊃ (1 2) (3 4 5)     ⍝ returns 2 3 ⍴ 1 2 0 3 4 5
+  #     ⍴⊃ (1 2) (3 4 5)    ⍝ returns 2 3
+  #     ⊃ (1 2 3) "AB"      ⍝ returns 2 3 ⍴ 1 2 3,'AB '
+  #     ⍴⊃ (1 2 3) "AB"     ⍝ returns 2 3
+  #     ⊃123                ⍝ returns 123
   monadic '⊃', 'Disclose', (a) ->
     if isSimple a then return a
     sa = shapeOf a
@@ -740,6 +935,13 @@ define ['./helpers'], (helpers) ->
 
   dyadic '⊃', 'Pick'
 
+  # Index (`⌷`)
+  #
+  #    1 ⌷ 3 5 8                ⍝ returns 5
+  #    (3 5 8)[1]               ⍝ returns 5
+  #    ⌷←{⍺+¨⍵}  ◇  (3 5 8)[1]  ⍝ returns 4 6 9
+  #    (2 2 0) (1 2) ⌷ 3 3⍴⍳9   ⍝ returns 3 2 ⍴ 7 8 7 8 1 2
+  #    ¯1 ⌷ 3 5 8               ⍝ fails
   dyadic '⌷', 'Index', (b, a) ->
     # `(a0 a1 ...)⌷b` is equivalent to `b[a0;a1;...]`
     if isSimple a then a = [a]
@@ -791,9 +993,37 @@ define ['./helpers'], (helpers) ->
       0
     r
 
+  # Grade up/down (`⍋`)
+  #
+  #     ⍋13 8 122 4                          ⍝ returns 3 1 0 2
+  #     a←13 8 122 4  ◇  a[⍋a]               ⍝ returns 4 8 13 122
+  #     ⍋"ZAMBIA"                            ⍝ returns 1 5 3 4 2 0
+  #     s←"ZAMBIA"  ◇  s[⍋s]                 ⍝ returns 'AABIMZ'
+  #     t←3 3⍴"BOBALFZAK"  ◇  ⍋t             ⍝ returns 1 0 2
+  #     t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  ⍋t       ⍝ returns 2 1 0
+  #     t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  t[⍋t;]   ⍝ returns 3 3 ⍴ 1 1 2 1 1 3 4 5 6
+  #     a←3 2 3⍴2 3 4 0 1 0 1 1 3 4 5 6 1 1 2 10 11 12  ◇  a[⍋a;;]   ⍝ returns 3 2 3 ⍴ 1 1 2 10 11 12 1 1 3 4 5 6 2 3 4 0 1 0
+  #     a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]   ⍝ returns 3 2 5 ⍴ 'bob  jonesbob  zwartjoe  doe  '
+  #     "ZYXWVUTSRQPONMLKJIHGFEDCBA"⍋"ZAMBIA"   ⍝ returns 0 2 4 3 1 5
+  #     ⎕A←"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ◇ (⌽⎕A)⍋3 3⍴"BOBALFZAK"   ⍝ returns 2 0 1
+  #     data←6 4⍴"ABLEaBLEACREABELaBELACES" ◇ coll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" ◇ data[coll⍋data;]   ⍝ returns 6 4 ⍴ 'ABELaBELABLEaBLEACESACRE'
+  #     data←6 4⍴"ABLEaBLEACREABELaBELACES" ◇ coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz" ◇ data[coll1⍋data;]   ⍝ returns 6 4 ⍴ 'ABELABLEACESACREaBELaBLE'
   monadic '⍋', 'Grade up', (b, a) -> grade b, a, 1
+
+  # Grade down (`⍒`)
+  #
+  #     ⍒3 1 8   ⍝ returns 2 0 1
   monadic '⍒', 'Grade down', (b, a) -> grade b, a, -1
 
+  # Encode (`⊤`)
+  #
+  #     1760 3 12⊤75          ⍝ returns 2 0 3
+  #     3 12⊤75               ⍝ returns 0 3
+  #     100000 12⊤75          ⍝ returns 6 3
+  #     16 16 16 16⊤100       ⍝ returns 0 0 6 4
+  #     1760 3 12⊤75.3        ⍝ returns 2 0 (75.3−72)
+  #     0 1⊤75.3              ⍝ returns 75 (75.3−75)
+  #     2 2 2 2 2⊤1 2 3 4 5   ⍝ returns 5 5 ⍴ 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 1 0 0 1 0 1 0 1
   monadic '⊤', 'Encode', (b, a) ->
     sa = shapeOf a
     sb = shapeOf b
@@ -815,6 +1045,20 @@ define ['./helpers'], (helpers) ->
             y = round((y - (y % x)) / x)
     withShape sa.concat(sb), r
 
+  # Decode (`⊥`)
+  #
+  #     10 ⊥ 3 2 6 9                        ⍝ returns 3269
+  #     8 ⊥ 3 1                             ⍝ returns 25
+  #     1760 3 12 ⊥ 1 2 8                   ⍝ returns 68
+  #     2 2 2 ⊥ 1                           ⍝ returns 7
+  #     0 20 12 4 ⊥ 2 15 6 3                ⍝ returns 2667
+  #     1760 3 12 ⊥ 3 3⍴1 1 1 2 0 3 0 1 8   ⍝ returns 60 37 80
+  #     60 60 ⊥ 3 13                        ⍝ returns 193
+  #     0 60 ⊥ 3 13                         ⍝ returns 193
+  #     60 ⊥ 3 13                           ⍝ returns 193
+  #     2 ⊥ 1 0 1 0                         ⍝ returns 10
+  #     2 ⊥ 1 2 3 4                         ⍝ returns 26
+  #     3 ⊥ 1 2 3 4                         ⍝ returns 58
   monadic '⊥', 'Decode', (b, a) ->
     sa = shapeOf a
     sb = shapeOf b
@@ -849,6 +1093,14 @@ define ['./helpers'], (helpers) ->
 
   # `⍬` Zilde (niladic function)
   builtins['⍬'] = []
+
+  # Index origin (`⎕IO`)
+  #
+  # It can only be read, but not assigned.
+  # TODO: allow assigning zero
+  #
+  #     ⎕IO     ⍝ returns 0
+  #     ⎕IO←1   ⍝ fails
   builtins['get_⎕IO'] = -> 0
   builtins['set_⎕IO'] = -> throw Error 'Assignment to the index origin (⎕IO) is not supported.'
 
@@ -930,12 +1182,62 @@ define ['./helpers'], (helpers) ->
 
     withShape sr, r
 
+  # Reduce, compress, or replicate (`/`)
+  #
+  # Reduce
+  #
+  #     +/ 3                       ⍝ returns 3
+  #     +/ 3 5 8                   ⍝ returns 16
+  #     +/ 2 4 6                   ⍝ returns 12
+  #     ⌈/ 82 66 93 13             ⍝ returns 93
+  #     ×/ 2 3 ⍴ 1 2 3 4 5 6       ⍝ returns 6 120
+  #     2 ,/ 'AB' 'CD' 'EF' 'HI'   ⍝ returns 'ABCD' 'CDEF' 'EFHI'
+  #     3 ,/ 'AB' 'CD' 'EF' 'HI'   ⍝ returns 'ABCDEF' 'CDEFHI'
+  #
+  # N-Wise reduce
+  #
+  #     2 +/ 1 + ⍳10    ⍝ returns 3 5 7 9 11 13 15 17 19
+  #     5 +/ 1 + ⍳10    ⍝ returns 15 20 25 30 35 40
+  #     10 +/ 1 + ⍳10   ⍝ returns ,55
+  #     11 +/ 1 + ⍳10   ⍝ returns ⍬
+  #     2 −/ 3 4 9 7    ⍝ returns ¯1 ¯5 2
+  #     ¯2 −/ 3 4 9 7   ⍝ returns 1 5 ¯2
+  #
+  # Compress
+  #
+  #     0 1 0 1 / 'ABCD'                                ⍝ returns 'BD'
+  #     1 1 1 1 0 / 12 14 16 18 20                      ⍝ returns 12 14 16 18
+  #     MARKS←45 60 33 50 66 19 ◇ (MARKS≥50)/MARKS      ⍝ returns 60 50 66
+  #     MARKS←45 60 33 50 66 19 ◇ (MARKS=50)/⍳↑⍴MARKS   ⍝ returns ,3
+  #     1/"FREDERIC"                                    ⍝ returns 'FREDERIC'
+  #     0/"FREDERIC"                                    ⍝ returns ⍬
+  #     0 1 0  / 1+2 3⍴⍳6                               ⍝ returns 2 1 ⍴ 2 5
+  #     1 0 /[0] 1+2 3⍴⍳6                               ⍝ returns 1 3 ⍴ 1 2 3
+  #     1 0 ⌿    1+2 3⍴⍳6                               ⍝ returns 1 3 ⍴ 1 2 3
+  #
+  # Replicate
+  #
+  #     2 ¯2 2 / 1+2 3⍴⍳6                 ⍝ returns 2 6 ⍴  1 1 0 0 3 3  4 4 0 0 6 6
+  #     2 ¯2 2 ¯2 2 / 1+2 3⍴⍳6            ⍝ returns 2 10 ⍴  1 1 0 0 2 2 0 0 3 3  4 4 0 0 5 5 0 0 6 6
+  #     1 1 ¯2 1 1 / 1 2 (2 2⍴⍳4) 3 4     ⍝ returns 1 2 (2 2⍴0) (2 2⍴0) 3 4
+  #     1 1 ¯2 1 1 1 / 1 2 (2 2⍴⍳4) 3 4   ⍝ returns 1 2 0 0 (2 2⍴0 1 2 3) 3 4
+  #     2 3 2 / "ABC"                     ⍝ returns 'AABBBCC'
+  #     2 / "DEF"                         ⍝ returns 'DDEEFF'
+  #     5 0 5 / 1 2 3                     ⍝ returns 1 1 1 1 1 3 3 3 3 3
+  #     2 / 1+2 3⍴⍳6                      ⍝ returns 2 6 ⍴  1 1 2 2 3 3  4 4 5 5 6 6
+  #     2 ⌿ 1+2 3⍴⍳6                      ⍝ returns 4 3 ⍴  1 2 3  1 2 3  4 5 6  4 5 6
+  #     2 3 / 3 1⍴"ABC"                   ⍝ returns 3 5 ⍴ 'AAAAABBBBBCCCCC'
+  #     2 ¯1 2 /[1] 3 1⍴(7 8 9)           ⍝ returns 3 5 ⍴ 7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
+  #     2 ¯1 2 /[1] 3 1⍴"ABC"             ⍝ returns 3 5 ⍴ 'AA AABB BBCC CC'
   postfixOperator '/', 'Reduce, compress, or replicate', (b, a, axis = -1) ->
     if typeof b is 'function'
       reduce b, undefined, axis
     else
       compressOrReplicate b, a, axis
 
+  # 1st axis reduce, compress, or replicate (`⌿`)
+  #
+  #     +⌿ 2 3 ⍴ 1 2 3 10 20 30   ⍝ returns 11 22 33
   postfixOperator '⌿', '1st axis reduce, compress, or replicate', (b, a, axis = 0) ->
     if typeof b is 'function'
       reduce b, undefined, axis
@@ -964,18 +1266,48 @@ define ['./helpers'], (helpers) ->
   expand = ->
     # todo
 
+  # Scan or expand (`\`)
+  #
+  #     +\ 20 10 ¯5 7              ⍝ returns 20 30 25 32
+  #     ,\ "AB" "CD" "EF"          ⍝ returns 'AB' 'ABCD' 'ABCDEF'
+  #     ×\ 2 3⍴5 2 3 4 7 6         ⍝ returns 2 3 ⍴ 5 10 30 4 28 168
+  #     ∧\ 1 1 1 0 1 1             ⍝ returns 1 1 1 0 0 0
+  # //#gives '−\1 2 3 4', [1, -1, 2, -2] # todo
+  #     ∨\ 0 0 1 0 0 1 0           ⍝ returns 0 0 1 1 1 1 1
+  #     +\ 1 2 3 4 5               ⍝ returns 1 3 6 10 15
+  #     +\ (1 2 3)(4 5 6)(7 8 9)   ⍝ returns (1 2 3) (5 7 9) (12 15 18)
+  #     M←2 3⍴1 2 3 4 5 6 ◇ +\M    ⍝ returns 2 3 ⍴ 1 3 6 4 9 15
+  #     M←2 3⍴1 2 3 4 5 6 ◇ +⍀M    ⍝ returns 2 3 ⍴ 1 2 3 5 7 9
+  # #gives 'M←2 3⍴1 2 3 4 5 6 ◇ +\[0]M', [1, 2, 3, 5, 7, 9] # todo
+  #     ,\ 'ABC'                   ⍝ returns (↑'A') 'AB' 'ABC'
+  #     T←"ONE(TWO) BOOK(S)" ◇ ≠\T∈"()"   ⍝ returns 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
+  #     T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK'
   postfixOperator '\\', 'Scan or expand', (b, a, axis = -1) ->
     if typeof b is 'function'
       scan b, undefined, axis
     else
       expand b, a, axis
 
+  # 1st axis scan or expand (`⍀`)
   postfixOperator '⍀', '1st axis scan or expand', (b, a, axis = 0) ->
     if typeof b is 'function'
       scan b, undefined, axis
     else
       expand b, a, axis
 
+  # Each (`¨`)
+  #
+  #     ⍴¨ (0 0 0 0) (0 0 0)                 ⍝ returns (,4) (,3)
+  #     ⍴¨ "MONDAY" "TUESDAY"                ⍝ returns (,6) (,7)
+  #     ⍴    (2 2⍴⍳4) (⍳10) 97.3 (3 4⍴"K")   ⍝ returns ,4
+  #     ⍴¨   (2 2⍴⍳4) (⍳10) 97.3 (3 4⍴"K")   ⍝ returns (2 2) (,10) ⍬ (3 4)
+  #     ⍴⍴¨  (2 2⍴⍳4) (⍳10) 97.3 (3 4⍴"K")   ⍝ returns ,4
+  #     ⍴¨⍴¨ (2 2⍴⍳4) (⍳10) 97.3 (3 4⍴"K")   ⍝ returns (,2) (,1) (,0) (,2)
+  #     (1 2 3) ,¨ 4 5 6                     ⍝ returns (1 4) (2 5) (3 6)
+  #     2 3 ↑¨ 'MONDAY' 'TUESDAY'            ⍝ returns 'MO' 'TUE'
+  #     2 ↑¨ 'MONDAY' 'TUESDAY'              ⍝ returns 'MO' 'TU'
+  #     2 3 ⍴¨ 1 2                           ⍝ returns (1 1) (2 2 2)
+  #     4 5 ⍴¨ "THE" "CAT"                   ⍝ returns 'THET' 'CATCA'
   postfixOperator '¨', 'Each', (f) -> (b, a) ->
     if not a? then return (for x in array b then f x)
     if isSimple a then return (for x in array b then f x, a)
@@ -994,8 +1326,14 @@ define ['./helpers'], (helpers) ->
       for x in a then for y in b then r.push f y, x
       withShape (shapeOf a).concat(shapeOf b), r
 
-  # todo: the general formula for higher dimensions is
+  # Inner product (`.`)
+  #
+  # TODO: the general formula for higher dimensions is
   # `A f.g B   <=>   f/¨ (⊂[⍴⍴A]A)∘.g ⊂[1]B`
+  #
+  #     (1 3 5 7) +.= 2 3 6 7   ⍝ returns 2
+  #     (1 3 5 7) ∧.= 2 3 6 7   ⍝ returns 0
+  #     (1 3 5 7) ∧.= 1 3 5 7   ⍝ returns 1
   infixOperator '.', 'Inner product', (g, f) ->
     F = reduce f
     (b, a) ->
