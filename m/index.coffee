@@ -171,3 +171,15 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
       $('#pageInput').show()
       $('#pageOutput').hide()
       false
+
+    # Bookmarkable source code
+    hashParams = {}
+    if location.hash
+      for nameValue in location.hash.substring(1).split ','
+        [name, value] = nameValue.split '='
+        hashParams[name] = unescape value
+    {code} = hashParams
+    if code
+      for c in code
+        if c is '\n' then actions.enter()
+        else actions.insert c
