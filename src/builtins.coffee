@@ -236,19 +236,77 @@ define ['./helpers'], (helpers) ->
   #     (2 3⍴⍳6) + 3 2⍴⍳6               ⍝ fails 'Length error'
   dyadic  '+', 'Add',            pervasive (y, x) -> x + y
 
+  # Negate (`−`)
+  #
+  #     −4         ⍝ returns ¯4
+  #     − 1 2 3    ⍝ returns ¯1 ¯2 ¯3
   monadic '−', 'Negate',         pervasive (x) -> -x
+
+  # Subtract (`−`)
+  #
+  #     1 − 3      ⍝ returns ¯2
+  #     5 − ¯3     ⍝ returns 8
   dyadic  '−', 'Subtract',       pervasive (y, x) -> x - y
+
+  # Sign of (`×`)
+  #
+  #     × ¯2 ¯1 0 1 2 ⍝ returns ¯1 ¯1 0 1 1
+  #     × 0÷0         ⍝ returns 0
   monadic '×', 'Sign of',        pervasive (x) -> (x > 0) - (x < 0)
+
+  # Multiply (`×`)
+  #
+  #     7 × 8       ⍝ returns 56
   dyadic  '×', 'Multiply',       pervasive (y, x) -> x * y
+
+  # Reciprocal (`÷`)
+  #
+  #     ÷2          ⍝ returns .5
   monadic '÷', 'Reciprocal',     pervasive (x) -> 1 / x
+
+  # Divide (`÷`)
+  #
+  #     27 ÷ 9      ⍝ returns 3
   dyadic  '÷', 'Divide',         pervasive (y, x) -> x / y
+
+  # Ceiling (`⌈`)
+  #
+  #     ⌈ 0 5 ¯5 (○1) ¯1.5   ⍝ returns 0 5 ¯5 4 ¯1
   monadic '⌈', 'Ceiling',        pervasive (x) -> ceil x
+
+  # Greater of (`⌈`)
+  #
+  #     3 ⌈ 5       ⍝ returns 5
   dyadic  '⌈', 'Greater of',     pervasive (y, x) -> max x, y
+
+  # Floor (`⌊`)
+  #
+  #     ⌊ 0 5 ¯5 (○1) ¯1.5   ⍝ returns 0 5 ¯5 3 ¯2
   monadic '⌊', 'Floor',          pervasive (x) -> floor x
+
+  # Lesser of (`⌊`)
+  #
+  #     3 ⌊ 5       ⍝ returns 3
   dyadic  '⌊', 'Lesser of',      pervasive (y, x) -> min x, y
+
+  # Absolute value (`∣`)
+  #
+  #     ∣ ¯8 0 8 ¯3.5   ⍝ returns 8 0 8 3.5
   monadic '∣', 'Absolute value', pervasive (x) -> abs x
+
+  # Residue (`∣`)
+  #
+  #     3 ∣ 5       ⍝ returns 2
   dyadic  '∣', 'Residue',        pervasive (y, x) -> y % x
 
+  # Index generate (`⍳`)
+  #
+  #     ⍳ 5         ⍝ returns 0 1 2 3 4
+  #     ⍴ ⍳ 5       ⍝ returns 1 ⍴ 5
+  #     ⍳ 0         ⍝ returns ⍬
+  #     ⍴ ⍳ 0       ⍝ returns ,0
+  #     ⍳ 2 3 4     ⍝ returns 2 3 4 3 ⍴ 0 0 0 0 0 1 0 0 2 0 0 3 0 1 0 0 1 1 0 1 2 0 1 3 0 2 0 0 2 1 0 2 2 0 2 3 1 0 0 1 0 1 1 0 2 1 0 3 1 1 0 1 1 1 1 1 2 1 1 3 1 2 0 1 2 1 1 2 2 1 2 3
+  #     ⍴⍳ 2 3 4    ⍝ returns 2 3 4 3
   monadic '⍳', 'Index generate', (a) ->
     if typeof a is 'number' then return (for i in [0...a] by 1 then i)
     for x in a then assert typeof x is 'number'
@@ -262,6 +320,16 @@ define ['./helpers'], (helpers) ->
         indices[i--] = 0
     withShape a.concat(shapeOf a), r
 
+  # Index of (`⍳`)
+  #
+  #     2 5 9 14 20 ⍳ 9                           ⍝ returns 1 ⍴ 2
+  #     2 5 9 14 20 ⍳ 6                           ⍝ returns 1 ⍴ 5
+  #     "GORSUCH" ⍳ "S"                           ⍝ returns 1 ⍴ 3
+  #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "CARP"     ⍝ returns 2 0 17 15
+  #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "PORK PIE" ⍝ returns 15 14 17 10 26 15 8 4
+  #     "MON" "TUES" "WED" ⍳ "MON" "THURS"        ⍝ returns 0 3
+  #     1 3 2 0 3 ⍳ ⍳ 5                           ⍝ returns 3 0 2 1 5
+  #     "CAT" "DOG" "MOUSE" ⍳ "DOG" "BIRD"        ⍝ returns 1 3
   dyadic  '⍳', 'Index of', (b, a) ->
     if isSimple a then a = [a]
     else assert shapeOf(a).length <= 1, 'Left argument to ⍳ must be of rank no more than 1.'
@@ -271,7 +339,21 @@ define ['./helpers'], (helpers) ->
       for x, i in a when match x, y then pos = i; break
       pos
 
+  # Roll (`?`)
+  #
+  #     n←6 ◇ r←?n ◇ (0≤r)∧(r<n)   ⍝ returns 1
+  #     ?0                         ⍝ returns 0
+  #     ?1                         ⍝ returns 0
   monadic '?', 'Roll', pervasive (x) -> floor random() * max 0, floor num x
+
+  # Deal (`?`)
+  #
+  #     n←100 ◇ (+/n?n)=(+/⍳n)   ⍝ returns 1 # a permutation (an "n?n" dealing) contains all numbers 0...n
+  #     n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A<n   ⍝ returns 1 # any number x in a dealing is 0 <= x < n
+  #     0 ? 100  ⍝ returns ⍬
+  #     0 ? 0    ⍝ returns ⍬
+  #     1 ? 1    ⍝ returns ,0
+  #     5 ? 3    ⍝ fails
   dyadic '?', 'Deal', (y, x) ->
     x = max 0, floor num x
     y = max 0, floor num y
@@ -316,6 +398,11 @@ define ['./helpers'], (helpers) ->
       a += p[i] / (x + i)
     return sqrt(2 * PI) * pow(t, x + 0.5) * exp(-t) * a
 
+  # Factorial (`!`)
+  #
+  #     !5    ⍝ returns 120
+  #     !21   ⍝ returns 51090942171709440000
+  #     !0    ⍝ returns 1
   monadic '!', 'Factorial', pervasive factorial = (x) ->
     if 0 <= x < 25 and x is floor x
       r = 1; i = 2; (while i <= x then r *= i++); r
@@ -326,6 +413,12 @@ define ['./helpers'], (helpers) ->
     else
       Gamma(x + 1)
 
+  # Binomial (`!`)
+  #
+  #     2 ! 4         ⍝ returns 6
+  #     3 ! 20        ⍝ returns 1140
+  #     2 ! 6 12 20   ⍝ returns 15 66 190
+  #     (2 3 ⍴ 1 + ⍳ 6) ! 2 3 ⍴ 3 6 9 12 15 18   ⍝ returns 2 3⍴ 3 15 84 495 3003 18564
   dyadic '!', 'Binomial', pervasive (n, k) ->
     if 0 <= k < 100 and 0 <= n < 100 and n is floor(n) and k is floor(k)
       if n < k then return 0
@@ -763,7 +856,7 @@ define ['./helpers'], (helpers) ->
 
   # # Built-in operators
 
-  # Helper for / and ⌿ in their operator sense
+  # Helper for `/` and `⌿` in their operator sense
   reduce = (f, _, axis = -1) -> (b, a) ->
     invokedAsMonadic = not a?
     if invokedAsMonadic then a = 0
@@ -790,7 +883,7 @@ define ['./helpers'], (helpers) ->
           x = items[i]; (for j in [i + 1 ... i + a] by 1 then x = f items[j], x); x
     if invokedAsMonadic then r[0] else r
 
-  # Helper for / and ⌿ in their function sense
+  # Helper for `/` and `⌿` in their function sense
   compressOrReplicate = (b, a, axis = -1) ->
     sb = shapeOf b
     if axis < 0 then axis += sb.length
