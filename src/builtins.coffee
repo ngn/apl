@@ -1096,13 +1096,14 @@ define ['./helpers'], (helpers) ->
 
   # Index origin (`⎕IO`)
   #
-  # It can only be read, but not assigned.
-  # TODO: allow assigning zero
+  # The index origin is fixed at 0.  Reading it returns 0.  Attempts to set it
+  # to anything other than that fail.
   #
   #     ⎕IO     ⍝ returns 0
+  #     ⎕IO←0   ⍝ returns 0
   #     ⎕IO←1   ⍝ fails
   builtins['get_⎕IO'] = -> 0
-  builtins['set_⎕IO'] = -> throw Error 'Assignment to the index origin (⎕IO) is not supported.'
+  builtins['set_⎕IO'] = (x) -> if x isnt 0 then throw Error 'The index origin (⎕IO) is fixed at 0' else x
 
 
 
