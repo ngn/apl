@@ -1124,8 +1124,9 @@ define ['./helpers'], (helpers) ->
     else
       sItem = sb[...axis].concat sb[axis + 1 ...] # shape of an item
       k = prod sb[axis + 1 ...]
-      items = for [0...n] then withShape sItem, []
+      items = for [0...n] then []
       for i in [0...b.length] then items[floor(i / k) % n].push b[i]
+      for i in [0...n] then items[i] = withShape sItem, items[i]
     r =
       if isBackwards
         for i in [0 ... n - a + 1]

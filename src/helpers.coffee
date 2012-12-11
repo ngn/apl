@@ -12,7 +12,13 @@ define ->
   # Helpers for the APL data model
   isSimple = (x) -> not (x instanceof Array)
   shapeOf = (a) -> a.shape or if a.length? then [a.length] else []
-  withShape = (shape, a) -> (if shape? and shape.length isnt 1 then a.shape = shape); a
+
+  withShape = (shape, a) ->
+    if shape? and a.length isnt prod shape
+      console.info "a.length = #{a.length}, shape = #{JSON.stringify shape}"
+      assert false
+    if shape? and shape.length isnt 1 then a.shape = shape
+    a
 
   prototypeOf = (x) ->
     if typeof x is 'number' then 0
