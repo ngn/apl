@@ -1310,12 +1310,13 @@ define ['./helpers'], (helpers) ->
   #     2 ↑¨ 'MONDAY' 'TUESDAY'              ⍝ returns 'MO' 'TU'
   #     2 3 ⍴¨ 1 2                           ⍝ returns (1 1) (2 2 2)
   #     4 5 ⍴¨ "THE" "CAT"                   ⍝ returns 'THET' 'CATCA'
+  #     {1+⍵⋆2}¨ 2 3 ⍴ ⍳ 6                   ⍝ returns 2 3 ⍴ 1 2 5 10 17 26
   postfixOperator '¨', 'Each', (f) -> (b, a) ->
-    if not a? then return (for x in array b then f x)
-    if isSimple a then return (for x in array b then f x, a)
-    if a.length is b.length then return (for i in [0...a.length] then f b[i], a[i])
-    if a.length is 1 then return (for x in b then f x, a[0])
-    if b.length is 1 then return (for x in a then f b[0], x)
+    if not a? then return withShape shapeOf(b), (for x in array b then f x)
+    if isSimple a then return withShape shapeOf(b), (for x in array b then f x, a)
+    if match(shapeOf(a), shapeOf(b)) then return withShape shapeOf(b), (for i in [0...a.length] then f b[i], a[i])
+    if a.length is 1 then return withShape shapeOf(b), (for x in b then f x, a[0])
+    if b.length is 1 then return withShape shapeOf(a), (for x in a then f b[0], x)
     die 'Length error'
 
   prefixOperator '∘.', 'Outer product', outerProduct = (f) ->
