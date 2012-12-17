@@ -1091,8 +1091,13 @@ define ['./helpers'], (helpers) ->
   monadic '⊢', 'Pass'
   dyadic '⊢', 'Right'
 
-  # `⍬` Zilde (niladic function)
-  builtins['⍬'] = []
+  # Zilde (`⍬`)
+  #
+  #     ⍬    ⍝ returns 0⍴0
+  #     ⍴⍬   ⍝ returns ,0
+  #     ⍬←5  ⍝ fails
+  builtins['get_⍬'] = -> []
+  builtins['set_⍬'] = -> die 'Symbol zilde (⍬) is read-only.'
 
   # Index origin (`⎕IO`)
   #
