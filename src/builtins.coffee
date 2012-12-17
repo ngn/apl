@@ -96,8 +96,8 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 # If an empty array has a prototype of `0`, we skip `aplPrototype` and leave
 # `0` as an implicit default.
 
-define ['./helpers'], (helpers) ->
-  {assert, die, inherit, isSimple, shapeOf, withShape, prod, prototypeOf, withPrototype, withPrototypeCopiedFrom} = helpers
+define (require) ->
+  {assert, die, inherit, isSimple, shapeOf, withShape, prod, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
   {min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin, cos, tan, asin, acos, atan} = Math
 
 
@@ -1085,7 +1085,21 @@ define ['./helpers'], (helpers) ->
 
   monadic '⍕', 'Format'
   dyadic '⍕', 'Format by example or specification'
-  monadic '⍎', 'Execute'
+
+  # Execute (`⍎`)
+  #
+  #     ⍎ '+/ 2 2 ⍴ 1 2 3 4'  ⍝ returns 3 7
+  #     ⍴ ⍎ '123 456'         ⍝ returns ,2
+  #     ⍎ '{⍵⋆2} ⍳5'          ⍝ returns 0 1 4 9 16
+  #     ⍎ 'undefinedVariable' ⍝ fails
+  #     ⍎ '1 2 (3'            ⍝ fails
+  monadic '⍎', 'Execute', (b) ->
+    s = ''
+    for c in array b
+      assert typeof c is 'string', 'The argument to ⍎ must be a character or a string.'
+      s += c
+    require('./compiler').exec s
+
   monadic '⊣', 'Stop'
   dyadic '⊣', 'Left'
   monadic '⊢', 'Pass'
