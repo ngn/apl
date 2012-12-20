@@ -119,14 +119,36 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
     setInterval((function() {
       return $('#cursor').toggleVisibility();
     }), 500);
-    $('#editor').on('mousedown touchstart', 'span', function(e) {
-      var x, _ref, _ref1, _ref2;
+    $('#editor').on('mousedown touchstart mousemove touchmove', function(e) {
+      var $bestE, bestDX, bestDY, bestXSide, te, x, y, _ref, _ref1, _ref2;
       e.preventDefault();
-      x = ((_ref = (_ref1 = e.originalEvent) != null ? (_ref2 = _ref1.touches) != null ? _ref2[0] : void 0 : void 0) != null ? _ref : e).pageX;
-      if (x < $(e.target).position().left + $(e.target).width() / 2) {
-        $('#cursor').insertBefore(this);
-      } else {
-        $('#cursor').insertAfter(this);
+      te = (_ref = (_ref1 = e.originalEvent) != null ? (_ref2 = _ref1.touches) != null ? _ref2[0] : void 0 : void 0) != null ? _ref : e;
+      x = te.pageX;
+      y = te.pageY;
+      bestDY = bestDX = 1 / 0;
+      bestXSide = 0;
+      $bestE = null;
+      $('#editor span').each(function() {
+        var $e, dx, dy, p, x1, y1;
+        $e = $(this);
+        p = $e.position();
+        x1 = p.left + $e.width() / 2;
+        y1 = p.top + $e.height() / 2;
+        dx = Math.abs(x1 - x);
+        dy = Math.abs(y1 - y);
+        if (dy < bestDY || dy === bestDY && dx < bestDX) {
+          $bestE = $e;
+          bestDX = dx;
+          bestDY = dy;
+          bestXSide = x > x1;
+        }
+      });
+      if ($bestE) {
+        if (bestXSide) {
+          $('#cursor').insertAfter($bestE);
+        } else {
+          $('#cursor').insertBefore($bestE);
+        }
       }
       return false;
     });

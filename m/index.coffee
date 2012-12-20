@@ -78,13 +78,37 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
   jQuery ($) ->
     setInterval (-> $('#cursor').toggleVisibility()), 500
 
-    $('#editor').on 'mousedown touchstart', 'span', (e) ->
+    $('#editor').on 'mousedown touchstart mousemove touchmove', (e) ->
       e.preventDefault()
-      x = (e.originalEvent?.touches?[0] ? e).pageX
-      if x < $(e.target).position().left + $(e.target).width() / 2
-        $('#cursor').insertBefore @
-      else
-        $('#cursor').insertAfter @
+      te = e.originalEvent?.touches?[0] ? e
+      x = te.pageX
+      y = te.pageY
+
+      # Find the nearest character to (x, y)
+      # Compare by Δy first, then by Δx
+      bestDY = bestDX = 1 / 0 # infinity
+      bestXSide = 0 # 0: must use insertBefore, 1: must use insertAfter
+      $bestE = null
+      $('#editor span').each ->
+        $e = $ @
+        p = $e.position()
+        x1 = p.left + $e.width() / 2
+        y1 = p.top + $e.height() / 2
+        dx = Math.abs(x1 - x)
+        dy = Math.abs(y1 - y)
+        if dy < bestDY or dy is bestDY and dx < bestDX
+          $bestE = $e
+          bestDX = dx
+          bestDY = dy
+          bestXSide = (x > x1)
+        return
+
+      if $bestE
+        if bestXSide
+          $('#cursor').insertAfter $bestE
+        else
+          $('#cursor').insertBefore $bestE
+
       false
 
     $('.key').bind 'mousedown touchstart', (event) ->
