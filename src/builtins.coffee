@@ -1100,10 +1100,10 @@ define (require) ->
       s += c
     require('./compiler').exec s
 
-  monadic '⊣', 'Stop'
-  dyadic '⊣', 'Left'
-  monadic '⊢', 'Pass'
-  dyadic '⊢', 'Right'
+  monadic '⊣', 'Stop', (b) -> []
+  dyadic '⊣', 'Left', (b, a) -> a
+  monadic '⊢', 'Pass', (b) -> b
+  dyadic '⊢', 'Right', (b, a) -> b
 
   # Zilde (`⍬`)
   #
