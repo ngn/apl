@@ -18,6 +18,9 @@ a {
 a:hover {
   background-color: #ffdd88; }
 
+#linkToMobile {
+  float: right; }
+
 #permalink {
   float: right; }
 
