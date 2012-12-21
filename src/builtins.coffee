@@ -1380,6 +1380,8 @@ define (require) ->
       x = withPrototype ' ', x.split ''
     x
 
+  builtins.bool = bool
+
   endOfBuiltins()
 
   {builtins}

@@ -273,7 +273,7 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
 
         when 'guard'
           """
-            if (#{visit node[1]}) {
+            if (_.bool(#{visit node[1]})) {
               return #{visit node[2]};
             }
           """
