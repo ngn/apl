@@ -23,7 +23,7 @@ o = (args...) -> args
 # # Terminals
 t '', /[ \t]+/ # skip whitespace
 t '', /[⍝#].*/ # skip comments
-t 'SEPARATOR', /[\n\r◇]/
+t 'SEPARATOR', /[\n\r◇⋄]/
 
 t 'NUMBER', ///
   ¯?                             # optional negation
