@@ -14,9 +14,7 @@ define ->
   shapeOf = (a) -> a.shape or if a.length? then [a.length] else []
 
   withShape = (shape, a) ->
-    if shape? and a.length isnt prod shape
-      console.info "a.length = #{a.length}, shape = #{JSON.stringify shape}"
-      assert false
+    assert (not shape?) or a.length is prod shape
     if shape? and shape.length isnt 1 then a.shape = shape
     a
 
