@@ -192,8 +192,8 @@ define (require) ->
     else
       withMetaInfoFrom f, (F = (b, a) ->
         if a? # dyadic pervasiveness
-          while (not isSimple a) and a.length is 1 then a = a[0]
-          while (not isSimple b) and b.length is 1 then b = b[0]
+          if (not isSimple a) and a.length is 1 and isSimple a[0] then a = a[0]
+          if (not isSimple b) and b.length is 1 and isSimple b[0] then b = b[0]
           if isSimple(b) and isSimple(a) then f b, a
           else if isSimple a then withShape b.shape, (for x in b then F x, a)
           else if isSimple b then withShape a.shape, (for x in a then F b, x)
