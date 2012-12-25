@@ -105,7 +105,8 @@ define (require) ->
   # # Type coersion helpers
 
   array = (x) ->
-    if isSimple x then [x] else x
+    if isSimple x then (x = [x]).shape = []
+    x
 
   num = (x) ->
     if x.length?
@@ -512,11 +513,10 @@ define (require) ->
   # Membership (`∈`)
   #
   #     2 3 4 5 6 ∈ 1 2 3 5 8 13 21   ⍝ returns 1 1 0 1 0
-  #     5 ∈ 1 2 3 5 8 13 21           ⍝ returns ,1
+  #     5 ∈ 1 2 3 5 8 13 21           ⍝ returns 1
   dyadic '∈', 'Membership', (b, a) ->
-    a = array a
     b = array b
-    withShape a.shape, (for x in a then +(x in b))
+    if isSimple a then +(a in b) else withShape a.shape, (for x in a then +(x in b))
 
   # Find (`⍷`)
   #
@@ -939,22 +939,39 @@ define (require) ->
 
   # Index (`⌷`)
   #
+  # `a0 a1...⌷b` is equivalent to `b[a0;a1;...]`
+  #
   #    1 ⌷ 3 5 8                ⍝ returns 5
   #    (3 5 8)[1]               ⍝ returns 5
   #    ⌷←{⍺+¨⍵}  ◇  (3 5 8)[1]  ⍝ returns 4 6 9
   #    (2 2 0) (1 2) ⌷ 3 3⍴⍳9   ⍝ returns 3 2 ⍴ 7 8 7 8 1 2
   #    ¯1 ⌷ 3 5 8               ⍝ fails
-  dyadic '⌷', 'Index', (b, a) ->
-    # `(a0 a1 ...)⌷b` is equivalent to `b[a0;a1;...]`
-    if isSimple a then a = [a]
-    assert (not a.shape) or a.shape.length <= 1, 'Indices must be a scalar or a vector, not a higher-dimensional array.'
-    sb = shapeOf b
+  #    2 ⌷ 111 222 333 444      ⍝ returns 333
+  #    (⊂3 2) ⌷ 111 222 333 444 ⍝ returns 444 333
+  #    (⊂2 3⍴2 0 3 0 1 2) ⌷ 111 222 333 444   ⍝ returns 2 3⍴333 111 444 111 222 333
+  #    1 0    ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21
+  #    1      ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 22 23 24
+  #    2 (1 0)⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 32 31
+  #    (1 2) 0⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 31
+  dyadic '⌷', 'Index', (b, a, axes = null) ->
     if typeof b is 'function' then return (y, x) -> b y, x, a
-    assert a.length is sb.length, 'The number of indices must be equal to the rank of the indexable.'
-    a = for x, i in a
-          if isSimple x then withShape [], [x]
-          else if not x.length then [0...sb[i]]
-          else x
+    a = array a
+    sr = [].concat a...
+    assert shapeOf(a).length <= 1, 'Indices must be a scalar or a vector, not a higher-dimensional array.'
+    sb = shapeOf b
+    assert a.length <= sb.length, 'The number of indices must not exceed the rank of the indexable.'
+    axes = if axes is null then [0...a.length] else array axes
+    assert shapeOf(axes).length <= 1, 'Axes must be a scalar or a vector, not a higher-dimensional array.'
+    assert a.length is axes.length, 'The number of indices must be equal to the number of axes specified.'
+    a1 = for x in sb then null
+    for axis, i in axes
+      assert (typeof axis is 'number' and axis is floor axis), 'Axes must be integers'
+      assert (0 <= axis < sb.length), 'Invalid axis'
+      assert not contains(axes[...i], axis), 'Duplicate axis'
+      a1[axis] = array a[i]
+    a = a1
+    for x, i in a when x is null
+      a[i] = [0...sb[i]]
     for x, d in a then for y in x when not (typeof y is 'number' and y is floor(y))
       die 'Indices must be integers'
     for x, d in a then for y in x when not (0 <= y < sb[d])
@@ -1136,9 +1153,10 @@ define (require) ->
     if invokedAsMonadic then a = 0
     a = floor num a
     isBackwards = a < 0; if isBackwards then a = -a
-    b = array b
+    b = if isSimple b then [b] else b
     sb = shapeOf b
     if axis < 0 then axis += sb.length
+    assert 0 <= axis < sb.length, 'Invalid axis'
     n = sb[axis]
     if a is 0 then a = n
     if sb.length is 1

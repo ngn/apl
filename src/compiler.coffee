@@ -327,10 +327,9 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
         when 'index'
           closestScope(node).vars['⌷'].used = true
           "_index(#{visit node[1]}, [#{
-            (
-              for c in node[2...]
-                if c is null then '[]' else visit c
-            ).join ', '
+            (for c in node[2...] when c isnt null then visit c).join ', '
+          }], [#{
+            (for c, i in node[2...] when c isnt null then i)
           }])"
 
         when 'seq'
