@@ -1391,7 +1391,12 @@ define (require) ->
       for [0...n] then y = f y, x
       y
 
-  builtins['set_⎕'] = (x) -> console.info x; x
+  # `⎕` and `⍞` will be implemented separately for node.js and the web.
+  # These here are just placeholders for compilation to work right.
+  builtins['set_⎕'] = (x) -> x
+  builtins['get_⎕'] = -> 0
+  builtins['set_⍞'] = (x) -> x
+  builtins['get_⍞'] = -> 0
 
   builtins.aplify = (x) ->
     assert x isnt null

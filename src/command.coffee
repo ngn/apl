@@ -153,8 +153,11 @@ define ['./compiler', './helpers', 'optimist'], (compiler, helpers, optimist) ->
 
     ctx =
       '⍵': for a in argv._ then a.split ''
-      'set_⎕': (x) -> process.stdout.write format x
-      'get_⎕': -> [1, 2, 3]
+      'set_⎕': (x) -> process.stdout.write format(x) + '\n'; x
+      'get_⎕': -> process.stdout.write '⎕: '; characterInput()
+      'set_⍞': (x) -> process.stdout.write format x; x
+      'get_⍞': characterInput = ->
+        die 'Reading from ⎕ or ⍞ is not implemented.'
 
     if filename is '-'
       readline = require 'readline'
