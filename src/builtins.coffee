@@ -854,7 +854,7 @@ define (require) ->
   #     1 1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"    ⍝ returns 1 2 4 ⍴ 'QRSTUVWX'
   #     ¯1 ¯1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"  ⍝ returns 1 2 4 ⍴ 'ABCDEFGH'
   #
-  # TODO: more tests
+  # todo: more tests
   #
   #     //#gives '1 ↓[1] 2 3 4⍴1+⍳24', [5..12].concat [17..24] # todo: drop with axis specification
   #     //#gives '1 ↓[2] 2 3 4⍴1+⍳24', [3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24] # todo
@@ -894,7 +894,7 @@ define (require) ->
   monadic '⊂', 'Enclose', (a) -> if isSimple a then a else withShape [], [a]
 
   # Partition (with axis) (`⊂`)
-  dyadic '⊂', 'Partition (with axis)' # TODO
+  dyadic '⊂', 'Partition (with axis)' # todo
 
   # Disclose (`⊃`)
   #
@@ -935,7 +935,7 @@ define (require) ->
       rec 0, 0, x.length, prod sr1
     withShape sr, r
 
-  dyadic '⊃', 'Pick'
+  dyadic '⊃', 'Pick' # todo
 
   # Index (`⌷`)
   #
@@ -1102,8 +1102,8 @@ define (require) ->
     else
       withShape sa[...-1].concat(sb[1...]), r
 
-  monadic '⍕', 'Format'
-  dyadic '⍕', 'Format by example or specification'
+  monadic '⍕', 'Format' # todo
+  dyadic '⍕', 'Format by example or specification' # todo
 
   # Execute (`⍎`)
   #
@@ -1370,7 +1370,7 @@ define (require) ->
 
   # Inner product (`.`)
   #
-  # TODO: the general formula for higher dimensions is
+  # todo: the general formula for higher dimensions is
   # `A f.g B   <=>   f/¨ (⊂[⍴⍴A]A)∘.g ⊂[1]B`
   #
   #     (1 3 5 7) +.= 2 3 6 7   ⍝ returns 2
