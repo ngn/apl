@@ -3,7 +3,7 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 
 define ['./compiler', './helpers', 'optimist'], (compiler, helpers, optimist) ->
   {exec} = compiler
-  {isSimple, shapeOf, sum, prod, repeat} = helpers
+  {isSimple, shapeOf, sum, prod, repeat, die} = helpers
 
   # TTY colours
   makeColour =
