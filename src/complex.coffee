@@ -17,6 +17,8 @@ define ['./helpers'], (helpers) ->
     #
     #     2j3 = 2j3   ⍝ returns 1
     #     2j3 = 3j2   ⍝ returns 0
+    #     0j0         ⍝ returns 0
+    #     123j0       ⍝ returns «123»
     '=': (x) ->
       +((x instanceof Complex) and x.re is @re and x.im is @im)
 

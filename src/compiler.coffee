@@ -333,7 +333,7 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
                 parseInt x, 16
               else
                 parseFloat x
-          if a.length is 1 then '' + a[0] else "new _.Complex(#{a[0]}, #{a[1]})"
+          if a.length is 1 or a[1] is 0 then '' + a[0] else "new _.Complex(#{a[0]}, #{a[1]})"
 
         when 'index'
           closestScope(node).vars['⌷'].used = true
