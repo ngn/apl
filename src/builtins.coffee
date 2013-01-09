@@ -1326,6 +1326,7 @@ define (require) ->
 
   # Helper for `/` and `⌿` in their function sense
   compressOrReplicate = (b, a, axis = -1) ->
+    if isSimple b then b = [b]
     sb = shapeOf b
     if axis < 0 then axis += sb.length
     assert 0 <= axis < sb.length, 'Axis out of bounds'
@@ -1403,6 +1404,7 @@ define (require) ->
   #     0 1 0  / 1+2 3⍴⍳6                               ⍝ returns 2 1 ⍴ 2 5
   #     1 0 /[0] 1+2 3⍴⍳6                               ⍝ returns 1 3 ⍴ 1 2 3
   #     1 0 ⌿    1+2 3⍴⍳6                               ⍝ returns 1 3 ⍴ 1 2 3
+  #     3 / 5                                           ⍝ returns 5 5 5
   #
   # Replicate
   #
@@ -1418,6 +1420,7 @@ define (require) ->
   #     2 3 / 3 1⍴"ABC"                   ⍝ returns 3 5 ⍴ 'AAAAABBBBBCCCCC'
   #     2 ¯1 2 /[1] 3 1⍴(7 8 9)           ⍝ returns 3 5 ⍴ 7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
   #     2 ¯1 2 /[1] 3 1⍴"ABC"             ⍝ returns 3 5 ⍴ 'AA AABB BBCC CC'
+  #     2 ¯2 2 / 7                        ⍝ returns 7 7 0 0 7 7
   postfixOperator '/', 'Reduce, compress, or replicate', (b, a, axis = -1) ->
     if typeof b is 'function'
       reduce b, undefined, axis
