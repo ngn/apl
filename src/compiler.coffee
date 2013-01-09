@@ -304,6 +304,11 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
             }
           """
 
+        # Strings of length one are scalars, all other strings are vectors.
+        #
+        #     ⍴⍴''     ⍝ returns ,1
+        #     ⍴⍴'x'    ⍝ returns ,0
+        #     ⍴⍴'xx'   ⍝ returns ,1
         when 'str'
           s = node[1]
           d = s[0] # the delimiter: '"' or "'"

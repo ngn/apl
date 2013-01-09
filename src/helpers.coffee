@@ -11,7 +11,9 @@ define ->
 
   # Helpers for the APL data model
   isSimple = (x) -> not (x instanceof Array)
-  shapeOf = (a) -> a.shape or if a.length? then [a.length] else []
+
+  shapeOf = (a) ->
+    a.shape or if a.length? and not (typeof a is 'string' and a.length is 1) then [a.length] else []
 
   withShape = (shape, a) ->
     assert (not shape?) or a.length is prod shape

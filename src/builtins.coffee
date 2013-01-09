@@ -1567,7 +1567,7 @@ define (require) ->
   builtins.aplify = (x) ->
     assert x isnt null
     assert typeof x isnt 'undefined'
-    if typeof x is 'string'
+    if typeof x is 'string' and x.length isnt 1
       x = withPrototype ' ', x.split ''
     x
 
