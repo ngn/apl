@@ -147,6 +147,15 @@ define (require) ->
     g.aplMetaInfo = if f.aplMetaInfo then inherit f.aplMetaInfo else {}
     g
 
+  # Overloadable functions
+  #
+  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1     ⍝ returns 1235
+  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ 1 ⍟ x     ⍝ returns 1235
+  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1 1   ⍝ returns 1235 1235
+  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x x ⍟ 1   ⍝ returns 1235 1235
+  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x            ⍝ returns 1234
+  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x            ⍝ returns 1234
+  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x x          ⍝ returns 1234 1234
   overloadable = (symbol, f) ->
     assert typeof symbol is 'string'
     assert typeof f is 'function'
@@ -1260,9 +1269,14 @@ define (require) ->
 
   # Zilde (`⍬`)
   #
-  #     ⍬    ⍝ returns 0⍴0
-  #     ⍴⍬   ⍝ returns ,0
-  #     ⍬←5  ⍝ fails
+  #     ⍬     ⍝ returns 0⍴0
+  #     ⍴⍬    ⍝ returns ,0
+  #     ⍬←5   ⍝ fails
+  #     ⍳ 0   ⍝ returns ⍬
+  #     ⍴ 0   ⍝ returns ⍬
+  #     ⍬     ⍝ returns ⍬
+  #     ⍬⍬    ⍝ returns ⍬ ⍬
+  #     1⍬2⍬3 ⍝ returns 1 ⍬ 2 ⍬ 3
   builtins['get_⍬'] = -> []
   builtins['set_⍬'] = -> die 'Symbol zilde (⍬) is read-only.'
 
@@ -1548,6 +1562,11 @@ define (require) ->
       assert shapeOf(a).length <= 1 and shapeOf(b).length <= 1, 'Inner product operator (.) is implemented only for arrays of rank no more than 1.'
       F g b, a
 
+  # Power operator (`⍣`)
+  #
+  #     ({⍵+1}⍣5) 3     ⍝ returns 8
+  #     ({⍵+1}⍣0) 3     ⍝ returns 3
+  #     (⍴⍣3) 2 2⍴⍳4    ⍝ returns ,1
   infixOperator '⍣', 'Power operator', (f, n) ->
     if typeof f is 'number' and typeof n is 'function'
       [f, n] = [n, f]

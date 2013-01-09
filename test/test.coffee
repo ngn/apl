@@ -65,13 +65,6 @@ fails '"a'
 gives '''  'Let''s parse it!'  ''', S 'Let\'s parse it!'
 gives '''  "0x22's the code for ""."  ''', S '0x22\'s the code for ".'
 
-# Empty vectors {{{1
-gives '⍳ 0', []
-gives '⍴ 0', []
-gives '⍬', []
-gives '⍬⍬', [[], []]
-gives '1⍬2⍬3', [1, [], 2, [], 3]
-
 # ◇ Statement separator {{{1
 gives '', []
 gives '1\n2', 2
@@ -96,14 +89,6 @@ gives '''
 ''', [[3, 18.84, 28.27],
       [4, 25.13, 50.26]]
 
-# overloadable functions {{{1
-gives "x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1", 1235
-gives "x ← «{'⍟': function (y) { return y + 1234; }}» ◇ 1 ⍟ x", 1235
-gives "x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1 1", [1235, 1235]
-gives "x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x x ⍟ 1", [1235, 1235]
-gives "x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x", 1234
-gives "x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x", 1234
-gives "x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x x", [1234, 1234]
 
 # [] Subscripting {{{1
 gives '(23 54 38)[0]', 23
@@ -122,17 +107,9 @@ gives '" X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]', S ' X ' +
                                       'X  ' +
                                       'XXX'
 
-# {} Lambda expressions {{{1
-gives '{1 + 1} 1', 2
-gives '{⍵=0:1 ◇ 2×∇⍵−1} 5', 32 # two to the power of
-gives '{ ⍵<2 : 1   ◇   (∇⍵−1)+(∇⍵−2) } 8', 34 # Fibonacci sequence
-
 # «» Embedded JavaScript {{{1
 gives '«1234+5678»', 6912
 gives '«"asdf"»', S 'asdf'
-
-
-
 
 
 
@@ -141,11 +118,6 @@ gives '«"asdf"»', S 'asdf'
 
 
 
-
-# ⍣ Power operator
-gives '({⍵+1}⍣5) 3', 8
-gives '({⍵+1}⍣0) 3', 3
-gives '(⍴⍣3) 2 2⍴⍳4', [1]
 
 # Game of life {{{1
 # from http://www.youtube.com/watch?v=a9xAKttWgP4
