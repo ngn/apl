@@ -16,7 +16,13 @@ fail = (reason, err) -> nFailed++; console.error reason; if err then console.err
 t0 = Date.now()
 d = __dirname + '/../src'
 for f in fs.readdirSync d when f.match /^\w+.coffee$/
-  for line in fs.readFileSync(d + '/' + f, 'utf8').split '\n'
+  lines = fs.readFileSync(d + '/' + f, 'utf8').split '\n'
+  i = 0
+  while i < lines.length
+    line = lines[i++]
+    while i < lines.length and (m = lines[i].match(/^ *# *\.\.\.(.*)$/))
+      line += m[1]
+      i++
     if m = line.match /^ *# {4,}(.*)⍝(.+)$/
       nTests++
       code = trim m[1]

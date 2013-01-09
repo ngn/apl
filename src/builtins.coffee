@@ -308,7 +308,38 @@ define (require) ->
   #     ⍴ ⍳ 5       ⍝ returns 1 ⍴ 5
   #     ⍳ 0         ⍝ returns ⍬
   #     ⍴ ⍳ 0       ⍝ returns ,0
-  #     ⍳ 2 3 4     ⍝ returns 2 3 4 3 ⍴ 0 0 0 0 0 1 0 0 2 0 0 3 0 1 0 0 1 1 0 1 2 0 1 3 0 2 0 0 2 1 0 2 2 0 2 3 1 0 0 1 0 1 1 0 2 1 0 3 1 1 0 1 1 1 1 1 2 1 1 3 1 2 0 1 2 1 1 2 2 1 2 3
+  #     ⍳ 2 3 4     ⍝ returns 2 3 4 3 ⍴
+  #...
+  #...                        0 0 0
+  #...                        0 0 1
+  #...                        0 0 2
+  #...                        0 0 3
+  #...
+  #...                        0 1 0
+  #...                        0 1 1
+  #...                        0 1 2
+  #...                        0 1 3
+  #...
+  #...                        0 2 0
+  #...                        0 2 1
+  #...                        0 2 2
+  #...                        0 2 3
+  #...
+  #...                        1 0 0
+  #...                        1 0 1
+  #...                        1 0 2
+  #...                        1 0 3
+  #...
+  #...                        1 1 0
+  #...                        1 1 1
+  #...                        1 1 2
+  #...                        1 1 3
+  #...
+  #...                        1 2 0
+  #...                        1 2 1
+  #...                        1 2 2
+  #...                        1 2 3
+  #
   #     ⍴⍳ 2 3 4    ⍝ returns 2 3 4 3
   monadic '⍳', 'Index generate', (a) ->
     if typeof a is 'number' then return (for i in [0...a] by 1 then i)
@@ -523,9 +554,20 @@ define (require) ->
   #     "AN"⍷"BANANA"                          ⍝ returns 0 1 0 1 0 0
   #     "BIRDS" "NEST"⍷"BIRDS" "NEST" "SOUP"   ⍝ returns 1 0 0
   #     "ME"⍷"HOME AGAIN"                      ⍝ returns 0 0 1 0 0 0 0 0 0 0
-  #     "DAY"⍷7 9⍴"SUNDAY   MONDAY   TUESDAY  WEDNESDAYTHURSDAY FRIDAY   SATURDAY "   ⍝ returns 7 9 ⍴ 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 0
+  #
+  #     "DAY"⍷7 9⍴"SUNDAY   MONDAY   TUESDAY  WEDNESDAYTHURSDAY FRIDAY   SATURDAY "
+  #...        ⍝ returns 7 9 ⍴
+  #...                        0 0 0 1 0 0 0 0 0
+  #...                        0 0 0 1 0 0 0 0 0
+  #...                        0 0 0 0 1 0 0 0 0
+  #...                        0 0 0 0 0 0 1 0 0
+  #...                        0 0 0 0 0 1 0 0 0
+  #...                        0 0 0 1 0 0 0 0 0
+  #...                        0 0 0 0 0 1 0 0 0
+  #
   #     (2 2⍴"ABCD")⍷"ABCD"   ⍝ returns 4 ⍴ 0
   #     (1 2) (3 4) ⍷ "START" (1 2 3) (1 2) (3 4)   ⍝ returns 0 0 1 0
+  #
   #     (2 2⍴7 8 12 13)⍷ 1+ 4 5⍴⍳20   ⍝ returns 4 5 ⍴ 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
   dyadic '⍷', 'Find', (b, a) ->
     sa = shapeOf a
@@ -578,7 +620,9 @@ define (require) ->
   #
   #     1 2 ∪ 2 3   ⍝ returns 1 2 3
   #     'SHOCK' ∪ 'CHOCOLATE'   ⍝ returns 'SHOCKLATE'
-  #     'lentils' 'bulghur' (3 4 5) ∪ 'lentils' 'rice'   ⍝ returns 'lentils' 'bulghur' (3 4 5) 'rice'
+  #
+  #     'lentils' 'bulghur' (3 4 5) ∪ 'lentils' 'rice'
+  #...         ⍝ returns 'lentils' 'bulghur' (3 4 5) 'rice'
   dyadic '∪', 'Union', (b, a) ->
     a = array a
     b = array b
@@ -779,7 +823,11 @@ define (require) ->
   #     ⍉ 2 3 ⍴ 1 2 3 6 7 8     ⍝ returns 3 2 ⍴ 1 6 2 7 3 8
   #     ⍴ ⍉ 2 3 ⍴ 1 2 3 6 7 8   ⍝ returns 3 2
   #     ⍉ 1 2 3                 ⍝ returns 1 2 3
-  #     ⍉ 2 3 4 ⍴ ⍳ 24          ⍝ returns 4 3 2 ⍴ 0 12 4 16 8 20 1 13 5 17 9 21 2 14 6 18 10 22 3 15 7 19 11 23
+  #     ⍉ 2 3 4 ⍴ ⍳ 24          ⍝ returns 4 3 2 ⍴
+  #...                               0 12   4 16    8 20
+  #...                               1 13   5 17    9 21
+  #...                               2 14   6 18   10 22
+  #...                               3 15   7 19   11 23
   monadic '⍉', 'Transpose', (a) ->
     sa = shapeOf a
     if sa.length <= 1 then return a # has no effect on scalars or vectors
@@ -1020,13 +1068,38 @@ define (require) ->
   #     s←"ZAMBIA"  ◇  s[⍋s]                 ⍝ returns 'AABIMZ'
   #     t←3 3⍴"BOBALFZAK"  ◇  ⍋t             ⍝ returns 1 0 2
   #     t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  ⍋t       ⍝ returns 2 1 0
-  #     t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  t[⍋t;]   ⍝ returns 3 3 ⍴ 1 1 2 1 1 3 4 5 6
-  #     a←3 2 3⍴2 3 4 0 1 0 1 1 3 4 5 6 1 1 2 10 11 12  ◇  a[⍋a;;]   ⍝ returns 3 2 3 ⍴ 1 1 2 10 11 12 1 1 3 4 5 6 2 3 4 0 1 0
-  #     a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]   ⍝ returns 3 2 5 ⍴ 'bob  jonesbob  zwartjoe  doe  '
+  #
+  #     t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  t[⍋t;]
+  #...         ⍝ returns 3 3 ⍴    1 1 2
+  #...                            1 1 3
+  #...                            4 5 6
+  #
+  #     a←3 2 3⍴2 3 4 0 1 0 1 1 3 4 5 6 1 1 2 10 11 12  ◇  a[⍋a;;]
+  #...      ⍝ returns 3 2 3 ⍴
+  #...           1  1  2
+  #...          10 11 12
+  #...
+  #...           1  1  3
+  #...           4  5  6
+  #...
+  #...           2  3  4
+  #...           0  1  0
+  #
+  #     a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]
+  #...      ⍝ returns 3 2 5 ⍴ 'bob  jonesbob  zwartjoe  doe  '
+  #
   #     "ZYXWVUTSRQPONMLKJIHGFEDCBA"⍋"ZAMBIA"   ⍝ returns 0 2 4 3 1 5
   #     ⎕A←"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ◇ (⌽⎕A)⍋3 3⍴"BOBALFZAK"   ⍝ returns 2 0 1
-  #     data←6 4⍴"ABLEaBLEACREABELaBELACES" ◇ coll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" ◇ data[coll⍋data;]   ⍝ returns 6 4 ⍴ 'ABELaBELABLEaBLEACESACRE'
-  #     data←6 4⍴"ABLEaBLEACREABELaBELACES" ◇ coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz" ◇ data[coll1⍋data;]   ⍝ returns 6 4 ⍴ 'ABELABLEACESACREaBELaBLE'
+  #
+  #     data←6 4⍴"ABLEaBLEACREABELaBELACES"
+  #...    ◇ coll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  #...    ◇ data[coll⍋data;]
+  #...      ⍝ returns 6 4 ⍴ 'ABELaBELABLEaBLEACESACRE'
+  #
+  #     data←6 4⍴"ABLEaBLEACREABELaBELACES"
+  #...    ◇ coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+  #...    ◇ data[coll1⍋data;]
+  #...      ⍝ returns 6 4 ⍴ 'ABELABLEACESACREaBELaBLE'
   monadic '⍋', 'Grade up', (b, a) -> grade b, a, 1
 
   # Grade down (`⍒`)
@@ -1042,7 +1115,12 @@ define (require) ->
   #     16 16 16 16⊤100       ⍝ returns 0 0 6 4
   #     1760 3 12⊤75.3        ⍝ returns 2 0 (75.3−72)
   #     0 1⊤75.3              ⍝ returns 75 (75.3−75)
-  #     2 2 2 2 2⊤1 2 3 4 5   ⍝ returns 5 5 ⍴ 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 1 0 0 1 0 1 0 1
+  #     2 2 2 2 2⊤1 2 3 4 5   ⍝ returns 5 5 ⍴
+  #...                              0 0 0 0 0
+  #...                              0 0 0 0 0
+  #...                              0 0 0 1 1
+  #...                              0 1 1 0 0
+  #...                              1 0 1 0 1
   monadic '⊤', 'Encode', (b, a) ->
     sa = shapeOf a
     sb = shapeOf b
