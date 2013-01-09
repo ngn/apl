@@ -310,6 +310,17 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
           "_.aplify(#{d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d})"
 
 
+        #     1234567890  ⍝ returns «1234567890»
+        #     12.34e56    ⍝ returns «12.34e56»
+        #     12.34e+56   ⍝ returns «12.34e+56»
+        #     12.34E56    ⍝ returns «12.34e56»
+        #     ¯12.34e¯56  ⍝ returns «-12.34e-56»
+        #     0Xffff      ⍝ returns «0xffff»
+        #     ¯0xffff     ⍝ returns «-0xffff»
+        #     ¯0xaBcD1234 ⍝ returns «-0xabcd1234»
+        #     ¯           ⍝ returns «Infinity»
+        #     ¯¯          ⍝ returns «-Infinity»
+        #     −¯          ⍝ returns «-Infinity»
         when 'num'
           s = node[1].replace /¯/g, '-'
           a =
