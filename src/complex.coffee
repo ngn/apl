@@ -22,11 +22,15 @@ define ['./helpers'], (helpers) ->
     #     123j0       ⍝ returns «123»
     #     2j¯3 + ¯2j3 ⍝ returns «0»
     '=': (x) ->
-      +((x instanceof Complex) and x.re is @re and x.im is @im)
+      if x instanceof Complex then +(@re is x.re and @im is x.im)
+      else if typeof x is 'number' then +(@re is x and @im is 0)
+      else 0
+
+    'right_=': (args...) -> @['='] args...
 
     # Match (`≡`)
-    '≡': (x) ->
-      @['='] x
+    '≡':       (args...) -> @['='] args...
+    'right_≡': (args...) -> @['='] args...
 
     # Add / Conjugate (`+`)
     #
@@ -40,7 +44,11 @@ define ['./helpers'], (helpers) ->
       else
         C @re, -@im
 
+    'right_+': (args...) -> @['+'] args...
+
     # Subtract / Negate (`−`)
+    #
+    #     5j2 − 3j8   ⍝ returns 2j¯6
     '−': (x) ->
       if x?
         if typeof x is 'number' then C @re - x, @im
@@ -48,6 +56,10 @@ define ['./helpers'], (helpers) ->
         else throw Error 'Unsupported operation'
       else
         C -@re, -@im
+
+    #     5 − 3j8   ⍝ returns 2j¯8
+    'right_−': (x) ->
+      (if x instanceof Complex then x else new Complex x, 0)['−'] @
 
     # Multiply / Sign of (`×`)
     #
@@ -61,9 +73,12 @@ define ['./helpers'], (helpers) ->
       else
         throw Error 'Unsupported operation'
 
+    #     2 × 1j¯2      ⍝ returns 2j¯4
+    'right_×': (args...) -> @['×'] args...
+
     # Divide / Reciprocal (`÷`)
     #
-    #     4j7 ÷ 1j¯2   ⍝ returns ¯2j3
+    #     1j¯2 ÷ 4j7    ⍝ returns ¯2j3
     '÷': (x) ->
       if x?
         if typeof x is 'number' then C @re / x, @im / x
@@ -74,5 +89,8 @@ define ['./helpers'], (helpers) ->
       else
         d = @re * @re + @im * @im
         C @re / d, -@im / d
+
+    'right_÷': (x) ->
+      (if x instanceof Complex then x else new Complex x, 0)['÷'] @
 
   {Complex}

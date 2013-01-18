@@ -149,21 +149,25 @@ define (require) ->
 
   # Overloadable functions
   #
-  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1     ⍝ returns 1235
-  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ 1 ⍟ x     ⍝ returns 1235
-  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1 1   ⍝ returns 1235 1235
-  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x x ⍟ 1   ⍝ returns 1235 1235
-  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x            ⍝ returns 1234
-  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x            ⍝ returns 1234
-  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x x          ⍝ returns 1234 1234
+  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1        ⍝ returns 1235
+  #     x ← «{'right_⍟': function (y) { return y + 1234; }}» ◇ 1 ⍟ x  ⍝ returns 1235
+  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1 1      ⍝ returns 1235 1235
+  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x x ⍟ 1      ⍝ returns 1235 1235
+  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x               ⍝ returns 1234
+  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x               ⍝ returns 1234
+  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x x             ⍝ returns 1234 1234
   overloadable = (symbol, f) ->
     assert typeof symbol is 'string'
     assert typeof f is 'function'
     withMetaInfoFrom f,
       (b, a, args...) ->
-        if typeof b?[symbol] is 'function' then b[symbol] a, args...
-        else if typeof a?[symbol] is 'function' then a[symbol] b, args...
-        else f b, a, args...
+        if not a? # monadic application
+          if typeof b?[symbol] is 'function' then b[symbol] args...
+          else f b, a, args...
+        else # dyadic application
+          if typeof a?[symbol] is 'function' then a[symbol] b, args...
+          else if typeof b?['right_' + symbol] is 'function' then b['right_' + symbol] a, args...
+          else f b, a, args...
 
   ambivalent = (symbol, f1, f2) ->
     assert typeof symbol is 'string'
