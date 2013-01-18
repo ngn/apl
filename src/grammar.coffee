@@ -1,7 +1,7 @@
 #!/usr/bin/env coffee
 
-# This file should be run every time modifications are made to it---it
-# generates `../lib/parser.js`.
+# This file should be run every time modifications are made to it.
+# It generates `../lib/parser.js`.
 
 grammar = lex: {rules: []}, bnf: {}
 
@@ -121,7 +121,7 @@ nt 'indexable', [
 
 
 
-# Generate parser.js
+# Generate `parser.js`
 {Parser} = require 'jison'
 fs = require 'fs'
 fs.writeFileSync '../lib/parser.js', new Parser(grammar).generate()
