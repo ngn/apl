@@ -187,6 +187,14 @@ define ['./compiler', './helpers', 'optimist', 'fs'], (compiler, helpers, optimi
       console.info '-----END AST-----'
 
     if argv.compile
+      jsOutput = """
+        #!/usr/bin/env node
+
+        (function () {
+        #{jsOutput}
+        }).call(this, require('apl').getBuiltins());
+
+      """
       if argv.stdio
         process.stdout.write jsOutput
       else
