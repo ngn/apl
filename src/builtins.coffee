@@ -1583,12 +1583,11 @@ define (require) ->
       for [0...n] then y = f y, x
       y
 
-  # `⎕` and `⍞` will be implemented separately for node.js and the web.
-  # These here are just placeholders for compilation to work right.
-  builtins['set_⎕'] = (x) -> x
-  builtins['get_⎕'] = -> 0
-  builtins['set_⍞'] = (x) -> x
-  builtins['get_⍞'] = -> 0
+  # `⎕` and `⍞` will be overridden for the web.
+  builtins['set_⎕'] = (x) -> process.stdout.write require('./formatter').format(x) + '\n'; x
+  builtins['get_⎕'] = -> die 'Reading from ⎕ is not implemented.'
+  builtins['set_⍞'] = (x) -> process.stdout.write require('./formatter').format x; x
+  builtins['get_⍞'] = -> die 'Reading from ⍞ is not implemented.'
 
   builtins.aplify = (x) ->
     assert x isnt null
