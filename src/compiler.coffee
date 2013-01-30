@@ -99,21 +99,20 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
       if k.match /^[gs]et_.*/
         builtinVarInfo[k[4...]] = {type: 'X'}
 
-  exec = (source, opts = {}) ->
+  exec = (aplSource, opts = {}) ->
+    execJS compile(aplSource, opts).jsOutput, opts
+
+  execJS = (jsSource, opts = {}) ->
     h = inherit builtins
     if opts.extraContext then for k, v of opts.extraContext then h[k] = v
-    (new Function compile source, opts) h
+    (new Function jsSource) h
 
-  compile = (source, opts = {}) ->
-    if opts.debug then console.info '-----APL SOURCE-----\n' + source
-    ast = parser.parse source
-    if opts.debug then (console.info '-----RAW AST-----\n'; printAST ast)
+  compile = (aplSource, opts = {}) ->
+    ast = parser.parse aplSource
     assignParents ast
     resolveSeqs ast
-    if opts.debug then (console.info '-----AST-----\n'; printAST ast)
-    output = toJavaScript ast
-    if opts.debug then console.info '-----JS OUTPUT-----\n' + output
-    output
+    jsOutput = toJavaScript ast
+    {ast, jsOutput}
 
   assignParents = (node) ->
     for child in node[1...] when child
@@ -268,7 +267,7 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
             if node.varsToDeclare.length
               r += 'var ' + node.varsToDeclare.join(', ') + ';\n'
             a = for child in node[1...] then visit child
-            a[a.length - 1] = 'return ' + a[a.length - 1] + ';'
+            a[a.length - 1] = 'return ' + a[a.length - 1] + ';\n'
             r += a.join(';\n')
 
         when 'guard'
@@ -401,20 +400,6 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
     while node[0] isnt 'body' then node = node.parent
     node
 
-  isArray = (x) -> x?.length? and typeof x isnt 'string'
-
-  printAST = (x, indent = '') ->
-    if isArray x
-      if x.length is 2 and not isArray x[1]
-        console.info indent + x[0] + ' ' + JSON.stringify x[1]
-      else
-        console.info indent + x[0]
-        for y in x[1...]
-          printAST y, indent + '  '
-    else
-      console.info indent + JSON.stringify x
-    return
 
 
-
-  {exec}
+  {exec, execJS, compile}
