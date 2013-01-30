@@ -10,6 +10,7 @@
     "lib": "./lib",
     "bin": "./bin"
   },
+  "main": "./lib/apl",
   "repository": {"type": "git", "url": "https://github.com/ngn/apl.git"},
   "dependencies": {
     "amdefine": ">=0.0.2",
