@@ -10,6 +10,10 @@
     "lib": "./lib",
     "bin": "./bin"
   },
+  "scripts": {
+    "start": "apl",
+    "test": "cake test"
+  },
   "main": "./lib/apl",
   "repository": {"type": "git", "url": "https://github.com/ngn/apl.git"},
   "dependencies": {
