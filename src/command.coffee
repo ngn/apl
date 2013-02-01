@@ -55,9 +55,9 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
       jsOutput = """
         #!/usr/bin/env node
 
-        (function () {
+        require('apl')(function () {
         #{jsOutput}
-        }).call(this, require('apl').getBuiltins());
+        });
 
       """
       if argv.stdio
