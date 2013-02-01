@@ -277,6 +277,10 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
             }
           """
 
+        # Assignment
+        #
+        #     A←5       ⍝ returns 5
+        #     A×A←2 5   ⍝ returns 4 25
         when 'assign'
           name = node[1]
           assert name isnt '∇', 'Assignment to ∇ is not allowed.'
@@ -286,6 +290,20 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
           else
             "#{jsName name} = #{visit node[2]}"
 
+        # Symbols
+        #
+        # Test get_/set_ convention for niladics:
+        #
+        #     radius ← 3 ◇
+        # ... get_circumference ← {2 × ○ radius} ◇
+        # ... get_surface ← {○ radius ⋆ 2} ◇
+        # ...
+        # ... before ← 0.01× ⌊ 100× radius circumference surface ◇
+        # ... radius ← radius + 1 ◇
+        # ... after  ← 0.01× ⌊ 100× radius circumference surface ◇
+        # ...
+        # ... before after
+        # ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
         when 'sym'
           name = node[1]
           if name is '∇'
@@ -377,6 +395,10 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
         when 'postfixOperator'
           "#{visit node[2]}(#{visit node[1]})"
 
+        # Embedded JavaScript
+        #
+        #     «1234+5678» ⍝ returns 6912
+        #     «"asdf"» ⍝ returns 'asdf'
         when 'embedded'
           "_.aplify(#{node[1].replace /(^«|»$)/g, ''})"
 

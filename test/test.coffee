@@ -71,25 +71,6 @@ gives '1\n2', 2
 gives '1\r2', 2
 gives '1 ◇ 2 ◇ 3', 3
 
-# ← Assignment {{{1
-gives 'A←5', 5
-gives 'A×A←2 5', [4, 25]
-
-# get_/set_ convention for niladics {{{1
-gives '''
-  radius ← 3
-  get_circumference ← {2 × ○ radius}
-  get_surface ← {○ radius ⋆ 2}
-
-  before ← 0.01× ⌊ 100× radius circumference surface
-  radius ← radius + 1
-  after  ← 0.01× ⌊ 100× radius circumference surface
-
-  before after
-''', [[3, 18.84, 28.27],
-      [4, 25.13, 50.26]]
-
-
 # [] Subscripting {{{1
 gives '(23 54 38)[0]', 23
 gives '(23 54 38)[1]', 54
@@ -106,12 +87,6 @@ gives '("axlrose"[4 3 0 2 5 6 1])[0 1 2 3]', S 'oral'
 gives '" X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]', S ' X ' +
                                       'X  ' +
                                       'XXX'
-
-# «» Embedded JavaScript {{{1
-gives '«1234+5678»', 6912
-gives '«"asdf"»', S 'asdf'
-
-
 
 # \ 1st axis scan {{{1
 #gives '×⍀  2 3⍴5 2 3 4 7 6', [5, 2, 3, 20, 14, 18]
