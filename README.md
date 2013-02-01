@@ -97,6 +97,33 @@ execution environment, namely the ubiquitous JavaScript.
     r←5
     ⌊ r c S                ⍝ gives 5 31 78
 
+# Usage
+
+As a hashbang interpreter for APL scripts:
+
+    sudo npm install apl -g
+
+    cat >a.apl <<EOF
+    #!/usr/bin/env apl
+    ⎕ ← 'Hell, oh, world!'
+    EOF
+
+    chmod +x a.apl
+    ./a.apl
+
+As a compiler:
+
+    apl -c a.apl
+    node a.js
+
+As a library:
+
+    npm install apl
+    node <<EOF
+    var apl = require('apl');
+    console.info(apl('1 2 3 + 4 5 6'));
+    EOF
+
 # Editor support
 
 [Vim keymap and syntax](https://github.com/ngn/vim-apl)
