@@ -15,6 +15,7 @@ fail = (reason, err) -> nFailed++; console.error reason; if err then console.err
 
 t0 = Date.now()
 d = __dirname + '/../src'
+lastTestTimestamp = 0
 for f in fs.readdirSync d when f.match /^\w+.coffee$/
   lines = fs.readFileSync(d + '/' + f, 'utf8').split '\n'
   i = 0
@@ -45,7 +46,10 @@ for f in fs.readdirSync d when f.match /^\w+.coffee$/
             fail "Code #{repr code} should have failed with #{repr expectedErrorMessage}, but it failed with #{repr e.message}", e
       else
         fail "Unrecognised expectation in doctest string #{repr line}"
+      if Date.now() - lastTestTimestamp > 100
+        process.stdout.write nTests + (if nFailed then " (#{nFailed} failed)" else '') + '\r'
+        lastTestTimestamp = Date.now()
 
-message = if nFailed then "#{nFailed} of #{nTests} tests failed" else "All #{nTests} tests passed"
+message = if nFailed then "#{nFailed} out of #{nTests} tests failed" else "All #{nTests} tests passed"
 message += " in #{Date.now() - t0} ms."
 console.info message
