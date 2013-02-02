@@ -1014,6 +1014,23 @@ define (require) ->
   #    1      ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 22 23 24
   #    2 (1 0)⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 32 31
   #    (1 2) 0⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 31
+  #
+  #    (23 54 38)[0]                         ⍝ returns 23
+  #    (23 54 38)[1]                         ⍝ returns 54
+  #    (23 54 38)[2]                         ⍝ returns 38
+  #    (23 54 38)[3]                         ⍝ fails
+  #    (23 54 38)[¯1]                        ⍝ fails
+  #    (23 54 38)[0 2]                       ⍝ returns 23 38
+  #    (2 3 ⍴ 100 101 102 110 111 112)[1;2]  ⍝ returns 112
+  #    (2 3 ⍴ 100 101 102 110 111 112)[1;¯1] ⍝ fails
+  #    (2 3 ⍴ 100 101 102 110 111 112)[10;1] ⍝ fails
+  #    'hello'[1]                            ⍝ returns 'e'
+  #    'ipodlover'[1 2 5 8 3 7 6 0 4]        ⍝ returns 'poordevil'
+  #    ('axlrose'[4 3 0 2 5 6 1])[0 1 2 3]   ⍝ returns 'oral'
+  #
+  #    " X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]  ⍝ returns 3 3⍴,/' X '
+  #...                                             'X  '
+  #...                                             'XXX'
   dyadic '⌷', 'Index', (b, a, axes = null) ->
     if typeof b is 'function' then return (y, x) -> b y, x, a
     a = array a

@@ -331,6 +331,13 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
         #     ⍴⍴''     ⍝ returns ,1
         #     ⍴⍴'x'    ⍝ returns ,0
         #     ⍴⍴'xx'   ⍝ returns ,1
+        #
+        # Pairs of quotes inside strings:
+        #     'Let''s parse it!'         ⍝ returns 'Let\'s parse it!'
+        #     "0x22's the code for ""."  ⍝ returns '0x22\'s the code for ".'
+        #     ⍴"\f\t\n\r\u1234\xff"      ⍝ returns ,6
+        #
+        #     "unclosed string           ⍝ fails
         when 'str'
           s = node[1]
           d = s[0] # the delimiter: '"' or "'"
