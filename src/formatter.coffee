@@ -8,7 +8,7 @@ define ['./helpers'], (helpers) ->
 
   # TTY colours
   makeColour =
-    if process.stdout.isTTY
+    if process?.stdout?.isTTY
       (code) -> (s) -> "\x1b[1;#{code}m#{s}\x1b[m"
     else
       -> (s) -> s
