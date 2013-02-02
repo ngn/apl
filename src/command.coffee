@@ -16,17 +16,19 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
         h: 'display this help message'
         i: 'run an interactive APL REPL'
         n: 'print out the parse tree that the parser produces'
+        p: 'print out the compiled JavaScript'
         s: 'listen for and compile scripts over stdio'
       .alias
         c: 'compile'
         h: 'help'
         i: 'interactive'
         n: 'nodes'
+        p: 'print'
         s: 'stdio'
-      .boolean('chins'.split '')
+      .boolean('chinps'.split '')
 
     for k of argv
-      if k not in 'c compile h help i interactive n nodes s stdio _'.split ' '
+      if k not in 'c compile h help i interactive n nodes p print s stdio _'.split ' '
         if not k.match /^\$\d+/
           console.info "Unknown option, \"#{k}\""
           return optimist.showHelp()
@@ -66,7 +68,7 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
         });
 
       """
-      if argv.stdio
+      if argv.stdio or argv.print
         process.stdout.write jsOutput
       else
         fs.writeFileSync argv._[0].replace(/\.apl$/, '') + '.js', jsOutput, 'utf8'
