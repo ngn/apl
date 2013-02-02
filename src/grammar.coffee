@@ -106,6 +106,7 @@ nt 'item', [
 nt 'indices', [
   o 'expr',                      "$$ = [$1]"
   o ';',                         "$$ = [null]"
+  o '; expr',                    "$$ = [null, $2]"
   o 'indices ; expr',            "($$ = $1).push($3)"
   o 'indices ;',                 "($$ = $1).push(null)"
 ]
