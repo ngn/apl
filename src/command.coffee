@@ -25,6 +25,12 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
         s: 'stdio'
       .boolean('chins'.split '')
 
+    for k of argv
+      if k not in 'c compile h help i interactive n nodes s stdio _'.split ' '
+        if not k.match /^\$\d+/
+          console.info "Unknown option, \"#{k}\""
+          return optimist.showHelp()
+
     if argv.help then return optimist.showHelp()
 
     ctx =
