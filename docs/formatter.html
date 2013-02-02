@@ -3,7 +3,7 @@ display on the console.</p>             </td>             <td class="code">     
 
 <span class="nx">define</span> <span class="p">[</span><span class="s1">&#39;./helpers&#39;</span><span class="p">],</span> <span class="nf">(helpers) -&gt;</span>
   <span class="p">{</span><span class="nx">isSimple</span><span class="p">,</span> <span class="nx">shapeOf</span><span class="p">,</span> <span class="nx">sum</span><span class="p">,</span> <span class="nx">prod</span><span class="p">,</span> <span class="nx">repeat</span><span class="p">}</span> <span class="o">=</span> <span class="nx">helpers</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>TTY colours</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">makeColour =</span>
-    <span class="k">if</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">isTTY</span>
+    <span class="k">if</span> <span class="nx">process</span><span class="o">?</span><span class="p">.</span><span class="nx">stdout</span><span class="o">?</span><span class="p">.</span><span class="nx">isTTY</span>
       <span class="nf">(code) -&gt;</span> <span class="nf">(s) -&gt;</span> <span class="s2">&quot;\x1b[1;#{code}m#{s}\x1b[m&quot;</span>
     <span class="k">else</span>
       <span class="o">-&gt;</span> <span class="nf">(s) -&gt;</span> <span class="nx">s</span>
