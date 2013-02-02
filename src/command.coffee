@@ -1,4 +1,8 @@
-# This file contains the entry point (`main()`) for APL execution on node.js.
+# This file contains the `main()` entry point to the APL compiler.
+# It gets executed when the `apl` command is typed in a shell, for instance.
+#
+# Our command-line interface closely follows the design of
+# [that of CoffeeScript](http://coffeescript.org/#usage)
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
 define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
@@ -6,10 +10,12 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
 
   main = ->
 
+    # Use [optimist](https://github.com/substack/node-optimist#readme)
+    # to parse the arguments.
     {argv} = optimist
       .usage('''
-        Usage: apl [options] path/to/script.apl [args]
-        \nIf called without options, `apl` will run your script.
+        Usage: apl [options] path/to/script.apl [args]\n
+        If called without options, `apl` will run your script.
       ''')
       .describe
         c: 'compile to JavaScript and save as .js files'
@@ -27,24 +33,47 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
         s: 'stdio'
       .boolean('chinps'.split '')
 
+    # Show help, if requested.
+    if argv.help then return optimist.showHelp()
+
+    # Complain about unknown or incompatible options.
     for k of argv
       if k not in 'c compile h help i interactive n nodes p print s stdio _'.split ' '
         if not k.match /^\$\d+/
-          console.info "Unknown option, \"#{k}\""
-          return optimist.showHelp()
+          process.stderr.write "Unknown option, \"#{k}\"\n\n"
+          optimist.showHelp()
+          return
 
-    if argv.help then return optimist.showHelp()
+    if argv.interactive and (argv.compile or argv.nodes or argv.print or argv.stdio)
+      process.stderr.write '''
+        Option -i (--interactive) is incompatible with the following options:
+          -c, --compile
+          -n, --nodes
+          -p, --print
+          -s, --stdio\n\n
+      '''
+      optimist.showHelp()
+      return
 
+    if argv.interactive and argv._.length
+      process.stderr.write '''
+        Option -i (--interactive) cannot be used with positional arguments.\n\n
+      '''
+      optimist.showHelp()
+      return
+
+    # Prepare for compilation/execution, create a context object.
     ctx =
       '⍵': for a in argv._ then a.split ''
 
+    # Start a REPL if requested or if no input is specified.
     if argv.interactive or not (argv._.length or argv.stdio) then return repl ctx
 
+    # Determine input.
     code =
       if argv.stdio
-        # Read all of stdin
-        Buffer.concat(loop
-          b = new Buffer 8
+        Buffer.concat(loop # read all of stdin
+          b = new Buffer 1024
           k = fs.readSync 0, b, 0, b.length, null
           break unless k
           b.slice 0, k
@@ -52,21 +81,21 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
       else
         fs.readFileSync argv._[0], 'utf8'
 
+    # Compile.
     {ast, jsOutput} = compile code, extraContext: ctx
 
+    # If printing of nodes is requested, do it and stop.
     if argv.nodes
-      console.info '-----BEGIN AST-----'
       printAST ast
-      console.info '-----END AST-----'
+      return
 
+    # Print or execute compiler output.
     if argv.compile
       jsOutput = """
-        #!/usr/bin/env node
-
+        \#!/usr/bin/env node\n
         require('apl')(function () {
         #{jsOutput}
-        });
-
+        });\n
       """
       if argv.stdio or argv.print
         process.stdout.write jsOutput
@@ -104,6 +133,7 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
 
 
 
+  # Helper functions for printing AST nodes
   printAST = (x, indent = '') ->
     if isArray x
       if x.length is 2 and not isArray x[1]

@@ -297,6 +297,14 @@ A×A←2 5   ⍝ returns 4 25
 <pre><code>⍴⍴''     ⍝ returns ,1
 ⍴⍴'x'    ⍝ returns ,0
 ⍴⍴'xx'   ⍝ returns ,1
+</code></pre>
+
+<p>Pairs of quotes inside strings:
+    'Let''s parse it!'         ⍝ returns 'Let\'s parse it!'
+    "0x22's the code for ""."  ⍝ returns '0x22\'s the code for ".'
+    ⍴"\f\t\n\r\u1234\xff"      ⍝ returns ,6</p>
+
+<pre><code>"unclosed string           ⍝ fails
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">when</span> <span class="s1">&#39;str&#39;</span>
           <span class="nv">s = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
           <span class="nv">d = </span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># the delimiter: &#39;&quot;&#39; or &quot;&#39;&quot;</span>
