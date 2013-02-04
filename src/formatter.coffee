@@ -12,7 +12,8 @@ define ['./helpers'], (helpers) ->
       (code) -> (s) -> "\x1b[1;#{code}m#{s}\x1b[m"
     else
       -> (s) -> s
-  [grey, red, green, yellow, blue, purple, cyan] = for colourId in [30..36] then makeColour colourId
+  [grey, red, green, yellow, blue, purple, cyan] =
+    for colourId in [30..36] then makeColour colourId
 
   # Colour scheme
   borderColour = grey
@@ -26,7 +27,8 @@ define ['./helpers'], (helpers) ->
   # alternatives: "──││┌┐└┘", "━━┃┃┏┓┗┛"
 
   Rect = (width, height, strings) -> {width, height, strings}
-  ColouredRect = (s, colour) -> Rect s.length, 1, [if colour then colour s else s]
+  ColouredRect = (s, colour) ->
+    Rect s.length, 1, [if colour then colour s else s]
 
   encode = (a, x) ->
     if a.length is 0 then return []
@@ -45,7 +47,11 @@ define ['./helpers'], (helpers) ->
     else if typeof a is 'number'
       ColouredRect ('' + a).replace(/-|Infinity/g, '¯'), numberColour
     else if typeof a is 'function'
-      s = if a.isPrefixOperator or a.isInfixOperator or a.isPostfixOperator then 'operator' else 'function'
+      s =
+        if a.isPrefixOperator or a.isInfixOperator or a.isPostfixOperator
+          'operator'
+        else
+          'function'
       if a.aplName then s += ' ' + a.aplName
       ColouredRect s, functionColour
     else if isSimple a then ColouredRect('' + a)
@@ -80,12 +86,14 @@ define ['./helpers'], (helpers) ->
             box
 
       mm = 1
-      totalWidth = 2 + sum(w) - colDims.length + sum(for i in [colDims.length - 1 .. 0] then mm *= colDims[i])
+      totalWidth = 2 + sum(w) - colDims.length +
+        sum(for i in [colDims.length - 1 .. 0] then mm *= colDims[i])
 
       totalHeight = 2 + sum(h)
       if rowDims.length
         mm = 1
-        totalHeight += 1 - rowDims.length + sum(for i in [rowDims.length - 1 .. 1] by -1 then mm *= rowDims[i])
+        totalHeight += 1 - rowDims.length +
+          sum(for i in [rowDims.length - 1 .. 1] by -1 then mm *= rowDims[i])
 
       strings = [borderColour TOPLFT + repeat(TOP, totalWidth - 2) + TOPRGT]
       for r in [0...nRows]
@@ -98,7 +106,11 @@ define ['./helpers'], (helpers) ->
           mm = 1
           for m in rowDims
             if r % (mm *= m) then break
-            strings.push borderColour(LFT) + repeat(' ', totalWidth - 2) + borderColour(RGT)
+            strings.push(
+              borderColour(LFT) +
+              repeat(' ', totalWidth - 2) +
+              borderColour(RGT)
+            )
 
         for i in [0...h[r]]
           s = ''
@@ -131,6 +143,7 @@ define ['./helpers'], (helpers) ->
       rect
     else
       padding = repeat ' ', rect.width
-      Rect rect.width, height, rect.strings.concat(for [rect.height...height] then padding)
+      Rect rect.width, height,
+        rect.strings.concat(for [rect.height...height] then padding)
 
   {format}

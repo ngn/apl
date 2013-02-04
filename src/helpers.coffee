@@ -3,7 +3,8 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 define ->
 
   # Prototypal inheritance of JavaScript objects
-  # (see [Douglas Crockford's explanation](http://javascript.crockford.com/prototypal.html))
+  # (see [Douglas Crockford's
+  # explanation](http://javascript.crockford.com/prototypal.html))
   inherit = (x) ->
     f = (->); f.prototype = x; new f
 
@@ -13,7 +14,11 @@ define ->
   isSimple = (x) -> not (x instanceof Array)
 
   shapeOf = (a) ->
-    a.shape or if a.length? and not (typeof a is 'string' and a.length is 1) then [a.length] else []
+    a.shape or
+      if a.length? and not (typeof a is 'string' and a.length is 1)
+        [a.length]
+      else
+        []
 
   withShape = (shape, a) ->
     assert (not shape?) or a.length is prod shape
@@ -26,14 +31,18 @@ define ->
     else if x.aplPrototype? then x.aplPrototype
     else if isSimple(x) or not x.length then 0
     else if isSimple x[0] then prototypeOf x[0]
-    else p = prototypeOf x[0]; withShape shapeOf(x[0]), (for [0...x[0].length] then p)
+    else
+      p = prototypeOf x[0]
+      withShape shapeOf(x[0]), (for [0...x[0].length] then p)
 
   withPrototype = withPrototype = (p, x) ->
-    if (x instanceof Array) and (not x.length) and (p isnt 0) then x.aplPrototype = p
+    if (x instanceof Array) and (not x.length) and (p isnt 0)
+      x.aplPrototype = p
     x
 
   withPrototypeCopiedFrom = (y, x) ->
-    if (x instanceof Array) and (not x.length) then withPrototype prototypeOf(y), x
+    if x instanceof Array and not x.length
+      withPrototype prototypeOf(y), x
     x
 
 
@@ -48,4 +57,5 @@ define ->
   die = (s) -> throw Error s
   assert = (flag, s = 'Assertion failed') -> if not flag then throw Error s
 
-  {inherit, isSimple, shapeOf, withShape, prototypeOf, withPrototype, withPrototypeCopiedFrom, sum, prod, repeat, die, assert}
+  {inherit, isSimple, shapeOf, withShape, prototypeOf, withPrototype,
+    withPrototypeCopiedFrom, sum, prod, repeat, die, assert}

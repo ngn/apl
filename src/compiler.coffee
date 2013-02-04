@@ -1,6 +1,8 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
-define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, builtinsModule, complex) ->
+define ['./parser', './helpers', './builtins', './complex'],
+(parser, helpers, builtinsModule, complex) ->
+
   parser ?= window.parser
   {inherit, die, assert} = helpers
   repr = JSON.stringify
@@ -20,7 +22,9 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
         @bracketStack.push token
       else if token in [')', ']', '}']
         @bracketStack.pop()
-      if token isnt 'NEWLINE' or @bracketStack.length is 0 or @bracketStack[@bracketStack.length - 1] is '{'
+      if (token isnt 'NEWLINE' or
+          @bracketStack.length is 0 or
+          @bracketStack[@bracketStack.length - 1] is '{')
         return token
 
 
@@ -89,7 +93,9 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
 
   ord = (s) -> s.charCodeAt 0
   hex4 = (n) -> s = '0000' + n.toString 16; s[s.length - 4 ...]
-  jsName = (name) -> predefinedNames[name] or name.replace /[^a-z0-9]/gi, (x) -> '_' + hex4 ord x
+  jsName = (name) ->
+    predefinedNames[name] or name.replace /[^a-z0-9]/gi, (x) ->
+      '_' + hex4 ord x
 
   builtins = inherit builtinsModule.builtins
   builtins.Complex = complex.Complex
@@ -169,7 +175,9 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
             name = node[1]
             h = visit node[2]
             if vars[name]
-              assert vars[name].type is h.type, "Inconsistent usage of symbol '#{name}', it is assigned both data and functions"
+              assert vars[name].type is h.type,
+                "Inconsistent usage of symbol '#{name}', it is " +
+                "assigned both data and functions"
             else
               vars[name] = h
               scopeNode.varsToDeclare.push jsName name
@@ -223,7 +231,8 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
             # Apply infix operators
             i = a.length - 2
             while --i >= 0
-              if h[i + 1].isInfixOperator and (h[i].type is 'F' or h[i + 2].type is 'F')
+              if (h[i + 1].isInfixOperator and
+                  (h[i].type is 'F' or h[i + 2].type is 'F'))
                 a[i...i+3] = [['infixOperator'].concat a[i...i+3]]
                 h[i...i+3] = [{type: 'F'}]
                 i--
@@ -326,19 +335,19 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
         #     ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
         when 'sym'
           name = node[1]
-          if name is '∇'
-            'arguments.callee'
-          else if (v = closestScope(node).vars[getter = "get_#{name}"])?.type is 'F'
+          if name is '∇' then return 'arguments.callee'
+          v = closestScope(node).vars[getter = "get_#{name}"]
+          if v?.type is 'F'
             v.used = true
             "#{jsName getter}()"
           else
-            "#{jsName name}"
+            jsName name
 
         # Lambda expressions
         #
-        #     {1 + 1} 1                           ⍝ returns 2
-        #     {⍵=0:1 ◇ 2×∇⍵−1} 5                  ⍝ returns 32 # two to the power of
-        #     { ⍵<2 : 1   ◇   (∇⍵−1)+(∇⍵−2) } 8   ⍝ returns 34 # Fibonacci sequence
+        #     {1 + 1} 1                      ⍝ returns 2
+        #     {⍵=0:1 ◇ 2×∇⍵−1} 5             ⍝ returns 32 # two to the power of
+        #     {⍵<2 : 1 ◇ (∇⍵−1)+(∇⍵−2) } 8   ⍝ returns 34 # Fibonacci sequence
         when 'lambda'
           """
             function (_w, _a) {
@@ -390,7 +399,8 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
                 parseInt x, 16
               else
                 parseFloat x
-          if a.length is 1 or a[1] is 0 then '' + a[0] else "new _.Complex(#{a[0]}, #{a[1]})"
+          if a.length is 1 or a[1] is 0 then '' + a[0]
+          else "new _.Complex(#{a[0]}, #{a[1]})"
 
         when 'index'
           closestScope(node).vars['⌷'].used = true

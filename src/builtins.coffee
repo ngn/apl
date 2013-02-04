@@ -97,8 +97,10 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 # `0` as an implicit default.
 
 define (require) ->
-  {assert, die, inherit, isSimple, shapeOf, withShape, prod, prototypeOf, withPrototype, withPrototypeCopiedFrom} = require './helpers'
-  {min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin, cos, tan, asin, acos, atan} = Math
+  {assert, die, inherit, isSimple, shapeOf, withShape, prod, prototypeOf,
+    withPrototype, withPrototypeCopiedFrom} = require './helpers'
+  {min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin,
+    cos, tan, asin, acos, atan} = Math
 
 
 
@@ -135,11 +137,14 @@ define (require) ->
     assert not h[name]?, "Redefinition of function #{name} #{description}"
     h[name] = f
 
-  monadic         = (a...) -> def tmp.monadic, a...
-  dyadic          = (a...) -> def tmp.dyadic,  a...
-  prefixOperator  = (a...) -> ((def tmp.monadic, a...).aplMetaInfo ?= {}).isPrefixOperator = true
-  postfixOperator = (a...) -> ((def tmp.monadic, a...).aplMetaInfo ?= {}).isPostfixOperator = true
-  infixOperator   = (a...) -> ((def tmp.dyadic,  a...).aplMetaInfo ?= {}).isInfixOperator = true
+  monadic = (a...) -> def tmp.monadic, a...
+  dyadic = (a...) -> def tmp.dyadic, a...
+  prefixOperator = (a...) ->
+    ((def tmp.monadic, a...).aplMetaInfo ?= {}).isPrefixOperator = true
+  postfixOperator = (a...) ->
+    ((def tmp.monadic, a...).aplMetaInfo ?= {}).isPostfixOperator = true
+  infixOperator = (a...) ->
+    ((def tmp.dyadic,  a...).aplMetaInfo ?= {}).isInfixOperator = true
 
   withMetaInfoFrom = (f, g) ->
     assert typeof f is 'function'
@@ -149,13 +154,20 @@ define (require) ->
 
   # Overloadable functions
   #
-  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1        ⍝ returns 1235
-  #     x ← «{'right_⍟': function (y) { return y + 1234; }}» ◇ 1 ⍟ x  ⍝ returns 1235
-  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1 1      ⍝ returns 1235 1235
-  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x x ⍟ 1      ⍝ returns 1235 1235
-  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x               ⍝ returns 1234
-  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x               ⍝ returns 1234
-  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x x             ⍝ returns 1234 1234
+  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1
+  #     ... ⍝ returns 1235
+  #     x ← «{'right_⍟': function (y) { return y + 1234; }}» ◇ 1 ⍟ x
+  #     ... ⍝ returns 1235
+  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1 1
+  #     ... ⍝ returns 1235 1235
+  #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x x ⍟ 1
+  #     ... ⍝ returns 1235 1235
+  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x
+  #     ... ⍝ returns 1234
+  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x
+  #     ... ⍝ returns 1234
+  #     x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x x
+  #     ... ⍝ returns 1234 1234
   overloadable = (symbol, f) ->
     assert typeof symbol is 'string'
     assert typeof f is 'function'
@@ -165,9 +177,12 @@ define (require) ->
           if typeof b?[symbol] is 'function' then b[symbol] args...
           else f b, a, args...
         else # dyadic application
-          if typeof a?[symbol] is 'function' then a[symbol] b, args...
-          else if typeof b?['right_' + symbol] is 'function' then b['right_' + symbol] a, args...
-          else f b, a, args...
+          if typeof a?[symbol] is 'function'
+            a[symbol] b, args...
+          else if typeof b?['right_' + symbol] is 'function'
+            b['right_' + symbol] a, args...
+          else
+            f b, a, args...
 
   ambivalent = (symbol, f1, f2) ->
     assert typeof symbol is 'string'
@@ -177,7 +192,9 @@ define (require) ->
     F = (b, a, args...) -> if a? then f2 b, a, args... else f1 b, a, args...
 
   endOfBuiltins = ->
-    ks = (for k of tmp.monadic then k).concat(for k of tmp.dyadic when not tmp.monadic[k]? then k)
+    ks = (for k of tmp.monadic then k).concat(
+      for k of tmp.dyadic when not tmp.monadic[k]? then k
+    )
     for k in ks
       f1 = tmp.monadic[k]
       if f1?
@@ -197,8 +214,9 @@ define (require) ->
     (f.aplMetaInfo ?= {}).isPervasive = true
     f
 
-  # `maybeMakePervasive(f)` is a decorator which takes a scalar function `f` and makes it
-  # propagate through arrays, if it has `f.aplMetaInfo.isPervasive`.
+  # `maybeMakePervasive(f)` is a decorator which takes a scalar function `f`
+  # and makes it propagate through arrays, if it has
+  # `f.aplMetaInfo.isPervasive`.
   maybeMakePervasive = (f) ->
     assert typeof f is 'function'
     if not f.aplMetaInfo?.isPervasive
@@ -217,10 +235,12 @@ define (require) ->
               assert sa[i] is sb[i], 'Length error'
             if sa.length > sb.length
               k = prod sa[sb.length...]
-              withShape sa, (for i in [0...a.length] then F b[floor i / k], a[i])
+              withShape sa,
+                (for i in [0...a.length] then F b[floor i / k], a[i])
             else if sa.length < sb.length
               k = prod sb[sa.length...]
-              withShape sb, (for i in [0...b.length] then F b[i], a[floor i / k])
+              withShape sb,
+                (for i in [0...b.length] then F b[i], a[floor i / k])
             else
               withShape sa, (for i in [0...a.length] then F b[i], a[i])
         else # monadic pervasiveness
@@ -373,13 +393,15 @@ define (require) ->
   #     2 5 9 14 20 ⍳ 6                           ⍝ returns 1 ⍴ 5
   #     "GORSUCH" ⍳ "S"                           ⍝ returns 1 ⍴ 3
   #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "CARP"     ⍝ returns 2 0 17 15
-  #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "PORK PIE" ⍝ returns 15 14 17 10 26 15 8 4
+  #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "PORK PIE"
+  #     ... ⍝ returns 15 14 17 10 26 15 8 4
   #     "MON" "TUES" "WED" ⍳ "MON" "THURS"        ⍝ returns 0 3
   #     1 3 2 0 3 ⍳ ⍳ 5                           ⍝ returns 3 0 2 1 5
   #     "CAT" "DOG" "MOUSE" ⍳ "DOG" "BIRD"        ⍝ returns 1 3
   dyadic  '⍳', 'Index of', (b, a) ->
     if isSimple a then a = [a]
-    else assert shapeOf(a).length <= 1, 'Left argument to ⍳ must be of rank no more than 1.'
+    else assert shapeOf(a).length <= 1,
+      'Left argument to ⍳ must be of rank no more than 1.'
     if isSimple b then b = [b]
     for y in b
       pos = a.length
@@ -395,8 +417,10 @@ define (require) ->
 
   # Deal (`?`)
   #
-  #     n←100 ◇ (+/n?n)=(+/⍳n)   ⍝ returns 1 # a permutation (an "n?n" dealing) contains all numbers 0...n
-  #     n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A<n   ⍝ returns 1 # any number x in a dealing is 0 <= x < n
+  #     n←100 ◇ (+/n?n)=(+/⍳n)
+  #     ... ⍝ returns 1 # a permutation (an "n?n" dealing) contains all 0...n
+  #     n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A<n
+  #     ... ⍝ returns 1 # any number x in a dealing is 0 <= x < n
   #     0 ? 100  ⍝ returns ⍬
   #     0 ? 0    ⍝ returns ⍬
   #     1 ? 1    ⍝ returns ,0
@@ -404,7 +428,8 @@ define (require) ->
   dyadic '?', 'Deal', (y, x) ->
     x = max 0, floor num x
     y = max 0, floor num y
-    assert x <= y, 'Domain error: left argument of ? must not be greater than its right argument.'
+    assert x <= y, 'Domain error: left argument of ? must not be greater ' +
+                   'than its right argument.'
     available = [0...y]
     for [0...x] then available.splice(floor(available.length * random()), 1)[0]
 
@@ -465,7 +490,8 @@ define (require) ->
   #     2 ! 4         ⍝ returns 6
   #     3 ! 20        ⍝ returns 1140
   #     2 ! 6 12 20   ⍝ returns 15 66 190
-  #     (2 3 ⍴ 1 + ⍳ 6) ! 2 3 ⍴ 3 6 9 12 15 18   ⍝ returns 2 3⍴ 3 15 84 495 3003 18564
+  #     (2 3 ⍴ 1 + ⍳ 6) ! 2 3 ⍴ 3 6 9 12 15 18
+  #     ... ⍝ returns 2 3⍴ 3 15 84 495 3003 18564
   dyadic '!', 'Binomial', pervasive (n, k) ->
     if 0 <= k < 100 and 0 <= n < 100 and n is floor(n) and k is floor(k)
       if n < k then return 0
@@ -494,7 +520,8 @@ define (require) ->
   #     8 = 2 + 2 + 2 + 2     ⍝ returns 1
   #     (2 3⍴1 2 3 4 5 6) = 2 3⍴3 3 3 5 5 5   ⍝ returns 2 3 ⍴ 0 0 1 0 1 0
   #     3 = 2 3⍴1 2 3 4 5 6   ⍝ returns 2 3 ⍴ 0 0 1 0 0 0
-  #     3 = (2 3⍴1 2 3 4 5 6) (2 3⍴3 3 3 5 5 5)   ⍝ returns (2 3 ⍴ 0 0 1 0 0 0) (2 3 ⍴ 1 1 1 0 0 0)
+  #     3 = (2 3⍴1 2 3 4 5 6) (2 3⍴3 3 3 5 5 5)
+  #     ... ⍝ returns (2 3 ⍴ 0 0 1 0 0 0) (2 3 ⍴ 1 1 1 0 0 0)
   dyadic '=', 'Equal', pervasive (y, x) -> +(x is y)
 
   dyadic '>', 'Greater than', pervasive (y, x) -> +(x > y)
@@ -548,7 +575,8 @@ define (require) ->
   #
   #     ∈ 17                        ⍝ returns ,17
   #     ⍴ ∈ (1 2 3) "ABC" (4 5 6)   ⍝ returns ,9
-  #     ∈ 2 2⍴(1 + 2 2⍴⍳4) "DEF" (1 + 2 3⍴⍳6) (7 8 9)   ⍝ returns 1 2 3 4,'DEF',1 2 3 4 5 6 7 8 9
+  #     ∈ 2 2⍴(1 + 2 2⍴⍳4) "DEF" (1 + 2 3⍴⍳6) (7 8 9)
+  #     ... ⍝ returns 1 2 3 4,'DEF',1 2 3 4 5 6 7 8 9
   monadic '∈', 'Enlist', (a) ->
     r = []
     rec = (x) -> (if isSimple x then r.push x else for y in x then rec y); r
@@ -560,7 +588,8 @@ define (require) ->
   #     5 ∈ 1 2 3 5 8 13 21           ⍝ returns 1
   dyadic '∈', 'Membership', (b, a) ->
     b = array b
-    if isSimple a then +(a in b) else withShape a.shape, (for x in a then +(x in b))
+    if isSimple a then +(a in b)
+    else withShape a.shape, (for x in a then +(x in b))
 
   # Find (`⍷`)
   #
@@ -568,20 +597,30 @@ define (require) ->
   #     "BIRDS" "NEST"⍷"BIRDS" "NEST" "SOUP"   ⍝ returns 1 0 0
   #     "ME"⍷"HOME AGAIN"                      ⍝ returns 0 0 1 0 0 0 0 0 0 0
   #
-  #     "DAY"⍷7 9⍴"SUNDAY   MONDAY   TUESDAY  WEDNESDAYTHURSDAY FRIDAY   SATURDAY "
+  #     "DAY"⍷7 9⍴,/("SUNDAY   "
+  #     ...          "MONDAY   "
+  #     ...          "TUESDAY  "
+  #     ...          "WEDNESDAY"
+  #     ...          "THURSDAY "
+  #     ...          "FRIDAY   "
+  #     ...          "SATURDAY ")
   #     ...   ⍝ returns (7 9 ⍴
-  #     ...                   0 0 0 1 0 0 0 0 0
-  #     ...                   0 0 0 1 0 0 0 0 0
-  #     ...                   0 0 0 0 1 0 0 0 0
-  #     ...                   0 0 0 0 0 0 1 0 0
-  #     ...                   0 0 0 0 0 1 0 0 0
-  #     ...                   0 0 0 1 0 0 0 0 0
-  #     ...                   0 0 0 0 0 1 0 0 0)
+  #     ...          0 0 0 1 0 0 0 0 0
+  #     ...          0 0 0 1 0 0 0 0 0
+  #     ...          0 0 0 0 1 0 0 0 0
+  #     ...          0 0 0 0 0 0 1 0 0
+  #     ...          0 0 0 0 0 1 0 0 0
+  #     ...          0 0 0 1 0 0 0 0 0
+  #     ...          0 0 0 0 0 1 0 0 0)
   #
   #     (2 2⍴"ABCD")⍷"ABCD"   ⍝ returns 4 ⍴ 0
   #     (1 2) (3 4) ⍷ "START" (1 2 3) (1 2) (3 4)   ⍝ returns 0 0 1 0
   #
-  #     (2 2⍴7 8 12 13)⍷ 1+ 4 5⍴⍳20   ⍝ returns 4 5 ⍴ 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+  #     (2 2⍴7 8 12 13)⍷ 1+ 4 5⍴⍳20
+  #     ... ⍝ returns 4 5 ⍴ (0 0 0 0 0
+  #     ...                  0 1 0 0 0
+  #     ...                  0 0 0 0 0
+  #     ...                  0 0 0 0 0)
   dyadic '⍷', 'Find', (b, a) ->
     sa = shapeOf a
     sb = shapeOf b
@@ -655,16 +694,17 @@ define (require) ->
 
   # Without (`∼`)
   #
-  #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ∼ "AEIOU"   ⍝ returns 'BCDFGHJKLMNPQRSTVWXYZ'
-  #     1 2 3 4 5 6 ∼ 2 4 6                ⍝ returns 1 3 5
-  #     "THIS IS TEXT" ∼ " "               ⍝ returns 'THISISTEXT'
-  #     "THIS" "AND" "THAT" ∼ "T"          ⍝ returns 'THIS' 'AND' 'THAT'
-  #     "THIS" "AND" "THAT" ∼ "AND"        ⍝ returns 'THIS' 'AND' 'THAT'
-  #     "THIS" "AND" "THAT" ∼ ⊂"AND"       ⍝ returns 'THIS' 'THAT'
-  #     "THIS" "AND" "THAT" ∼ "TH" "AND"   ⍝ returns 'THIS' 'THAT'
+  #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"∼"AEIOU" ⍝ returns 'BCDFGHJKLMNPQRSTVWXYZ'
+  #     1 2 3 4 5 6 ∼ 2 4 6                  ⍝ returns 1 3 5
+  #     "THIS IS TEXT" ∼ " "                 ⍝ returns 'THISISTEXT'
+  #     "THIS" "AND" "THAT" ∼ "T"            ⍝ returns 'THIS' 'AND' 'THAT'
+  #     "THIS" "AND" "THAT" ∼ "AND"          ⍝ returns 'THIS' 'AND' 'THAT'
+  #     "THIS" "AND" "THAT" ∼ ⊂"AND"         ⍝ returns 'THIS' 'THAT'
+  #     "THIS" "AND" "THAT" ∼ "TH" "AND"     ⍝ returns 'THIS' 'THAT'
   dyadic '∼', 'Without', (b, a) ->
     if isSimple a then a = [a]
-    else assert shapeOf(a).length <= 1, 'Left argument to ∼ must be of rank no more than 1.'
+    else assert shapeOf(a).length <= 1,
+      'Left argument to ∼ must be of rank no more than 1.'
     if isSimple b then b = [b]
     r = []
     for x in a
@@ -699,18 +739,18 @@ define (require) ->
 
   # And (GCD) (`∧`)
   #
-  #     1∧1                                     ⍝ returns 1
-  #     1∧0                                     ⍝ returns 0
-  #     0∧1                                     ⍝ returns 0
-  #     0∧0                                     ⍝ returns 0
-  #     0 0 1 1 ∧ 0 1 0 1                       ⍝ returns 0 0 0 1
-  #     0 0 0 1 1 ∧ 1 1 1 1 0                   ⍝ returns 0 0 0 1 0
-  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  1 ∧ t   ⍝ returns 3 3 ⍴ 1 1 1 0 0 0 1 0 1
-  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  ∧/ t    ⍝ returns 1 0 0
-  #     12∧18                                   ⍝ returns 36    # 12=2×2×3, 18=2×3×3
-  #     299∧323                                 ⍝ returns 96577 # 299=13×23, 323=17×19
-  #     12345∧12345                             ⍝ returns 12345
-  #     0∧123                                   ⍝ returns 0
+  #     1∧1                                   ⍝ returns 1
+  #     1∧0                                   ⍝ returns 0
+  #     0∧1                                   ⍝ returns 0
+  #     0∧0                                   ⍝ returns 0
+  #     0 0 1 1 ∧ 0 1 0 1                     ⍝ returns 0 0 0 1
+  #     0 0 0 1 1 ∧ 1 1 1 1 0                 ⍝ returns 0 0 0 1 0
+  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  1∧t   ⍝ returns 3 3 ⍴ 1 1 1 0 0 0 1 0 1
+  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  ∧/ t  ⍝ returns 1 0 0
+  #     12∧18       # 12=2×2×3, 18=2×3×3      ⍝ returns 36
+  #     299∧323     # 299=13×23, 323=17×19    ⍝ returns 96577
+  #     12345∧12345                           ⍝ returns 12345
+  #     0∧123                                 ⍝ returns 0
   dyadic '∧', 'And', pervasive (y, x) ->
     x = abs num x
     y = abs num y
@@ -737,26 +777,33 @@ define (require) ->
     if isSimple b then b = [b]
     a =
       for x in a
-        assert typeof x is 'number', 'Domain error: Left argument to ⍴ must be a numeric scalar or vector.'
+        assert typeof x is 'number',
+          'Domain error: Left argument to ⍴ must be a ' +
+          'numeric scalar or vector.'
         max 0, floor x
-    withShape a, withPrototypeCopiedFrom b, (for i in [0...prod a] then b[i % b.length])
+    withShape a, withPrototypeCopiedFrom b,
+      (for i in [0...prod a] then b[i % b.length])
 
   # Helper for functions `,` and `⍪`
   catenate = (b, a, axis = -1) ->
     sa = shapeOf a; if sa.length is 0 then sa = [1]; a = [a]
     sb = shapeOf b; if sb.length is 0 then sb = [1]; b = [b]
-    assert sa.length is sb.length, 'Length error: Cannot catenate arrays of different ranks'
+    assert sa.length is sb.length,
+      'Length error: Cannot catenate arrays of different ranks'
     if axis < 0 then axis += sa.length
     for i in [0...sa.length] when sa[i] isnt sb[i] and i isnt axis
-      die 'Length error: Catenated arrays must match at all axes except the one to catenate on'
-    ni = prod sa[...axis]       # number of items across all dimensions before `axis'
-    nja = sa[axis]              # number of items across `axis' in `a'
-    njb = sb[axis]              # number of items across `axis' in `b'
-    nk = prod sa[axis + 1 ...]  # number of items across all dimensions after `axis'
+      die 'Length error: Catenated arrays must match ' +
+          'at all axes except the one to catenate on'
+    ni = prod sa[...axis] # number of items across all dimensions before `axis'
+    nja = sa[axis]        # number of items across `axis' in `a'
+    njb = sb[axis]        # number of items across `axis' in `b'
+    nk = prod sa[axis + 1 ...] # number of items across dimensions after `axis'
     r = []
     for i in [0...ni]
-      for j in [0...nja] then for k in [0...nk] then r.push a[k + nk * (j + nja * i)]
-      for j in [0...njb] then for k in [0...nk] then r.push b[k + nk * (j + njb * i)]
+      for j in [0...nja] then for k in [0...nk]
+        r.push a[k + nk * (j + nja * i)]
+      for j in [0...njb] then for k in [0...nk]
+        r.push b[k + nk * (j + njb * i)]
     sr = for x in sa then x
     sr[axis] += sb[axis]
     withShape sr, r
@@ -808,7 +855,8 @@ define (require) ->
     sb = shapeOf b
     n = sb[sb.length - 1]
     a %= n; if a < 0 then a += n
-    withShape sb, (for i in [0...b.length] then b[i - (i % n) + ((i % n) + a) % n])
+    withShape sb,
+      (for i in [0...b.length] then b[i - (i % n) + ((i % n) + a) % n])
 
   # 1st axis reverse (`⊖`)
   #
@@ -817,7 +865,8 @@ define (require) ->
   #     ⊖ 'BOB WON POTS'                ⍝ returns 'STOP NOW BOB'
   #     ⊖    2 5 ⍴ 1 2 3 4 5 6 7 8 9 0  ⍝ returns 2 5 ⍴ 6 7 8 9 0 1 2 3 4 5
   #     ⊖[1] 2 5 ⍴ 1 2 3 4 5 6 7 8 9 0  ⍝ returns 2 5 ⍴ 5 4 3 2 1 0 9 8 7 6
-  monadic '⊖', '1st axis reverse', (b, _1, axis = 0) -> reverse b, undefined, axis
+  monadic '⊖', '1st axis reverse', (b, _1, axis = 0) ->
+    reverse b, undefined, axis
 
   # 1st axis rotate (`⊖`)
   #
@@ -829,7 +878,8 @@ define (require) ->
     n = sb[0]
     k = b.length / n
     a %= n; if a < 0 then a += n
-    withShape sb, (for i in [0...b.length] then b[((floor(i / k) + a) % n) * k + (i % k)])
+    withShape sb,
+      (for i in [0...b.length] then b[((floor(i / k) + a) % n) * k + (i % k)])
 
   # Transpose (`⍉`)
   #
@@ -878,10 +928,13 @@ define (require) ->
   dyadic '↑', 'Take', (b, a) ->
     if isSimple a then a = [a]
     for x in a
-      assert typeof x is 'number', 'Domain error: Left argument to ↑ must be a numeric scalar or vector.'
+      assert typeof x is 'number',
+        'Domain error: Left argument to ↑ must be a numeric scalar or vector.'
     if isSimple(b) and a.length is 1 then b = [b]
     sb = shapeOf b
-    assert a.length is sb.length, 'Length error: Left argument to ↑ must have as many elements as is the rank of its right argument.'
+    assert a.length is sb.length,
+      'Length error: Left argument to ↑ must have as many elements as is ' +
+      'the rank of its right argument.'
     r = []
     pa = for [0...a.length] then 0
     pa[a.length - 1] = 1
@@ -899,7 +952,8 @@ define (require) ->
         else
           if sb[d] + a[d] < 0
             for [0 ... -(sb[d] + a[d]) * pa[d]] then r.push filler
-          for j in [max(0, sb[d] + a[d]) ... sb[d]] then rec d + 1, i + j * k, k
+          for j in [max(0, sb[d] + a[d]) ... sb[d]]
+            rec d + 1, i + j * k, k
       0
     rec 0, 0, b.length
     withShape (for x in a then abs x), withPrototype filler, r
@@ -917,8 +971,10 @@ define (require) ->
   #
   # todo: more tests
   #
-  #     //#gives '1 ↓[1] 2 3 4⍴1+⍳24', [5..12].concat [17..24] # todo: drop with axis specification
-  #     //#gives '1 ↓[2] 2 3 4⍴1+⍳24', [3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24] # todo
+  #     //#gives '1 ↓[1] 2 3 4⍴1+⍳24', [5..12].concat [17..24]
+  #     //    # todo: drop with axis specification
+  #     //#gives '1 ↓[2] 2 3 4⍴1+⍳24',
+  #     //    [3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24] # todo
   #     //#gives '1 ↓[2 1] 2 3 4⍴1+⍳24', [7, 8, 11, 12, 19, 20, 23, 24] # todo
   dyadic '↓', 'Drop', (b, a) ->
     if isSimple a then a = [a]
@@ -927,7 +983,8 @@ define (require) ->
     if isSimple b then b = withShape (for [0...a.length] then 1), b
     sb = shapeOf b
     if a.length > sb.length
-      die 'The left argument to ↓ must have length less than or equal to the rank of its right argument.'
+      die 'The left argument to ↓ must have length less than or equal to ' +
+          'the rank of its right argument.'
     for [a.length...sb.length] then a.push 0
     lims =
       for i in [0...a.length]
@@ -974,14 +1031,19 @@ define (require) ->
     for x in a[1...]
       sx = shapeOf x
       if sx.length isnt sr1.length
-        die 'The argument of ⊃ must contain elements of the same rank.' # todo: or scalars
+        die 'The argument of ⊃ must contain elements of the same rank.'
+        # todo: or scalars
       for i in [0...sr1.length]
         sr1[i] = max sr1[i], sx[i]
     sr = shapeOf(a).concat sr1
     r = []
     for x in a
       sx = shapeOf x
-      rec = (d, i, n, N) -> # d: dimension, i: index in x, n: block size in x, N: block size in r
+      rec = (d,   # dimension
+             i,   # index in x
+             n,   # block size in x
+             N    # block size in r
+             ) ->
         if d >= sr1.length
           r.push x[i]
         else
@@ -1009,7 +1071,8 @@ define (require) ->
   #     ¯1 ⌷ 3 5 8               ⍝ fails
   #     2 ⌷ 111 222 333 444      ⍝ returns 333
   #     (⊂3 2) ⌷ 111 222 333 444 ⍝ returns 444 333
-  #     (⊂2 3⍴2 0 3 0 1 2) ⌷ 111 222 333 444   ⍝ returns 2 3⍴333 111 444 111 222 333
+  #     (⊂2 3⍴2 0 3 0 1 2) ⌷ 111 222 333 444
+  #     ... ⍝ returns 2 3⍴333 111 444 111 222 333
   #     1 0    ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21
   #     1      ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 22 23 24
   #     2 (1 0)⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 32 31
@@ -1037,23 +1100,29 @@ define (require) ->
     if typeof b is 'function' then return (y, x) -> b y, x, a
     a = array a
     sr = [].concat a...
-    assert shapeOf(a).length <= 1, 'Indices must be a scalar or a vector, not a higher-dimensional array.'
+    assert shapeOf(a).length <= 1,
+      'Indices must be a scalar or a vector, not a higher-dimensional array.'
     sb = shapeOf b
-    assert a.length <= sb.length, 'The number of indices must not exceed the rank of the indexable.'
+    assert a.length <= sb.length,
+      'The number of indices must not exceed the rank of the indexable.'
     axes = if axes is null then [0...a.length] else array axes
-    assert shapeOf(axes).length <= 1, 'Axes must be a scalar or a vector, not a higher-dimensional array.'
-    assert a.length is axes.length, 'The number of indices must be equal to the number of axes specified.'
+    assert shapeOf(axes).length <= 1,
+      'Axes must be a scalar or a vector, not a higher-dimensional array.'
+    assert a.length is axes.length,
+      'The number of indices must be equal to the number of axes specified.'
     a1 = for x in sb then null
     for axis, i in axes
-      assert (typeof axis is 'number' and axis is floor axis), 'Axes must be integers'
+      assert (typeof axis is 'number' and axis is floor axis),
+        'Axes must be integers'
       assert (0 <= axis < sb.length), 'Invalid axis'
       assert not contains(axes[...i], axis), 'Duplicate axis'
       a1[axis] = array a[i]
     a = a1
     for x, i in a when x is null
       a[i] = [0...sb[i]]
-    for x, d in a then for y in x when not (typeof y is 'number' and y is floor(y))
-      die 'Indices must be integers'
+    for x, d in a then for y in x
+      if not (typeof y is 'number' and y is floor(y))
+        die 'Indices must be integers'
     for x, d in a then for y in x when not (0 <= y < sb[d])
       die 'Index out of bounds'
     sr = []; for x in a then sr = sr.concat shapeOf x
@@ -1121,7 +1190,9 @@ define (require) ->
   #     ... ⍝ returns 3 2 5 ⍴ 'bob  jonesbob  zwartjoe  doe  '
   #
   #     "ZYXWVUTSRQPONMLKJIHGFEDCBA"⍋"ZAMBIA"   ⍝ returns 0 2 4 3 1 5
-  #     ⎕A←"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ◇ (⌽⎕A)⍋3 3⍴"BOBALFZAK"   ⍝ returns 2 0 1
+  #
+  #     ⎕A←"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ◇ (⌽⎕A)⍋3 3⍴"BOBALFZAK"
+  #     ... ⍝ returns 2 0 1
   #
   #     data←6 4⍴"ABLEaBLEACREABELaBELACES"
   #     ... coll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -1250,7 +1321,8 @@ define (require) ->
     sb = shapeOf b
     lastDimA = if sa.length then sa[sa.length - 1] else 1
     firstDimB = if sb.length then sb[0] else 1
-    assert lastDimA is 1 or firstDimB is 1 or lastDimA is firstDimB, 'Incompatible shapes for ⊥ ("Decode")'
+    assert lastDimA is 1 or firstDimB is 1 or lastDimA is firstDimB,
+      'Incompatible shapes for ⊥ ("Decode")'
     if isSimple a then a = [a]
     if isSimple b then b = [b]
     r = []
@@ -1282,7 +1354,8 @@ define (require) ->
   monadic '⍎', 'Execute', (b) ->
     s = ''
     for c in array b
-      assert typeof c is 'string', 'The argument to ⍎ must be a character or a string.'
+      assert typeof c is 'string',
+        'The argument to ⍎ must be a character or a string.'
       s += c
     require('./compiler').exec s
 
@@ -1313,7 +1386,8 @@ define (require) ->
   #     ⎕IO←0   ⍝ returns 0
   #     ⎕IO←1   ⍝ fails
   builtins['get_⎕IO'] = -> 0
-  builtins['set_⎕IO'] = (x) -> if x isnt 0 then throw Error 'The index origin (⎕IO) is fixed at 0' else x
+  builtins['set_⎕IO'] = (x) ->
+    if x isnt 0 then throw Error 'The index origin (⎕IO) is fixed at 0' else x
 
 
 
@@ -1342,10 +1416,14 @@ define (require) ->
     r =
       if isBackwards
         for i in [0 ... n - a + 1]
-          x = items[i + a - 1]; (for j in [i + a - 2 ... i - 1] by -1 then x = f items[j], x); x
+          x = items[i + a - 1]
+          for j in [i + a - 2 ... i - 1] by -1 then x = f items[j], x
+          x
       else
         for i in [0 ... n - a + 1]
-          x = items[i]; (for j in [i + 1 ... i + a] by 1 then x = f items[j], x); x
+          x = items[i]
+          for j in [i + 1 ... i + a] by 1 then x = f items[j], x
+          x
     if invokedAsMonadic then r[0] else r
 
   # Helper for `/` and `⌿` in their function sense
@@ -1356,12 +1434,14 @@ define (require) ->
     assert 0 <= axis < sb.length, 'Axis out of bounds'
     sr = sb[0...]
     sr[axis] = 0
-    assert shapeOf(a).length <= 1, 'Left argument to / must be an integer or a vector of integers'
+    assert shapeOf(a).length <= 1,
+      'Left argument to / must be an integer or a vector of integers'
     if not a.length then a = for [0...sb[axis]] then a
 
     nNonNegative = 0 # number of non-negative elements in a
     for x in a
-      assert typeof x is 'number' and x is floor x, 'Left argument to / must be an integer or a vector of integers'
+      assert typeof x is 'number' and x is floor x,
+        'Left argument to / must be an integer or a vector of integers'
       sr[axis] += abs x
       nNonNegative += (x >= 0)
 
@@ -1389,7 +1469,9 @@ define (require) ->
               r.push b[k + nk*(j + nj*i)]
           j += isExpansive or isHyperexpansive
         else
-          filler = prototypeOf(if isExpansive then [b[nk*(j + nj*i)]] else [b[nk*nj*i]])
+          filler = prototypeOf(
+            if isExpansive then [b[nk*(j + nj*i)]] else [b[nk*nj*i]]
+          )
           for [0...-x*nk]
             r.push filler
           j += isExpansive
@@ -1432,19 +1514,21 @@ define (require) ->
   #
   # Replicate
   #
-  #     2 ¯2 2 / 1+2 3⍴⍳6                 ⍝ returns 2 6 ⍴  1 1 0 0 3 3  4 4 0 0 6 6
-  #     2 ¯2 2 ¯2 2 / 1+2 3⍴⍳6            ⍝ returns 2 10 ⍴  1 1 0 0 2 2 0 0 3 3  4 4 0 0 5 5 0 0 6 6
+  #     2 ¯2 2 / 1+2 3⍴⍳6
+  #     ... ⍝ returns 2 6 ⍴  1 1 0 0 3 3  4 4 0 0 6 6
+  #     2 ¯2 2 ¯2 2 / 1+2 3⍴⍳6
+  #     ... ⍝ returns 2 10 ⍴  1 1 0 0 2 2 0 0 3 3  4 4 0 0 5 5 0 0 6 6
   #     1 1 ¯2 1 1 / 1 2 (2 2⍴⍳4) 3 4     ⍝ returns 1 2 (2 2⍴0) (2 2⍴0) 3 4
   #     1 1 ¯2 1 1 1 / 1 2 (2 2⍴⍳4) 3 4   ⍝ returns 1 2 0 0 (2 2⍴0 1 2 3) 3 4
-  #     2 3 2 / "ABC"                     ⍝ returns 'AABBBCC'
-  #     2 / "DEF"                         ⍝ returns 'DDEEFF'
-  #     5 0 5 / 1 2 3                     ⍝ returns 1 1 1 1 1 3 3 3 3 3
-  #     2 / 1+2 3⍴⍳6                      ⍝ returns 2 6 ⍴  1 1 2 2 3 3  4 4 5 5 6 6
-  #     2 ⌿ 1+2 3⍴⍳6                      ⍝ returns 4 3 ⍴  1 2 3  1 2 3  4 5 6  4 5 6
-  #     2 3 / 3 1⍴"ABC"                   ⍝ returns 3 5 ⍴ 'AAAAABBBBBCCCCC'
-  #     2 ¯1 2 /[1] 3 1⍴(7 8 9)           ⍝ returns 3 5 ⍴ 7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
-  #     2 ¯1 2 /[1] 3 1⍴"ABC"             ⍝ returns 3 5 ⍴ 'AA AABB BBCC CC'
-  #     2 ¯2 2 / 7                        ⍝ returns 7 7 0 0 7 7
+  #     2 3 2 / "ABC"             ⍝ returns 'AABBBCC'
+  #     2 / "DEF"                 ⍝ returns 'DDEEFF'
+  #     5 0 5 / 1 2 3             ⍝ returns 1 1 1 1 1 3 3 3 3 3
+  #     2 / 1+2 3⍴⍳6              ⍝ returns 2 6 ⍴  1 1 2 2 3 3  4 4 5 5 6 6
+  #     2 ⌿ 1+2 3⍴⍳6              ⍝ returns 4 3 ⍴  1 2 3  1 2 3  4 5 6  4 5 6
+  #     2 3 / 3 1⍴"ABC"           ⍝ returns 3 5 ⍴ 'AAAAABBBBBCCCCC'
+  #     2 ¯1 2 /[1] 3 1⍴(7 8 9)   ⍝ returns 3 5 ⍴ 7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
+  #     2 ¯1 2 /[1] 3 1⍴"ABC"     ⍝ returns 3 5 ⍴ 'AA AABB BBCC CC'
+  #     2 ¯2 2 / 7                ⍝ returns 7 7 0 0 7 7
   postfixOperator '/', 'Reduce, compress, or replicate', (b, a, axis = -1) ->
     if typeof b is 'function'
       reduce b, undefined, axis
@@ -1454,11 +1538,12 @@ define (require) ->
   # 1st axis reduce, compress, or replicate (`⌿`)
   #
   #     +⌿ 2 3 ⍴ 1 2 3 10 20 30   ⍝ returns 11 22 33
-  postfixOperator '⌿', '1st axis reduce, compress, or replicate', (b, a, axis = 0) ->
-    if typeof b is 'function'
-      reduce b, undefined, axis
-    else
-      compressOrReplicate b, a, axis
+  postfixOperator '⌿', '1st axis reduce, compress, or replicate',
+    (b, a, axis = 0) ->
+      if typeof b is 'function'
+        reduce b, undefined, axis
+      else
+        compressOrReplicate b, a, axis
 
   # Helper for `\` and `⍀` in their operator sense
   scan = (f, _, axis = -1) -> (a, _1) ->
@@ -1496,7 +1581,8 @@ define (require) ->
   #     M←2 3⍴1 2 3 4 5 6 ◇ +⍀M    ⍝ returns 2 3 ⍴ 1 2 3 5 7 9
   #     //gives 'M←2 3⍴1 2 3 4 5 6 ◇ +\[0]M', [1, 2, 3, 5, 7, 9] # todo
   #     ,\ 'ABC'                   ⍝ returns (↑'A') 'AB' 'ABC'
-  #     T←"ONE(TWO) BOOK(S)" ◇ ≠\T∈"()"   ⍝ returns 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
+  #     T←"ONE(TWO) BOOK(S)" ◇ ≠\T∈"()"
+  #     ... ⍝ returns 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
   #     T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK'
   postfixOperator '\\', 'Scan or expand', (b, a, axis = -1) ->
     if typeof b is 'function'
@@ -1526,11 +1612,16 @@ define (require) ->
   #     4 5 ⍴¨ "THE" "CAT"                   ⍝ returns 'THET' 'CATCA'
   #     {1+⍵⋆2}¨ 2 3 ⍴ ⍳ 6                   ⍝ returns 2 3 ⍴ 1 2 5 10 17 26
   postfixOperator '¨', 'Each', (f) -> (b, a) ->
-    if not a? then return withShape shapeOf(b), (for x in array b then f x)
-    if isSimple a then return withShape shapeOf(b), (for x in array b then f x, a)
-    if match(shapeOf(a), shapeOf(b)) then return withShape shapeOf(b), (for i in [0...a.length] then f b[i], a[i])
-    if a.length is 1 then return withShape shapeOf(b), (for x in b then f x, a[0])
-    if b.length is 1 then return withShape shapeOf(a), (for x in a then f b[0], x)
+    if not a?
+      return withShape shapeOf(b), (for x in array b then f x)
+    if isSimple a
+      return withShape shapeOf(b), (for x in array b then f x, a)
+    if match shapeOf(a), shapeOf(b)
+      return withShape shapeOf(b), (for i in [0...a.length] then f b[i], a[i])
+    if a.length is 1
+      return withShape shapeOf(b), (for x in b then f x, a[0])
+    if b.length is 1
+      return withShape shapeOf(a), (for x in a then f b[0], x)
     die 'Length error'
 
   # Outer product
@@ -1586,7 +1677,9 @@ define (require) ->
   infixOperator '.', 'Inner product', (g, f) ->
     F = reduce f
     (b, a) ->
-      assert shapeOf(a).length <= 1 and shapeOf(b).length <= 1, 'Inner product operator (.) is implemented only for arrays of rank no more than 1.'
+      assert shapeOf(a).length <= 1 and shapeOf(b).length <= 1,
+        'Inner product operator (.) is implemented only for ' +
+        'arrays of rank no more than 1.'
       F g b, a
 
   # Power operator (`⍣`)
@@ -1604,10 +1697,14 @@ define (require) ->
       y
 
   # `⎕` and `⍞` will be overridden for the web.
-  builtins['set_⎕'] = (x) -> process.stdout.write require('./formatter').format(x) + '\n'; x
-  builtins['get_⎕'] = -> die 'Reading from ⎕ is not implemented.'
-  builtins['set_⍞'] = (x) -> process.stdout.write require('./formatter').format x; x
-  builtins['get_⍞'] = -> die 'Reading from ⍞ is not implemented.'
+  builtins['set_⎕'] = (x) ->
+    process.stdout.write require('./formatter').format(x) + '\n'; x
+  builtins['get_⎕'] = ->
+    die 'Reading from ⎕ is not implemented.'
+  builtins['set_⍞'] = (x) ->
+    process.stdout.write require('./formatter').format x; x
+  builtins['get_⍞'] = ->
+    die 'Reading from ⍞ is not implemented.'
 
   builtins.aplify = (x) ->
     assert x isnt null

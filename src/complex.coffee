@@ -68,7 +68,8 @@ define ['./helpers'], (helpers) ->
     '×': (x) ->
       if x?
         if typeof x is 'number' then C x * @re, x * @im
-        else if x instanceof Complex then C @re * x.re - @im * x.im, @re * x.im + @im * x.re
+        else if x instanceof Complex
+          C @re * x.re - @im * x.im, @re * x.im + @im * x.re
         else throw Error 'Unsupported operation'
       else
         throw Error 'Unsupported operation'

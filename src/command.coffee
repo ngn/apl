@@ -37,14 +37,15 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
     if argv.help then return optimist.showHelp()
 
     # Complain about unknown or incompatible options.
-    for k of argv
-      if k not in 'c compile h help i interactive n nodes p print s stdio _'.split ' '
-        if not k.match /^\$\d+/
-          process.stderr.write "Unknown option, \"#{k}\"\n\n"
-          optimist.showHelp()
-          return
+    knownOptions =
+      'c compile h help i interactive n nodes p print s stdio _'.split ' '
+    for k of argv when (k not in knownOptions) and not k.match /^\$\d+/
+      process.stderr.write "Unknown option, \"#{k}\"\n\n"
+      optimist.showHelp()
+      return
 
-    if argv.interactive and (argv.compile or argv.nodes or argv.print or argv.stdio)
+    if (argv.interactive and
+          (argv.compile or argv.nodes or argv.print or argv.stdio))
       process.stderr.write '''
         Option -i (--interactive) is incompatible with the following options:
           -c, --compile
@@ -67,7 +68,8 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
       '⍵': for a in argv._ then a.split ''
 
     # Start a REPL if requested or if no input is specified.
-    if argv.interactive or not (argv._.length or argv.stdio) then return repl ctx
+    if argv.interactive or not (argv._.length or argv.stdio)
+      return repl ctx
 
     # Determine input.
     code =
@@ -100,7 +102,8 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
       if argv.stdio or argv.print
         process.stdout.write jsOutput
       else
-        fs.writeFileSync argv._[0].replace(/\.apl$/, '') + '.js', jsOutput, 'utf8'
+        fs.writeFileSync argv._[0].replace(/\.apl$/, '') + '.js',
+          jsOutput, 'utf8'
     else
       execJS jsOutput, extraContext: ctx
 
