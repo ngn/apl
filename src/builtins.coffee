@@ -321,7 +321,7 @@ define (require) ->
   #     ⍴ ⍳ 5       ⍝ returns 1 ⍴ 5
   #     ⍳ 0         ⍝ returns ⍬
   #     ⍴ ⍳ 0       ⍝ returns ,0
-  #     ⍳ 2 3 4     ⍝ returns 2 3 4 3 ⍴
+  #     ⍳ 2 3 4     ⍝ returns (2 3 4 3 ⍴
   #     ...
   #     ...                   0 0 0
   #     ...                   0 0 1
@@ -351,7 +351,7 @@ define (require) ->
   #     ...                   1 2 0
   #     ...                   1 2 1
   #     ...                   1 2 2
-  #     ...                   1 2 3
+  #     ...                   1 2 3)
   #
   #     ⍴⍳ 2 3 4    ⍝ returns 2 3 4 3
   monadic '⍳', 'Index generate', (a) ->
@@ -569,14 +569,14 @@ define (require) ->
   #     "ME"⍷"HOME AGAIN"                      ⍝ returns 0 0 1 0 0 0 0 0 0 0
   #
   #     "DAY"⍷7 9⍴"SUNDAY   MONDAY   TUESDAY  WEDNESDAYTHURSDAY FRIDAY   SATURDAY "
-  #     ...   ⍝ returns 7 9 ⍴
+  #     ...   ⍝ returns (7 9 ⍴
   #     ...                   0 0 0 1 0 0 0 0 0
   #     ...                   0 0 0 1 0 0 0 0 0
   #     ...                   0 0 0 0 1 0 0 0 0
   #     ...                   0 0 0 0 0 0 1 0 0
   #     ...                   0 0 0 0 0 1 0 0 0
   #     ...                   0 0 0 1 0 0 0 0 0
-  #     ...                   0 0 0 0 0 1 0 0 0
+  #     ...                   0 0 0 0 0 1 0 0 0)
   #
   #     (2 2⍴"ABCD")⍷"ABCD"   ⍝ returns 4 ⍴ 0
   #     (1 2) (3 4) ⍷ "START" (1 2 3) (1 2) (3 4)   ⍝ returns 0 0 1 0
@@ -836,11 +836,11 @@ define (require) ->
   #     ⍉ 2 3 ⍴ 1 2 3 6 7 8     ⍝ returns 3 2 ⍴ 1 6 2 7 3 8
   #     ⍴ ⍉ 2 3 ⍴ 1 2 3 6 7 8   ⍝ returns 3 2
   #     ⍉ 1 2 3                 ⍝ returns 1 2 3
-  #     ⍉ 2 3 4 ⍴ ⍳ 24          ⍝ returns 4 3 2 ⍴
+  #     ⍉ 2 3 4 ⍴ ⍳ 24          ⍝ returns (4 3 2 ⍴
   #     ...                          0 12   4 16    8 20
   #     ...                          1 13   5 17    9 21
   #     ...                          2 14   6 18   10 22
-  #     ...                          3 15   7 19   11 23
+  #     ...                          3 15   7 19   11 23)
   monadic '⍉', 'Transpose', (a) ->
     sa = shapeOf a
     if sa.length <= 1 then return a # has no effect on scalars or vectors
@@ -1002,37 +1002,37 @@ define (require) ->
   #
   # `a0 a1...⌷b` is equivalent to `b[a0;a1;...]`
   #
-  #    1 ⌷ 3 5 8                ⍝ returns 5
-  #    (3 5 8)[1]               ⍝ returns 5
-  #    ⌷←{⍺+¨⍵}  ◇  (3 5 8)[1]  ⍝ returns 4 6 9
-  #    (2 2 0) (1 2) ⌷ 3 3⍴⍳9   ⍝ returns 3 2 ⍴ 7 8 7 8 1 2
-  #    ¯1 ⌷ 3 5 8               ⍝ fails
-  #    2 ⌷ 111 222 333 444      ⍝ returns 333
-  #    (⊂3 2) ⌷ 111 222 333 444 ⍝ returns 444 333
-  #    (⊂2 3⍴2 0 3 0 1 2) ⌷ 111 222 333 444   ⍝ returns 2 3⍴333 111 444 111 222 333
-  #    1 0    ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21
-  #    1      ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 22 23 24
-  #    2 (1 0)⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 32 31
-  #    (1 2) 0⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 31
+  #     1 ⌷ 3 5 8                ⍝ returns 5
+  #     (3 5 8)[1]               ⍝ returns 5
+  #     ⌷←{⍺+¨⍵}  ◇  (3 5 8)[1]  ⍝ returns 4 6 9
+  #     (2 2 0) (1 2) ⌷ 3 3⍴⍳9   ⍝ returns 3 2 ⍴ 7 8 7 8 1 2
+  #     ¯1 ⌷ 3 5 8               ⍝ fails
+  #     2 ⌷ 111 222 333 444      ⍝ returns 333
+  #     (⊂3 2) ⌷ 111 222 333 444 ⍝ returns 444 333
+  #     (⊂2 3⍴2 0 3 0 1 2) ⌷ 111 222 333 444   ⍝ returns 2 3⍴333 111 444 111 222 333
+  #     1 0    ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21
+  #     1      ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 22 23 24
+  #     2 (1 0)⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 32 31
+  #     (1 2) 0⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 31
   #
-  #    (23 54 38)[0]                         ⍝ returns 23
-  #    (23 54 38)[1]                         ⍝ returns 54
-  #    (23 54 38)[2]                         ⍝ returns 38
-  #    (23 54 38)[3]                         ⍝ fails
-  #    (23 54 38)[¯1]                        ⍝ fails
-  #    (23 54 38)[0 2]                       ⍝ returns 23 38
-  #    (2 3 ⍴ 100 101 102 110 111 112)[1;2]  ⍝ returns 112
-  #    (2 3 ⍴ 100 101 102 110 111 112)[1;¯1] ⍝ fails
-  #    (2 3 ⍴ 100 101 102 110 111 112)[10;1] ⍝ fails
-  #    (2 3 ⍴ 100 101 102 110 111 112)[1;]   ⍝ returns 110 111 112
-  #    (2 3 ⍴ 100 101 102 110 111 112)[;1]   ⍝ returns 101 111
-  #    'hello'[1]                            ⍝ returns 'e'
-  #    'ipodlover'[1 2 5 8 3 7 6 0 4]        ⍝ returns 'poordevil'
-  #    ('axlrose'[4 3 0 2 5 6 1])[0 1 2 3]   ⍝ returns 'oral'
+  #     (23 54 38)[0]                         ⍝ returns 23
+  #     (23 54 38)[1]                         ⍝ returns 54
+  #     (23 54 38)[2]                         ⍝ returns 38
+  #     (23 54 38)[3]                         ⍝ fails
+  #     (23 54 38)[¯1]                        ⍝ fails
+  #     (23 54 38)[0 2]                       ⍝ returns 23 38
+  #     (2 3 ⍴ 100 101 102 110 111 112)[1;2]  ⍝ returns 112
+  #     (2 3 ⍴ 100 101 102 110 111 112)[1;¯1] ⍝ fails
+  #     (2 3 ⍴ 100 101 102 110 111 112)[10;1] ⍝ fails
+  #     (2 3 ⍴ 100 101 102 110 111 112)[1;]   ⍝ returns 110 111 112
+  #     (2 3 ⍴ 100 101 102 110 111 112)[;1]   ⍝ returns 101 111
+  #     'hello'[1]                            ⍝ returns 'e'
+  #     'ipodlover'[1 2 5 8 3 7 6 0 4]        ⍝ returns 'poordevil'
+  #     ('axlrose'[4 3 0 2 5 6 1])[0 1 2 3]   ⍝ returns 'oral'
   #
-  #    " X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]  ⍝ returns 3 3⍴,/' X '
-  #...                                             'X  '
-  #...                                             'XXX'
+  #     " X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]  ⍝ returns 3 3⍴,/ (' X '
+  #     ...                                           'X  '
+  #     ...                                           'XXX')
   dyadic '⌷', 'Index', (b, a, axes = null) ->
     if typeof b is 'function' then return (y, x) -> b y, x, a
     a = array a
@@ -1102,12 +1102,12 @@ define (require) ->
   #     t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  ⍋t       ⍝ returns 2 1 0
   #
   #     t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  t[⍋t;]
-  #     ...    ⍝ returns 3 3 ⍴    1 1 2
+  #     ...    ⍝ returns (3 3 ⍴   1 1 2
   #     ...                       1 1 3
-  #     ...                       4 5 6
+  #     ...                       4 5 6)
   #
   #     a←3 2 3⍴2 3 4 0 1 0 1 1 3 4 5 6 1 1 2 10 11 12  ◇  a[⍋a;;]
-  #     ... ⍝ returns 3 2 3 ⍴
+  #     ... ⍝ returns (3 2 3 ⍴
   #     ...      1  1  2
   #     ...     10 11 12
   #     ...
@@ -1115,7 +1115,7 @@ define (require) ->
   #     ...      4  5  6
   #     ...
   #     ...      2  3  4
-  #     ...      0  1  0
+  #     ...      0  1  0)
   #
   #     a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]
   #     ... ⍝ returns 3 2 5 ⍴ 'bob  jonesbob  zwartjoe  doe  '
@@ -1124,13 +1124,13 @@ define (require) ->
   #     ⎕A←"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ◇ (⌽⎕A)⍋3 3⍴"BOBALFZAK"   ⍝ returns 2 0 1
   #
   #     data←6 4⍴"ABLEaBLEACREABELaBELACES"
-  #     ... ◇ coll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-  #     ... ◇ data[coll⍋data;]
+  #     ... coll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  #     ... data[coll⍋data;]
   #     ...   ⍝ returns 6 4 ⍴ 'ABELaBELABLEaBLEACESACRE'
   #
   #     data←6 4⍴"ABLEaBLEACREABELaBELACES"
-  #     ... ◇ coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
-  #     ... ◇ data[coll1⍋data;]
+  #     ... coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+  #     ... data[coll1⍋data;]
   #     ...   ⍝ returns 6 4 ⍴ 'ABELABLEACESACREaBELaBLE'
   monadic '⍋', 'Grade up', (b, a) -> grade b, a, 1
 
@@ -1147,33 +1147,34 @@ define (require) ->
   #     16 16 16 16⊤100       ⍝ returns 0 0 6 4
   #     1760 3 12⊤75.3        ⍝ returns 2 0 (75.3−72)
   #     0 1⊤75.3              ⍝ returns 75 (75.3−75)
-  #     2 2 2 2 2⊤1 2 3 4 5   ⍝ returns 5 5 ⍴
+  #
+  #     2 2 2 2 2⊤1 2 3 4 5   ⍝ returns (5 5 ⍴
   #     ...                         0 0 0 0 0
   #     ...                         0 0 0 0 0
   #     ...                         0 0 0 1 1
   #     ...                         0 1 1 0 0
-  #     ...                         1 0 1 0 1
+  #     ...                         1 0 1 0 1)
   #
-  #    10⊤5 15 125 ⍝ returns 5 5 5
-  #    0 10⊤5 15 125 ⍝ returns 2 3⍴ 0 1 12 5 5 5
+  #     10⊤5 15 125 ⍝ returns 5 5 5
+  #     0 10⊤5 15 125 ⍝ returns 2 3⍴ 0 1 12 5 5 5
   #
-  #    (8 3⍴ 2 0 0
-  #    ...   2 0 0
-  #    ...   2 0 0
-  #    ...   2 0 0
-  #    ...   2 8 0
-  #    ...   2 8 0
-  #    ...   2 8 16
-  #    ...   2 8 16) ⊤ 75
-  #    ...       ⍝ returns 8 3⍴
-  #    ...             0 0 0
-  #    ...             1 0 0
-  #    ...             0 0 0
-  #    ...             0 0 0
-  #    ...             1 0 0
-  #    ...             0 1 0
-  #    ...             1 1 4
-  #    ...             1 3 11
+  #     (8 3⍴ 2 0 0
+  #     ...   2 0 0
+  #     ...   2 0 0
+  #     ...   2 0 0
+  #     ...   2 8 0
+  #     ...   2 8 0
+  #     ...   2 8 16
+  #     ...   2 8 16) ⊤ 75
+  #     ...       ⍝ returns (8 3⍴
+  #     ...             0 0 0
+  #     ...             1 0 0
+  #     ...             0 0 0
+  #     ...             0 0 0
+  #     ...             1 0 0
+  #     ...             0 1 0
+  #     ...             1 1 4
+  #     ...             1 3 11)
   monadic '⊤', 'Encode', (b, a) ->
     sa = shapeOf a
     sb = shapeOf b
@@ -1212,38 +1213,38 @@ define (require) ->
   #
   #     //gives '(1j1 ⊥ 1 2 3 4) = 5j9', 1 # todo: ⊥ for complex numbers
   #
-  #    M ← 3 8 ⍴
-  #    ...                   0 0 0 0 1 1 1 1
-  #    ...                   0 0 1 1 0 0 1 1
-  #    ...                   0 1 0 1 0 1 0 1
-  #    ... ◇ A ← 4 3 ⍴
-  #    ...                   1 1 1
-  #    ...                   2 2 2
-  #    ...                   3 3 3
-  #    ...                   4 4 4
-  #    ... ◇ A ⊥ M
-  #    ...      ⍝ returns 4 8⍴
-  #    ...          0 1 1 2  1  2  2  3
-  #    ...          0 1 2 3  4  5  6  7
-  #    ...          0 1 3 4  9 10 12 13
-  #    ...          0 1 4 5 16 17 20 21
+  #     M ← (3 8 ⍴
+  #     ...                   0 0 0 0 1 1 1 1
+  #     ...                   0 0 1 1 0 0 1 1
+  #     ...                   0 1 0 1 0 1 0 1)
+  #     ... A ← (4 3 ⍴
+  #     ...                   1 1 1
+  #     ...                   2 2 2
+  #     ...                   3 3 3
+  #     ...                   4 4 4)
+  #     ... A ⊥ M
+  #     ...      ⍝ returns (4 8⍴
+  #     ...          0 1 1 2  1  2  2  3
+  #     ...          0 1 2 3  4  5  6  7
+  #     ...          0 1 3 4  9 10 12 13
+  #     ...          0 1 4 5 16 17 20 21)
   #
-  #    M ← 3 8 ⍴
-  #    ...          0 0 0 0 1 1 1 1
-  #    ...          0 0 1 1 0 0 1 1
-  #    ...          0 1 0 1 0 1 0 1
-  #    ... ◇ 2 ⊥ M
-  #    ...      ⍝ returns 0 1 2 3 4 5 6 7
+  #     M ← (3 8 ⍴
+  #     ...          0 0 0 0 1 1 1 1
+  #     ...          0 0 1 1 0 0 1 1
+  #     ...          0 1 0 1 0 1 0 1)
+  #     ... 2 ⊥ M
+  #     ...      ⍝ returns 0 1 2 3 4 5 6 7
   #
-  #    M ← 3 8 ⍴
-  #    ...          0 0 0 0 1 1 1 1
-  #    ...          0 0 1 1 0 0 1 1
-  #    ...          0 1 0 1 0 1 0 1
-  #    ... ◇ A ← 2 1 ⍴ 2 10
-  #    ... ◇ A ⊥ M
-  #    ...      ⍝ returns 2 8⍴
-  #    ...          0 1  2  3   4   5   6   7
-  #    ...          0 1 10 11 100 101 110 111
+  #     M ← (3 8 ⍴
+  #     ...          0 0 0 0 1 1 1 1
+  #     ...          0 0 1 1 0 0 1 1
+  #     ...          0 1 0 1 0 1 0 1)
+  #     ... A ← 2 1 ⍴ 2 10
+  #     ... A ⊥ M
+  #     ...      ⍝ returns (2 8⍴
+  #     ...          0 1  2  3   4   5   6   7
+  #     ...          0 1 10 11 100 101 110 111)
   monadic '⊥', 'Decode', (b, a) ->
     sa = shapeOf a
     sb = shapeOf b
@@ -1487,13 +1488,13 @@ define (require) ->
   #     ,\ "AB" "CD" "EF"          ⍝ returns 'AB' 'ABCD' 'ABCDEF'
   #     ×\ 2 3⍴5 2 3 4 7 6         ⍝ returns 2 3 ⍴ 5 10 30 4 28 168
   #     ∧\ 1 1 1 0 1 1             ⍝ returns 1 1 1 0 0 0
-  # //gives '−\1 2 3 4', [1, -1, 2, -2] # todo
+  #     //gives '−\1 2 3 4', [1, -1, 2, -2] # todo
   #     ∨\ 0 0 1 0 0 1 0           ⍝ returns 0 0 1 1 1 1 1
   #     +\ 1 2 3 4 5               ⍝ returns 1 3 6 10 15
   #     +\ (1 2 3)(4 5 6)(7 8 9)   ⍝ returns (1 2 3) (5 7 9) (12 15 18)
   #     M←2 3⍴1 2 3 4 5 6 ◇ +\M    ⍝ returns 2 3 ⍴ 1 3 6 4 9 15
   #     M←2 3⍴1 2 3 4 5 6 ◇ +⍀M    ⍝ returns 2 3 ⍴ 1 2 3 5 7 9
-  # //gives 'M←2 3⍴1 2 3 4 5 6 ◇ +\[0]M', [1, 2, 3, 5, 7, 9] # todo
+  #     //gives 'M←2 3⍴1 2 3 4 5 6 ◇ +\[0]M', [1, 2, 3, 5, 7, 9] # todo
   #     ,\ 'ABC'                   ⍝ returns (↑'A') 'AB' 'ABC'
   #     T←"ONE(TWO) BOOK(S)" ◇ ≠\T∈"()"   ⍝ returns 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
   #     T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK'
@@ -1534,36 +1535,36 @@ define (require) ->
 
   # Outer product
   #
-  #    2 3 4 ∘.× 1 2 3 4
-  #    ...     ⍝ returns 3 4⍴
-  #    ...         2 4  6  8
-  #    ...         3 6  9 12
-  #    ...         4 8 12 16
+  #     2 3 4 ∘.× 1 2 3 4
+  #     ...     ⍝ returns (3 4⍴
+  #     ...         2 4  6  8
+  #     ...         3 6  9 12
+  #     ...         4 8 12 16)
   #
-  #    0 1 2 3 4 ∘.! 0 1 2 3 4
-  #    ...     ⍝ returns 5 5⍴
-  #    ...         1 1 1 1 1
-  #    ...         0 1 2 3 4
-  #    ...         0 0 1 3 6
-  #    ...         0 0 0 1 4
-  #    ...         0 0 0 0 1
+  #     0 1 2 3 4 ∘.! 0 1 2 3 4
+  #     ...     ⍝ returns (5 5⍴
+  #     ...         1 1 1 1 1
+  #     ...         0 1 2 3 4
+  #     ...         0 0 1 3 6
+  #     ...         0 0 0 1 4
+  #     ...         0 0 0 0 1)
   #
-  #    1 2 ∘., 1+⍳3
-  #    ...     ⍝ returns 2 3⍴
-  #    ...         (1 1) (1 2) (1 3)
-  #    ...         (2 1) (2 2) (2 3)
+  #     1 2 ∘., 1+⍳3
+  #     ...     ⍝ returns (2 3⍴
+  #     ...         (1 1) (1 2) (1 3)
+  #     ...         (2 1) (2 2) (2 3))
   #
-  #    ⍴ 1 2 ∘., 1+⍳3   ⍝ returns 2 3
+  #     ⍴ 1 2 ∘., 1+⍳3   ⍝ returns 2 3
   #
-  #    2 3 ∘.↑ 1 2
-  #    ...     ⍝ returns 2 2⍴
-  #    ...           (1 0)   (2 0)
-  #    ...         (1 0 0) (2 0 0)
+  #     2 3 ∘.↑ 1 2
+  #     ...     ⍝ returns (2 2⍴
+  #     ...           (1 0)   (2 0)
+  #     ...         (1 0 0) (2 0 0))
   #
-  #    ⍴ 2 3 ∘.↑ 1 2     ⍝ returns 2 2
-  #    ⍴ ((4 3 ⍴ 0) ∘.+ (5 2 ⍴ 0))   ⍝ returns 4 3 5 2
-  #    2 3 ∘.× 4 5       ⍝ returns 2 2⍴ 8 10 12 15
-  #    2 3 ∘.{⍺×⍵} 4 5   ⍝ returns 2 2⍴ 8 10 12 15
+  #     ⍴ 2 3 ∘.↑ 1 2     ⍝ returns 2 2
+  #     ⍴ ((4 3 ⍴ 0) ∘.+ (5 2 ⍴ 0))   ⍝ returns 4 3 5 2
+  #     2 3 ∘.× 4 5       ⍝ returns 2 2⍴ 8 10 12 15
+  #     2 3 ∘.{⍺×⍵} 4 5   ⍝ returns 2 2⍴ 8 10 12 15
   prefixOperator '∘.', 'Outer product', outerProduct = (f) ->
     assert typeof f is 'function'
     (b, a) ->

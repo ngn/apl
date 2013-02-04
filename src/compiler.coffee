@@ -314,16 +314,16 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
         #
         # Test get_/set_ convention for niladics:
         #
-        #     radius ← 3 ◇
-        # ... get_circumference ← {2 × ○ radius} ◇
-        # ... get_surface ← {○ radius ⋆ 2} ◇
-        # ...
-        # ... before ← 0.01× ⌊ 100× radius circumference surface ◇
-        # ... radius ← radius + 1 ◇
-        # ... after  ← 0.01× ⌊ 100× radius circumference surface ◇
-        # ...
-        # ... before after
-        # ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
+        #     radius ← 3
+        #     ... get_circumference ← {2 × ○ radius}
+        #     ... get_surface ← {○ radius ⋆ 2}
+        #     ...
+        #     ... before ← 0.01× ⌊ 100× radius circumference surface
+        #     ... radius ← radius + 1
+        #     ... after  ← 0.01× ⌊ 100× radius circumference surface
+        #     ...
+        #     ... before after
+        #     ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
         when 'sym'
           name = node[1]
           if name is '∇'
@@ -353,6 +353,7 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
         #     ⍴⍴'xx'   ⍝ returns ,1
         #
         # Pairs of quotes inside strings:
+        #
         #     'Let''s parse it!'         ⍝ returns 'Let\'s parse it!'
         #     "0x22's the code for ""."  ⍝ returns '0x22\'s the code for ".'
         #     ⍴"\f\t\n\r\u1234\xff"      ⍝ returns ,6
@@ -364,6 +365,8 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
           "_.aplify(#{d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d})"
 
 
+        # Numbers
+        #
         #     1234567890  ⍝ returns «1234567890»
         #     12.34e56    ⍝ returns «12.34e56»
         #     12.34e+56   ⍝ returns «12.34e+56»

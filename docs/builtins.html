@@ -1,4 +1,4 @@
-<!DOCTYPE html>  <html> <head>   <title>builtins.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="apl.html">                 apl.coffee               </a>                                           <a class="source" href="browser.html">                 browser.coffee               </a>                                           <a class="source" href="builtins.html">                 builtins.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="compiler.html">                 compiler.coffee               </a>                                           <a class="source" href="complex.html">                 complex.coffee               </a>                                           <a class="source" href="formatter.html">                 formatter.coffee               </a>                                           <a class="source" href="grammar.html">                 grammar.coffee               </a>                                           <a class="source" href="helpers.html">                 helpers.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               builtins.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="k">if</span> <span class="k">typeof</span> <span class="nx">define</span> <span class="o">isnt</span> <span class="s1">&#39;function&#39;</span> <span class="k">then</span> <span class="nv">define = </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;amdefine&#39;</span><span class="p">)(</span><span class="nx">module</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>This file contains an implementation of APL's built-in functions and
+<!DOCTYPE html>  <html> <head>   <title>builtins.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="builtins.html">                 builtins.coffee               </a>                                           <a class="source" href="compiler.html">                 compiler.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               builtins.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="k">if</span> <span class="k">typeof</span> <span class="nx">define</span> <span class="o">isnt</span> <span class="s1">&#39;function&#39;</span> <span class="k">then</span> <span class="nv">define = </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;amdefine&#39;</span><span class="p">)(</span><span class="nx">module</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>This file contains an implementation of APL's built-in functions and
 operators.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h1>JavaScript representation of APL arrays</h1>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>APL's data structures are multidimensional arrays:</p>
 
 <ul>
@@ -260,7 +260,7 @@ propagate through arrays, if it has <code>f.aplMetaInfo.isPervasive</code>.</p> 
 ⍴ ⍳ 5       ⍝ returns 1 ⍴ 5
 ⍳ 0         ⍝ returns ⍬
 ⍴ ⍳ 0       ⍝ returns ,0
-⍳ 2 3 4     ⍝ returns 2 3 4 3 ⍴
+⍳ 2 3 4     ⍝ returns (2 3 4 3 ⍴
 ...
 ...                   0 0 0
 ...                   0 0 1
@@ -290,7 +290,7 @@ propagate through arrays, if it has <code>f.aplMetaInfo.isPervasive</code>.</p> 
 ...                   1 2 0
 ...                   1 2 1
 ...                   1 2 2
-...                   1 2 3
+...                   1 2 3)
 
 ⍴⍳ 2 3 4    ⍝ returns 2 3 4 3
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⍳&#39;</span><span class="p">,</span> <span class="s1">&#39;Index generate&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
@@ -478,14 +478,14 @@ n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A&lt;n   ⍝ returns 1 # any number x i
 "ME"⍷"HOME AGAIN"                      ⍝ returns 0 0 1 0 0 0 0 0 0 0
 
 "DAY"⍷7 9⍴"SUNDAY   MONDAY   TUESDAY  WEDNESDAYTHURSDAY FRIDAY   SATURDAY "
-...   ⍝ returns 7 9 ⍴
+...   ⍝ returns (7 9 ⍴
 ...                   0 0 0 1 0 0 0 0 0
 ...                   0 0 0 1 0 0 0 0 0
 ...                   0 0 0 0 1 0 0 0 0
 ...                   0 0 0 0 0 0 1 0 0
 ...                   0 0 0 0 0 1 0 0 0
 ...                   0 0 0 1 0 0 0 0 0
-...                   0 0 0 0 0 1 0 0 0
+...                   0 0 0 0 0 1 0 0 0)
 
 (2 2⍴"ABCD")⍷"ABCD"   ⍝ returns 4 ⍴ 0
 (1 2) (3 4) ⍷ "START" (1 2 3) (1 2) (3 4)   ⍝ returns 0 0 1 0
@@ -710,11 +710,11 @@ t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  ∧/ t    ⍝ returns 1 0 0
 <pre><code>⍉ 2 3 ⍴ 1 2 3 6 7 8     ⍝ returns 3 2 ⍴ 1 6 2 7 3 8
 ⍴ ⍉ 2 3 ⍴ 1 2 3 6 7 8   ⍝ returns 3 2
 ⍉ 1 2 3                 ⍝ returns 1 2 3
-⍉ 2 3 4 ⍴ ⍳ 24          ⍝ returns 4 3 2 ⍴
+⍉ 2 3 4 ⍴ ⍳ 24          ⍝ returns (4 3 2 ⍴
 ...                          0 12   4 16    8 20
 ...                          1 13   5 17    9 21
 ...                          2 14   6 18   10 22
-...                          3 15   7 19   11 23
+...                          3 15   7 19   11 23)
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⍉&#39;</span><span class="p">,</span> <span class="s1">&#39;Transpose&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="k">if</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">a</span> <span class="c1"># has no effect on scalars or vectors</span>
@@ -864,37 +864,38 @@ t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  ∧/ t    ⍝ returns 1 0 0
 
 <p><code>a0 a1...⌷b</code> is equivalent to <code>b[a0;a1;...]</code></p>
 
-<p>1 ⌷ 3 5 8                ⍝ returns 5
-   (3 5 8)[1]               ⍝ returns 5
-   ⌷←{⍺+¨⍵}  ◇  (3 5 8)[1]  ⍝ returns 4 6 9
-   (2 2 0) (1 2) ⌷ 3 3⍴⍳9   ⍝ returns 3 2 ⍴ 7 8 7 8 1 2
-   ¯1 ⌷ 3 5 8               ⍝ fails
-   2 ⌷ 111 222 333 444      ⍝ returns 333
-   (⊂3 2) ⌷ 111 222 333 444 ⍝ returns 444 333
-   (⊂2 3⍴2 0 3 0 1 2) ⌷ 111 222 333 444   ⍝ returns 2 3⍴333 111 444 111 222 333
-   1 0    ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21
-   1      ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 22 23 24
-   2 (1 0)⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 32 31
-   (1 2) 0⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 31</p>
+<pre><code>1 ⌷ 3 5 8                ⍝ returns 5
+(3 5 8)[1]               ⍝ returns 5
+⌷←{⍺+¨⍵}  ◇  (3 5 8)[1]  ⍝ returns 4 6 9
+(2 2 0) (1 2) ⌷ 3 3⍴⍳9   ⍝ returns 3 2 ⍴ 7 8 7 8 1 2
+¯1 ⌷ 3 5 8               ⍝ fails
+2 ⌷ 111 222 333 444      ⍝ returns 333
+(⊂3 2) ⌷ 111 222 333 444 ⍝ returns 444 333
+(⊂2 3⍴2 0 3 0 1 2) ⌷ 111 222 333 444   ⍝ returns 2 3⍴333 111 444 111 222 333
+1 0    ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21
+1      ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 22 23 24
+2 (1 0)⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 32 31
+(1 2) 0⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34   ⍝ returns 21 31
 
-<p>(23 54 38)[0]                         ⍝ returns 23
-   (23 54 38)[1]                         ⍝ returns 54
-   (23 54 38)[2]                         ⍝ returns 38
-   (23 54 38)[3]                         ⍝ fails
-   (23 54 38)[¯1]                        ⍝ fails
-   (23 54 38)[0 2]                       ⍝ returns 23 38
-   (2 3 ⍴ 100 101 102 110 111 112)[1;2]  ⍝ returns 112
-   (2 3 ⍴ 100 101 102 110 111 112)[1;¯1] ⍝ fails
-   (2 3 ⍴ 100 101 102 110 111 112)[10;1] ⍝ fails
-   (2 3 ⍴ 100 101 102 110 111 112)[1;]   ⍝ returns 110 111 112
-   (2 3 ⍴ 100 101 102 110 111 112)[;1]   ⍝ returns 101 111
-   'hello'[1]                            ⍝ returns 'e'
-   'ipodlover'[1 2 5 8 3 7 6 0 4]        ⍝ returns 'poordevil'
-   ('axlrose'[4 3 0 2 5 6 1])[0 1 2 3]   ⍝ returns 'oral'</p>
+(23 54 38)[0]                         ⍝ returns 23
+(23 54 38)[1]                         ⍝ returns 54
+(23 54 38)[2]                         ⍝ returns 38
+(23 54 38)[3]                         ⍝ fails
+(23 54 38)[¯1]                        ⍝ fails
+(23 54 38)[0 2]                       ⍝ returns 23 38
+(2 3 ⍴ 100 101 102 110 111 112)[1;2]  ⍝ returns 112
+(2 3 ⍴ 100 101 102 110 111 112)[1;¯1] ⍝ fails
+(2 3 ⍴ 100 101 102 110 111 112)[10;1] ⍝ fails
+(2 3 ⍴ 100 101 102 110 111 112)[1;]   ⍝ returns 110 111 112
+(2 3 ⍴ 100 101 102 110 111 112)[;1]   ⍝ returns 101 111
+'hello'[1]                            ⍝ returns 'e'
+'ipodlover'[1 2 5 8 3 7 6 0 4]        ⍝ returns 'poordevil'
+('axlrose'[4 3 0 2 5 6 1])[0 1 2 3]   ⍝ returns 'oral'
 
-<p>" X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]  ⍝ returns 3 3⍴,/' X '
-...                                             'X  '
-...                                             'XXX'</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;⌷&#39;</span><span class="p">,</span> <span class="s1">&#39;Index&#39;</span><span class="p">,</span> <span class="nf">(b, a, axes = null) -&gt;</span>
+" X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]  ⍝ returns 3 3⍴,/ (' X '
+...                                           'X  '
+...                                           'XXX')
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">dyadic</span> <span class="s1">&#39;⌷&#39;</span><span class="p">,</span> <span class="s1">&#39;Index&#39;</span><span class="p">,</span> <span class="nf">(b, a, axes = null) -&gt;</span>
     <span class="k">if</span> <span class="k">typeof</span> <span class="nx">b</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span> <span class="k">then</span> <span class="k">return</span> <span class="nf">(y, x) -&gt;</span> <span class="nx">b</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">a</span>
     <span class="nv">a = </span><span class="nx">array</span> <span class="nx">a</span>
     <span class="nv">sr = </span><span class="p">[].</span><span class="nx">concat</span> <span class="nx">a</span><span class="p">...</span>
@@ -958,12 +959,12 @@ t←3 3⍴"BOBALFZAK"  ◇  ⍋t             ⍝ returns 1 0 2
 t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  ⍋t       ⍝ returns 2 1 0
 
 t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  t[⍋t;]
-...    ⍝ returns 3 3 ⍴    1 1 2
+...    ⍝ returns (3 3 ⍴   1 1 2
 ...                       1 1 3
-...                       4 5 6
+...                       4 5 6)
 
 a←3 2 3⍴2 3 4 0 1 0 1 1 3 4 5 6 1 1 2 10 11 12  ◇  a[⍋a;;]
-... ⍝ returns 3 2 3 ⍴
+... ⍝ returns (3 2 3 ⍴
 ...      1  1  2
 ...     10 11 12
 ...
@@ -971,7 +972,7 @@ a←3 2 3⍴2 3 4 0 1 0 1 1 3 4 5 6 1 1 2 10 11 12  ◇  a[⍋a;;]
 ...      4  5  6
 ...
 ...      2  3  4
-...      0  1  0
+...      0  1  0)
 
 a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]
 ... ⍝ returns 3 2 5 ⍴ 'bob  jonesbob  zwartjoe  doe  '
@@ -980,13 +981,13 @@ a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]
 ⎕A←"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ◇ (⌽⎕A)⍋3 3⍴"BOBALFZAK"   ⍝ returns 2 0 1
 
 data←6 4⍴"ABLEaBLEACREABELaBELACES"
-... ◇ coll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-... ◇ data[coll⍋data;]
+... coll←2 26⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+... data[coll⍋data;]
 ...   ⍝ returns 6 4 ⍴ 'ABELaBELABLEaBLEACESACRE'
 
 data←6 4⍴"ABLEaBLEACREABELaBELACES"
-... ◇ coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
-... ◇ data[coll1⍋data;]
+... coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+... data[coll1⍋data;]
 ...   ⍝ returns 6 4 ⍴ 'ABELABLEACESACREaBELaBLE'
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⍋&#39;</span><span class="p">,</span> <span class="s1">&#39;Grade up&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span> <span class="nx">grade</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="mi">1</span></pre></div>             </td>           </tr>                               <tr id="section-65">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-65">&#182;</a>               </div>               <p>Grade down (<code>⍒</code>)</p>
 
@@ -999,34 +1000,35 @@ data←6 4⍴"ABLEaBLEACREABELaBELACES"
 16 16 16 16⊤100       ⍝ returns 0 0 6 4
 1760 3 12⊤75.3        ⍝ returns 2 0 (75.3−72)
 0 1⊤75.3              ⍝ returns 75 (75.3−75)
-2 2 2 2 2⊤1 2 3 4 5   ⍝ returns 5 5 ⍴
+
+2 2 2 2 2⊤1 2 3 4 5   ⍝ returns (5 5 ⍴
 ...                         0 0 0 0 0
 ...                         0 0 0 0 0
 ...                         0 0 0 1 1
 ...                         0 1 1 0 0
-...                         1 0 1 0 1
-</code></pre>
+...                         1 0 1 0 1)
 
-<p>10⊤5 15 125 ⍝ returns 5 5 5
-   0 10⊤5 15 125 ⍝ returns 2 3⍴ 0 1 12 5 5 5</p>
+10⊤5 15 125 ⍝ returns 5 5 5
+0 10⊤5 15 125 ⍝ returns 2 3⍴ 0 1 12 5 5 5
 
-<p>(8 3⍴ 2 0 0
-   ...   2 0 0
-   ...   2 0 0
-   ...   2 0 0
-   ...   2 8 0
-   ...   2 8 0
-   ...   2 8 16
-   ...   2 8 16) ⊤ 75
-   ...       ⍝ returns 8 3⍴
-   ...             0 0 0
-   ...             1 0 0
-   ...             0 0 0
-   ...             0 0 0
-   ...             1 0 0
-   ...             0 1 0
-   ...             1 1 4
-   ...             1 3 11</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⊤&#39;</span><span class="p">,</span> <span class="s1">&#39;Encode&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+(8 3⍴ 2 0 0
+...   2 0 0
+...   2 0 0
+...   2 0 0
+...   2 8 0
+...   2 8 0
+...   2 8 16
+...   2 8 16) ⊤ 75
+...       ⍝ returns (8 3⍴
+...             0 0 0
+...             1 0 0
+...             0 0 0
+...             0 0 0
+...             1 0 0
+...             0 1 0
+...             1 1 4
+...             1 3 11)
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⊤&#39;</span><span class="p">,</span> <span class="s1">&#39;Encode&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">a</span> <span class="k">then</span> <span class="nv">a = </span><span class="p">[</span><span class="nx">a</span><span class="p">]</span>
@@ -1061,40 +1063,40 @@ data←6 4⍴"ABLEaBLEACREABELaBELACES"
 3 ⊥ 1 2 3 4                         ⍝ returns 58
 
 //gives '(1j1 ⊥ 1 2 3 4) = 5j9', 1 # todo: ⊥ for complex numbers
-</code></pre>
 
-<p>M ← 3 8 ⍴
-   ...                   0 0 0 0 1 1 1 1
-   ...                   0 0 1 1 0 0 1 1
-   ...                   0 1 0 1 0 1 0 1
-   ... ◇ A ← 4 3 ⍴
-   ...                   1 1 1
-   ...                   2 2 2
-   ...                   3 3 3
-   ...                   4 4 4
-   ... ◇ A ⊥ M
-   ...      ⍝ returns 4 8⍴
-   ...          0 1 1 2  1  2  2  3
-   ...          0 1 2 3  4  5  6  7
-   ...          0 1 3 4  9 10 12 13
-   ...          0 1 4 5 16 17 20 21</p>
+M ← (3 8 ⍴
+...                   0 0 0 0 1 1 1 1
+...                   0 0 1 1 0 0 1 1
+...                   0 1 0 1 0 1 0 1)
+... A ← (4 3 ⍴
+...                   1 1 1
+...                   2 2 2
+...                   3 3 3
+...                   4 4 4)
+... A ⊥ M
+...      ⍝ returns (4 8⍴
+...          0 1 1 2  1  2  2  3
+...          0 1 2 3  4  5  6  7
+...          0 1 3 4  9 10 12 13
+...          0 1 4 5 16 17 20 21)
 
-<p>M ← 3 8 ⍴
-   ...          0 0 0 0 1 1 1 1
-   ...          0 0 1 1 0 0 1 1
-   ...          0 1 0 1 0 1 0 1
-   ... ◇ 2 ⊥ M
-   ...      ⍝ returns 0 1 2 3 4 5 6 7</p>
+M ← (3 8 ⍴
+...          0 0 0 0 1 1 1 1
+...          0 0 1 1 0 0 1 1
+...          0 1 0 1 0 1 0 1)
+... 2 ⊥ M
+...      ⍝ returns 0 1 2 3 4 5 6 7
 
-<p>M ← 3 8 ⍴
-   ...          0 0 0 0 1 1 1 1
-   ...          0 0 1 1 0 0 1 1
-   ...          0 1 0 1 0 1 0 1
-   ... ◇ A ← 2 1 ⍴ 2 10
-   ... ◇ A ⊥ M
-   ...      ⍝ returns 2 8⍴
-   ...          0 1  2  3   4   5   6   7
-   ...          0 1 10 11 100 101 110 111</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⊥&#39;</span><span class="p">,</span> <span class="s1">&#39;Decode&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
+M ← (3 8 ⍴
+...          0 0 0 0 1 1 1 1
+...          0 0 1 1 0 0 1 1
+...          0 1 0 1 0 1 0 1)
+... A ← 2 1 ⍴ 2 10
+... A ⊥ M
+...      ⍝ returns (2 8⍴
+...          0 1  2  3   4   5   6   7
+...          0 1 10 11 100 101 110 111)
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">monadic</span> <span class="s1">&#39;⊥&#39;</span><span class="p">,</span> <span class="s1">&#39;Decode&#39;</span><span class="p">,</span> <span class="nf">(b, a) -&gt;</span>
     <span class="nv">sa = </span><span class="nx">shapeOf</span> <span class="nx">a</span>
     <span class="nv">sb = </span><span class="nx">shapeOf</span> <span class="nx">b</span>
     <span class="nv">lastDimA = </span><span class="k">if</span> <span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="nx">sa</span><span class="p">[</span><span class="nx">sa</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="mi">1</span>
@@ -1311,18 +1313,17 @@ MARKS←45 60 33 50 66 19 ◇ (MARKS=50)/⍳↑⍴MARKS   ⍝ returns ,3
 ,\ "AB" "CD" "EF"          ⍝ returns 'AB' 'ABCD' 'ABCDEF'
 ×\ 2 3⍴5 2 3 4 7 6         ⍝ returns 2 3 ⍴ 5 10 30 4 28 168
 ∧\ 1 1 1 0 1 1             ⍝ returns 1 1 1 0 0 0
-</code></pre>
-
-<p>//gives '−\1 2 3 4', [1, -1, 2, -2] # todo
-    ∨\ 0 0 1 0 0 1 0           ⍝ returns 0 0 1 1 1 1 1
-    +\ 1 2 3 4 5               ⍝ returns 1 3 6 10 15
-    +\ (1 2 3)(4 5 6)(7 8 9)   ⍝ returns (1 2 3) (5 7 9) (12 15 18)
-    M←2 3⍴1 2 3 4 5 6 ◇ +\M    ⍝ returns 2 3 ⍴ 1 3 6 4 9 15
-    M←2 3⍴1 2 3 4 5 6 ◇ +⍀M    ⍝ returns 2 3 ⍴ 1 2 3 5 7 9
-//gives 'M←2 3⍴1 2 3 4 5 6 ◇ +[0]M', [1, 2, 3, 5, 7, 9] # todo
-    ,\ 'ABC'                   ⍝ returns (↑'A') 'AB' 'ABC'
-    T←"ONE(TWO) BOOK(S)" ◇ ≠\T∈"()"   ⍝ returns 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
-    T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK'</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">postfixOperator</span> <span class="s1">&#39;\\&#39;</span><span class="p">,</span> <span class="s1">&#39;Scan or expand&#39;</span><span class="p">,</span> <span class="nf">(b, a, axis = -1) -&gt;</span>
+//gives '−\1 2 3 4', [1, -1, 2, -2] # todo
+∨\ 0 0 1 0 0 1 0           ⍝ returns 0 0 1 1 1 1 1
++\ 1 2 3 4 5               ⍝ returns 1 3 6 10 15
++\ (1 2 3)(4 5 6)(7 8 9)   ⍝ returns (1 2 3) (5 7 9) (12 15 18)
+M←2 3⍴1 2 3 4 5 6 ◇ +\M    ⍝ returns 2 3 ⍴ 1 3 6 4 9 15
+M←2 3⍴1 2 3 4 5 6 ◇ +⍀M    ⍝ returns 2 3 ⍴ 1 2 3 5 7 9
+//gives 'M←2 3⍴1 2 3 4 5 6 ◇ +\[0]M', [1, 2, 3, 5, 7, 9] # todo
+,\ 'ABC'                   ⍝ returns (↑'A') 'AB' 'ABC'
+T←"ONE(TWO) BOOK(S)" ◇ ≠\T∈"()"   ⍝ returns 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
+T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK'
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">postfixOperator</span> <span class="s1">&#39;\\&#39;</span><span class="p">,</span> <span class="s1">&#39;Scan or expand&#39;</span><span class="p">,</span> <span class="nf">(b, a, axis = -1) -&gt;</span>
     <span class="k">if</span> <span class="k">typeof</span> <span class="nx">b</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span>
       <span class="nx">scan</span> <span class="nx">b</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">,</span> <span class="nx">axis</span>
     <span class="k">else</span>
@@ -1352,36 +1353,37 @@ MARKS←45 60 33 50 66 19 ◇ (MARKS=50)/⍳↑⍴MARKS   ⍝ returns ,3
     <span class="k">if</span> <span class="nx">b</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">withShape</span> <span class="nx">shapeOf</span><span class="p">(</span><span class="nx">a</span><span class="p">),</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">then</span> <span class="nx">f</span> <span class="nx">b</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">x</span><span class="p">)</span>
     <span class="nx">die</span> <span class="s1">&#39;Length error&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-82">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-82">&#182;</a>               </div>               <p>Outer product</p>
 
-<p>2 3 4 ∘.× 1 2 3 4
-   ...     ⍝ returns 3 4⍴
-   ...         2 4  6  8
-   ...         3 6  9 12
-   ...         4 8 12 16</p>
+<pre><code>2 3 4 ∘.× 1 2 3 4
+...     ⍝ returns (3 4⍴
+...         2 4  6  8
+...         3 6  9 12
+...         4 8 12 16)
 
-<p>0 1 2 3 4 ∘.! 0 1 2 3 4
-   ...     ⍝ returns 5 5⍴
-   ...         1 1 1 1 1
-   ...         0 1 2 3 4
-   ...         0 0 1 3 6
-   ...         0 0 0 1 4
-   ...         0 0 0 0 1</p>
+0 1 2 3 4 ∘.! 0 1 2 3 4
+...     ⍝ returns (5 5⍴
+...         1 1 1 1 1
+...         0 1 2 3 4
+...         0 0 1 3 6
+...         0 0 0 1 4
+...         0 0 0 0 1)
 
-<p>1 2 ∘., 1+⍳3
-   ...     ⍝ returns 2 3⍴
-   ...         (1 1) (1 2) (1 3)
-   ...         (2 1) (2 2) (2 3)</p>
+1 2 ∘., 1+⍳3
+...     ⍝ returns (2 3⍴
+...         (1 1) (1 2) (1 3)
+...         (2 1) (2 2) (2 3))
 
-<p>⍴ 1 2 ∘., 1+⍳3   ⍝ returns 2 3</p>
+⍴ 1 2 ∘., 1+⍳3   ⍝ returns 2 3
 
-<p>2 3 ∘.↑ 1 2
-   ...     ⍝ returns 2 2⍴
-   ...           (1 0)   (2 0)
-   ...         (1 0 0) (2 0 0)</p>
+2 3 ∘.↑ 1 2
+...     ⍝ returns (2 2⍴
+...           (1 0)   (2 0)
+...         (1 0 0) (2 0 0))
 
-<p>⍴ 2 3 ∘.↑ 1 2     ⍝ returns 2 2
-   ⍴ ((4 3 ⍴ 0) ∘.+ (5 2 ⍴ 0))   ⍝ returns 4 3 5 2
-   2 3 ∘.× 4 5       ⍝ returns 2 2⍴ 8 10 12 15
-   2 3 ∘.{⍺×⍵} 4 5   ⍝ returns 2 2⍴ 8 10 12 15</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">prefixOperator</span> <span class="s1">&#39;∘.&#39;</span><span class="p">,</span> <span class="s1">&#39;Outer product&#39;</span><span class="p">,</span> <span class="nv">outerProduct = </span><span class="nf">(f) -&gt;</span>
+⍴ 2 3 ∘.↑ 1 2     ⍝ returns 2 2
+⍴ ((4 3 ⍴ 0) ∘.+ (5 2 ⍴ 0))   ⍝ returns 4 3 5 2
+2 3 ∘.× 4 5       ⍝ returns 2 2⍴ 8 10 12 15
+2 3 ∘.{⍺×⍵} 4 5   ⍝ returns 2 2⍴ 8 10 12 15
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">prefixOperator</span> <span class="s1">&#39;∘.&#39;</span><span class="p">,</span> <span class="s1">&#39;Outer product&#39;</span><span class="p">,</span> <span class="nv">outerProduct = </span><span class="nf">(f) -&gt;</span>
     <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span>
     <span class="nf">(b, a) -&gt;</span>
       <span class="nx">assert</span> <span class="nx">a</span><span class="o">?</span><span class="p">,</span> <span class="s1">&#39;Operator ∘. (Outer product) works only with dyadic functions&#39;</span>
