@@ -80,6 +80,17 @@ execution environment, namely the ubiquitous JavaScript.
     1 ↑ a          ⍝ returns 5; pronounced "one take of a"
     1 ↓ a          ⍝ returns 6 7 8; pronounced "one drop of a"
 
+    ⍝ Tacit programming
+    (f g) x        ⍝ this is called a hook, equivalent to: x f g x
+    (÷⍟) N         ⍝ N÷log(N) = approx number of primes below N
+    x (f g) y      ⍝ dyadic hook: x f g y
+    (f g h) x      ⍝ a fork: (f x) g (h x)
+    avg ← (+/)÷⍴   ⍝ arithmetic mean
+    x (f g h) y    ⍝ dyadic fork: (x f y) g (x h y)
+    7 (+,-) 4      ⍝ sum and difference, returns 11 3
+    ((−b)(+,−)D⋆÷2) ÷ 2×a   ⍝ solutions of a quadratic equation
+
+
 # Some unorthodox additions
 
     ⍝ The index origin is fixed at 0
