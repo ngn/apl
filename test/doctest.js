@@ -44,14 +44,14 @@ for (_i = 0, _len = _ref.length; _i < _len; _i++) {
   while (i < lines.length) {
     line = lines[i++];
     while (i < lines.length && (m = lines[i].match(/^ *# *\.\.\.(.*)$/))) {
-      line += m[1];
+      line += '\n' + m[1];
       i++;
     }
-    if (m = line.match(/^ *# {4,}(.*)⍝(.+)$/)) {
+    if (m = line.match(/^ *# {4,}([^]*)⍝([^]+)$/)) {
       nTests++;
       code = trim(m[1]);
       outcome = trim(m[2]);
-      if (m = outcome.match(/^returns (.*)$/)) {
+      if (m = outcome.match(/^returns ([^]*)$/)) {
         expected = exec(m[1]);
         try {
           actual = exec(code);
@@ -61,7 +61,7 @@ for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         } catch (e) {
           fail("Test " + (repr(code)) + " failed with " + e, e);
         }
-      } else if (m = outcome.match(/^fails( .*)?$/)) {
+      } else if (m = outcome.match(/^fails( [^]*)?$/)) {
         expectedErrorMessage = m[1] ? eval(m[1]) : '';
         try {
           exec(code);

@@ -22,13 +22,13 @@ for f in fs.readdirSync d when f.match /^\w+.coffee$/
   while i < lines.length
     line = lines[i++]
     while i < lines.length and (m = lines[i].match(/^ *# *\.\.\.(.*)$/))
-      line += m[1]
+      line += '\n' + m[1]
       i++
-    if m = line.match /^ *# {4,}(.*)⍝(.+)$/
+    if m = line.match /^ *# {4,}([^]*)⍝([^]+)$/
       nTests++
       code = trim m[1]
       outcome = trim m[2]
-      if m = outcome.match /^returns (.*)$/
+      if m = outcome.match /^returns ([^]*)$/
         expected = exec m[1]
         try
           actual = exec code
@@ -36,7 +36,7 @@ for f in fs.readdirSync d when f.match /^\w+.coffee$/
             fail "Test #{repr code} failed: expected #{repr expected} but got #{repr actual}"
         catch e
           fail "Test #{repr code} failed with #{e}", e
-      else if m = outcome.match /^fails( .*)?$/
+      else if m = outcome.match /^fails( [^]*)?$/
         expectedErrorMessage = if m[1] then eval m[1] else ''
         try
           exec code
