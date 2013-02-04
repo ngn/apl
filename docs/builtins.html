@@ -1529,20 +1529,32 @@ T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK
 
 <p>Hook: <code>(fg)⍵ ←→ ⍵fg⍵</code> ; <code>⍺(fg)⍵ ←→ ⍺fg⍵</code></p>
 
-<pre><code>(+÷)\3 7 16 ¯294
+<pre><code># Approximations of pi through continued fractions
+(+÷)\3 7 16 ¯294
 ... ⍝ returns (3
 ...            3.142857142857143
 ...            3.1415929203539825
 ...            3.141592653921421)
 
+# Test if a number is an integer
 (=⌊) 123     ⍝ returns 1
 (=⌊) 123.4   ⍝ returns 0
+
+# Approximation of the number of primes below a certain limit
+(÷⍟) 1000    ⍝ returns 144.76482730108395
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">builtins.hook = </span><span class="nf">(g, f) -&gt;</span>
     <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span>
     <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">g</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span>
     <span class="nf">(b, a) -&gt;</span> <span class="nx">f</span> <span class="nx">g</span><span class="p">(</span><span class="nx">b</span><span class="p">),</span> <span class="p">(</span><span class="nx">a</span> <span class="o">?</span> <span class="nx">b</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-88">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-88">&#182;</a>               </div>               <p>Fork: <code>(fgh)⍵ ←→ (f⍵)g(h⍵)</code> ; <code>⍺(fgh)⍵ ←→ (⍺f⍵)g(⍺h⍵)</code></p>
 
-<pre><code>avg←(+/)÷⍴ ◇ avg 4 5 10 7   ⍝ returns 6.5
+<pre><code># Arithmetic mean
+avg←(+/)÷⍴ ◇ avg 4 5 10 7   ⍝ returns 6.5
+
+# Quadratic equation
+a←1 ◇ b←¯22 ◇ c←85
+... √ ← {⍵⋆.5}
+... ((−b)(+,−)√(b⋆2)−4×a×c) ÷ 2×a
+... ⍝ returns 17 5
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">builtins.fork = </span><span class="nf">(h, g, f) -&gt;</span>
     <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span>
     <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">g</span> <span class="o">is</span> <span class="s1">&#39;function&#39;</span>
