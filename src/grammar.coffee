@@ -23,7 +23,8 @@ o = (args...) -> args
 # # Terminals
 t '', /[ \t]+/ # skip whitespace
 t '', /[⍝#].*/ # skip comments
-t 'SEPARATOR', /[\n\r◇⋄]/
+t 'NEWLINE', /[\n\r]+/
+t 'SEPARATOR', /[◇⋄]/
 
 t 'NUMBER', ///
   ¯?                             # optional negation
@@ -70,7 +71,9 @@ nt 'root', [
 nt 'body', [
   o '',                          "$$ = ['body']"
   o 'guard',                     "$$ = ['body', $1]"
+  o 'body NEWLINE',              "$$ = $1"
   o 'body SEPARATOR',            "$$ = $1"
+  o 'body NEWLINE guard',        "($$ = $1).push($3)"
   o 'body SEPARATOR guard',      "($$ = $1).push($3)"
 ]
 

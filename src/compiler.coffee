@@ -5,6 +5,26 @@ define ['./parser', './helpers', './builtins', './complex'], (parser, helpers, b
   {inherit, die, assert} = helpers
   repr = JSON.stringify
 
+  # Monkey-patch the lexer to allow for newlines within parentheses
+  {lexer} = parser.parser
+  {setInput, next} = lexer
+
+  lexer.setInput = (args...) ->
+    @bracketStack = []
+    setInput.call @, args...
+
+  lexer.next = (args...) ->
+    loop
+      token = next.call @, args...
+      if token in ['(', '[', '{']
+        @bracketStack.push token
+      else if token in [')', ']', '}']
+        @bracketStack.pop()
+      if token isnt 'NEWLINE' or @bracketStack.length is 0 or @bracketStack[@bracketStack.length - 1] is '{'
+        return token
+
+
+
   createHash = (s) ->
     h = {}
     for kv in s.split '\n'
