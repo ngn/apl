@@ -8,8 +8,7 @@ define ['./parser', './helpers', './builtins', './complex'],
   repr = JSON.stringify
 
   # Monkey-patch the lexer to allow for newlines within parentheses
-  {lexer} = parser.parser
-  {setInput, next} = lexer
+  {setInput, next} = lexer = parser.lexer ? parser.parser.lexer
 
   lexer.setInput = (args...) ->
     @bracketStack = []
