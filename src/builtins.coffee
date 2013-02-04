@@ -1546,22 +1546,25 @@ define (require) ->
         compressOrReplicate b, a, axis
 
   # Helper for `\` and `⍀` in their operator sense
-  scan = (f, _, axis = -1) -> (a, _1) ->
-    assert not _1?, 'Scan can only be applied monadically.'
-    sa = shapeOf a
-    if sa.length is 0 then return a
-    if axis < 0 then axis += sa.length
-    r = Array a.length
-    ni = prod sa[...axis]
-    nj = sa[axis]
-    nk = prod sa[axis + 1 ...]
+  scan = (f, _, axis = -1) -> (b, a) ->
+    assert not a?, 'Scan can only be applied monadically.'
+    sb = shapeOf b
+    if sb.length is 0 then return b
+    if axis < 0 then axis += sb.length
+    assert 0 <= axis < sb.length, 'Invalid axis'
+    r = Array b.length
+    ni = prod sb[...axis]
+    nj = sb[axis]
+    nk = prod sb[axis + 1 ...]
     for i in [0...ni]
       for k in [0...nk]
-        x = r[k + nk*nj*i] = a[k + nk*nj*i]
-        for j in [1...nj]
-          ijk = k + nk * (j + nj * i)
-          x = r[ijk] = f a[ijk], x
-    withShape shapeOf(a), r
+        for j in [0...nj]
+          ijk = (i * nj + j) * nk + k
+          x = b[ijk]
+          for t in [j - 1..0] by -1
+            x = f x, b[(i * nj + t) * nk + k]
+          r[ijk] = x
+    withShape shapeOf(b), r
 
   # Helper for `\` and `⍀` in their function sense
   expand = ->
@@ -1714,6 +1717,34 @@ define (require) ->
     x
 
   builtins.bool = bool
+
+  # [Phrasal forms](http://www.jsoftware.com/papers/fork1.htm)
+  #
+  # Hook: `(fg)⍵ ←→ ⍵fg⍵` ; `⍺(fg)⍵ ←→ ⍺fg⍵`
+  #
+  #     (+÷)\3 7 16 ¯294
+  #     ... ⍝ returns (3
+  #     ...            3.142857142857143
+  #     ...            3.1415929203539825
+  #     ...            3.141592653921421)
+  #
+  #     (=⌊) 123     ⍝ returns 1
+  #     (=⌊) 123.4   ⍝ returns 0
+  builtins.hook = (g, f) ->
+    assert typeof f is 'function'
+    assert typeof g is 'function'
+    (b, a) -> f g(b), (a ? b)
+
+  # Fork: `(fgh)⍵ ←→ (f⍵)g(h⍵)` ; `⍺(fgh)⍵ ←→ (⍺f⍵)g(⍺h⍵)`
+  #
+  #     avg←(+/)÷⍴ ◇ avg 4 5 10 7   ⍝ returns 6.5
+  builtins.fork = (h, g, f) ->
+    assert typeof f is 'function'
+    assert typeof g is 'function'
+    assert typeof h is 'function'
+    (b, a) -> g h(b, a), f(b, a)
+
+
 
   endOfBuiltins()
 

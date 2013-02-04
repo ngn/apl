@@ -253,6 +253,16 @@ define ['./parser', './helpers', './builtins', './complex'],
                 a[i...i+2] = [['prefixOperator'].concat a[i...i+2]]
                 h[i...i+2] = [{type: 'F'}]
 
+            # Hooks
+            if h.length is 2 and h[0].type is h[1].type is 'F'
+              a = [['hook'].concat a]
+              h = [{type: 'F'}]
+
+            # Forks
+            if h.length is 3 and h[0].type is h[1].type is h[2].type is 'F'
+              a = [['fork'].concat a]
+              h = [{type: 'F'}]
+
             if h[h.length - 1].type is 'F'
               assert h.length <= 1, 'Trailing function in expression'
             else
@@ -434,6 +444,12 @@ define ['./parser', './helpers', './builtins', './complex'],
 
         when 'postfixOperator'
           "#{visit node[2]}(#{visit node[1]})"
+
+        when 'hook'
+          "_.hook(#{visit node[2]}, #{visit node[1]})"
+
+        when 'fork'
+          "_.fork(#{visit node[3]}, #{visit node[2]}, #{visit node[1]})"
 
         # Embedded JavaScript
         #
