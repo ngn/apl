@@ -23,7 +23,7 @@ but intended for small touchscreens)
 
 # Wtf is this?
 
-APL is an ancient array-oriented weird-looking elegant programming language.
+APL is a programming language that's
 
 * **ancient:** It was conceived in the 1960s based on a Harvard professor's
   mathematical notation, which he published in a book titled "A Programming
@@ -33,7 +33,7 @@ APL is an ancient array-oriented weird-looking elegant programming language.
   particular, scalars are 0-dimensional arrays.  When a function is applied on
   an array, it acts on all items simultaneously.
 
-* **weird-looking:** APL uses non-ASCII characters for most of its built-in
+* **bizarre:** APL uses non-ASCII characters for most of its built-in
   functions.  When it was invented, ASCII hadn't yet been established as a
   standard anyway.
 
@@ -45,7 +45,9 @@ APL is an ancient array-oriented weird-looking elegant programming language.
 This project is an attempt to breathe back life into APL for a modern
 execution environment, namely the ubiquitous JavaScript.
 
-# A taste of classic APL
+# Sample code
+
+Classic examples
 
     1 2 3 + 4 5 6  ⍝ returns 5 7 9; the array 1 2 3 added to 4 5 6, item by item
     7 + 4 5 6      ⍝ returns 11 12 13; the scalar 7 is extended to match the length of 4 5 6
@@ -63,11 +65,13 @@ execution environment, namely the ubiquitous JavaScript.
     ⌊3.14          ⍝ 3; functions have double meaning; e.g. with only one (right) arg, ⌊ means "floor"
     7⌊5            ⍝ 5; with 2 args it means "minimum"; 1-arg is said to be "monadic", 2-arg "dyadic"
 
-    ⍝ Lambda expressions
+Lambda expressions
+
     f ← {⍺+2×⍵}    ⍝ ⍺ and ⍵ are the left and right formal parameters
     5 f 3          ⍝ would return 11
 
-    ⍝ Map, filter, reduce
+Map, filter, reduce
+
     a ← 1 2 3 4
     {1+3×⍵} a      ⍝ map; simply apply the function on the array; returns 4 7 10 13
     ({⍵>2} a) / a  ⍝ filter; returns 3 4; note that here / is used as a function, not operator
@@ -75,12 +79,14 @@ execution environment, namely the ubiquitous JavaScript.
     ×/a            ⍝ same as {⍺×⍵}/a
     {(⍺×t)+⍵} / a  ⍝ evaluate polynomial with coefficients a at point t
 
-    ⍝ Head and tail
+Head and tail (or `car` and `cdr`, if you prefer)
+
     a ← 5 6 7 8
     1 ↑ a          ⍝ returns 5; pronounced "one take of a"
     1 ↓ a          ⍝ returns 6 7 8; pronounced "one drop of a"
 
-    ⍝ Tacit programming
+Tacit programming
+
     (f g) x        ⍝ this is called a hook, equivalent to: x f g x
     (÷⍟) N         ⍝ N÷log(N) = approx number of primes below N
     x (f g) y      ⍝ dyadic hook: x f g y
@@ -88,19 +94,22 @@ execution environment, namely the ubiquitous JavaScript.
     avg ← (+/)÷⍴   ⍝ arithmetic mean
     x (f g h) y    ⍝ dyadic fork: (x f y) g (x h y)
     7 (+,-) 4      ⍝ sum and difference, returns 11 3
-    ((−b)(+,−)D⋆÷2) ÷ 2×a   ⍝ solutions of a quadratic equation
+    ((−b)(+,−)D⋆÷2) ÷ 2×a   ⍝ solutions to a quadratic equation
 
 
 # Some unorthodox additions
 
-    ⍝ The index origin is fixed at 0
+The index origin is fixed at 0
+
     ⎕IO                    ⍝ returns 0
     ⎕IO ← 1                ⍝ gives an error
 
-    ⍝ Embedded JavaScript:
+Embedded JavaScript
+
     3 + «Math.sqrt(25)»    ⍝ returns 8
 
-    ⍝ Computed variables are syntactically indistinguishable from other variables:
+Computed variables are syntactically indistinguishable from other variables
+
     r←3                    ⍝ radius
     get_c←{○ r×2}          ⍝ circumference
     get_S←{○ r⋆2}          ⍝ surface
