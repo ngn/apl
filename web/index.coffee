@@ -248,7 +248,7 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
     for [name, code], i in window.examples
       $('#examples').append(" <a href='#example#{i}'>#{name}</a>")
 
-    $('#examples a').live 'click', ->
+    $('#examples').on 'click', 'a', ->
       [name, code] = window.examples[parseInt $(@).attr('href').replace /#example(\d+)$/, '$1']
       $('#code').val(code).focus()
       false
