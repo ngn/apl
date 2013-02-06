@@ -5,96 +5,14 @@ if (typeof define !== 'function') {
   define = require('amdefine')(module);
 }
 
-define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compiler, browser, helpers) {
-  var browserBuiltins, exec, inherit;
-  exec = compiler.exec;
-  browserBuiltins = browser.browserBuiltins;
-  inherit = helpers.inherit;
+define(function(require) {
+  var browserBuiltins, exec, format, inherit;
+  exec = require('../lib/compiler').exec;
+  browserBuiltins = require('../lib/browser').browserBuiltins;
+  inherit = require('../lib/helpers').inherit;
+  format = require('../lib/formatter').format;
   return jQuery(function($) {
-    var a, code, esc, escHard, escT, execute, formatAsHTML, formatHTMLTable, hSymbolDefs, hashParams, i, k, mapping, name, nameValue, rMapping, symbolDef, symbolDefs, tipsyOpts, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
-    escT = {
-      '<': 'lt',
-      '>': 'gt',
-      '&': 'amp',
-      "'": 'apos',
-      '"': 'quot'
-    };
-    esc = function(s) {
-      if (s) {
-        return s.replace(/[<>&'"]/g, function(x) {
-          return "&" + escT[x] + ";";
-        });
-      } else {
-        return '';
-      }
-    };
-    escHard = function(s) {
-      return esc(s).replace(/\ /g, '&nbsp;').replace(/\n/g, '<br/>');
-    };
-    formatAsHTML = function(x) {
-      var i, nPlanes, nc, nr, planeSize, planes, rx, sx, y, _ref;
-      try {
-        if (typeof x === 'string') {
-          return "<span class='character'>" + (esc(x).replace(' ', '&nbsp;', 'g')) + "</span>";
-        } else if (typeof x === 'number') {
-          return "<span class='number'>" + (('' + x).replace(/-|Infinity/g, '¯')) + "</span>";
-        } else if (typeof x === 'function') {
-          return "<span class='function'>" + (x.isPrefixOperator || x.isInfixOperator || x.isPostfixOperator ? 'operator' : 'function') + (x.aplName ? ' ' + x.aplName : '') + "</span>";
-        } else if (!(x.length != null)) {
-          return "<span class='unknown'>" + (esc('' + x)) + "</span>";
-        } else if (x.shape && x.shape.length > 2) {
-          sx = x.shape;
-          rx = sx.length;
-          planeSize = sx[rx - 2] * sx[rx - 1];
-          nPlanes = x.length / planeSize;
-          planes = (function() {
-            var _i, _results;
-            _results = [];
-            for (i = _i = 0; 0 <= nPlanes ? _i < nPlanes : _i > nPlanes; i = 0 <= nPlanes ? ++_i : --_i) {
-              _results.push(formatHTMLTable(x.slice(i * planeSize, (i + 1) * planeSize), sx[rx - 1], sx[rx - 2], 'subarray'));
-            }
-            return _results;
-          })();
-          nc = sx[rx - 3];
-          nr = nPlanes / nc;
-          return formatHTMLTable(planes, nr, nc, 'array');
-        } else {
-          if (x.length === 0) {
-            return "<table class='array empty'><tr><td>empty</table>";
-          }
-          _ref = x.shape || [1, x.length], nr = _ref[0], nc = _ref[1];
-          x = (function() {
-            var _i, _len, _results;
-            _results = [];
-            for (_i = 0, _len = x.length; _i < _len; _i++) {
-              y = x[_i];
-              _results.push(formatAsHTML(y));
-            }
-            return _results;
-          })();
-          return formatHTMLTable(x, nr, nc, 'array');
-        }
-      } catch (e) {
-        if (typeof console !== "undefined" && console !== null) {
-          if (typeof console.error === "function") {
-            console.error(e);
-          }
-        }
-        return '<span class="error">Presentation error</span>';
-      }
-    };
-    formatHTMLTable = function(a, nr, nc, cssClass) {
-      var c, r, s, _i, _j;
-      s = "<table class='" + cssClass + "'>";
-      for (r = _i = 0; 0 <= nr ? _i < nr : _i > nr; r = 0 <= nr ? ++_i : --_i) {
-        s += '<tr>';
-        for (c = _j = 0; 0 <= nc ? _j < nc : _j > nc; c = 0 <= nc ? ++_j : --_j) {
-          s += "<td>" + a[nc * r + c] + "</td>";
-        }
-        s += '</tr>';
-      }
-      return s += '</table>';
-    };
+    var a, code, execute, hSymbolDefs, hashParams, i, k, mapping, name, nameValue, rMapping, symbolDef, symbolDefs, tipsyOpts, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
     hashParams = {};
     if (location.hash) {
       _ref = location.hash.substring(1).split(',');
@@ -118,14 +36,14 @@ define(['../lib/compiler', '../lib/browser', '../lib/helpers'], function(compile
       ctx = inherit(browserBuiltins);
       try {
         result = exec($('#code').val());
-        $('#result').html(formatAsHTML(result));
+        $('#result').removeClass('error').text(format(result));
       } catch (err) {
         if (typeof console !== "undefined" && console !== null) {
           if (typeof console.error === "function") {
             console.error(err);
           }
         }
-        $('#result').html("<div class='error'>" + (escHard(err.message)) + "</div>");
+        $('#result').addClass('error').text(err.message);
       }
     };
     $('#go').tipsy({

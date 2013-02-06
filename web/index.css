@@ -40,25 +40,11 @@ a:hover {
   cursor: pointer; }
 
 #result {
-  margin-top: 20px; }
-  #result .character {
-    color: #884400;
-    font-weight: bold; }
-  #result .function {
-    color: green;
-    font-style: italic; }
-  #result .unknown {
-    color: red; }
-  #result .array {
-    border: solid black 1px; }
-  #result .empty {
-    color: #aaaaaa;
-    font-style: italic; }
-  #result .error {
-    color: red;
-    border: solid #ffdddd 1px;
-    background-color: #ffeeee;
-    padding: 10px; }
+  margin-top: 20px;
+  white-space: pre; }
+
+#result.error {
+  color: red; }
 
 .ui-keyboard {
   position: fixed !important;
