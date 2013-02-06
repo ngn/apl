@@ -1,62 +1,10 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
-define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, browser, helpers) ->
-  {exec} = compiler
-  {browserBuiltins} = browser
-  {inherit} = helpers
-
-  # Result formatting {{{1
-
-  escT = {'<': 'lt', '>': 'gt', '&': 'amp', "'": 'apos', '"': 'quot'}
-  esc = (s) -> if s then s.replace /[<>&'"]/g, (x) -> "&#{escT[x]};" else ''
-  escHard = (s) -> esc(s).replace(/\ /g, '&nbsp;').replace(/\n/g, '<br/>')
-
-  formatAsHTML = (x) ->
-    # Supports arrays of up 4 dimensions
-    # Higher-rank arrays are displayed as if 4-dimensional
-    try
-      if typeof x is 'string'
-        "<span class='character'>#{esc(x).replace(' ', '&nbsp;', 'g')}</span>"
-      else if typeof x is 'number'
-        "<span class='number'>#{('' + x).replace /-|Infinity/g, '¯'}</span>"
-      else if typeof x is 'function'
-        "<span class='function'>#{
-          if x.isPrefixOperator or x.isInfixOperator or x.isPostfixOperator then 'operator' else 'function'
-        }#{
-          if x.aplName then ' ' + x.aplName else ''
-        }</span>"
-      else if not x.length?
-        "<span class='unknown'>#{esc('' + x)}</span>"
-      else if x.shape and x.shape.length > 2
-        # Slice into planes
-        sx = x.shape # shape of x
-        rx = sx.length # rank of x
-        planeSize = sx[rx - 2] * sx[rx - 1]
-        nPlanes = x.length / planeSize
-        planes = for i in [0...nPlanes]
-          formatHTMLTable x[i * planeSize ... (i + 1) * planeSize], sx[rx - 1], sx[rx - 2], 'subarray'
-        nc = sx[rx - 3]
-        nr = nPlanes / nc
-        formatHTMLTable planes, nr, nc, 'array'
-      else
-        if x.length is 0 then return "<table class='array empty'><tr><td>empty</table>"
-        [nr, nc] = x.shape or [1, x.length]
-        x = for y in x then formatAsHTML y
-        formatHTMLTable x, nr, nc, 'array'
-    catch e
-      console?.error?(e)
-      '<span class="error">Presentation error</span>'
-
-  formatHTMLTable = (a, nr, nc, cssClass) ->
-    s = "<table class='#{cssClass}'>"
-    for r in [0...nr]
-      s += '<tr>'
-      for c in [0...nc]
-        s += "<td>#{a[nc * r + c]}</td>"
-      s += '</tr>'
-    s += '</table>'
-
-  # }}}
+define (require) ->
+  {exec} = require '../lib/compiler'
+  {browserBuiltins} = require '../lib/browser'
+  {inherit} = require '../lib/helpers'
+  {format} = require '../lib/formatter'
 
   $.fn.toggleVisibility = ->
     @css 'visibility', if @css('visibility') is 'hidden' then '' else 'hidden'
@@ -120,7 +68,8 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
           ->
             $k.data 'timeoutId', null
             $k.trigger 'aplkeypress'
-            $k.data 'intervalId', setInterval (-> $k.trigger 'aplkeypress'), 200
+            $k.data 'intervalId',
+              setInterval (-> $k.trigger 'aplkeypress'), 200
             return
           500
         )
@@ -155,16 +104,20 @@ define ['../lib/compiler', '../lib/browser', '../lib/helpers'], (compiler, brows
     updateLayout()
 
     actions =
-      insert: (c) -> $('<span>').text(c.replace /\ /g, '\xa0').insertBefore '#cursor'
+      insert: (c) ->
+        $('<span>').text(c.replace /\ /g, '\xa0').insertBefore '#cursor'
       enter: -> $('<br>').insertBefore '#cursor'
       backspace: -> $('#cursor').prev().remove()
       exec: ->
         ctx = inherit browserBuiltins
         try
-          $('#result').html formatAsHTML exec extractTextFromDOM(document.getElementById 'editor').replace /\xa0/g, ' '
+          code = extractTextFromDOM(document.getElementById 'editor')
+                  .replace /\xa0/g, ' '
+          result = exec code
+          $('#result').removeClass('error').text format result
         catch err
           console?.error?(err)
-          $('#result').html "<div class='error'>#{escHard err.message}</div>"
+          $('#result').addClass('error').text err.message
         $('#pageInput').hide()
         $('#pageOutput').show()
         return

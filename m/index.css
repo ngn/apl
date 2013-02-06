@@ -51,25 +51,11 @@ body {
     width: 15%; }
 
 #result {
+  white-space: pre;
   margin: 15px 15px 60px 15px; }
-  #result .character {
-    color: #884400;
-    font-weight: bold; }
-  #result .function {
-    color: green;
-    font-style: italic; }
-  #result .unknown {
-    color: red; }
-  #result .array {
-    border: solid black 1px; }
-  #result .empty {
-    color: #aaaaaa;
-    font-style: italic; }
-  #result .error {
-    color: red;
-    border: solid #ffdddd 1px;
-    background-color: #ffeeee;
-    padding: 10px; }
+
+#result.error {
+  color: red; }
 
 #closeOutputButton {
   position: fixed;
