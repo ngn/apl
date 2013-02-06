@@ -70,8 +70,12 @@ define ['./helpers'], (helpers) ->
       for r, i in rows
         for c, j in cols
           t = grid[i][j]
-          left = repeat ' ', c.leftMargin
-          right = repeat ' ', c.width + c.rightMargin - t[0].length
+          if c.type is 1 # numbers should be right-justified
+            left = repeat ' ', c.leftMargin + c.width - t[0].length
+            right = repeat ' ', c.rightMargin
+          else
+            left = repeat ' ', c.leftMargin
+            right = repeat ' ', c.rightMargin + c.width - t[0].length
           for k in [0...t.length] then t[k] = left + t[k] + right
           bottom = repeat ' ', t[0].length
           for [t.length...r.height + r.bottomMargin] then t.push bottom
