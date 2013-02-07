@@ -1,10 +1,10 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
-define ['./parser', './helpers', './builtins', './complex'],
-(parser, helpers, builtinsModule, complex) ->
-
-  parser ?= window.parser
-  {inherit, die, assert} = helpers
+define (require) ->
+  parser = require('./parser') ? window.parser
+  {builtins} = require './builtins'
+  {Complex} = require './complex'
+  {inherit, die, assert} = require './helpers'
   repr = JSON.stringify
 
   # Monkey-patch the lexer to allow for newlines within parentheses
@@ -96,18 +96,17 @@ define ['./parser', './helpers', './builtins', './complex'],
     predefinedNames[name] or name.replace /[^a-z0-9]/gi, (x) ->
       '_' + hex4 ord x
 
-  builtins = inherit builtinsModule.builtins
-  builtins.Complex = complex.Complex
+  ctx = inherit builtins, {Complex}
 
-  builtinVarInfo =
+  varInfo =
     '⍺': {type: 'X'}
     '⍵': {type: 'X'}
     '∇': {type: 'F'}
 
   do ->
-    for k, v of builtins
-      v = builtins[k]
-      builtinVarInfo[k] =
+    for k, v of ctx
+      v = ctx[k]
+      varInfo[k] =
         if typeof v isnt 'function'
           {type: 'X'}
         else if v.aplMetaInfo?.isNiladicFunction
@@ -122,13 +121,13 @@ define ['./parser', './helpers', './builtins', './complex'],
           {type: 'F'}
 
       if k.match /^[gs]et_.*/
-        builtinVarInfo[k[4...]] = {type: 'X'}
+        varInfo[k[4...]] = {type: 'X'}
 
   exec = (aplSource, opts = {}) ->
     execJS compile(aplSource, opts).jsOutput, opts
 
   execJS = (jsSource, opts = {}) ->
-    h = inherit builtins
+    h = inherit ctx
     if opts.extraContext then for k, v of opts.extraContext then h[k] = v
     (new Function jsSource) h
 
@@ -155,7 +154,7 @@ define ['./parser', './helpers', './builtins', './complex'],
   # This information is used to convert each "seq" node into a hierarchy of
   # function applications.
   resolveSeqs = (ast) ->
-    ast.vars = inherit builtinVarInfo
+    ast.vars = inherit varInfo
     queue = [ast] # accumulates "body" nodes which we encounter on our way
     while queue.length
       {vars} = scopeNode = queue.shift()
@@ -464,7 +463,7 @@ define ['./parser', './helpers', './builtins', './complex'],
     """
       var #{
         ['_ = arguments[0]'].concat(
-          for k, v of builtinVarInfo when v.used
+          for k, v of varInfo when v.used
             "#{jsName k} = _[#{repr k}]"
         ).join ',\n    '
       };

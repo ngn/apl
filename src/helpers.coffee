@@ -5,8 +5,13 @@ define ->
   # Prototypal inheritance of JavaScript objects
   # (see [Douglas Crockford's
   # explanation](http://javascript.crockford.com/prototypal.html))
-  inherit = (x) ->
-    f = (->); f.prototype = x; new f
+  #
+  # This implementation allows extra properties to be assigned
+  # to the newly-created object.
+  inherit = (x, extraProperties = {}) ->
+    f = (->); f:: = x; r = new f
+    for k, v of extraProperties then r[k] = v
+    r
 
 
 
