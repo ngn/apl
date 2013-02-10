@@ -86,12 +86,9 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
 
     # Compile.
     if isCoffeeScript
-      code = code.replace /«([^»]*)»/g, '`«$1»`'
-      code = require('coffee-script').compile code
-      jsOutput = code.replace /«([^»]*)»/g, (_1, fragment) ->
-        """(require('apl')(function () {#{
-          compile(fragment, extraContext: ctx).jsOutput
-        }}))"""
+      cs = require 'coffee-script'
+      pp = require './coffee-preprocessor'
+      jsOutput = cs.compile pp.preprocess code, ctx
     else
       {ast, jsOutput} = compile code, extraContext: ctx
       jsOutput = """
