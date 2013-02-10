@@ -81,10 +81,25 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
           b.slice 0, k
         ).toString 'utf8'
       else
+        isCoffeeScript = /\.coffee$/.test argv._[0]
         fs.readFileSync argv._[0], 'utf8'
 
     # Compile.
-    {ast, jsOutput} = compile code, extraContext: ctx
+    if isCoffeeScript
+      code = code.replace /«([^»]*)»/g, '`«$1»`'
+      code = require('coffee-script').compile code
+      jsOutput = code.replace /«([^»]*)»/g, (_1, fragment) ->
+        """(require('apl')(function () {#{
+          compile(fragment, extraContext: ctx).jsOutput
+        }}))"""
+    else
+      {ast, jsOutput} = compile code, extraContext: ctx
+      jsOutput = """
+        \#!/usr/bin/env node\n
+        require('apl')(function () {
+        #{jsOutput}
+        });\n
+      """
 
     # If printing of nodes is requested, do it and stop.
     if argv.nodes
@@ -93,16 +108,10 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
 
     # Print or execute compiler output.
     if argv.compile
-      jsOutput = """
-        \#!/usr/bin/env node\n
-        require('apl')(function () {
-        #{jsOutput}
-        });\n
-      """
       if argv.stdio or argv.print
         process.stdout.write jsOutput
       else
-        fs.writeFileSync argv._[0].replace(/\.apl$/, '') + '.js',
+        fs.writeFileSync argv._[0].replace(/\.(apl|coffee)$/, '') + '.js',
           jsOutput, 'utf8'
     else
       execJS jsOutput, extraContext: ctx
