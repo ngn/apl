@@ -70,103 +70,6 @@ define (require) ->
       child.parent = node
     return
 
-  # # (this part will be refactored)
-
-  createHash = (s) ->
-    h = {}
-    for kv in s.split '\n'
-      [k, v] = kv.split /\ +/
-      h[k] = v
-    h
-
-  predefinedNames = createHash '''
-    ⍺  _a
-    ⍵  _w
-    +  _add
-    -  _sub
-    ×  _mul
-    ÷  _div
-    !  _bang
-    ?  _ques
-    ⌷  _index
-    ⍴  _r
-    ⍳  _i
-    ,  _cat
-    ⍪  _cat1
-    ⎕  _q
-    ⍞  _qq
-    ∈  _e
-    ⍷  _eu
-    ∼  _tilde
-    ↑  _take
-    ↓  _drop
-    ⍉  _trans
-    ⌽  _rot
-    ⊖  _rot1
-    ⌽  _circ
-    ○  _circ
-    ⍬  _zilde
-    ⋆  _pow
-    ⌈  _max
-    ⌊  _min
-    ∘. _outer
-    .  _inner
-    ∣  _mod
-    ⊤  _tee
-    ⊥  _bot
-    ∪  _cup
-    ∩  _cap
-    ⊂  _enclose
-    ⊃  _disclose
-    ⍒  _gradeUp
-    ⍋  _gradeDown
-    ⍣  _powOp
-    ¨  _each
-    /  _slash
-    ⌿  _slash1
-    \\ _bslash
-    ⍀  _bslash1
-    =  _eq
-    ≠  _ne
-    <  _lt
-    >  _gt
-    ≤  _le
-    ≥  _ge
-  '''
-
-  ord = (s) -> s.charCodeAt 0
-  hex4 = (n) -> s = '0000' + n.toString 16; s[s.length - 4 ...]
-  jsName = (name) ->
-    predefinedNames[name] or name.replace /[^a-z0-9]/gi, (x) ->
-      '_' + hex4 ord x
-
-  ctx = inherit builtins, {Complex}
-
-  varInfo =
-    '⍺': {type: 'X'}
-    '⍵': {type: 'X'}
-    '∇': {type: 'F'}
-
-  do ->
-    for k, v of ctx
-      v = ctx[k]
-      varInfo[k] =
-        if typeof v isnt 'function'
-          {type: 'X'}
-        else if v.aplMetaInfo?.isNiladicFunction
-          {type: 'F', isNiladicFunction: true}
-        else if v.aplMetaInfo?.isPrefixOperator
-          {type: 'F', isPrefixOperator: true}
-        else if v.aplMetaInfo?.isPostfixOperator
-          {type: 'F', isPostfixOperator: true}
-        else if v.aplMetaInfo?.isInfixOperator
-          {type: 'F', isInfixOperator: true}
-        else
-          {type: 'F'}
-
-      if k.match /^[gs]et_.*/
-        varInfo[k[4...]] = {type: 'X'}
-
   # # Stage 4: Resolve seq nodes
   #
   # For each scope (`body` node), determine the type of each pronoun (`sym`
@@ -198,16 +101,31 @@ define (require) ->
   # You can see a textual representation of this tree in your shell, if you
   # type `apl -n filename.apl`
   resolveSeqs = (ast) ->
-    ast.vars = inherit varInfo
+    ast.vars =
+      '⍺': {type: 'X', code: '_a'}
+      '⍵': {type: 'X', code: '_w'}
+      '∇': {type: 'F', code: 'arguments.callee'}
+    for k, v of builtins
+      ast.vars[k] = h = {type: 'X', code: "_[#{JSON.stringify k}]"}
+      if typeof v is 'function'
+        h.type = 'F'
+        if (m = v.aplMetaInfo)?
+          if m.isPrefixOperator  then h.isPrefixOperator  = true
+          if m.isPostfixOperator then h.isPostfixOperator = true
+          if m.isInfixOperator   then h.isInfixOperator   = true
+        if /^[gs]et_.*/.test k
+          ast.vars[k[4...]] = {type: 'X'}
+    scopeCounter = 0
+    ast.scopeId = scopeCounter++
     queue = [ast] # accumulates "body" nodes which we encounter on our way
     while queue.length
       {vars} = scopeNode = queue.shift()
-      scopeNode.varsToDeclare = []
 
       visit = (node) ->
         switch node[0]
           when 'body'
             node.vars = inherit vars
+            node.scopeId = scopeCounter++
             queue.push node
             null
           when 'guard'
@@ -221,8 +139,9 @@ define (require) ->
                 "Inconsistent usage of symbol '#{name}', it is " +
                 "assigned both data and functions"
             else
-              vars[name] = h
-              scopeNode.varsToDeclare.push jsName name
+              vars[name] =
+                type: h.type
+                code: "_#{scopeNode.scopeId}[#{JSON.stringify name}]"
             h
           when 'sym'
             name = node[1]
@@ -245,19 +164,12 @@ define (require) ->
               t = visit c
               assert t.type is 'X', 'Only data can be used as an index'
             t1
-          when 'embedded'
-            {type: 'X'}
           when 'seq'
             a = node[1...]
             a.reverse()
             h = for child in a then visit child
             h.reverse()
             a.reverse()
-
-            # Apply niladic functions
-            for i in [0...a.length]
-              if h[i].isNiladicFunction
-                a[i] = ['niladic', a[i]]
 
             # Form vectors from sequences of data
             i = 0
@@ -341,15 +253,13 @@ define (require) ->
       switch node[0]
 
         when 'body'
-          r = ''
           if node.length is 1
             'return [];\n'
           else
-            if node.varsToDeclare.length
-              r += 'var ' + node.varsToDeclare.join(', ') + ';\n'
-            a = for child in node[1...] then visit child
-            a[a.length - 1] = 'return ' + a[a.length - 1] + ';\n'
-            r += a.join(';\n')
+            a = ["var _#{node.scopeId} = {};\n"]
+            for child in node[1...] then a.push visit child
+            a[a.length - 1] = "return #{a[a.length - 1]};\n"
+            a.join(';\n')
 
         when 'guard'
           """
@@ -365,11 +275,12 @@ define (require) ->
         when 'assign'
           name = node[1]
           assert name isnt '∇', 'Assignment to ∇ is not allowed.'
-          if (v = closestScope(node).vars[setter = "set_#{name}"])?.type is 'F'
+          vars = closestScope(node).vars
+          if (v = vars["set_#{name}"])?.type is 'F'
             v.used = true
-            "#{jsName setter}(#{visit node[2]})" # todo: pass-through value
+            "#{v.code}(#{visit node[2]})" # todo: pass-through value
           else
-            "#{jsName name} = #{visit node[2]}"
+            "#{vars[name].code} = #{visit node[2]}"
 
         # Symbols
         #
@@ -387,13 +298,14 @@ define (require) ->
         #     ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
         when 'sym'
           name = node[1]
-          if name is '∇' then return 'arguments.callee'
-          v = closestScope(node).vars[getter = "get_#{name}"]
-          if v?.type is 'F'
+          vars = closestScope(node).vars
+          if (v = vars["get_#{name}"])?.type is 'F'
             v.used = true
-            "#{jsName getter}()"
+            "#{v.code}()"
           else
-            jsName name
+            v = vars[name]
+            v.used = true
+            v.code
 
         # Lambda expressions
         #
@@ -455,8 +367,7 @@ define (require) ->
           else "new _.Complex(#{a[0]}, #{a[1]})"
 
         when 'index'
-          closestScope(node).vars['⌷'].used = true
-          "_index(#{visit node[1]}, [#{
+          "_['⌷'](#{visit node[1]}, [#{
             (for c in node[2...] when c isnt null then visit c).join ', '
           }], [#{
             (for c, i in node[2...] when c isnt null then i)
@@ -468,9 +379,6 @@ define (require) ->
         when 'vector'
           n = node.length - 1
           "[#{(for child in node[1...] then visit child).join ', '}]"
-
-        when 'niladic'
-          "#{visit node[1]}()"
 
         when 'monadic'
           "#{visit node[1]}(#{visit node[2]})"
@@ -503,15 +411,9 @@ define (require) ->
         else
           die "Unrecognised node type, '#{node[0]}'"
 
-    s = visit ast
     """
-      var #{
-        ['_ = arguments[0]'].concat(
-          for k, v of varInfo when v.used
-            "#{jsName k} = _[#{repr k}]"
-        ).join ',\n    '
-      };
-      #{s}
+      var _ = arguments[0];
+      #{visit ast}
     """
 
   # A helper to find the nearest `body` ancestor
@@ -527,7 +429,7 @@ define (require) ->
     execJS compile(aplSource, opts).jsOutput, opts
 
   execJS = (jsSource, opts = {}) ->
-    h = inherit ctx
+    h = inherit builtins, {Complex}
     if opts.extraContext then for k, v of opts.extraContext then h[k] = v
     (new Function jsSource) h
 
