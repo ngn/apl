@@ -7,7 +7,16 @@ define (require) ->
   {inherit, die, assert} = require './helpers'
   repr = JSON.stringify
 
-  # Monkey-patch the lexer to allow for newlines within parentheses
+  # # Stage 1: Lexing
+  #
+  # Lexing means transforming the input stream of characters into a sequence of
+  # tokens.  We let [Jison](http://zaach.github.com/jison/) do this job with
+  # the token definitions from [`grammar.coffee`](./grammar.html).
+  #
+  # But there is one shortcoming for which we must intervene.  We want to treat
+  # newlines inside `()` and `[]` as whitespace but newlines inside `{}` as
+  # statement separators.  Here we are monkeypatching the lexer, somewhat
+  # recklessly, in order to achieve that.
   {setInput, next} = lexer = parser.lexer ? parser.parser.lexer
 
   lexer.setInput = (args...) ->
@@ -26,7 +35,42 @@ define (require) ->
           @bracketStack[@bracketStack.length - 1] is '{')
         return token
 
+  # # Stage 2: Parsing
+  #
+  # The [Jison](http://zaach.github.com/jison/)-generated parser will build us
+  # an AST according to the grammar rules defined in
+  # [`grammar.coffee`](./grammar.html).  Nothing for us to do here.
+  #
+  # A node in the AST will be a JavaScript array whose first item is a string
+  # indicating the type of node.  The rest of the items are the children or
+  # represent the content of a node.  For instance `(1 + 2) × 3 4` will produce
+  # the tree:
+  #
+  #     ['body',
+  #       ['seq',
+  #         ['seq',
+  #           ['num', '1'],
+  #           ['sym', '+'],
+  #           ['num', '2']],
+  #         ['sym', '×'],
+  #         ['num', '3'],
+  #         ['num', '4']]]
+  #
+  # Note, that at this stage we don't yet know which symbols represent verbs
+  # and which represent nouns.
+  ;
 
+  # # Stage 3: Assign parents
+  #
+  # This is a simple recursive procedure to assign a `.parent` property to each
+  # node, so we can walk the tree up as well as down.
+  assignParents = (node) ->
+    for child in node[1...] when child
+      assignParents child
+      child.parent = node
+    return
+
+  # # (this part will be refactored)
 
   createHash = (s) ->
     h = {}
@@ -123,36 +167,36 @@ define (require) ->
       if k.match /^[gs]et_.*/
         varInfo[k[4...]] = {type: 'X'}
 
-  exec = (aplSource, opts = {}) ->
-    execJS compile(aplSource, opts).jsOutput, opts
-
-  execJS = (jsSource, opts = {}) ->
-    h = inherit ctx
-    if opts.extraContext then for k, v of opts.extraContext then h[k] = v
-    (new Function jsSource) h
-
-  compile = (aplSource, opts = {}) ->
-    ast = parser.parse aplSource
-    assignParents ast
-    resolveSeqs ast
-    jsOutput = toJavaScript ast
-    {ast, jsOutput}
-
-  assignParents = (node) ->
-    for child in node[1...] when child
-      assignParents child
-      child.parent = node
-    return
-
-  # For each scope, determine the type of each symbol.
-  # A symbol can be either of two types:
+  # # Stage 4: Resolve seq nodes
   #
-  #   * Type X: data or a niladic function
+  # For each scope (`body` node), determine the type of each pronoun (`sym`
+  # node) used in it.
   #
-  #   * Type F: a monadic function, a dyadic function, or an operator
+  # A pronoun can be either of two types:
   #
-  # This information is used to convert each "seq" node into a hierarchy of
-  # function applications.
+  #   * Type `X`: data or a niladic function
+  #
+  #   * Type `F`: a monadic function, a dyadic function, or an operator
+  #
+  # This information is then used to convert each sequence (`seq` node) into
+  # a hierarchy of function applications.
+  #
+  # For instance, after this stage, the APL program `(1 + 2) × 3 4` will be
+  # represented as:
+  #
+  #     ['body',
+  #       ['dyadic',
+  #         ['dyadic',
+  #           ['num', '1'],
+  #           ['sym', '+'],
+  #           ['num', '2']],
+  #         ['sym', '+'],
+  #         ['vector',
+  #           ['num', '3'],
+  #           ['num', '4']]]]
+  #
+  # You can see a textual representation of this tree in your shell, if you
+  # type `apl -n filename.apl`
   resolveSeqs = (ast) ->
     ast.vars = inherit varInfo
     queue = [ast] # accumulates "body" nodes which we encounter on our way
@@ -290,7 +334,7 @@ define (require) ->
 
 
 
-  # Convert AST to JavaScript code
+  # # Stage 5: Render JavaScript code
   toJavaScript = (ast) ->
 
     visit = (node) ->
@@ -470,12 +514,28 @@ define (require) ->
       #{s}
     """
 
-
-
+  # A helper to find the nearest `body` ancestor
   closestScope = (node) ->
     while node[0] isnt 'body' then node = node.parent
     node
 
 
+
+  # # Public interface of the `compiler` module
+
+  exec = (aplSource, opts = {}) ->
+    execJS compile(aplSource, opts).jsOutput, opts
+
+  execJS = (jsSource, opts = {}) ->
+    h = inherit ctx
+    if opts.extraContext then for k, v of opts.extraContext then h[k] = v
+    (new Function jsSource) h
+
+  compile = (aplSource, opts = {}) ->
+    ast = parser.parse aplSource
+    assignParents ast
+    resolveSeqs ast
+    jsOutput = toJavaScript ast
+    {ast, jsOutput}
 
   {exec, execJS, compile}
