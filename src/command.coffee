@@ -91,12 +91,6 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
       jsOutput = cs.compile pp.preprocess code, ctx
     else
       {ast, jsOutput} = compile code, extraContext: ctx
-      jsOutput = """
-        \#!/usr/bin/env node\n
-        require('apl')(function () {
-        #{jsOutput}
-        });\n
-      """
 
     # If printing of nodes is requested, do it and stop.
     if argv.nodes
@@ -105,6 +99,12 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
 
     # Print or execute compiler output.
     if argv.compile
+      jsOutput = """
+        \#!/usr/bin/env node\n
+        require('apl')(function () {
+        #{jsOutput}
+        });\n
+      """
       if argv.stdio or argv.print
         process.stdout.write jsOutput
       else

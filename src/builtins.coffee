@@ -1750,11 +1750,19 @@ define (require) ->
   #     ... √ ← {⍵⋆.5}
   #     ... ((−b)(+,−)√(b⋆2)−4×a×c) ÷ 2×a
   #     ... ⍝ returns 17 5
-  builtins.fork = (h, g, f) ->
-    assert typeof f is 'function'
-    assert typeof g is 'function'
-    assert typeof h is 'function'
-    (b, a) -> g h(b, a), f(b, a)
+  #
+  #     # Trains (longer forks)
+  #     (+,−,×,÷) 2     ⍝ returns 2 ¯2 1 .5
+  #     1 (+,−,×,÷) 2   ⍝ returns 3 ¯1 2 .5
+  builtins.fork = (funcs) ->
+    assert funcs.length % 2 is 1
+    assert funcs.length >= 3
+    for f in funcs then assert typeof f is 'function'
+    (b, a) ->
+      r = funcs[funcs.length - 1] b, a
+      for i in [funcs.length - 2 ... 0] by -2
+        r = funcs[i] r, funcs[i - 1] b, a
+      r
 
 
 

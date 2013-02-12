@@ -55,6 +55,7 @@ define ->
   # Sum and product;  I wish JavaScript had a _reduce_ operator :)
   sum = (xs) -> r = 0; (for x in xs then r += x); r
   prod = (xs) -> r = 1; (for x in xs then r *= x); r
+  all = (xs) -> (for x in xs when not x then return false); true
 
   # `repeat(s, n)` catenates `n` instances of a string `s`.
   repeat = (s, n) -> r = ''; (for [0...n] then r += s); r
@@ -63,4 +64,4 @@ define ->
   assert = (flag, s = 'Assertion failed') -> if not flag then throw Error s
 
   {inherit, isSimple, shapeOf, withShape, prototypeOf, withPrototype,
-    withPrototypeCopiedFrom, sum, prod, repeat, die, assert}
+    withPrototypeCopiedFrom, sum, prod, all, repeat, die, assert}

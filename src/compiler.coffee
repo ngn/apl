@@ -4,8 +4,7 @@ define (require) ->
   parser = require('./parser') ? window.parser
   {builtins} = require './builtins'
   {Complex} = require './complex'
-  {inherit, die, assert} = require './helpers'
-  repr = JSON.stringify
+  {inherit, die, assert, all} = require './helpers'
 
   # # Stage 1: Lexing
   #
@@ -213,7 +212,8 @@ define (require) ->
               h = [{type: 'F'}]
 
             # Forks
-            if h.length is 3 and h[0].type is h[1].type is h[2].type is 'F'
+            if (h.length >= 3 and h.length % 2 is 1 and
+                    all(for x in h then x.type is 'F'))
               a = [['fork'].concat a]
               h = [{type: 'F'}]
 
@@ -399,7 +399,7 @@ define (require) ->
           "_.hook(#{visit node[2]}, #{visit node[1]})"
 
         when 'fork'
-          "_.fork(#{visit node[3]}, #{visit node[2]}, #{visit node[1]})"
+          "_.fork([#{for c in node[1...] then visit c}])"
 
         # Embedded JavaScript
         #
