@@ -101,11 +101,11 @@ define (require) ->
   # type `apl -n filename.apl`
   resolveSeqs = (ast) ->
     ast.vars =
-      '⍺': {type: 'X', code: '_a'}
-      '⍵': {type: 'X', code: '_w'}
-      '∇': {type: 'F', code: 'arguments.callee'}
+      '⍺': {type: 'X', jsCode: '_a'}
+      '⍵': {type: 'X', jsCode: '_w'}
+      '∇': {type: 'F', jsCode: 'arguments.callee'}
     for k, v of builtins
-      ast.vars[k] = h = {type: 'X', code: "_[#{JSON.stringify k}]"}
+      ast.vars[k] = h = {type: 'X', jsCode: "_[#{JSON.stringify k}]"}
       if typeof v is 'function'
         h.type = 'F'
         if (m = v.aplMetaInfo)?
@@ -140,7 +140,7 @@ define (require) ->
             else
               vars[name] =
                 type: h.type
-                code: "_#{scopeNode.scopeId}[#{JSON.stringify name}]"
+                jsCode: "_#{scopeNode.scopeId}[#{JSON.stringify name}]"
             h
           when 'sym'
             name = node[1]
@@ -278,9 +278,9 @@ define (require) ->
           vars = closestScope(node).vars
           if (v = vars["set_#{name}"])?.type is 'F'
             v.used = true
-            "#{v.code}(#{visit node[2]})" # todo: pass-through value
+            "#{v.jsCode}(#{visit node[2]})" # todo: pass-through value
           else
-            "#{vars[name].code} = #{visit node[2]}"
+            "#{vars[name].jsCode} = #{visit node[2]}"
 
         # Symbols
         #
@@ -301,11 +301,11 @@ define (require) ->
           vars = closestScope(node).vars
           if (v = vars["get_#{name}"])?.type is 'F'
             v.used = true
-            "#{v.code}()"
+            "#{v.jsCode}()"
           else
             v = vars[name]
             v.used = true
-            v.code
+            v.jsCode
 
         # Lambda expressions
         #

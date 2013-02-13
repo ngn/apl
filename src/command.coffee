@@ -72,7 +72,7 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
       return repl ctx
 
     # Determine input.
-    code =
+    aplCode =
       if argv.stdio
         Buffer.concat(loop # read all of stdin
           b = new Buffer 1024
@@ -86,16 +86,16 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
 
     # If printing of nodes is requested, do it and stop.
     if argv.nodes
-      printAST nodes code
+      printAST nodes aplCode
       return
 
     # Compile.
     if isCoffeeScript
       cs = require 'coffee-script'
       pp = require './coffee-preprocessor'
-      jsCode = cs.compile pp.preprocess code
+      jsCode = cs.compile pp.preprocess aplCode
     else
-      jsCode = compile code
+      jsCode = compile aplCode
 
     # Print or execute compiler output.
     if argv.compile
