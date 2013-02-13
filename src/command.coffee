@@ -6,7 +6,7 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
 define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
-  {exec, execJS, compile} = compiler
+  {nodes, compile, exec} = compiler
 
   main = ->
 
@@ -84,34 +84,36 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
         isCoffeeScript = /\.coffee$/.test argv._[0]
         fs.readFileSync argv._[0], 'utf8'
 
+    # If printing of nodes is requested, do it and stop.
+    if argv.nodes
+      printAST nodes code
+      return
+
     # Compile.
     if isCoffeeScript
       cs = require 'coffee-script'
       pp = require './coffee-preprocessor'
-      jsOutput = cs.compile pp.preprocess code, ctx
+      jsCode = cs.compile pp.preprocess code
     else
-      {ast, jsOutput} = compile code, extraContext: ctx
-
-    # If printing of nodes is requested, do it and stop.
-    if argv.nodes
-      printAST ast
-      return
+      jsCode = compile code
 
     # Print or execute compiler output.
     if argv.compile
-      jsOutput = """
-        \#!/usr/bin/env node\n
-        require('apl')(function () {
-        #{jsOutput}
-        });\n
+      jsCode = """
+        \#!/usr/bin/env node
+        var _ = require('apl').createGlobalContext();
+        #{jsCode}
       """
       if argv.stdio or argv.print
-        process.stdout.write jsOutput
+        process.stdout.write jsCode
       else
         fs.writeFileSync argv._[0].replace(/\.(apl|coffee)$/, '') + '.js',
-          jsOutput, 'utf8'
+          jsCode, 'utf8'
     else
-      execJS jsOutput, extraContext: ctx
+      (new Function """
+        var _ = arguments[0];
+        #{jsCode}
+      """) createGlobalContext()
 
 
 

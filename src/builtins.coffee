@@ -1718,6 +1718,8 @@ define (require) ->
 
   builtins.bool = bool
 
+  builtins.Complex = require('./complex').Complex
+
   # [Phrasal forms](http://www.jsoftware.com/papers/fork1.htm)
   #
   # Hook: `(fg)⍵ ←→ ⍵fg⍵` ; `⍺(fg)⍵ ←→ ⍺fg⍵`

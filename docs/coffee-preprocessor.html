@@ -5,10 +5,11 @@
 <span class="nx">define</span> <span class="o">-&gt;</span>
   <span class="p">{</span><span class="nx">compile</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s1">&#39;./compiler&#39;</span>
 
-  <span class="nv">preprocess: </span><span class="nf">(code, ctx) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Compile fragments delimited by <code>«»</code></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">code = </span><span class="nx">code</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/«([^»]*)»/g</span><span class="p">,</span> <span class="nf">(_1, fragment) -&gt;</span>
-      <span class="s2">&quot;`(require(&#39;apl&#39;)(function () {#{</span>
-<span class="s2">        compile(fragment, extraContext: ctx).jsOutput</span>
-<span class="s2">      }}))`&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Compile bodies of squiggly arrow funtions (<code>~&gt;</code>)</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">lines = </span><span class="nx">code</span><span class="p">.</span><span class="nx">split</span> <span class="s1">&#39;\n&#39;</span>
+  <span class="nv">preprocess: </span><span class="nf">(coffeeCode) -&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Compile fragments delimited by <code>«»</code></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">coffeeCode = </span><span class="nx">coffeeCode</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/«([^»]*)»/g</span><span class="p">,</span> <span class="nf">(_1, fragment) -&gt;</span>
+      <span class="s2">&quot;`(function () {</span>
+<span class="s2">        var _ = require(&#39;apl&#39;).createGlobalContext();</span>
+<span class="s2">        #{compile fragment}</span>
+<span class="s2">      })()`&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Compile bodies of squiggly arrow funtions (<code>~&gt;</code>)</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">lines = </span><span class="nx">coffeeCode</span><span class="p">.</span><span class="nx">split</span> <span class="s1">&#39;\n&#39;</span>
     <span class="nv">i = </span><span class="mi">0</span>
     <span class="k">while</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">lines</span><span class="p">.</span><span class="nx">length</span>
       <span class="k">if</span> <span class="sr">/~&gt;$/</span><span class="p">.</span><span class="nx">test</span> <span class="nx">lines</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
@@ -20,7 +21,8 @@
           <span class="nx">j</span><span class="o">++</span>
         <span class="nv">fragment = </span><span class="nx">lines</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">...</span> <span class="nx">j</span><span class="p">].</span><span class="nx">join</span> <span class="s1">&#39;\n&#39;</span>
         <span class="nx">lines</span><span class="p">[</span><span class="nx">i</span><span class="p">...</span><span class="nx">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">lines</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">replace</span> <span class="sr">/~&gt;$/</span><span class="p">,</span> <span class="s2">&quot;`(function () {</span>
-<span class="s2">          #{compile(fragment, extraContext: ctx).jsOutput}</span>
+<span class="s2">          var _ = require(&#39;apl&#39;).createGlobalContext();</span>
+<span class="s2">          #{compile fragment}</span>
 <span class="s2">        })`&quot;</span><span class="p">]</span>
       <span class="nx">i</span><span class="o">++</span>
     <span class="nx">lines</span><span class="p">.</span><span class="nx">join</span> <span class="s1">&#39;\n&#39;</span>

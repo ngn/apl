@@ -411,10 +411,7 @@ define (require) ->
         else
           die "Unrecognised node type, '#{node[0]}'"
 
-    """
-      var _ = arguments[0];
-      #{visit ast}
-    """
+    visit ast
 
   # A helper to find the nearest `body` ancestor
   closestScope = (node) ->
@@ -423,21 +420,21 @@ define (require) ->
 
 
 
-  # # Public interface of the `compiler` module
+  # # Public interface to this module
 
-  exec = (aplSource, opts = {}) ->
-    execJS compile(aplSource, opts).jsOutput, opts
-
-  execJS = (jsSource, opts = {}) ->
-    h = inherit builtins, {Complex}
-    if opts.extraContext then for k, v of opts.extraContext then h[k] = v
-    (new Function jsSource) h
-
-  compile = (aplSource, opts = {}) ->
-    ast = parser.parse aplSource
+  nodes = (aplCode) ->
+    ast = parser.parse aplCode
     assignParents ast
     resolveSeqs ast
-    jsOutput = toJavaScript ast
-    {ast, jsOutput}
+    ast
 
-  {exec, execJS, compile}
+  compile = (aplCode) ->
+    toJavaScript nodes aplCode
+
+  exec = (aplCode, opts = {}) ->
+    (new Function """
+      var _ = arguments[0];
+      #{compile aplCode}
+    """) inherit builtins, opts.extraContext
+
+  {nodes, compile, exec}

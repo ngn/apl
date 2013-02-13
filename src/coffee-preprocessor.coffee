@@ -6,16 +6,17 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 define ->
   {compile} = require './compiler'
 
-  preprocess: (code, ctx) ->
+  preprocess: (coffeeCode) ->
 
     # Compile fragments delimited by `«»`
-    code = code.replace /«([^»]*)»/g, (_1, fragment) ->
-      "`(require('apl')(function () {#{
-        compile(fragment, extraContext: ctx).jsOutput
-      }}))`"
+    coffeeCode = coffeeCode.replace /«([^»]*)»/g, (_1, fragment) ->
+      "`(function () {
+        var _ = require('apl').createGlobalContext();
+        #{compile fragment}
+      })()`"
 
     # Compile bodies of squiggly arrow funtions (`~>`)
-    lines = code.split '\n'
+    lines = coffeeCode.split '\n'
     i = 0
     while i < lines.length
       if /~>$/.test lines[i]
@@ -27,7 +28,8 @@ define ->
           j++
         fragment = lines[i + 1 ... j].join '\n'
         lines[i...j] = [lines[i].replace /~>$/, "`(function () {
-          #{compile(fragment, extraContext: ctx).jsOutput}
+          var _ = require('apl').createGlobalContext();
+          #{compile fragment}
         })`"]
       i++
     lines.join '\n'
