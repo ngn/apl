@@ -73,8 +73,9 @@ to parse the arguments.</p>             </td>             <td class="code">     
       <span class="nv">jsCode = </span><span class="nx">compile</span> <span class="nx">code</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Print or execute compiler output.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="nx">argv</span><span class="p">.</span><span class="nx">compile</span>
       <span class="nv">jsCode = </span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        \#!/usr/bin/env node</span>
-<span class="s2">        var _ = require(&#39;apl&#39;).createGlobalContext();</span>
-<span class="s2">        #{jsCode}</span>
+<span class="s2">        (function (_) {</span>
+<span class="s2">          #{jsCode}</span>
+<span class="s2">        })(require(&#39;apl&#39;).createGlobalContext());</span>
 <span class="s2">      &quot;&quot;&quot;</span>
       <span class="k">if</span> <span class="nx">argv</span><span class="p">.</span><span class="nx">stdio</span> <span class="o">or</span> <span class="nx">argv</span><span class="p">.</span><span class="nx">print</span>
         <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span> <span class="nx">jsCode</span>

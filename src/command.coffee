@@ -101,8 +101,9 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
     if argv.compile
       jsCode = """
         \#!/usr/bin/env node
-        var _ = require('apl').createGlobalContext();
-        #{jsCode}
+        (function (_) {
+          #{jsCode}
+        })(require('apl').createGlobalContext());
       """
       if argv.stdio or argv.print
         process.stdout.write jsCode
