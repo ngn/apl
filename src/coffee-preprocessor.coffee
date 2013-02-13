@@ -8,14 +8,21 @@ define ->
 
   preprocess: (coffeeCode) ->
 
-    # Compile fragments delimited by `«»`
-    coffeeCode = coffeeCode.replace /«([^»]*)»/g, (_1, fragment) ->
-      "`(function () {
-        var _ = require('apl').createGlobalContext();
-        #{compile fragment}
-      })()`"
+    # # Step 1
 
-    # Compile bodies of squiggly arrow funtions (`~>`)
+    # Collect APL fragments and replace them with placeholders of the form
+    # `` `@123` ``, where `123` is the fragment id.
+    fragments = []
+
+    # Collect fragments delimited by `«»`
+    coffeeCode = coffeeCode.replace /«([^»]*)»/g, (_1, aplCode) ->
+      fragments.push(
+        kind: 'expression'
+        aplCode: aplCode
+      )
+      "`@#{fragments.length - 1}`"
+
+    # Collect bodies of squiggly arrow funtions (`~>`)
     lines = coffeeCode.split '\n'
     i = 0
     while i < lines.length
@@ -26,10 +33,23 @@ define ->
         while (j < lines.length and
                (/^[ \t]*([#⍝].*)?$/.test(lines[j]) or indentRE.test(lines[j])))
           j++
-        fragment = lines[i + 1 ... j].join '\n'
-        lines[i...j] = [lines[i].replace /~>$/, "`(function () {
-          var _ = require('apl').createGlobalContext();
-          #{compile fragment}
-        })`"]
+        fragments.push(
+          kind: 'function'
+          aplCode: lines[i + 1 ... j].join('\n')
+        )
+        lines[i...j] = [lines[i].replace /~>$/, "`@#{fragments.length - 1}`"]
       i++
-    lines.join '\n'
+    coffeeCode = lines.join '\n'
+
+    # # Step 2
+
+    # Replace each placeholder with the compiled code for the corresponding
+    # fragment.
+    coffeeCode.replace /`@(\d+)`/g, (_1, id) ->
+      f = fragments[+id]
+      jsCode = """(function () {
+        var _ = require('apl').createGlobalContext();
+        #{compile f.aplCode}
+      })"""
+      if f.kind is 'expression' then jsCode += '()'
+      "`#{jsCode}`"
