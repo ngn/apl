@@ -42,7 +42,7 @@ scope.</p>             </td>             <td class="code">               <div cl
         <span class="kc">true</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h1>Step 3</h1>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Replace each placeholder with the compiled code for the corresponding
 fragment.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">coffeeCode</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/`@(\d+)`/g</span><span class="p">,</span> <span class="nf">(_1, id) -&gt;</span>
       <span class="nv">f = </span><span class="nx">fragments</span><span class="p">[</span><span class="o">+</span><span class="nx">id</span><span class="p">]</span>
-      <span class="nv">jsCode = </span><span class="s2">&quot;&quot;&quot;(function () {</span>
+      <span class="nv">jsCode = </span><span class="s2">&quot;&quot;&quot;(function (_w, _a) {</span>
 <span class="s2">        var _ = require(&#39;apl&#39;).createGlobalContext();</span>
 <span class="s2">        #{compile f.aplCode, extraVars: f.vars}</span>
 <span class="s2">      })&quot;&quot;&quot;</span>

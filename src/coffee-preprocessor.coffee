@@ -65,7 +65,7 @@ define ->
     # fragment.
     coffeeCode.replace /`@(\d+)`/g, (_1, id) ->
       f = fragments[+id]
-      jsCode = """(function () {
+      jsCode = """(function (_w, _a) {
         var _ = require('apl').createGlobalContext();
         #{compile f.aplCode, extraVars: f.vars}
       })"""
