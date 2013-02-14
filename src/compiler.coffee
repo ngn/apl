@@ -7,7 +7,7 @@ define (require) ->
   {inherit, die, assert, all} = require './helpers'
 
   # # Stage 1: Lexing
-  #
+
   # Lexing means transforming the input stream of characters into a sequence of
   # tokens.  We let [Jison](http://zaach.github.com/jison/) do this job with
   # the token definitions from [`grammar.coffee`](./grammar.html).
@@ -35,7 +35,7 @@ define (require) ->
         return token
 
   # # Stage 2: Parsing
-  #
+
   # The [Jison](http://zaach.github.com/jison/)-generated parser will build us
   # an AST according to the grammar rules defined in
   # [`grammar.coffee`](./grammar.html).  Nothing for us to do here.
@@ -60,7 +60,7 @@ define (require) ->
   ;
 
   # # Stage 3: Assign parents
-  #
+
   # This is a simple recursive procedure to assign a `.parent` property to each
   # node, so we can walk the tree up as well as down.
   assignParents = (node) ->
@@ -70,7 +70,7 @@ define (require) ->
     return
 
   # # Stage 4: Resolve seq nodes
-  #
+
   # For each scope (`body` node), determine the type of each pronoun (`sym`
   # node) used in it.
   #
@@ -99,7 +99,7 @@ define (require) ->
   #
   # You can see a textual representation of this tree in your shell, if you
   # type `apl -n filename.apl`
-  resolveSeqs = (ast) ->
+  resolveSeqs = (ast, opts = {}) ->
     ast.vars =
       '⍺': {type: 'X', jsCode: '_a'}
       '⍵': {type: 'X', jsCode: '_w'}
@@ -114,6 +114,8 @@ define (require) ->
           if m.isInfixOperator   then h.isInfixOperator   = true
         if /^[gs]et_.*/.test k
           ast.vars[k[4...]] = {type: 'X'}
+    if opts.extraVars
+      ast.vars = inherit ast.vars, opts.extraVars
     scopeCounter = 0
     ast.scopeId = scopeCounter++
     queue = [ast] # accumulates "body" nodes which we encounter on our way
@@ -422,19 +424,19 @@ define (require) ->
 
   # # Public interface to this module
 
-  nodes = (aplCode) ->
+  nodes = (aplCode, opts = {}) ->
     ast = parser.parse aplCode
     assignParents ast
-    resolveSeqs ast
+    resolveSeqs ast, opts
     ast
 
-  compile = (aplCode) ->
-    toJavaScript nodes aplCode
+  compile = (aplCode, opts = {}) ->
+    toJavaScript nodes aplCode, opts
 
   exec = (aplCode, opts = {}) ->
     (new Function """
       var _ = arguments[0];
-      #{compile aplCode}
+      #{compile aplCode, opts}
     """) inherit builtins, opts.extraContext
 
   {nodes, compile, exec}

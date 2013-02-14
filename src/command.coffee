@@ -99,22 +99,38 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
 
     # Print or execute compiler output.
     if argv.compile
-      jsCode = """
-        \#!/usr/bin/env node
-        (function (_) {
+      if isCoffeeScript
+        jsCode = """
+          \#!/usr/bin/env node
           #{jsCode}
-        })(require('apl').createGlobalContext());
-      """
+        """
+      else
+        jsCode = """
+          \#!/usr/bin/env node
+          var _ = require('apl').createGlobalContext();
+          #{jsCode}
+        """
       if argv.stdio or argv.print
         process.stdout.write jsCode
       else
-        fs.writeFileSync argv._[0].replace(/\.(apl|coffee)$/, '') + '.js',
-          jsCode, 'utf8'
+        filename = argv._[0].replace(/\.(apl|coffee)$/, '.js')
+        fs.writeFileSync filename, jsCode, 'utf8'
     else
-      (new Function """
-        var _ = arguments[0];
-        #{jsCode}
-      """) createGlobalContext()
+      if isCoffeeScript
+        fakeRequire = (args...) ->
+          if args.length is 1 and args[0] is 'apl'
+            require './apl'
+          else
+            require args...
+        (new Function """
+          var require = arguments[0];
+          #{jsCode}
+        """) fakeRequire
+      else
+        (new Function """
+          var _ = arguments[0];
+          #{jsCode}
+        """) require('./apl').createGlobalContext()
 
 
 

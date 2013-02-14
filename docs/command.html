@@ -71,22 +71,38 @@ to parse the arguments.</p>             </td>             <td class="code">     
       <span class="nv">jsCode = </span><span class="nx">cs</span><span class="p">.</span><span class="nx">compile</span> <span class="nx">pp</span><span class="p">.</span><span class="nx">preprocess</span> <span class="nx">aplCode</span>
     <span class="k">else</span>
       <span class="nv">jsCode = </span><span class="nx">compile</span> <span class="nx">aplCode</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <p>Print or execute compiler output.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="nx">argv</span><span class="p">.</span><span class="nx">compile</span>
-      <span class="nv">jsCode = </span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        \#!/usr/bin/env node</span>
-<span class="s2">        (function (_) {</span>
+      <span class="k">if</span> <span class="nx">isCoffeeScript</span>
+        <span class="nv">jsCode = </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">          \#!/usr/bin/env node</span>
 <span class="s2">          #{jsCode}</span>
-<span class="s2">        })(require(&#39;apl&#39;).createGlobalContext());</span>
-<span class="s2">      &quot;&quot;&quot;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+      <span class="k">else</span>
+        <span class="nv">jsCode = </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">          \#!/usr/bin/env node</span>
+<span class="s2">          var _ = require(&#39;apl&#39;).createGlobalContext();</span>
+<span class="s2">          #{jsCode}</span>
+<span class="s2">        &quot;&quot;&quot;</span>
       <span class="k">if</span> <span class="nx">argv</span><span class="p">.</span><span class="nx">stdio</span> <span class="o">or</span> <span class="nx">argv</span><span class="p">.</span><span class="nx">print</span>
         <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span> <span class="nx">jsCode</span>
       <span class="k">else</span>
-        <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFileSync</span> <span class="nx">argv</span><span class="p">.</span><span class="nx">_</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\.(apl|coffee)$/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.js&#39;</span><span class="p">,</span>
-          <span class="nx">jsCode</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span>
+        <span class="nv">filename = </span><span class="nx">argv</span><span class="p">.</span><span class="nx">_</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\.(apl|coffee)$/</span><span class="p">,</span> <span class="s1">&#39;.js&#39;</span><span class="p">)</span>
+        <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFileSync</span> <span class="nx">filename</span><span class="p">,</span> <span class="nx">jsCode</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span>
     <span class="k">else</span>
-      <span class="p">(</span><span class="k">new</span> <span class="nb">Function</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        var _ = arguments[0];</span>
-<span class="s2">        #{jsCode}</span>
-<span class="s2">      &quot;&quot;&quot;</span><span class="p">)</span> <span class="nx">createGlobalContext</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Read-eval-print loop</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">repl = </span><span class="nf">(ctx) -&gt;</span>
+      <span class="k">if</span> <span class="nx">isCoffeeScript</span>
+        <span class="nv">fakeRequire = </span><span class="nf">(args...) -&gt;</span>
+          <span class="k">if</span> <span class="nx">args</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span> <span class="o">and</span> <span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">is</span> <span class="s1">&#39;apl&#39;</span>
+            <span class="nx">require</span> <span class="s1">&#39;./apl&#39;</span>
+          <span class="k">else</span>
+            <span class="nx">require</span> <span class="nx">args</span><span class="p">...</span>
+        <span class="p">(</span><span class="k">new</span> <span class="nb">Function</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">          var require = arguments[0];</span>
+<span class="s2">          #{jsCode}</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span> <span class="nx">fakeRequire</span>
+      <span class="k">else</span>
+        <span class="p">(</span><span class="k">new</span> <span class="nb">Function</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">          var _ = arguments[0];</span>
+<span class="s2">          #{jsCode}</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./apl&#39;</span><span class="p">).</span><span class="nx">createGlobalContext</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <p>Read-eval-print loop</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">repl = </span><span class="nf">(ctx) -&gt;</span>
     <span class="nv">readline = </span><span class="nx">require</span> <span class="s1">&#39;readline&#39;</span>
     <span class="nv">rl = </span><span class="nx">readline</span><span class="p">.</span><span class="nx">createInterface</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stdin</span><span class="p">,</span> <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span>
     <span class="nx">rl</span><span class="p">.</span><span class="nx">setPrompt</span> <span class="s1">&#39;APL&gt; &#39;</span>
