@@ -9,3 +9,5 @@ exports = module.exports = (aplSource) ->
 
 exports.createGlobalContext = ->
   require('./helpers').inherit require('./builtins').builtins
+
+exports.compile = require('./compiler').compile
