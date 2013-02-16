@@ -97,8 +97,11 @@ type <code>apl -n filename.apl</code></p>             </td>             <td clas
           <span class="k">if</span> <span class="nx">m</span><span class="p">.</span><span class="nx">isInfixOperator</span>   <span class="k">then</span> <span class="nv">h.isInfixOperator   = </span><span class="kc">true</span>
         <span class="k">if</span> <span class="sr">/^[gs]et_.*/</span><span class="p">.</span><span class="nx">test</span> <span class="nx">k</span>
           <span class="nx">ast</span><span class="p">.</span><span class="nx">vars</span><span class="p">[</span><span class="nx">k</span><span class="p">[</span><span class="mi">4</span><span class="p">...]]</span> <span class="o">=</span> <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">}</span>
-    <span class="k">if</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">extraVars</span>
+    <span class="k">if</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">extraVars</span> <span class="c1"># todo: extraVars is deprecated</span>
       <span class="nv">ast.vars = </span><span class="nx">inherit</span> <span class="nx">ast</span><span class="p">.</span><span class="nx">vars</span><span class="p">,</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">extraVars</span>
+    <span class="k">if</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">vars</span>
+      <span class="k">for</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">vars</span>
+        <span class="nx">ast</span><span class="p">.</span><span class="nx">vars</span><span class="p">[</span><span class="nx">v</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nv">type: </span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="nv">jsCode: </span><span class="nx">v</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span>
     <span class="nv">scopeCounter = </span><span class="mi">0</span>
     <span class="nv">ast.scopeId = </span><span class="nx">scopeCounter</span><span class="o">++</span>
     <span class="nv">queue = </span><span class="p">[</span><span class="nx">ast</span><span class="p">]</span> <span class="c1"># accumulates &quot;body&quot; nodes which we encounter on our way</span>
@@ -365,7 +368,16 @@ A×A←2 5   ⍝ returns 4 25
     <span class="nx">ast</span>
 
   <span class="nv">compile = </span><span class="nf">(aplCode, opts = {}) -&gt;</span>
-    <span class="nx">toJavaScript</span> <span class="nx">nodes</span> <span class="nx">aplCode</span><span class="p">,</span> <span class="nx">opts</span>
+    <span class="nv">jsCode = </span><span class="nx">toJavaScript</span> <span class="nx">nodes</span> <span class="nx">aplCode</span><span class="p">,</span> <span class="nx">opts</span>
+    <span class="k">if</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">embedded</span>
+      <span class="nv">jsCode = </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        var _ = require(&#39;apl&#39;).createGlobalContext(),</span>
+<span class="s2">            _a = arguments[0],</span>
+<span class="s2">            _w = arguments[1];</span>
+<span class="s2">        #{jsCode}</span>
+<span class="s2">      &quot;&quot;&quot;</span>
+    <span class="nx">jsCode</span>
+
 
   <span class="nv">exec = </span><span class="nf">(aplCode, opts = {}) -&gt;</span>
     <span class="p">(</span><span class="k">new</span> <span class="nb">Function</span> <span class="s2">&quot;&quot;&quot;</span>

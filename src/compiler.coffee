@@ -114,8 +114,11 @@ define (require) ->
           if m.isInfixOperator   then h.isInfixOperator   = true
         if /^[gs]et_.*/.test k
           ast.vars[k[4...]] = {type: 'X'}
-    if opts.extraVars
+    if opts.extraVars # todo: extraVars is deprecated
       ast.vars = inherit ast.vars, opts.extraVars
+    if opts.vars
+      for v in opts.vars
+        ast.vars[v.name] = {type: 'X', jsCode: v.name}
     scopeCounter = 0
     ast.scopeId = scopeCounter++
     queue = [ast] # accumulates "body" nodes which we encounter on our way
@@ -431,7 +434,16 @@ define (require) ->
     ast
 
   compile = (aplCode, opts = {}) ->
-    toJavaScript nodes aplCode, opts
+    jsCode = toJavaScript nodes aplCode, opts
+    if opts.embedded
+      jsCode = """
+        var _ = require('apl').createGlobalContext(),
+            _a = arguments[0],
+            _w = arguments[1];
+        #{jsCode}
+      """
+    jsCode
+
 
   exec = (aplCode, opts = {}) ->
     (new Function """
