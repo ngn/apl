@@ -92,7 +92,7 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
     # Compile.
     if isCoffeeScript
       cs = require 'coffee-script'
-      pp = require './coffee-preprocessor'
+      pp = require 'coffee-subscript'
       jsCode = cs.compile pp.preprocess aplCode
     else
       jsCode = compile aplCode
