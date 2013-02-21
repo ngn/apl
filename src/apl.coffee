@@ -8,6 +8,6 @@ exports = module.exports = (aplSource) ->
   require('./compiler').exec aplSource
 
 exports.createGlobalContext = ->
-  require('./helpers').inherit require('./builtins').builtins
+  require('./helpers').inherit require('./vocabulary').vocabulary
 
 exports.compile = require('./compiler').compile

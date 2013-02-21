@@ -2,7 +2,7 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 
 define (require) ->
   parser = require('./parser') ? window.parser
-  {builtins} = require './builtins'
+  {vocabulary} = require './vocabulary'
   {Complex} = require './complex'
   {inherit, die, assert, all} = require './helpers'
 
@@ -104,7 +104,7 @@ define (require) ->
       '⍺': {type: 'X', jsCode: '_a'}
       '⍵': {type: 'X', jsCode: '_w'}
       '∇': {type: 'F', jsCode: 'arguments.callee'}
-    for k, v of builtins
+    for k, v of vocabulary
       ast.vars[k] = h = {type: 'X', jsCode: "_[#{JSON.stringify k}]"}
       if typeof v is 'function'
         h.type = 'F'
@@ -449,6 +449,6 @@ define (require) ->
     (new Function """
       var _ = arguments[0];
       #{compile aplCode, opts}
-    """) inherit builtins, opts.extraContext
+    """) inherit vocabulary, opts.extraContext
 
   {nodes, compile, exec}

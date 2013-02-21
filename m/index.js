@@ -6,9 +6,9 @@ if (typeof define !== 'function') {
 }
 
 define(function(require) {
-  var browserBuiltins, exec, extractTextFromDOM, format, inherit;
+  var browserVocabulary, exec, extractTextFromDOM, format, inherit;
   exec = require('../lib/compiler').exec;
-  browserBuiltins = require('../lib/browser').browserBuiltins;
+  browserVocabulary = require('../lib/browser').browserVocabulary;
   inherit = require('../lib/helpers').inherit;
   format = require('../lib/formatter').format;
   $.fn.toggleVisibility = function() {
@@ -123,7 +123,7 @@ define(function(require) {
       },
       exec: function() {
         var code, ctx, result;
-        ctx = inherit(browserBuiltins);
+        ctx = inherit(browserVocabulary);
         try {
           code = extractTextFromDOM(document.getElementById('editor')).replace(/\xa0/g, ' ');
           result = exec(code);

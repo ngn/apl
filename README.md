@@ -14,7 +14,7 @@
 An APL compiler written in [CoffeeScript](http://jashkenas.github.com/coffee-script/)<br/>
 Runs on [node.js](http://nodejs.org/) or in a browser<br/>
 Uses [Jison](http://zaach.github.com/jison/) for parsing<br/>
-[Literate source code](http://ngn.github.com/apl/docs/builtins.html)
+[Literate source code](http://ngn.github.com/apl/docs/vocabulary.html)
 
 **[In-browser demo](http://ngn.github.com/apl/web/index.html)**
 

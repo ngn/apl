@@ -6,9 +6,9 @@ if (typeof define !== 'function') {
 }
 
 define(function(require) {
-  var browserBuiltins, exec, format, inherit;
+  var browserVocabulary, exec, format, inherit;
   exec = require('../lib/compiler').exec;
-  browserBuiltins = require('../lib/browser').browserBuiltins;
+  browserVocabulary = require('../lib/browser').browserVocabulary;
   inherit = require('../lib/helpers').inherit;
   format = require('../lib/formatter').format;
   return jQuery(function($) {
@@ -33,7 +33,7 @@ define(function(require) {
     });
     execute = function() {
       var ctx, result;
-      ctx = inherit(browserBuiltins);
+      ctx = inherit(browserVocabulary);
       try {
         result = exec($('#code').val());
         $('#result').removeClass('error').text(format(result));

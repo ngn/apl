@@ -3,8 +3,8 @@
 fs = require 'fs'
 path = require 'path'
 {exec} = require '../lib/compiler'
-{builtins} = require '../lib/builtins'
-match = builtins['≡']
+{vocabulary} = require '../lib/vocabulary'
+match = vocabulary['≡']
 repr = JSON.stringify
 
 trim = (s) -> s.replace /(^ +| +$)/g, ''

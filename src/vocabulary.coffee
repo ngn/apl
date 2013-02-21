@@ -125,7 +125,7 @@ define (require) ->
 
   # # DSL for defining built-in symbols
 
-  builtins = {}
+  vocabulary = {}
 
   tmp = monadic: {}, dyadic: {}
 
@@ -191,7 +191,7 @@ define (require) ->
     assert typeof f2 is 'function'
     F = (b, a, args...) -> if a? then f2 b, a, args... else f1 b, a, args...
 
-  endOfBuiltins = ->
+  endOfVocabulary = ->
     ks = (for k of tmp.monadic then k).concat(
       for k of tmp.dyadic when not tmp.monadic[k]? then k
     )
@@ -204,11 +204,11 @@ define (require) ->
       if f2?
         f2 = overloadable k, f2
         f2 = maybeMakePervasive f2
-      builtins[k] = ambivalent(k, f1, f2)
+      vocabulary[k] = ambivalent(k, f1, f2)
     tmp = null
 
   # `pervasive(f)` only marks `f` as pervasive.  It will actually be made
-  # pervasive later in `endOfBuiltins()`.
+  # pervasive later in `endOfVocabulary()`.
   pervasive = (f) ->
     assert typeof f is 'function'
     (f.aplMetaInfo ?= {}).isPervasive = true
@@ -1374,8 +1374,8 @@ define (require) ->
   #     ⍬     ⍝ returns ⍬
   #     ⍬⍬    ⍝ returns ⍬ ⍬
   #     1⍬2⍬3 ⍝ returns 1 ⍬ 2 ⍬ 3
-  builtins['get_⍬'] = -> []
-  builtins['set_⍬'] = -> die 'Symbol zilde (⍬) is read-only.'
+  vocabulary['get_⍬'] = -> []
+  vocabulary['set_⍬'] = -> die 'Symbol zilde (⍬) is read-only.'
 
   # Index origin (`⎕IO`)
   #
@@ -1385,8 +1385,8 @@ define (require) ->
   #     ⎕IO     ⍝ returns 0
   #     ⎕IO←0   ⍝ returns 0
   #     ⎕IO←1   ⍝ fails
-  builtins['get_⎕IO'] = -> 0
-  builtins['set_⎕IO'] = (x) ->
+  vocabulary['get_⎕IO'] = -> 0
+  vocabulary['set_⎕IO'] = (x) ->
     if x isnt 0 then throw Error 'The index origin (⎕IO) is fixed at 0' else x
 
 
@@ -1700,25 +1700,25 @@ define (require) ->
       y
 
   # `⎕` and `⍞` will be overridden for the web.
-  builtins['set_⎕'] = (x) ->
+  vocabulary['set_⎕'] = (x) ->
     process.stdout.write require('./formatter').format(x) + '\n'; x
-  builtins['get_⎕'] = ->
+  vocabulary['get_⎕'] = ->
     die 'Reading from ⎕ is not implemented.'
-  builtins['set_⍞'] = (x) ->
+  vocabulary['set_⍞'] = (x) ->
     process.stdout.write require('./formatter').format x; x
-  builtins['get_⍞'] = ->
+  vocabulary['get_⍞'] = ->
     die 'Reading from ⍞ is not implemented.'
 
-  builtins.aplify = (x) ->
+  vocabulary.aplify = (x) ->
     assert x isnt null
     assert typeof x isnt 'undefined'
     if typeof x is 'string' and x.length isnt 1
       x = withPrototype ' ', x.split ''
     x
 
-  builtins.bool = bool
+  vocabulary.bool = bool
 
-  builtins.Complex = require('./complex').Complex
+  vocabulary.Complex = require('./complex').Complex
 
   # [Phrasal forms](http://www.jsoftware.com/papers/fork1.htm)
   #
@@ -1737,7 +1737,7 @@ define (require) ->
   #
   #     # Approximation of the number of primes below a certain limit
   #     (÷⍟) 1000    ⍝ returns 144.76482730108395
-  builtins.hook = (g, f) ->
+  vocabulary.hook = (g, f) ->
     assert typeof f is 'function'
     assert typeof g is 'function'
     (b, a) -> f g(b), (a ? b)
@@ -1756,7 +1756,7 @@ define (require) ->
   #     # Trains (longer forks)
   #     (+,−,×,÷) 2     ⍝ returns 2 ¯2 1 .5
   #     1 (+,−,×,÷) 2   ⍝ returns 3 ¯1 2 .5
-  builtins.fork = (funcs) ->
+  vocabulary.fork = (funcs) ->
     assert funcs.length % 2 is 1
     assert funcs.length >= 3
     for f in funcs then assert typeof f is 'function'
@@ -1768,6 +1768,6 @@ define (require) ->
 
 
 
-  endOfBuiltins()
+  endOfVocabulary()
 
-  {builtins}
+  {vocabulary}

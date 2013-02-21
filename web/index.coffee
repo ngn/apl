@@ -2,7 +2,7 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 
 define (require) ->
   {exec} = require '../lib/compiler'
-  {browserBuiltins} = require '../lib/browser'
+  {browserVocabulary} = require '../lib/browser'
   {inherit} = require '../lib/helpers'
   {format} = require '../lib/formatter'
 
@@ -25,7 +25,7 @@ define (require) ->
 
     # "Execute" button {{{1
     execute = ->
-      ctx = inherit browserBuiltins
+      ctx = inherit browserVocabulary
       try
         result = exec $('#code').val()
         $('#result').removeClass('error').text format result
