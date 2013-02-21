@@ -1,10 +1,8 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
-define (require) ->
-  parser = require('./parser') ? window.parser
-  {vocabulary} = require './vocabulary'
-  {Complex} = require './complex'
-  {inherit, die, assert, all} = require './helpers'
+define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabulary}, {Complex}, helpers) ->
+  parser = parser ? window.parser
+  {inherit, die, assert, all} = helpers
 
   # # Stage 1: Lexing
 
