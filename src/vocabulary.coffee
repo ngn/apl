@@ -1,7 +1,6 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
-# This file contains an implementation of APL's built-in functions and
-# operators.
+# This file contains an implementation of APL's built-in vocabulary.
 
 # # JavaScript representation of APL arrays
 
@@ -64,7 +63,7 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 # ## APL prototypes
 #
 # Every object in APL, including empty arrays, has a _prototype_ used whenever
-# "padding material" is needed, such as in the _take_ function:
+# "padding material" is needed, such as in the _take_ verb:
 #
 #     5 ↑ 1 2 3     ⍝ returns      1 2 3 0 0
 #     5 ↑ 'abc'     ⍝ returns      'abc  '
@@ -132,19 +131,19 @@ define (require) ->
   def = (h, name, description, f) ->
     assert typeof name is 'string'
     assert typeof description is 'string'
-    f ?= -> die "Function #{name} #{description} is not implemented."
+    f ?= -> die "Verb #{name} #{description} is not implemented."
     assert typeof f is 'function'
-    assert not h[name]?, "Redefinition of function #{name} #{description}"
+    assert not h[name]?, "Redefinition of verb #{name} #{description}"
     h[name] = f
 
   monadic = (a...) -> def tmp.monadic, a...
   dyadic = (a...) -> def tmp.dyadic, a...
-  prefixOperator = (a...) ->
-    ((def tmp.monadic, a...).aplMetaInfo ?= {}).isPrefixOperator = true
-  postfixOperator = (a...) ->
-    ((def tmp.monadic, a...).aplMetaInfo ?= {}).isPostfixOperator = true
-  infixOperator = (a...) ->
-    ((def tmp.dyadic,  a...).aplMetaInfo ?= {}).isInfixOperator = true
+  prefixAdverb = (a...) ->
+    ((def tmp.monadic, a...).aplMetaInfo ?= {}).isPrefixAdverb = true
+  postfixAdverb = (a...) ->
+    ((def tmp.monadic, a...).aplMetaInfo ?= {}).isPostfixAdverb = true
+  conjunction = (a...) ->
+    ((def tmp.dyadic,  a...).aplMetaInfo ?= {}).isConjunction = true
 
   withMetaInfoFrom = (f, g) ->
     assert typeof f is 'function'
@@ -152,7 +151,7 @@ define (require) ->
     g.aplMetaInfo = if f.aplMetaInfo then inherit f.aplMetaInfo else {}
     g
 
-  # Overloadable functions
+  # Overloadable verbs
   #
   #     x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1
   #     ... ⍝ returns 1235
@@ -250,7 +249,7 @@ define (require) ->
 
 
 
-  # # Built-in functions
+  # # Built-in verbs
 
   # Conjugate (`+`)
   #
@@ -784,7 +783,7 @@ define (require) ->
     withShape a, withPrototypeCopiedFrom b,
       (for i in [0...prod a] then b[i % b.length])
 
-  # Helper for functions `,` and `⍪`
+  # Helper for verbs `,` and `⍪`
   catenate = (b, a, axis = -1) ->
     sa = shapeOf a; if sa.length is 0 then sa = [1]; a = [a]
     sb = shapeOf b; if sb.length is 0 then sb = [1]; b = [b]
@@ -1391,9 +1390,9 @@ define (require) ->
 
 
 
-  # # Built-in operators
+  # # Built-in adverbs and conjunctions
 
-  # Helper for `/` and `⌿` in their operator sense
+  # Helper for `/` and `⌿` in their adverbial sense
   reduce = (f, _, axis = -1) -> (b, a) ->
     invokedAsMonadic = not a?
     if invokedAsMonadic then a = 0
@@ -1426,7 +1425,7 @@ define (require) ->
           x
     if invokedAsMonadic then r[0] else r
 
-  # Helper for `/` and `⌿` in their function sense
+  # Helper for `/` and `⌿` in their verbal sense
   compressOrReplicate = (b, a, axis = -1) ->
     if isSimple b then b = [b]
     sb = shapeOf b
@@ -1529,7 +1528,7 @@ define (require) ->
   #     2 ¯1 2 /[1] 3 1⍴(7 8 9)   ⍝ returns 3 5 ⍴ 7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
   #     2 ¯1 2 /[1] 3 1⍴"ABC"     ⍝ returns 3 5 ⍴ 'AA AABB BBCC CC'
   #     2 ¯2 2 / 7                ⍝ returns 7 7 0 0 7 7
-  postfixOperator '/', 'Reduce, compress, or replicate', (b, a, axis = -1) ->
+  postfixAdverb '/', 'Reduce, compress, or replicate', (b, a, axis = -1) ->
     if typeof b is 'function'
       reduce b, undefined, axis
     else
@@ -1538,14 +1537,14 @@ define (require) ->
   # 1st axis reduce, compress, or replicate (`⌿`)
   #
   #     +⌿ 2 3 ⍴ 1 2 3 10 20 30   ⍝ returns 11 22 33
-  postfixOperator '⌿', '1st axis reduce, compress, or replicate',
+  postfixAdverb '⌿', '1st axis reduce, compress, or replicate',
     (b, a, axis = 0) ->
       if typeof b is 'function'
         reduce b, undefined, axis
       else
         compressOrReplicate b, a, axis
 
-  # Helper for `\` and `⍀` in their operator sense
+  # Helper for `\` and `⍀` in their adverbial sense
   scan = (f, _, axis = -1) -> (b, a) ->
     assert not a?, 'Scan can only be applied monadically.'
     sb = shapeOf b
@@ -1566,7 +1565,7 @@ define (require) ->
           r[ijk] = x
     withShape shapeOf(b), r
 
-  # Helper for `\` and `⍀` in their function sense
+  # Helper for `\` and `⍀` in their verbal sense
   expand = ->
     # todo
 
@@ -1587,14 +1586,14 @@ define (require) ->
   #     T←"ONE(TWO) BOOK(S)" ◇ ≠\T∈"()"
   #     ... ⍝ returns 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
   #     T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK'
-  postfixOperator '\\', 'Scan or expand', (b, a, axis = -1) ->
+  postfixAdverb '\\', 'Scan or expand', (b, a, axis = -1) ->
     if typeof b is 'function'
       scan b, undefined, axis
     else
       expand b, a, axis
 
   # 1st axis scan or expand (`⍀`)
-  postfixOperator '⍀', '1st axis scan or expand', (b, a, axis = 0) ->
+  postfixAdverb '⍀', '1st axis scan or expand', (b, a, axis = 0) ->
     if typeof b is 'function'
       scan b, undefined, axis
     else
@@ -1614,7 +1613,7 @@ define (require) ->
   #     2 3 ⍴¨ 1 2                           ⍝ returns (1 1) (2 2 2)
   #     4 5 ⍴¨ "THE" "CAT"                   ⍝ returns 'THET' 'CATCA'
   #     {1+⍵⋆2}¨ 2 3 ⍴ ⍳ 6                   ⍝ returns 2 3 ⍴ 1 2 5 10 17 26
-  postfixOperator '¨', 'Each', (f) -> (b, a) ->
+  postfixAdverb '¨', 'Each', (f) -> (b, a) ->
     if not a?
       return withShape shapeOf(b), (for x in array b then f x)
     if isSimple a
@@ -1659,10 +1658,10 @@ define (require) ->
   #     ⍴ ((4 3 ⍴ 0) ∘.+ (5 2 ⍴ 0))   ⍝ returns 4 3 5 2
   #     2 3 ∘.× 4 5       ⍝ returns 2 2⍴ 8 10 12 15
   #     2 3 ∘.{⍺×⍵} 4 5   ⍝ returns 2 2⍴ 8 10 12 15
-  prefixOperator '∘.', 'Outer product', outerProduct = (f) ->
+  prefixAdverb '∘.', 'Outer product', outerProduct = (f) ->
     assert typeof f is 'function'
     (b, a) ->
-      assert a?, 'Operator ∘. (Outer product) works only with dyadic functions'
+      assert a?, 'Adverb ∘. (Outer product) can be applied to dyadic verbs only'
       a = array a
       b = array b
       r = []
@@ -1677,11 +1676,11 @@ define (require) ->
   #     (1 3 5 7) +.= 2 3 6 7   ⍝ returns 2
   #     (1 3 5 7) ∧.= 2 3 6 7   ⍝ returns 0
   #     (1 3 5 7) ∧.= 1 3 5 7   ⍝ returns 1
-  infixOperator '.', 'Inner product', (g, f) ->
+  conjunction '.', 'Inner product', (g, f) ->
     F = reduce f
     (b, a) ->
       assert shapeOf(a).length <= 1 and shapeOf(b).length <= 1,
-        'Inner product operator (.) is implemented only for ' +
+        'Inner product (.) is implemented only for ' +
         'arrays of rank no more than 1.'
       F g b, a
 
@@ -1690,7 +1689,7 @@ define (require) ->
   #     ({⍵+1}⍣5) 3     ⍝ returns 8
   #     ({⍵+1}⍣0) 3     ⍝ returns 3
   #     (⍴⍣3) 2 2⍴⍳4    ⍝ returns ,1
-  infixOperator '⍣', 'Power operator', (f, n) ->
+  conjunction '⍣', 'Power operator', (f, n) ->
     if typeof f is 'number' and typeof n is 'function'
       [f, n] = [n, f]
     else
@@ -1756,14 +1755,14 @@ define (require) ->
   #     # Trains (longer forks)
   #     (+,−,×,÷) 2     ⍝ returns 2 ¯2 1 .5
   #     1 (+,−,×,÷) 2   ⍝ returns 3 ¯1 2 .5
-  vocabulary.fork = (funcs) ->
-    assert funcs.length % 2 is 1
-    assert funcs.length >= 3
-    for f in funcs then assert typeof f is 'function'
+  vocabulary.fork = (verbs) ->
+    assert verbs.length % 2 is 1
+    assert verbs.length >= 3
+    for f in verbs then assert typeof f is 'function'
     (b, a) ->
-      r = funcs[funcs.length - 1] b, a
-      for i in [funcs.length - 2 ... 0] by -2
-        r = funcs[i] r, funcs[i - 1] b, a
+      r = verbs[verbs.length - 1] b, a
+      for i in [verbs.length - 2 ... 0] by -2
+        r = verbs[i] r, verbs[i - 1] b, a
       r
 
 

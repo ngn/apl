@@ -78,7 +78,7 @@ define (require) ->
   #
   #   * Type `X`: data or a niladic function
   #
-  #   * Type `F`: a monadic function, a dyadic function, or an operator
+  #   * Type `F`: a verb, adverb, or conjunction
   #
   # This information is then used to convert each sequence (`seq` node) into
   # a hierarchy of function applications.
@@ -109,9 +109,9 @@ define (require) ->
       if typeof v is 'function'
         h.type = 'F'
         if (m = v.aplMetaInfo)?
-          if m.isPrefixOperator  then h.isPrefixOperator  = true
-          if m.isPostfixOperator then h.isPostfixOperator = true
-          if m.isInfixOperator   then h.isInfixOperator   = true
+          if m.isPrefixAdverb  then h.isPrefixAdverb  = true
+          if m.isPostfixAdverb then h.isPostfixAdverb = true
+          if m.isConjunction   then h.isConjunction   = true
         if /^[gs]et_.*/.test k
           ast.vars[k[4...]] = {type: 'X'}
     if opts.extraVars # todo: extraVars is deprecated
@@ -186,29 +186,29 @@ define (require) ->
               else
                 i++
 
-            # Apply infix operators
+            # Apply conjunctions
             i = a.length - 2
             while --i >= 0
-              if (h[i + 1].isInfixOperator and
+              if (h[i + 1].isConjunction and
                   (h[i].type is 'F' or h[i + 2].type is 'F'))
-                a[i...i+3] = [['infixOperator'].concat a[i...i+3]]
+                a[i...i+3] = [['conjunction'].concat a[i...i+3]]
                 h[i...i+3] = [{type: 'F'}]
                 i--
 
-            # Apply postfix operators
+            # Apply postfix adverbs
             i = 0
             while i < a.length - 1
-              if h[i].type is 'F' and h[i + 1].isPostfixOperator
-                a[i...i+2] = [['postfixOperator'].concat a[i...i+2]]
+              if h[i].type is 'F' and h[i + 1].isPostfixAdverb
+                a[i...i+2] = [['postfixAdverb'].concat a[i...i+2]]
                 h[i...i+2] = [{type: 'F'}]
               else
                 i++
 
-            # Apply prefix operators
+            # Apply prefix adverbs
             i = a.length - 1
             while --i >= 0
-              if h[i].isPrefixOperator and h[i + 1].type is 'F'
-                a[i...i+2] = [['prefixOperator'].concat a[i...i+2]]
+              if h[i].isPrefixAdverb and h[i + 1].type is 'F'
+                a[i...i+2] = [['prefixAdverb'].concat a[i...i+2]]
                 h[i...i+2] = [{type: 'F'}]
 
             # Hooks
@@ -391,13 +391,13 @@ define (require) ->
         when 'dyadic'
           "#{visit node[2]}(#{visit node[3]}, #{visit node[1]})"
 
-        when 'prefixOperator'
+        when 'prefixAdverb'
           "#{visit node[1]}(#{visit node[2]})"
 
-        when 'infixOperator'
+        when 'conjunction'
           "#{visit node[2]}(#{visit node[3]}, #{visit node[1]})"
 
-        when 'postfixOperator'
+        when 'postfixAdverb'
           "#{visit node[2]}(#{visit node[1]})"
 
         when 'hook'
