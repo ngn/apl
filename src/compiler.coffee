@@ -1,63 +1,9 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
 define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabulary}, {Complex}, helpers) ->
-  parser = parser ? window.parser
   {inherit, die, assert, all} = helpers
 
-  # # Stage 1: Lexing
-
-  # Lexing means transforming the input stream of characters into a sequence of
-  # tokens.  We let [Jison](http://zaach.github.com/jison/) do this job with
-  # the token definitions from [`grammar.coffee`](./grammar.html).
-  #
-  # But there is one shortcoming for which we must intervene.  We want to treat
-  # newlines inside `()` and `[]` as whitespace but newlines inside `{}` as
-  # statement separators.  Here we are monkeypatching the lexer, somewhat
-  # recklessly, in order to achieve that.
-  {setInput, next} = lexer = parser.lexer ? parser.parser.lexer
-
-  lexer.setInput = (args...) ->
-    @bracketStack = []
-    setInput.call @, args...
-
-  lexer.next = (args...) ->
-    loop
-      token = next.call @, args...
-      if token in ['(', '[', '{']
-        @bracketStack.push token
-      else if token in [')', ']', '}']
-        @bracketStack.pop()
-      if (token isnt 'NEWLINE' or
-          @bracketStack.length is 0 or
-          @bracketStack[@bracketStack.length - 1] is '{')
-        return token
-
-  # # Stage 2: Parsing
-
-  # The [Jison](http://zaach.github.com/jison/)-generated parser will build us
-  # an AST according to the grammar rules defined in
-  # [`grammar.coffee`](./grammar.html).  Nothing for us to do here.
-  #
-  # A node in the AST will be a JavaScript array whose first item is a string
-  # indicating the type of node.  The rest of the items are the children or
-  # represent the content of a node.  For instance `(1 + 2) × 3 4` will produce
-  # the tree:
-  #
-  #     ['body',
-  #       ['seq',
-  #         ['seq',
-  #           ['num', '1'],
-  #           ['sym', '+'],
-  #           ['num', '2']],
-  #         ['sym', '×'],
-  #         ['num', '3'],
-  #         ['num', '4']]]
-  #
-  # Note, that at this stage we don't yet know which symbols represent verbs
-  # and which represent nouns.
-  ;
-
-  # # Stage 3: Assign parents
+  # # Stage 1: Assign parents
 
   # This is a simple recursive procedure to assign a `.parent` property to each
   # node, so we can walk the tree up as well as down.
@@ -67,7 +13,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
       child.parent = node
     return
 
-  # # Stage 4: Resolve seq nodes
+  # # Stage 2: Resolve seq nodes
 
   # For each scope (`body` node), determine the type of each pronoun (`sym`
   # node) used in it.
@@ -134,7 +80,10 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
             visit node[1]
             visit node[2]
           when 'assign'
-            name = node[1]
+            assert node[1].constructor is Array
+            assert node[1][0] is 'sym', 'Compound assignment is not supported.'
+            name = node[1][1]
+            assert typeof name is 'string'
             h = visit node[2]
             if vars[name]
               assert vars[name].type is h.type,
@@ -249,7 +198,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
 
 
 
-  # # Stage 5: Render JavaScript code
+  # # Stage 3: Render JavaScript code
   toJavaScript = (ast) ->
 
     visit = (node) ->
@@ -276,7 +225,11 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
         #     A←5       ⍝ returns 5
         #     A×A←2 5   ⍝ returns 4 25
         when 'assign'
-          name = node[1]
+          assert node[1].constructor is Array
+          assert node[1].length is 2
+          assert node[1][0] is 'sym'
+          name = node[1][1]
+          assert typeof name is 'string'
           assert name isnt '∇', 'Assignment to ∇ is not allowed.'
           vars = closestScope(node).vars
           if (v = vars["set_#{name}"])?.type is 'F'
