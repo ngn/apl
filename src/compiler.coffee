@@ -13,9 +13,9 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
       child.parent = node
     return
 
-  # # Stage 2: Resolve seq nodes
+  # # Stage 2: Resolve expr nodes
 
-  # For each scope (`body` node), determine the type of each pronoun (`sym`
+  # For each scope (`body` node), determine the type of each pronoun (`symbol`
   # node) used in it.
   #
   # A pronoun can be either of two types:
@@ -24,7 +24,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
   #
   #   * Type `F`: a verb, adverb, or conjunction
   #
-  # This information is then used to convert each sequence (`seq` node) into
+  # This information is then used to convert each sequence (`expr` node) into
   # a hierarchy of function applications.
   #
   # For instance, after this stage, the APL program `(1 + 2) × 3 4` will be
@@ -33,17 +33,17 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
   #     ['body',
   #       ['dyadic',
   #         ['dyadic',
-  #           ['num', '1'],
-  #           ['sym', '+'],
-  #           ['num', '2']],
-  #         ['sym', '+'],
+  #           ['number', '1'],
+  #           ['symbol', '+'],
+  #           ['number', '2']],
+  #         ['symbol', '+'],
   #         ['vector',
-  #           ['num', '3'],
-  #           ['num', '4']]]]
+  #           ['number', '3'],
+  #           ['number', '4']]]]
   #
   # You can see a textual representation of this tree in your shell, if you
   # type `apl -n filename.apl`
-  resolveSeqs = (ast, opts = {}) ->
+  resolveExprs = (ast, opts = {}) ->
     ast.vars =
       '⍺': {type: 'X', jsCode: '_a'}
       '⍵': {type: 'X', jsCode: '_w'}
@@ -81,7 +81,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
             visit node[2]
           when 'assign'
             assert node[1].constructor is Array
-            assert node[1][0] is 'sym', 'Compound assignment is not supported.'
+            assert node[1][0] is 'symbol', 'Compound assignment is not supported.'
             name = node[1][1]
             assert typeof name is 'string'
             h = visit node[2]
@@ -94,7 +94,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
                 type: h.type
                 jsCode: "_#{scopeNode.scopeId}[#{JSON.stringify name}]"
             h
-          when 'sym'
+          when 'symbol'
             name = node[1]
             if (v = vars["get_#{name}"])?.type is 'F'
               v.used = true
@@ -107,7 +107,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
           when 'lambda'
             visit node[1]
             {type: 'F'}
-          when 'str', 'num', 'embedded'
+          when 'str', 'number', 'embedded'
             {type: 'X'}
           when 'index'
             t1 = visit node[1]
@@ -115,7 +115,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
               t = visit c
               assert t.type is 'X', 'Only data can be used as an index'
             t1
-          when 'seq'
+          when 'expr'
             a = node[1...]
             a.reverse()
             h = for child in a then visit child
@@ -181,7 +181,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
                   a[h.length - 3...] = [['dyadic'].concat a[h.length - 3...]]
                   h[h.length - 3...] = [{type: 'X'}]
 
-            # Replace `"seq"` node with `a[0]` in the AST
+            # Replace `"expr"` node with `a[0]` in the AST
             node[0...] = a[0]
             a[0].parent = null
             for c in node[1...] when c then c.parent = node
@@ -227,7 +227,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
         when 'assign'
           assert node[1].constructor is Array
           assert node[1].length is 2
-          assert node[1][0] is 'sym'
+          assert node[1][0] is 'symbol'
           name = node[1][1]
           assert typeof name is 'string'
           assert name isnt '∇', 'Assignment to ∇ is not allowed.'
@@ -252,7 +252,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
         #     ...
         #     ... before after
         #     ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
-        when 'sym'
+        when 'symbol'
           name = node[1]
           vars = closestScope(node).vars
           if (v = vars["get_#{name}"])?.type is 'F'
@@ -307,7 +307,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
         #     ¯           ⍝ returns «Infinity»
         #     ¯¯          ⍝ returns «-Infinity»
         #     −¯          ⍝ returns «-Infinity»
-        when 'num'
+        when 'number'
           s = node[1].replace /¯/g, '-'
           a =
             for x in s.split /j/i
@@ -329,8 +329,8 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
             (for c, i in node[2...] when c isnt null then i)
           }])"
 
-        when 'seq'
-          die 'No "seq" nodes are expected at this stage.'
+        when 'expr'
+          die 'No "expr" nodes are expected at this stage.'
 
         when 'vector'
           n = node.length - 1
@@ -381,7 +381,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
   nodes = (aplCode, opts = {}) ->
     ast = parser.parse aplCode
     assignParents ast
-    resolveSeqs ast, opts
+    resolveExprs ast, opts
     ast
 
   compile = (aplCode, opts = {}) ->

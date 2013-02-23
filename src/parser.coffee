@@ -9,14 +9,14 @@ define ['./lexer'], (lexer) ->
   # produce the tree:
   #
   #     ['body',
-  #       ['seq',
-  #         ['seq',
-  #           ['num', '1'],
-  #           ['sym', '+'],
-  #           ['num', '2']],
-  #         ['sym', '×'],
-  #         ['num', '3'],
-  #         ['num', '4']]]
+  #       ['expr',
+  #         ['expr',
+  #           ['number', '1'],
+  #           ['symbol', '+'],
+  #           ['number', '2']],
+  #         ['symbol', '×'],
+  #         ['number', '3'],
+  #         ['number', '4']]]
   #
   # Note, that at right after parsing stage we don't yet know which symbols
   # represent verbs and which represent nouns.  This will be resolved later in
@@ -62,7 +62,7 @@ define ['./lexer'], (lexer) ->
         body.push expr
 
     parseExpr = ->
-      expr = ['seq']
+      expr = ['expr']
       loop
         item = parseItem()
         if consume '←' then return expr.concat [['assign', item, parseExpr()]]
@@ -89,9 +89,9 @@ define ['./lexer'], (lexer) ->
 
     parseIndexable = ->
       v = token.value
-      if consume 'number' then ['num', v]
+      if consume 'number' then ['number', v]
       else if consume 'string' then ['str', v]
-      else if consume 'symbol' then ['sym', v]
+      else if consume 'symbol' then ['symbol', v]
       else if consume 'embedded' then ['embedded', v]
       else if consume '(' then (expr = parseExpr(); demand ')'; expr)
       else if consume '{' then (b = parseBody(); demand '}'; ['lambda', b])
