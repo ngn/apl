@@ -47,7 +47,7 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 #               var cube = [
 #                   0, // Element at indices [0;0;0]
 #                   0, // Element at indices [0;0;1]
-#                   // ... indices iterted in lexicographic order ...
+#                   // ... indices iterated in lexicographic order ...
 #                   0  // Element at indices [1;1;2]
 #               ];
 #               cube.shape = [2, 2, 3];
