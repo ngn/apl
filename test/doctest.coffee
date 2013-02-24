@@ -3,8 +3,7 @@
 fs = require 'fs'
 path = require 'path'
 {exec} = require '../lib/compiler'
-{vocabulary} = require '../lib/vocabulary'
-match = vocabulary['≡']
+match = require('../lib/vocabulary')['≡']
 repr = JSON.stringify
 
 trim = (s) -> s.replace /(^ +| +$)/g, ''

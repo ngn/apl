@@ -2,8 +2,7 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 # `browser.coffee` provides the APL vocabulary in a browser environment.
 # It builds on top of [`vocabulary.coffee`](./vocabulary.html).
 
-define ['./vocabulary', './helpers'], (vocabularyModule, helpers) ->
-  {vocabulary} = vocabularyModule
+define ['./vocabulary', './helpers'], (vocabulary, helpers) ->
   {inherit} = helpers
 
   browserVocabulary = ctx = inherit vocabulary

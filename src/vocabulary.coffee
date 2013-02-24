@@ -1767,5 +1767,4 @@ define (require) ->
 
 
   endOfVocabulary()
-
-  {vocabulary}
+  vocabulary

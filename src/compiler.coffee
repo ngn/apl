@@ -2,7 +2,7 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 
 # `compiler.coffee` transforms an AST into JavaScript code.
 
-define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabulary}, {Complex}, helpers) ->
+define ['./parser', './vocabulary', './complex', './helpers'], (parser, vocabulary, {Complex}, helpers) ->
   {inherit, die, assert, all} = helpers
 
   # # Stage 1: Assign parents
