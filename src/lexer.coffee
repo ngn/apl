@@ -1,7 +1,7 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 define ->
 
-  # The Lexer transforms APL source into a stream of tokens.
+  # The lexer transforms APL source into a stream of tokens.
   #
   # It does so by trying to match regular expressions at the current source
   # position and forming a token from the first one that succeeds.

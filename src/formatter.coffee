@@ -1,5 +1,5 @@
-# This file contains utility functions which format APL data structures for
-# display on the console.
+# `formatter.coffee` provides a utility to visualize APL data structures in a
+# character grid such as the TTY or an HTML table.
 
 if typeof define isnt 'function' then define = require('amdefine')(module)
 

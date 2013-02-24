@@ -1,8 +1,9 @@
-# This file contains the `main()` entry point to the APL compiler.
-# It gets executed when the `apl` command is typed in a shell, for instance.
+# `command.coffee` contains the `main()` entry point to the APL compiler when
+# invoked as a shell command.
 #
 # Our command-line interface closely follows the design of
 # [that of CoffeeScript](http://coffeescript.org/#usage)
+
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
 define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
@@ -10,8 +11,8 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
 
   main = ->
 
-    # Use [optimist](https://github.com/substack/node-optimist#readme)
-    # to parse the arguments.
+    # We use [optimist](https://github.com/substack/node-optimist#readme) to
+    # parse the arguments.
     {argv} = optimist
       .usage('''
         Usage: apl [options] path/to/script.apl [args]\n
@@ -97,7 +98,10 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
     else
       jsCode = compile aplCode
 
-    # Print or execute compiler output.
+    # Print or execute compiler output
+    #
+    # (it looks a little hairy because we must wrap compiler output differently
+    # depending on where it will be executed, but really it's straightforward)
     if argv.compile
       if isCoffeeScript
         jsCode = """

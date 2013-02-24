@@ -1,22 +1,24 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
-# This file contains an implementation of APL's built-in vocabulary.
+# `vocabulary.coffee` is our big mama implementation of APL's built-in verbs,
+# adverbs, conjunctions, and pronouns, with a propensity to grow morbidly
+# obese.
 
 # # JavaScript representation of APL arrays
 
 # APL's data structures are multidimensional arrays:
 #
-#   * (rank 0) Scalars---can be:
+#   * (rank 0) Scalars—they can be:
 #
 #       * simple scalars, like numbers and characters
 #
-#       * an APL array of rank zero, containing exactly one element
+#       * a _boxed_ APL array of rank zero, containing exactly one element
 #
-#   * (rank 1) Vectors---sequences of APL objects with zero or more elements
+#   * (rank 1) Vectors—sequences of APL objects with zero or more elements
 #
-#   * (rank 2) Matrices---two-dimensional arrays of APL objects
+#   * (rank 2) Matrices—two-dimensional arrays of APL objects
 #
-#   * (rank 3+) Cubes, etc
+#   * (rank 3+) Cubes, tesseracts, and higher-delusional stuff.
 #
 # APL arrays are not necessarily homogenous, they may contain data of mixed
 # types.
@@ -45,25 +47,22 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 #               var cube = [
 #                   0, // Element at indices [0;0;0]
 #                   0, // Element at indices [0;0;1]
-#                   0, // Element at indices [0;0;2]
-#                   0, // Element at indices [0;1;0]
-#                   0, // Element at indices [0;1;1]
-#                   // ...
+#                   // ... indices iterted in lexicographic order ...
 #                   0  // Element at indices [1;1;2]
 #               ];
 #               cube.shape = [2, 2, 3];
 #               return cube;
 #           }
 #
-#       A vector's representation, as opposed to that of higher-dimensional
-#       arrays, is not required to have a `shape` property.  The shape of a
-#       vector `v` is assumed to be `[v.length]`, by convention.  Similarly, we
-#       could say that a scalar's shape is `[]` by convention.
+#   A vector's representation, as opposed to that of higher-dimensional
+#   arrays, is not required to have a `shape` property.  The shape of a
+#   vector `v` is assumed to be `[v.length]` by convention.  Similarly, we
+#   could say that a scalar's shape is `[]` by convention.
 #
 # ## APL prototypes
 #
-# Every object in APL, including empty arrays, has a _prototype_ used whenever
-# "padding material" is needed, such as in the _take_ verb:
+# Every object in APL, including empty arrays, has an _prototype_, used
+# whenever "padding material" is needed, such as in the _take_ verb:
 #
 #     5 ↑ 1 2 3     ⍝ returns      1 2 3 0 0
 #     5 ↑ 'abc'     ⍝ returns      'abc  '
@@ -92,8 +91,8 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 #     b.aplPrototype = [0, 0, 0, 0];
 #     b.aplPrototype.shape = [2, 2];
 #
-# If an empty array has a prototype of `0`, we skip `aplPrototype` and leave
-# `0` as an implicit default.
+# If an empty array has a prototype of `0`, we can skip `aplPrototype` and
+# leave `0` as an implicit default.
 
 define (require) ->
   {assert, die, inherit, isSimple, shapeOf, withShape, prod, prototypeOf,

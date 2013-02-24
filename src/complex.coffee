@@ -1,5 +1,10 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
+# `complex.coffee` is a rather meagre implementation of complex numbers.  Only
+# basic arithmetic operations are supported.
+#
+# More importantly, `complex.coffee` demonstrates how one can implement
+# custom APL objects.
 define ['./helpers'], (helpers) ->
   {die, assert} = helpers
 

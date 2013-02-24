@@ -1,5 +1,6 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
-# This file will only be sourced when APL is used in a browser environment.
+# `browser.coffee` provides the APL vocabulary in a browser environment.
+# It builds on top of [`vocabulary.coffee`](./vocabulary.html).
 
 define ['./vocabulary', './helpers'], (vocabularyModule, helpers) ->
   {vocabulary} = vocabularyModule

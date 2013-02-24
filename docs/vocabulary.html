@@ -1,13 +1,15 @@
-<!DOCTYPE html>  <html> <head>   <title>vocabulary.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="apl.html">                 apl.coffee               </a>                                           <a class="source" href="browser.html">                 browser.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="compiler.html">                 compiler.coffee               </a>                                           <a class="source" href="complex.html">                 complex.coffee               </a>                                           <a class="source" href="formatter.html">                 formatter.coffee               </a>                                           <a class="source" href="helpers.html">                 helpers.coffee               </a>                                           <a class="source" href="lexer.html">                 lexer.coffee               </a>                                           <a class="source" href="parser.html">                 parser.coffee               </a>                                           <a class="source" href="vocabulary.html">                 vocabulary.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               vocabulary.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="k">if</span> <span class="k">typeof</span> <span class="nx">define</span> <span class="o">isnt</span> <span class="s">&#39;function&#39;</span> <span class="k">then</span> <span class="nv">define = </span><span class="nx">require</span><span class="p">(</span><span class="s">&#39;amdefine&#39;</span><span class="p">)(</span><span class="nx">module</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>This file contains an implementation of APL's built-in vocabulary.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h1>JavaScript representation of APL arrays</h1>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>APL's data structures are multidimensional arrays:</p>
+<!DOCTYPE html>  <html> <head>   <title>vocabulary.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="apl.html">                 apl.coffee               </a>                                           <a class="source" href="browser.html">                 browser.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="compiler.html">                 compiler.coffee               </a>                                           <a class="source" href="complex.html">                 complex.coffee               </a>                                           <a class="source" href="formatter.html">                 formatter.coffee               </a>                                           <a class="source" href="helpers.html">                 helpers.coffee               </a>                                           <a class="source" href="lexer.html">                 lexer.coffee               </a>                                           <a class="source" href="parser.html">                 parser.coffee               </a>                                           <a class="source" href="vocabulary.html">                 vocabulary.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               vocabulary.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="k">if</span> <span class="k">typeof</span> <span class="nx">define</span> <span class="o">isnt</span> <span class="s">&#39;function&#39;</span> <span class="k">then</span> <span class="nv">define = </span><span class="nx">require</span><span class="p">(</span><span class="s">&#39;amdefine&#39;</span><span class="p">)(</span><span class="nx">module</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p><code>vocabulary.coffee</code> is our big mama implementation of APL's built-in verbs,
+adverbs, conjunctions, and pronouns, with a propensity to grow morbidly
+obese.</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h1>JavaScript representation of APL arrays</h1>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>APL's data structures are multidimensional arrays:</p>
 
 <ul>
-<li><p>(rank 0) Scalars---can be:</p>
+<li><p>(rank 0) Scalars—they can be:</p>
 
 <ul><li><p>simple scalars, like numbers and characters</p></li>
-<li><p>an APL array of rank zero, containing exactly one element</p></li></ul></li>
-<li><p>(rank 1) Vectors---sequences of APL objects with zero or more elements</p></li>
-<li><p>(rank 2) Matrices---two-dimensional arrays of APL objects</p></li>
-<li><p>(rank 3+) Cubes, etc</p></li>
+<li><p>a <em>boxed</em> APL array of rank zero, containing exactly one element</p></li></ul></li>
+<li><p>(rank 1) Vectors—sequences of APL objects with zero or more elements</p></li>
+<li><p>(rank 2) Matrices—two-dimensional arrays of APL objects</p></li>
+<li><p>(rank 3+) Cubes, tesseracts, and higher-delusional stuff.</p></li>
 </ul>
 
 <p>APL arrays are not necessarily homogenous, they may contain data of mixed
@@ -36,10 +38,7 @@ cube of zeroes may be constructed via:</p>
       var cube = [
           0, // Element at indices [0;0;0]
           0, // Element at indices [0;0;1]
-          0, // Element at indices [0;0;2]
-          0, // Element at indices [0;1;0]
-          0, // Element at indices [0;1;1]
-          // ...
+          // ... indices iterted in lexicographic order ...
           0  // Element at indices [1;1;2]
       ];
       cube.shape = [2, 2, 3];
@@ -48,15 +47,15 @@ cube of zeroes may be constructed via:</p>
 </code></pre>
 
 <p>A vector's representation, as opposed to that of higher-dimensional
-  arrays, is not required to have a <code>shape</code> property.  The shape of a
-  vector <code>v</code> is assumed to be <code>[v.length]</code>, by convention.  Similarly, we
-  could say that a scalar's shape is <code>[]</code> by convention.</p></li>
+arrays, is not required to have a <code>shape</code> property.  The shape of a
+vector <code>v</code> is assumed to be <code>[v.length]</code> by convention.  Similarly, we
+could say that a scalar's shape is <code>[]</code> by convention.</p></li>
 </ul>
 
 <h2>APL prototypes</h2>
 
-<p>Every object in APL, including empty arrays, has a <em>prototype</em> used whenever
-"padding material" is needed, such as in the <em>take</em> verb:</p>
+<p>Every object in APL, including empty arrays, has an <em>prototype</em>, used
+whenever "padding material" is needed, such as in the <em>take</em> verb:</p>
 
 <pre><code>5 ↑ 1 2 3     ⍝ returns      1 2 3 0 0
 5 ↑ 'abc'     ⍝ returns      'abc  '
@@ -86,8 +85,8 @@ b.aplPrototype = [0, 0, 0, 0];
 b.aplPrototype.shape = [2, 2];
 </code></pre>
 
-<p>If an empty array has a prototype of <code>0</code>, we skip <code>aplPrototype</code> and leave
-<code>0</code> as an implicit default.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">define</span> <span class="nf">(require) -&gt;</span>
+<p>If an empty array has a prototype of <code>0</code>, we can skip <code>aplPrototype</code> and
+leave <code>0</code> as an implicit default.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">define</span> <span class="nf">(require) -&gt;</span>
   <span class="p">{</span><span class="nx">assert</span><span class="p">,</span> <span class="nx">die</span><span class="p">,</span> <span class="nx">inherit</span><span class="p">,</span> <span class="nx">isSimple</span><span class="p">,</span> <span class="nx">shapeOf</span><span class="p">,</span> <span class="nx">withShape</span><span class="p">,</span> <span class="nx">prod</span><span class="p">,</span> <span class="nx">prototypeOf</span><span class="p">,</span>
     <span class="nx">withPrototype</span><span class="p">,</span> <span class="nx">withPrototypeCopiedFrom</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;./helpers&#39;</span>
   <span class="p">{</span><span class="nx">min</span><span class="p">,</span> <span class="nx">max</span><span class="p">,</span> <span class="nx">floor</span><span class="p">,</span> <span class="nx">ceil</span><span class="p">,</span> <span class="nx">round</span><span class="p">,</span> <span class="nx">abs</span><span class="p">,</span> <span class="nx">random</span><span class="p">,</span> <span class="nx">exp</span><span class="p">,</span> <span class="nx">pow</span><span class="p">,</span> <span class="nx">log</span><span class="p">,</span> <span class="nx">PI</span><span class="p">,</span> <span class="nx">sqrt</span><span class="p">,</span> <span class="nx">sin</span><span class="p">,</span>
