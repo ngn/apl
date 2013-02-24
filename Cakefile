@@ -33,8 +33,13 @@ task 'test', ->
     console.info 'Done'
 
 task 'docs', ->
-  filenames = for f in readdirSync 'src' when f.match(/^\w.*\.coffee$/) and newer('src/' + f, 'docs/' + f.replace(/\.coffee$/, '.html')) then 'src/' + f
-  if filenames.length
+  filenames = for f in readdirSync 'src' when f.match /^\w+\.coffee$/ then f
+  mustGenerateDocs = false
+  for f in filenames
+    if newer "src/#{f}", "docs/#{f.replace /\.coffee$/, '.html'}"
+      mustGenerateDocs = true
+      console.info "* #{f} has changed"
+  if mustGenerateDocs
     console.info 'Generating docs...'
-    exec docco, filenames, {}, ->
+    exec docco, (for f in filenames then "src/#{f}"), {}, ->
       console.info 'Done'
