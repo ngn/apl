@@ -1,5 +1,5 @@
 {existsSync} = require 'path'
-{statSync, readdirSync} = require 'fs'
+{statSync, readdirSync, readFileSync} = require 'fs'
 {spawn} = require 'child_process'
 
 # Executables
@@ -43,3 +43,21 @@ task 'docs', ->
     console.info 'Generating docs...'
     exec docco, (for f in filenames then "src/#{f}"), {}, ->
       console.info 'Done'
+
+task 'stats', ->
+  console.info 'Lines of code, not counting empty lines and comments:'
+  total = 0
+  stats =
+    for file in readdirSync 'src' when file.match /^\w+\.coffee$/
+      loc = 0
+      for line in readFileSync("src/#{file}").toString().split '\n'
+        if /^ *[^ #]/.test line
+          loc++
+      total += loc
+      {file, loc}
+  stats.sort (x, y) -> y.loc - x.loc
+  for x in stats then console.info('  ' +
+    (x.file + '                    ')[...20] +
+    (s = '    ' + x.loc)[s.length - 4...]
+  )
+  console.info "TOTAL: #{total}"
