@@ -29,11 +29,11 @@ define ['./lexer'], (lexer) ->
     # token.
     token = tokenStream.next()
 
-    # `consume()` consumes the upcoming token.
-    #
-    # `consume(tt)` would only do that and return true if its type is `tt`.
+    # `consume(tt)` consumes the upcoming token and returns a truthy value only
+    # if its type matches `tt`.  A space-separated value of `tt` matches any of
+    # a set of token types.
     consume = (tt) ->
-      if token.type is tt then (token = tokenStream.next(); true) else false
+      if token.type in tt.split ' ' then token = tokenStream.next()
 
     # `demand(tt)` is like `consume(tt)` but intolerant to a mismatch.
     demand = (tt) ->
@@ -55,7 +55,7 @@ define ['./lexer'], (lexer) ->
       body = ['body']
       loop
         if token.type in ['eof', '}'] then return body
-        while consume('separator') or consume('newline') then ;
+        while consume 'separator newline' then ;
         if token.type in ['eof', '}'] then return body
         expr = parseExpr()
         if consume ':' then expr = ['guard', expr, parseExpr()]
@@ -88,11 +88,8 @@ define ['./lexer'], (lexer) ->
           demand ';'
 
     parseIndexable = ->
-      v = token.value
-      if consume 'number' then ['number', v]
-      else if consume 'string' then ['str', v]
-      else if consume 'symbol' then ['symbol', v]
-      else if consume 'embedded' then ['embedded', v]
+      t = token
+      if consume 'number string symbol embedded' then [t.type, t.value]
       else if consume '(' then (expr = parseExpr(); demand ')'; expr)
       else if consume '{' then (b = parseBody(); demand '}'; ['lambda', b])
       else fail "Expected indexable but got #{token.type}"

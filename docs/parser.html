@@ -7,24 +7,24 @@ or they represent the content of a node.  For instance <code>(1 + 2) × 3 4</cod
 produce the tree:</p>
 
 <pre><code>['body',
-  ['seq',
-    ['seq',
-      ['num', '1'],
-      ['sym', '+'],
-      ['num', '2']],
-    ['sym', '×'],
-    ['num', '3'],
-    ['num', '4']]]
+  ['expr',
+    ['expr',
+      ['number', '1'],
+      ['symbol', '+'],
+      ['number', '2']],
+    ['symbol', '×'],
+    ['number', '3'],
+    ['number', '4']]]
 </code></pre>
 
 <p>Note, that at right after parsing stage we don't yet know which symbols
 represent verbs and which represent nouns.  This will be resolved later in
 the <code>compiler</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">parse: </span><span class="nf">(aplCode) -&gt;</span>
     <span class="nv">tokenStream = </span><span class="nx">lexer</span><span class="p">.</span><span class="nx">tokenize</span> <span class="nx">aplCode</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>A single-token lookahead is used.  Variable <code>token</code> stores the upcoming
-token.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">token = </span><span class="nx">tokenStream</span><span class="p">.</span><span class="nx">next</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p><code>consume()</code> consumes the upcoming token.</p>
-
-<p><code>consume(tt)</code> would only do that and return true if its type is <code>tt</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">consume = </span><span class="nf">(tt) -&gt;</span>
-      <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="nx">tt</span> <span class="k">then</span> <span class="p">(</span><span class="nv">token = </span><span class="nx">tokenStream</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span> <span class="kc">true</span><span class="p">)</span> <span class="k">else</span> <span class="kc">false</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p><code>demand(tt)</code> is like <code>consume(tt)</code> but intolerant to a mismatch.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">demand = </span><span class="nf">(tt) -&gt;</span>
+token.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">token = </span><span class="nx">tokenStream</span><span class="p">.</span><span class="nx">next</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p><code>consume(tt)</code> consumes the upcoming token and returns a truthy value only
+if its type matches <code>tt</code>.  A space-separated value of <code>tt</code> matches any of
+a set of token types.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">consume = </span><span class="nf">(tt) -&gt;</span>
+      <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="k">in</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">split</span> <span class="s">&#39; &#39;</span> <span class="k">then</span> <span class="nv">token = </span><span class="nx">tokenStream</span><span class="p">.</span><span class="nx">next</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p><code>demand(tt)</code> is like <code>consume(tt)</code> but intolerant to a mismatch.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">demand = </span><span class="nf">(tt) -&gt;</span>
       <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="o">isnt</span> <span class="nx">tt</span> <span class="k">then</span> <span class="nx">fail</span> <span class="s">&quot;Expected </span><span class="si">#{</span><span class="nx">tt</span><span class="si">}</span><span class="s"> but got </span><span class="si">#{</span><span class="nx">token</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="s">&quot;</span>
       <span class="nv">token = </span><span class="nx">tokenStream</span><span class="p">.</span><span class="nx">next</span><span class="p">()</span>
       <span class="k">return</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p><code>fail(message)</code> politely points at the location where things went awry.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nv">fail = </span><span class="nf">(message) -&gt;</span>
@@ -37,14 +37,14 @@ roughly correspond to the set of non-terminals in an imaginary grammar.</p>     
       <span class="nv">body = </span><span class="p">[</span><span class="s">&#39;body&#39;</span><span class="p">]</span>
       <span class="nx">loop</span>
         <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;eof&#39;</span><span class="p">,</span> <span class="s">&#39;}&#39;</span><span class="p">]</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">body</span>
-        <span class="k">while</span> <span class="nx">consume</span><span class="p">(</span><span class="s">&#39;separator&#39;</span><span class="p">)</span> <span class="o">or</span> <span class="nx">consume</span><span class="p">(</span><span class="s">&#39;newline&#39;</span><span class="p">)</span> <span class="k">then</span> <span class="p">;</span>
+        <span class="k">while</span> <span class="nx">consume</span> <span class="s">&#39;separator newline&#39;</span> <span class="k">then</span> <span class="p">;</span>
         <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;eof&#39;</span><span class="p">,</span> <span class="s">&#39;}&#39;</span><span class="p">]</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">body</span>
         <span class="nv">expr = </span><span class="nx">parseExpr</span><span class="p">()</span>
         <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;:&#39;</span> <span class="k">then</span> <span class="nv">expr = </span><span class="p">[</span><span class="s">&#39;guard&#39;</span><span class="p">,</span> <span class="nx">expr</span><span class="p">,</span> <span class="nx">parseExpr</span><span class="p">()]</span>
         <span class="nx">body</span><span class="p">.</span><span class="nx">push</span> <span class="nx">expr</span>
 
     <span class="nv">parseExpr = </span><span class="o">-&gt;</span>
-      <span class="nv">expr = </span><span class="p">[</span><span class="s">&#39;seq&#39;</span><span class="p">]</span>
+      <span class="nv">expr = </span><span class="p">[</span><span class="s">&#39;expr&#39;</span><span class="p">]</span>
       <span class="nx">loop</span>
         <span class="nv">item = </span><span class="nx">parseItem</span><span class="p">()</span>
         <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;←&#39;</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">expr</span><span class="p">.</span><span class="nx">concat</span> <span class="p">[[</span><span class="s">&#39;assign&#39;</span><span class="p">,</span> <span class="nx">item</span><span class="p">,</span> <span class="nx">parseExpr</span><span class="p">()]]</span>
@@ -70,11 +70,8 @@ roughly correspond to the set of non-terminals in an imaginary grammar.</p>     
           <span class="nx">demand</span> <span class="s">&#39;;&#39;</span>
 
     <span class="nv">parseIndexable = </span><span class="o">-&gt;</span>
-      <span class="nv">v = </span><span class="nx">token</span><span class="p">.</span><span class="nx">value</span>
-      <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;number&#39;</span> <span class="k">then</span> <span class="p">[</span><span class="s">&#39;num&#39;</span><span class="p">,</span> <span class="nx">v</span><span class="p">]</span>
-      <span class="k">else</span> <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;string&#39;</span> <span class="k">then</span> <span class="p">[</span><span class="s">&#39;str&#39;</span><span class="p">,</span> <span class="nx">v</span><span class="p">]</span>
-      <span class="k">else</span> <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;symbol&#39;</span> <span class="k">then</span> <span class="p">[</span><span class="s">&#39;sym&#39;</span><span class="p">,</span> <span class="nx">v</span><span class="p">]</span>
-      <span class="k">else</span> <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;embedded&#39;</span> <span class="k">then</span> <span class="p">[</span><span class="s">&#39;embedded&#39;</span><span class="p">,</span> <span class="nx">v</span><span class="p">]</span>
+      <span class="nv">t = </span><span class="nx">token</span>
+      <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;number string symbol embedded&#39;</span> <span class="k">then</span> <span class="p">[</span><span class="nx">t</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">value</span><span class="p">]</span>
       <span class="k">else</span> <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;(&#39;</span> <span class="k">then</span> <span class="p">(</span><span class="nv">expr = </span><span class="nx">parseExpr</span><span class="p">();</span> <span class="nx">demand</span> <span class="s">&#39;)&#39;</span><span class="p">;</span> <span class="nx">expr</span><span class="p">)</span>
       <span class="k">else</span> <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;{&#39;</span> <span class="k">then</span> <span class="p">(</span><span class="nv">b = </span><span class="nx">parseBody</span><span class="p">();</span> <span class="nx">demand</span> <span class="s">&#39;}&#39;</span><span class="p">;</span> <span class="p">[</span><span class="s">&#39;lambda&#39;</span><span class="p">,</span> <span class="nx">b</span><span class="p">])</span>
       <span class="k">else</span> <span class="nx">fail</span> <span class="s">&quot;Expected indexable but got </span><span class="si">#{</span><span class="nx">token</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="s">&quot;</span>

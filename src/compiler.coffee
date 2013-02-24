@@ -107,7 +107,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
           when 'lambda'
             visit node[1]
             {type: 'F'}
-          when 'str', 'number', 'embedded'
+          when 'string', 'number', 'embedded'
             {type: 'X'}
           when 'index'
             t1 = visit node[1]
@@ -288,7 +288,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
         #     ⍴"\f\t\n\r\u1234\xff"      ⍝ returns ,6
         #
         #     "unclosed string           ⍝ fails
-        when 'str'
+        when 'string'
           s = node[1]
           d = s[0] # the delimiter: '"' or "'"
           "_.aplify(#{d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d})"

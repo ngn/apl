@@ -6,7 +6,7 @@ node, so we can walk the tree up as well as down.</p>             </td>         
     <span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">...]</span> <span class="k">when</span> <span class="nx">child</span>
       <span class="nx">assignParents</span> <span class="nx">child</span>
       <span class="nv">child.parent = </span><span class="nx">node</span>
-    <span class="k">return</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h1>Stage 2: Resolve seq nodes</h1>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>For each scope (<code>body</code> node), determine the type of each pronoun (<code>sym</code>
+    <span class="k">return</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h1>Stage 2: Resolve expr nodes</h1>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>For each scope (<code>body</code> node), determine the type of each pronoun (<code>symbol</code>
 node) used in it.</p>
 
 <p>A pronoun can be either of two types:</p>
@@ -16,7 +16,7 @@ node) used in it.</p>
 <li><p>Type <code>F</code>: a verb, adverb, or conjunction</p></li>
 </ul>
 
-<p>This information is then used to convert each sequence (<code>seq</code> node) into
+<p>This information is then used to convert each sequence (<code>expr</code> node) into
 a hierarchy of function applications.</p>
 
 <p>For instance, after this stage, the APL program <code>(1 + 2) × 3 4</code> will be
@@ -25,17 +25,17 @@ represented as:</p>
 <pre><code>['body',
   ['dyadic',
     ['dyadic',
-      ['num', '1'],
-      ['sym', '+'],
-      ['num', '2']],
-    ['sym', '+'],
+      ['number', '1'],
+      ['symbol', '+'],
+      ['number', '2']],
+    ['symbol', '+'],
     ['vector',
-      ['num', '3'],
-      ['num', '4']]]]
+      ['number', '3'],
+      ['number', '4']]]]
 </code></pre>
 
 <p>You can see a textual representation of this tree in your shell, if you
-type <code>apl -n filename.apl</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">resolveSeqs = </span><span class="nf">(ast, opts = {}) -&gt;</span>
+type <code>apl -n filename.apl</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">resolveExprs = </span><span class="nf">(ast, opts = {}) -&gt;</span>
     <span class="nv">ast.vars =</span>
       <span class="s">&#39;⍺&#39;</span><span class="o">:</span> <span class="p">{</span><span class="nv">type: </span><span class="s">&#39;X&#39;</span><span class="p">,</span> <span class="nv">jsCode: </span><span class="s">&#39;_a&#39;</span><span class="p">}</span>
       <span class="s">&#39;⍵&#39;</span><span class="o">:</span> <span class="p">{</span><span class="nv">type: </span><span class="s">&#39;X&#39;</span><span class="p">,</span> <span class="nv">jsCode: </span><span class="s">&#39;_w&#39;</span><span class="p">}</span>
@@ -73,7 +73,7 @@ type <code>apl -n filename.apl</code></p>             </td>             <td clas
             <span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
           <span class="k">when</span> <span class="s">&#39;assign&#39;</span>
             <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">constructor</span> <span class="o">is</span> <span class="nb">Array</span>
-            <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">is</span> <span class="s">&#39;sym&#39;</span><span class="p">,</span> <span class="s">&#39;Compound assignment is not supported.&#39;</span>
+            <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">is</span> <span class="s">&#39;symbol&#39;</span><span class="p">,</span> <span class="s">&#39;Compound assignment is not supported.&#39;</span>
             <span class="nv">name = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
             <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">name</span> <span class="o">is</span> <span class="s">&#39;string&#39;</span>
             <span class="nv">h = </span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -86,7 +86,7 @@ type <code>apl -n filename.apl</code></p>             </td>             <td clas
                 <span class="nv">type: </span><span class="nx">h</span><span class="p">.</span><span class="nx">type</span>
                 <span class="nv">jsCode: </span><span class="s">&quot;_</span><span class="si">#{</span><span class="nx">scopeNode</span><span class="p">.</span><span class="nx">scopeId</span><span class="si">}</span><span class="s">[</span><span class="si">#{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span> <span class="nx">name</span><span class="si">}</span><span class="s">]&quot;</span>
             <span class="nx">h</span>
-          <span class="k">when</span> <span class="s">&#39;sym&#39;</span>
+          <span class="k">when</span> <span class="s">&#39;symbol&#39;</span>
             <span class="nv">name = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="p">(</span><span class="nv">v = </span><span class="nx">vars</span><span class="p">[</span><span class="s">&quot;get_</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">&quot;</span><span class="p">])</span><span class="o">?</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;F&#39;</span>
               <span class="nv">v.used = </span><span class="kc">true</span>
@@ -99,7 +99,7 @@ type <code>apl -n filename.apl</code></p>             </td>             <td clas
           <span class="k">when</span> <span class="s">&#39;lambda&#39;</span>
             <span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="p">{</span><span class="nv">type: </span><span class="s">&#39;F&#39;</span><span class="p">}</span>
-          <span class="k">when</span> <span class="s">&#39;str&#39;</span><span class="p">,</span> <span class="s">&#39;num&#39;</span><span class="p">,</span> <span class="s">&#39;embedded&#39;</span>
+          <span class="k">when</span> <span class="s">&#39;string&#39;</span><span class="p">,</span> <span class="s">&#39;number&#39;</span><span class="p">,</span> <span class="s">&#39;embedded&#39;</span>
             <span class="p">{</span><span class="nv">type: </span><span class="s">&#39;X&#39;</span><span class="p">}</span>
           <span class="k">when</span> <span class="s">&#39;index&#39;</span>
             <span class="nv">t1 = </span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -107,7 +107,7 @@ type <code>apl -n filename.apl</code></p>             </td>             <td clas
               <span class="nv">t = </span><span class="nx">visit</span> <span class="nx">c</span>
               <span class="nx">assert</span> <span class="nx">t</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;X&#39;</span><span class="p">,</span> <span class="s">&#39;Only data can be used as an index&#39;</span>
             <span class="nx">t1</span>
-          <span class="k">when</span> <span class="s">&#39;seq&#39;</span>
+          <span class="k">when</span> <span class="s">&#39;expr&#39;</span>
             <span class="nv">a = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">...]</span>
             <span class="nx">a</span><span class="p">.</span><span class="nx">reverse</span><span class="p">()</span>
             <span class="nv">h = </span><span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">a</span> <span class="k">then</span> <span class="nx">visit</span> <span class="nx">child</span>
@@ -151,7 +151,7 @@ type <code>apl -n filename.apl</code></p>             </td>             <td clas
                   <span class="nx">h</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">2</span><span class="p">...]</span> <span class="o">=</span> <span class="p">[{</span><span class="nv">type: </span><span class="s">&#39;X&#39;</span><span class="p">}]</span>
                 <span class="k">else</span>
                   <span class="nx">a</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">...]</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;dyadic&#39;</span><span class="p">].</span><span class="nx">concat</span> <span class="nx">a</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">...]]</span>
-                  <span class="nx">h</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">...]</span> <span class="o">=</span> <span class="p">[{</span><span class="nv">type: </span><span class="s">&#39;X&#39;</span><span class="p">}]</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Replace <code>"seq"</code> node with <code>a[0]</code> in the AST</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">node</span><span class="p">[</span><span class="mi">0</span><span class="p">...]</span> <span class="o">=</span> <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                  <span class="nx">h</span><span class="p">[</span><span class="nx">h</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">...]</span> <span class="o">=</span> <span class="p">[{</span><span class="nv">type: </span><span class="s">&#39;X&#39;</span><span class="p">}]</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <p>Replace <code>"expr"</code> node with <code>a[0]</code> in the AST</p>             </td>             <td class="code">               <div class="highlight"><pre>            <span class="nx">node</span><span class="p">[</span><span class="mi">0</span><span class="p">...]</span> <span class="o">=</span> <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nv">parent = </span><span class="kc">null</span>
             <span class="k">for</span> <span class="nx">c</span> <span class="k">in</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">...]</span> <span class="k">when</span> <span class="nx">c</span> <span class="k">then</span> <span class="nv">c.parent = </span><span class="nx">node</span>
 
@@ -189,7 +189,7 @@ A×A←2 5   ⍝ returns 4 25
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">when</span> <span class="s">&#39;assign&#39;</span>
           <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">constructor</span> <span class="o">is</span> <span class="nb">Array</span>
           <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">2</span>
-          <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">is</span> <span class="s">&#39;sym&#39;</span>
+          <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">is</span> <span class="s">&#39;symbol&#39;</span>
           <span class="nv">name = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
           <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">name</span> <span class="o">is</span> <span class="s">&#39;string&#39;</span>
           <span class="nx">assert</span> <span class="nx">name</span> <span class="o">isnt</span> <span class="s">&#39;∇&#39;</span><span class="p">,</span> <span class="s">&#39;Assignment to ∇ is not allowed.&#39;</span>
@@ -212,7 +212,7 @@ A×A←2 5   ⍝ returns 4 25
 ...
 ... before after
 ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">when</span> <span class="s">&#39;sym&#39;</span>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">when</span> <span class="s">&#39;symbol&#39;</span>
           <span class="nv">name = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
           <span class="nv">vars = </span><span class="nx">closestScope</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">vars</span>
           <span class="k">if</span> <span class="p">(</span><span class="nv">v = </span><span class="nx">vars</span><span class="p">[</span><span class="s">&quot;get_</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">&quot;</span><span class="p">])</span><span class="o">?</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;F&#39;</span>
@@ -245,7 +245,7 @@ A×A←2 5   ⍝ returns 4 25
 ⍴"\f\t\n\r\u1234\xff"      ⍝ returns ,6
 
 "unclosed string           ⍝ fails
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">when</span> <span class="s">&#39;str&#39;</span>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">when</span> <span class="s">&#39;string&#39;</span>
           <span class="nv">s = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
           <span class="nv">d = </span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># the delimiter: &#39;&quot;&#39; or &quot;&#39;&quot;</span>
           <span class="s">&quot;_.aplify(</span><span class="si">#{</span><span class="nx">d</span> <span class="o">+</span> <span class="nx">s</span><span class="p">[</span><span class="mi">1</span><span class="p">...</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">///</span><span class="c1">#{d + d}///g, &#39;\\&#39; + d) + d})&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>Numbers</p>
@@ -261,7 +261,7 @@ A×A←2 5   ⍝ returns 4 25
 ¯           ⍝ returns «Infinity»
 ¯¯          ⍝ returns «-Infinity»
 −¯          ⍝ returns «-Infinity»
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="sr">when &#39;num&#39;</span>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="sr">when &#39;number&#39;</span>
 <span class="sr">          s = node[1].replace /¯/g, &#39;-&#39;</span>
 <span class="sr">          a =</span>
 <span class="sr">            for x in s.split /j/i</span>
@@ -283,8 +283,8 @@ A×A←2 5   ⍝ returns 4 25
             <span class="sr">(for c, i in node[2...] when c isnt null then i)</span>
 <span class="sr">          }])&quot;</span>
 
-<span class="sr">        when &#39;seq&#39;</span>
-<span class="sr">          die &#39;No &quot;seq&quot; nodes are expected at this stage.&#39;</span>
+<span class="sr">        when &#39;expr&#39;</span>
+<span class="sr">          die &#39;No &quot;expr&quot; nodes are expected at this stage.&#39;</span>
 
 <span class="sr">        when &#39;vector&#39;</span>
 <span class="sr">          n = node.length - 1</span>
@@ -324,7 +324,7 @@ A×A←2 5   ⍝ returns 4 25
 <span class="sr">    node</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h1>Public interface to this module</h1>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="sr">nodes = (aplCode, opts = {}) -&gt;</span>
 <span class="sr">    ast = parser.parse aplCode</span>
 <span class="sr">    assignParents ast</span>
-<span class="sr">    resolveSeqs ast, opts</span>
+<span class="sr">    resolveExprs ast, opts</span>
 <span class="sr">    ast</span>
 
 <span class="sr">  compile = (aplCode, opts = {}) -&gt;</span>
