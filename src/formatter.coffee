@@ -4,14 +4,7 @@
 if typeof define isnt 'function' then define = require('amdefine')(module)
 
 define ['./helpers'], (helpers) ->
-  {isSimple, shapeOf, sum, prod, repeat, prototypeOf, assert} = helpers
-
-  encode = (a, x) ->
-    if a.length is 0 then return []
-    for m in a then r = x % m; x = Math.floor x / m; r
-
-  decode = (a, b) ->
-    r = 0; (for ai, i in a then r = r * ai + b[i]); r
+  {isSimple, shapeOf, prod, repeat} = helpers
 
   # Format an APL object as a multiline string
   format = (a) -> format0(a).join '\n'

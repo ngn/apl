@@ -60,8 +60,6 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, {vocabul
           if m.isConjunction   then h.isConjunction   = true
         if /^[gs]et_.*/.test k
           ast.vars[k[4...]] = {type: 'X'}
-    if opts.extraVars # todo: extraVars is deprecated
-      ast.vars = inherit ast.vars, opts.extraVars
     if opts.vars
       for v in opts.vars
         ast.vars[v.name] = {type: 'X', jsCode: v.name}
