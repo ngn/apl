@@ -127,7 +127,7 @@ define(function(require) {
         try {
           code = extractTextFromDOM(document.getElementById('editor')).replace(/\xa0/g, ' ');
           result = exec(code);
-          $('#result').removeClass('error').text(format(result));
+          $('#result').removeClass('error').text(format(result).join('\n'));
         } catch (err) {
           if (typeof console !== "undefined" && console !== null) {
             if (typeof console.error === "function") {

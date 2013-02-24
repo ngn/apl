@@ -114,7 +114,7 @@ define (require) ->
           code = extractTextFromDOM(document.getElementById 'editor')
                   .replace /\xa0/g, ' '
           result = exec code
-          $('#result').removeClass('error').text format result
+          $('#result').removeClass('error').text format(result).join '\n'
         catch err
           console?.error?(err)
           $('#result').addClass('error').text err.message

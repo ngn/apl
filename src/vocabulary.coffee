@@ -1699,11 +1699,11 @@ define (require) ->
 
   # `⎕` and `⍞` will be overridden for the web.
   vocabulary['set_⎕'] = (x) ->
-    process.stdout.write require('./formatter').format(x) + '\n'; x
+    process.stdout.write require('./formatter').format(x).join('\n') + '\n'; x
   vocabulary['get_⎕'] = ->
     die 'Reading from ⎕ is not implemented.'
   vocabulary['set_⍞'] = (x) ->
-    process.stdout.write require('./formatter').format x; x
+    process.stdout.write require('./formatter').format(x).join('\n'); x
   vocabulary['get_⍞'] = ->
     die 'Reading from ⍞ is not implemented.'
 

@@ -149,7 +149,7 @@ define ['./compiler', 'optimist', 'fs'], (compiler, optimist, fs) ->
       try
         if not line.match /^[\ \t\f\r\n]*$/
           result = exec line, extraContext: ctx
-          process.stdout.write format(result) + '\n'
+          process.stdout.write format(result).join('\n') + '\n'
       catch e
         console.error e
       rl.prompt()

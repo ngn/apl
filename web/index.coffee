@@ -28,7 +28,7 @@ define (require) ->
       ctx = inherit browserVocabulary
       try
         result = exec $('#code').val()
-        $('#result').removeClass('error').text format result
+        $('#result').removeClass('error').text format(result).join '\n'
       catch err
         console?.error?(err)
         $('#result').addClass('error').text err.message

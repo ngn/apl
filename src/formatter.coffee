@@ -6,10 +6,8 @@ if typeof define isnt 'function' then define = require('amdefine')(module)
 define ['./helpers'], (helpers) ->
   {isSimple, shapeOf, prod, repeat} = helpers
 
-  # Format an APL object as a multiline string
-  format = (a) -> format0(a).join '\n'
-
-  format0 = (a) ->
+  # Format an APL object as an vector of strings
+  format: format = (a) ->
     if typeof a is 'undefined' then ['undefined']
     else if a is null then ['null']
     else if typeof a is 'string' then [a]
@@ -19,7 +17,7 @@ define ['./helpers'], (helpers) ->
     else if a.length is 0 then ['']
     else
       sa = shapeOf a
-      if not sa.length then return format0 a[0]
+      if not sa.length then return format a[0]
       nRows = prod sa[...sa.length - 1]
       nCols = sa[sa.length - 1]
 
@@ -37,7 +35,7 @@ define ['./helpers'], (helpers) ->
         for r, i in rows
           for c, j in cols
             x = a[nCols * i + j]
-            box = format0 x
+            box = format x
             r.height = Math.max r.height, box.length
             c.width = Math.max c.width, box[0].length
             c.type = Math.max c.type,
@@ -76,5 +74,3 @@ define ['./helpers'], (helpers) ->
           result.push((for j in [0...nCols] then grid[i][j][k]).join '')
 
       result
-
-  {format}

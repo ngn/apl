@@ -36,7 +36,7 @@ define(function(require) {
       ctx = inherit(browserVocabulary);
       try {
         result = exec($('#code').val());
-        $('#result').removeClass('error').text(format(result));
+        $('#result').removeClass('error').text(format(result).join('\n'));
       } catch (err) {
         if (typeof console !== "undefined" && console !== null) {
           if (typeof console.error === "function") {
