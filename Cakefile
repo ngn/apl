@@ -28,16 +28,20 @@ newer = (x, y) ->
 task 'build', ->
   cs = require 'coffee-script'
   if not existsSync 'lib' then mkdirSync 'lib'
-  for f in readdirSync 'src'
-    if f.match /^\w.*\.coffee$/
-      coffeeFile = 'src/' + f
-      jsFile = 'lib/' + f.replace /\.coffee$/, '.js'
-      if newer coffeeFile, jsFile
-        console.info "Compiling #{f}..."
-        fs.readFile coffeeFile, 'utf8', (err, coffeeCode) ->
+  jobs = readdirSync('src')
+            .map((f) ->
+              coffeeFile: 'src/' + f
+              jsFile: 'lib/' + f.replace /\.coffee$/, '.js'
+            )
+            .filter (job) -> newer job.coffeeFile, job.jsFile
+  if jobs.length
+    console.info "Compiling #{jobs.map((x) -> x.coffeeFile).join ' '}..."
+    jobs.forEach (job) ->
+      fs.readFile job.coffeeFile, 'utf8', (err, coffeeCode) ->
+        if err then throw err
+        jsCode = cs.compile coffeeCode, filename: job.coffeeFile
+        fs.writeFile job.jsFile, jsCode, (err) ->
           if err then throw err
-          jsCode = cs.compile coffeeCode, filename: f
-          fs.writeFile jsFile, jsCode
 
 task 'test', ->
   console.info 'Running doctests...'
