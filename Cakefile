@@ -1,6 +1,13 @@
-{existsSync} = require 'path'
-{statSync, readdirSync, readFileSync} = require 'fs'
+{statSync, readdirSync, readFileSync, existsSync} = require 'fs'
 {spawn} = require 'child_process'
+
+# Sanity check
+if not existsSync 'node_modules'
+  console.error '''
+    Directory "node_modules/" does not exist.
+    You should run "npm install" first.
+  '''
+  process.exit(1)
 
 # Executables
 coffee = 'node_modules/coffee-script/bin/coffee'
