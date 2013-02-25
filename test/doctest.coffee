@@ -31,7 +31,7 @@ for f in fs.readdirSync d when f.match /^\w+.coffee$/
         expected = exec m[1]
         try
           actual = exec code
-          if not match exec(code), expected
+          if not match actual, expected
             fail "Test #{repr code} failed: expected #{repr expected} but got #{repr actual}"
         catch e
           fail "Test #{repr code} failed with #{e}", e

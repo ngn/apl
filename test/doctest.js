@@ -53,7 +53,7 @@ for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         expected = exec(m[1]);
         try {
           actual = exec(code);
-          if (!match(exec(code), expected)) {
+          if (!match(actual, expected)) {
             fail("Test " + (repr(code)) + " failed: expected " + (repr(expected)) + " but got " + (repr(actual)));
           }
         } catch (e) {
