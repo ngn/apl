@@ -1716,6 +1716,19 @@ define (require) ->
       for [0...n] then y = f y, x
       y
 
+  # [Commute](http://www.jsoftware.com/papers/opfns1.htm#3) (`⍨`)
+  #
+  # Definition: `x f⍨ y  <->  y f x`
+  #
+  #     17 −⍨ 23    ⍝ returns 6
+  #     7 ⍴⍨ 2 3    ⍝ returns 2 3⍴7
+  #     −⍨ 123      ⍝ returns ¯123
+  postfixAdverb '⍨', 'Commute', (f) ->
+    assert typeof f is 'function'
+    (b, a) -> if a? then f a, b else f b
+
+
+
   # `⎕` and `⍞` will be overridden for the web.
   vocabulary['set_⎕'] = (x) ->
     process.stdout.write require('./formatter').format(x).join('\n') + '\n'; x
