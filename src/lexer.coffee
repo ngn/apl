@@ -57,7 +57,7 @@ define ->
         col = (if a.length is 1 then col else 1) + a[a.length - 1].length
         aplCode = aplCode.substring m[0].length
         if type isnt '-'
-          if type in ['(', '[', '{'] then stack.push t.type
+          if type in ['(', '[', '{'] then stack.push type
           else if type in [')', ']', '}'] then stack.pop()
           if type isnt 'newline' or stack[stack.length - 1] is '{'
             return {
