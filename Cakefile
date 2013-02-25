@@ -1,4 +1,5 @@
-{statSync, readdirSync, readFileSync, existsSync} = require 'fs'
+fs = require 'fs'
+{statSync, readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync} = require 'fs'
 {spawn} = require 'child_process'
 
 # Sanity check
@@ -25,13 +26,18 @@ newer = (x, y) ->
   (not existsSync y) or statSync(x).mtime.getTime() > statSync(y).mtime.getTime()
 
 task 'build', ->
-  filenames = readdirSync('src')
-                .filter((f) -> f.match(/^\w.*\.coffee$/) and
-                      newer 'src/' + f, 'lib/' + f.replace /\.coffee$/, '.js')
-                .map (f) -> 'src/' + f
-  if filenames.length
-    console.info "Compiling #{filenames.join ' '}..."
-    exec coffee, ['-b', '-o', 'lib', '-c'].concat(filenames), {}, ->
+  cs = require 'coffee-script'
+  if not existsSync 'lib' then mkdirSync 'lib'
+  for f in readdirSync 'src'
+    if f.match /^\w.*\.coffee$/
+      coffeeFile = 'src/' + f
+      jsFile = 'lib/' + f.replace /\.coffee$/, '.js'
+      if newer coffeeFile, jsFile
+        console.info "Compiling #{f}..."
+        fs.readFile coffeeFile, 'utf8', (err, coffeeCode) ->
+          if err then throw err
+          jsCode = cs.compile coffeeCode, filename: f
+          fs.writeFile jsFile, jsCode
 
 task 'test', ->
   console.info 'Running doctests...'
