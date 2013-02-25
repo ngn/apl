@@ -215,7 +215,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, vocabula
 
         when 'guard'
           """
-            if (_.bool(#{visit node[1]})) {
+            if (_['⎕bool'](#{visit node[1]})) {
               return #{visit node[2]};
             }
           """
@@ -291,7 +291,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, vocabula
         when 'string'
           s = node[1]
           d = s[0] # the delimiter: '"' or "'"
-          "_.aplify(#{d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d})"
+          "_['⎕aplify'](#{d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d})"
 
 
         # Numbers
@@ -320,7 +320,7 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, vocabula
               else
                 parseFloat x
           if a.length is 1 or a[1] is 0 then '' + a[0]
-          else "new _.Complex(#{a[0]}, #{a[1]})"
+          else "new _['⎕complex'](#{a[0]}, #{a[1]})"
 
         when 'index'
           "_['⌷'](#{visit node[1]}, [#{
@@ -352,17 +352,17 @@ define ['./parser', './vocabulary', './complex', './helpers'], (parser, vocabula
           "#{visit node[2]}(#{visit node[1]})"
 
         when 'hook'
-          "_.hook(#{visit node[2]}, #{visit node[1]})"
+          "_['⎕hook'](#{visit node[2]}, #{visit node[1]})"
 
         when 'fork'
-          "_.fork([#{for c in node[1...] then visit c}])"
+          "_['⎕fork']([#{for c in node[1...] then visit c}])"
 
         # Embedded JavaScript
         #
         #     «1234+5678» ⍝ returns 6912
         #     «"asdf"» ⍝ returns 'asdf'
         when 'embedded'
-          "_.aplify(#{node[1].replace /(^«|»$)/g, ''})"
+          "_['⎕aplify'](#{node[1].replace /(^«|»$)/g, ''})"
 
         else
           die "Unrecognised node type, '#{node[0]}'"

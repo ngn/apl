@@ -175,7 +175,7 @@ type <code>apl -n filename.apl</code></p>             </td>             <td clas
 
         <span class="k">when</span> <span class="s">&#39;guard&#39;</span>
           <span class="s">&quot;&quot;&quot;</span>
-<span class="s">            if (_.bool(</span><span class="si">#{</span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s">)) {</span>
+<span class="s">            if (_[&#39;⎕bool&#39;](</span><span class="si">#{</span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s">)) {</span>
 <span class="s">              return </span><span class="si">#{</span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s">;</span>
 <span class="s">            }</span>
 <span class="s">          &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>Assignment</p>
@@ -244,7 +244,7 @@ A×A←2 5   ⍝ returns 4 25
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="k">when</span> <span class="s">&#39;string&#39;</span>
           <span class="nv">s = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
           <span class="nv">d = </span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># the delimiter: &#39;&quot;&#39; or &quot;&#39;&quot;</span>
-          <span class="s">&quot;_.aplify(</span><span class="si">#{</span><span class="nx">d</span> <span class="o">+</span> <span class="nx">s</span><span class="p">[</span><span class="mi">1</span><span class="p">...</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">///</span><span class="c1">#{d + d}///g, &#39;\\&#39; + d) + d})&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>Numbers</p>
+          <span class="s">&quot;_[&#39;⎕aplify&#39;](</span><span class="si">#{</span><span class="nx">d</span> <span class="o">+</span> <span class="nx">s</span><span class="p">[</span><span class="mi">1</span><span class="p">...</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">///</span><span class="c1">#{d + d}///g, &#39;\\&#39; + d) + d})&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>Numbers</p>
 
 <pre><code>1234567890  ⍝ returns «1234567890»
 12.34e56    ⍝ returns «12.34e56»
@@ -270,7 +270,7 @@ A×A←2 5   ⍝ returns 4 25
 <span class="sr">              else</span>
 <span class="sr">                parseFloat x</span>
 <span class="sr">          if a.length is 1 or a[1] is 0 then &#39;&#39; + a[0]</span>
-<span class="sr">          else &quot;new _.Complex(</span><span class="c1">#{a[0]}, #{a[1]})&quot;</span>
+<span class="sr">          else &quot;new _[&#39;⎕complex&#39;](</span><span class="c1">#{a[0]}, #{a[1]})&quot;</span>
 
         <span class="sr">when &#39;index&#39;</span>
 <span class="sr">          &quot;_[&#39;⌷&#39;](</span><span class="c1">#{visit node[1]}, [#{</span>
@@ -302,15 +302,15 @@ A×A←2 5   ⍝ returns 4 25
 <span class="sr">          &quot;</span><span class="c1">#{visit node[2]}(#{visit node[1]})&quot;</span>
 
         <span class="sr">when &#39;hook&#39;</span>
-<span class="sr">          &quot;_.hook(</span><span class="c1">#{visit node[2]}, #{visit node[1]})&quot;</span>
+<span class="sr">          &quot;_[&#39;⎕hook&#39;](</span><span class="c1">#{visit node[2]}, #{visit node[1]})&quot;</span>
 
         <span class="sr">when &#39;fork&#39;</span>
-<span class="sr">          &quot;_.fork([</span><span class="c1">#{for c in node[1...] then visit c}])&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>Embedded JavaScript</p>
+<span class="sr">          &quot;_[&#39;⎕fork&#39;]([</span><span class="c1">#{for c in node[1...] then visit c}])&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>Embedded JavaScript</p>
 
 <pre><code>«1234+5678» ⍝ returns 6912
 «"asdf"» ⍝ returns 'asdf'
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="sr">when &#39;embedded&#39;</span>
-<span class="sr">          &quot;_.aplify(</span><span class="c1">#{node[1].replace /(^«|»$)/g, &#39;&#39;})&quot;</span>
+<span class="sr">          &quot;_[&#39;⎕aplify&#39;](</span><span class="c1">#{node[1].replace /(^«|»$)/g, &#39;&#39;})&quot;</span>
 
         <span class="sr">else</span>
 <span class="sr">          die &quot;Unrecognised node type, &#39;</span><span class="c1">#{node[0]}&#39;&quot;</span>

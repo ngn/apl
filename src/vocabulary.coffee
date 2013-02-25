@@ -1707,16 +1707,16 @@ define (require) ->
   vocabulary['get_⍞'] = ->
     die 'Reading from ⍞ is not implemented.'
 
-  vocabulary.aplify = (x) ->
+  vocabulary['⎕aplify'] = (x) ->
     assert x isnt null
     assert typeof x isnt 'undefined'
     if typeof x is 'string' and x.length isnt 1
       x = withPrototype ' ', x.split ''
     x
 
-  vocabulary.bool = bool
+  vocabulary['⎕bool'] = bool
 
-  vocabulary.Complex = require('./complex').Complex
+  vocabulary['⎕complex'] = require('./complex').Complex
 
   # [Phrasal forms](http://www.jsoftware.com/papers/fork1.htm)
   #
@@ -1735,7 +1735,7 @@ define (require) ->
   #
   #     # Approximation of the number of primes below a certain limit
   #     (÷⍟) 1000    ⍝ returns 144.76482730108395
-  vocabulary.hook = (g, f) ->
+  vocabulary['⎕hook'] = (g, f) ->
     assert typeof f is 'function'
     assert typeof g is 'function'
     (b, a) -> f g(b), (a ? b)
@@ -1754,7 +1754,7 @@ define (require) ->
   #     # Trains (longer forks)
   #     (+,−,×,÷) 2     ⍝ returns 2 ¯2 1 .5
   #     1 (+,−,×,÷) 2   ⍝ returns 3 ¯1 2 .5
-  vocabulary.fork = (verbs) ->
+  vocabulary['⎕fork'] = (verbs) ->
     assert verbs.length % 2 is 1
     assert verbs.length >= 3
     for f in verbs then assert typeof f is 'function'
