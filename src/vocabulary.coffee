@@ -99,6 +99,7 @@ define (require) ->
     withPrototype, withPrototypeCopiedFrom} = require './helpers'
   {min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin,
     cos, tan, asin, acos, atan} = Math
+  formatter = require './formatter'
 
 
 
@@ -1339,7 +1340,25 @@ define (require) ->
     else
       withShape sa[...-1].concat(sb[1...]), r
 
-  monadic '⍕', 'Format' # todo
+  # Format (`⍕`)
+  #
+  #     ⍕123                ⍝ returns 1 3⍴'123'
+  #     ⍕123 456            ⍝ returns 1 7⍴'123 456'
+  #     ⍕123 'a'            ⍝ returns 1 5⍴'123 a'
+  #     ⍕12 'ab'            ⍝ returns 1 7⍴'12  ab '
+  #     ⍕2 2⍴'a'            ⍝ returns 2 2⍴'a'
+  #     ⍕2 2⍴5              ⍝ returns 2 3⍴,/('5 5'
+  #     ...                                  '5 5')
+  #     ⍕2 2⍴0 0 0 'a'      ⍝ returns 2 3⍴,/('0 0'
+  #     ...                                  '0 a')
+  #     ⍕2 2⍴0 0 0 'ab'     ⍝ returns 2 6⍴,/('0  0  '
+  #     ...                                  '0  ab ')
+  #     ⍕2 2⍴0 0 0 123      ⍝ returns 2 5⍴,/('0   0'
+  #     ...                                  '0 123')
+  monadic '⍕', 'Format', (b) ->
+    t = formatter.format b
+    withShape [t.length, t[0].length], t.join('').split('')
+
   dyadic '⍕', 'Format by example or specification' # todo
 
   # Execute (`⍎`)
