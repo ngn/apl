@@ -29,6 +29,7 @@ task 'build', ->
   cs = require 'coffee-script'
   if not existsSync 'lib' then mkdirSync 'lib'
   jobs = readdirSync('src')
+            .filter((f) -> f.match /^\w+\.coffee$/)
             .map((f) ->
               coffeeFile: 'src/' + f
               jsFile: 'lib/' + f.replace /\.coffee$/, '.js'
