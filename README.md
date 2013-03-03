@@ -167,3 +167,30 @@ guillemets (`«»`) or indented as the body of a squiggly arrow function (`~>`):
 # Editor support
 
 [Vim keymap and syntax](https://github.com/ngn/vim-apl)
+
+# How you can help
+
+Spread the word about this project.
+
+Design a logo.
+
+And here is a list of features I would love to include but I didn't have the
+time or skill to implement yet; your ideas or contributions in code are
+welcome:
+
+* namespaces
+* destructuring assignment (`a b[1] (⌽c) ← 1 2 (3 4)`)
+* function assignment (`a +← 1`)
+* del syntax for functions (`∇ result ← left f right`)
+* laminate (`,[.5]`)
+* syntax for user-defined operators (`⍺⍺` and `⍵⍵`)
+* matrix inverse and matrix divide (`⌹`)
+* partition with axis (dyadic `⊂`)
+* pick (monadic `⊃`)
+* format by specification (dyadic `⍎`)
+* expand (`\` and `⍀` when applied to nouns)
+* inner product (`.`) for ranks higher than 2
+* a power limit operator (`⍣≡`), a.k.a. fixpoint
+* synchronous readline from stdin (getters for `⎕` and `⍞`)
+* an APL keyboard layout
+* an APL mode for Emacs
