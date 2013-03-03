@@ -1707,14 +1707,24 @@ define (require) ->
   #     ({⍵+1}⍣5) 3     ⍝ returns 8
   #     ({⍵+1}⍣0) 3     ⍝ returns 3
   #     (⍴⍣3) 2 2⍴⍳4    ⍝ returns ,1
-  conjunction '⍣', 'Power operator', (f, n) ->
-    if typeof f is 'number' and typeof n is 'function'
-      [f, n] = [n, f]
+  #     'a' (,⍣3) 'b'   ⍝ returns 'aaab'
+  #     1(+÷)⍣=1        ⍝ returns 1.618033988749895
+  conjunction '⍣', 'Power operator', (g, f) ->
+    if typeof f is 'number' and typeof g is 'function'
+      h = f; f = g; g = h
     else
-      assert typeof f is 'function' and typeof n is 'number'
-    (y, x) ->
-      for [0...n] then y = f y, x
-      y
+      assert typeof f is 'function'
+    if typeof g is 'number'
+      (y, x) ->
+        for [0...g] then y = f y, x
+        y
+    else
+      (y, x) ->
+        loop
+          y1 = f y, x
+          if g y, y1 then return y
+          y = y1
+
 
   # [Commute](http://www.jsoftware.com/papers/opfns1.htm#3) (`⍨`)
   #

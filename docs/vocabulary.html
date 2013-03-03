@@ -1517,14 +1517,23 @@ T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK
 <pre><code>({⍵+1}⍣5) 3     ⍝ returns 8
 ({⍵+1}⍣0) 3     ⍝ returns 3
 (⍴⍣3) 2 2⍴⍳4    ⍝ returns ,1
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">conjunction</span> <span class="s">&#39;⍣&#39;</span><span class="p">,</span> <span class="s">&#39;Power operator&#39;</span><span class="p">,</span> <span class="nf">(f, n) -&gt;</span>
-    <span class="k">if</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span> <span class="o">and</span> <span class="k">typeof</span> <span class="nx">n</span> <span class="o">is</span> <span class="s">&#39;function&#39;</span>
-      <span class="p">[</span><span class="nx">f</span><span class="p">,</span> <span class="nx">n</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nx">n</span><span class="p">,</span> <span class="nx">f</span><span class="p">]</span>
+'a' (,⍣3) 'b'   ⍝ returns 'aaab'
+1(+÷)⍣=1        ⍝ returns 1.618033988749895
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">conjunction</span> <span class="s">&#39;⍣&#39;</span><span class="p">,</span> <span class="s">&#39;Power operator&#39;</span><span class="p">,</span> <span class="nf">(g, f) -&gt;</span>
+    <span class="k">if</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span> <span class="o">and</span> <span class="k">typeof</span> <span class="nx">g</span> <span class="o">is</span> <span class="s">&#39;function&#39;</span>
+      <span class="nv">h = </span><span class="nx">f</span><span class="p">;</span> <span class="nv">f = </span><span class="nx">g</span><span class="p">;</span> <span class="nv">g = </span><span class="nx">h</span>
     <span class="k">else</span>
-      <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s">&#39;function&#39;</span> <span class="o">and</span> <span class="k">typeof</span> <span class="nx">n</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span>
-    <span class="nf">(y, x) -&gt;</span>
-      <span class="k">for</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">n</span><span class="p">]</span> <span class="k">then</span> <span class="nv">y = </span><span class="nx">f</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">x</span>
-      <span class="nx">y</span></pre></div>             </td>           </tr>                               <tr id="section-87">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-87">&#182;</a>               </div>               <p><a href="http://www.jsoftware.com/papers/opfns1.htm#3">Commute</a> (<code>⍨</code>)</p>
+      <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s">&#39;function&#39;</span>
+    <span class="k">if</span> <span class="k">typeof</span> <span class="nx">g</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span>
+      <span class="nf">(y, x) -&gt;</span>
+        <span class="k">for</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">g</span><span class="p">]</span> <span class="k">then</span> <span class="nv">y = </span><span class="nx">f</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">x</span>
+        <span class="nx">y</span>
+    <span class="k">else</span>
+      <span class="nf">(y, x) -&gt;</span>
+        <span class="nx">loop</span>
+          <span class="nv">y1 = </span><span class="nx">f</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">x</span>
+          <span class="k">if</span> <span class="nx">g</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">y1</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">y</span>
+          <span class="nv">y = </span><span class="nx">y1</span></pre></div>             </td>           </tr>                               <tr id="section-87">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-87">&#182;</a>               </div>               <p><a href="http://www.jsoftware.com/papers/opfns1.htm#3">Commute</a> (<code>⍨</code>)</p>
 
 <p>Definition: <code>x f⍨ y  &lt;-&gt;  y f x</code></p>
 
