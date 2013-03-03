@@ -78,3 +78,27 @@ task 'stats', ->
     (s = '    ' + x.loc)[s.length - 4...]
   )
   console.info "TOTAL: #{total}"
+
+task 'web', ->
+  cs = require 'coffee-script'
+  if newer 'web/index.coffee', 'web/index.js'
+    console.info 'Compiling web/index.js...'
+    coffeeCode = readFileSync 'web/index.coffee', 'utf8'
+    jsCode = cs.compile coffeeCode, filename: 'web/index.coffee'
+    writeFileSync 'web/index.js', jsCode, 'utf8'
+  s = readFileSync 'web/fake-require.js', 'utf8'
+  for f in readdirSync 'lib' when f isnt 'command.js' and f.match /^\w+\.js$/
+    s += """
+      defModule('./#{f.replace /\.js$/, ''}', function (exports, require) {
+        #{readFileSync 'lib/' + f, 'utf8'}
+        return exports;
+      });
+    """
+  s += readFileSync 'web/examples.js',                  'utf8'
+  s += readFileSync 'web/jquery-1.9.1.min.js',          'utf8'
+  s += readFileSync 'web/jquery.fieldselection.min.js', 'utf8'
+  s += readFileSync 'web/jquery.retype.min.js',         'utf8'
+  s += readFileSync 'web/jquery.keyboard.min.js',       'utf8'
+  s += readFileSync 'web/jquery.tipsy.js',              'utf8'
+  s += readFileSync 'web/index.js',                     'utf8'
+  writeFileSync 'web/all.js', s, 'utf8'

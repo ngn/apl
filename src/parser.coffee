@@ -1,97 +1,96 @@
-if typeof define isnt 'function' then define = require('amdefine')(module)
-define ['./lexer'], (lexer) ->
+lexer = require './lexer'
 
-  # The parser builds an AST from a stream of tokens.
-  #
-  # A node in the AST is a JavaScript array whose first item is a string
-  # indicating the type of node.  The rest of the items are either the children
-  # or they represent the content of a node.  For instance `(1 + 2) × 3 4` will
-  # produce the tree:
-  #
-  #     ['body',
-  #       ['expr',
-  #         ['expr',
-  #           ['number', '1'],
-  #           ['symbol', '+'],
-  #           ['number', '2']],
-  #         ['symbol', '×'],
-  #         ['number', '3'],
-  #         ['number', '4']]]
-  #
-  # Note, that at right after parsing stage we don't yet know which symbols
-  # represent verbs and which represent nouns.  This will be resolved later in
-  # the `compiler`.
+# The parser builds an AST from a stream of tokens.
+#
+# A node in the AST is a JavaScript array whose first item is a string
+# indicating the type of node.  The rest of the items are either the children
+# or they represent the content of a node.  For instance `(1 + 2) × 3 4` will
+# produce the tree:
+#
+#     ['body',
+#       ['expr',
+#         ['expr',
+#           ['number', '1'],
+#           ['symbol', '+'],
+#           ['number', '2']],
+#         ['symbol', '×'],
+#         ['number', '3'],
+#         ['number', '4']]]
+#
+# Note, that at right after parsing stage we don't yet know which symbols
+# represent verbs and which represent nouns.  This will be resolved later in
+# the `compiler`.
 
-  parse: (aplCode) ->
-    tokenStream = lexer.tokenize aplCode
+exports.parse = (aplCode) ->
+  tokenStream = lexer.tokenize aplCode
 
-    # A single-token lookahead is used.  Variable `token` stores the upcoming
-    # token.
+  # A single-token lookahead is used.  Variable `token` stores the upcoming
+  # token.
+  token = tokenStream.next()
+
+  # `consume(tt)` consumes the upcoming token and returns a truthy value only
+  # if its type matches `tt`.  A space-separated value of `tt` matches any of
+  # a set of token types.
+  consume = (tt) ->
+    if token.type in tt.split ' ' then token = tokenStream.next()
+
+  # `demand(tt)` is like `consume(tt)` but intolerant to a mismatch.
+  demand = (tt) ->
+    if token.type isnt tt then fail "Expected #{tt} but got #{token.type}"
     token = tokenStream.next()
+    return
 
-    # `consume(tt)` consumes the upcoming token and returns a truthy value only
-    # if its type matches `tt`.  A space-separated value of `tt` matches any of
-    # a set of token types.
-    consume = (tt) ->
-      if token.type in tt.split ' ' then token = tokenStream.next()
+  # `fail(message)` politely points at the location where things went awry.
+  fail = (message) ->
+    throw Error """
+      Syntax error: #{message} at #{token.startLine}:#{token.startCol}
+      #{aplCode.split('\n')[token.startLine - 1]}
+      #{new Array(token.startCol).join('-') + '^'}
+    """
 
-    # `demand(tt)` is like `consume(tt)` but intolerant to a mismatch.
-    demand = (tt) ->
-      if token.type isnt tt then fail "Expected #{tt} but got #{token.type}"
-      token = tokenStream.next()
-      return
+  # The parser is a recursive descent parser.  Various `parseXXX()` functions
+  # roughly correspond to the set of non-terminals in an imaginary grammar.
+  parseBody = ->
+    body = ['body']
+    loop
+      if token.type in ['eof', '}'] then return body
+      while consume 'separator newline' then ;
+      if token.type in ['eof', '}'] then return body
+      expr = parseExpr()
+      if consume ':' then expr = ['guard', expr, parseExpr()]
+      body.push expr
 
-    # `fail(message)` politely points at the location where things went awry.
-    fail = (message) ->
-      throw Error """
-        Syntax error: #{message} at #{token.startLine}:#{token.startCol}
-        #{aplCode.split('\n')[token.startLine - 1]}
-        #{new Array(token.startCol).join('-') + '^'}
-      """
+  parseExpr = ->
+    expr = ['expr']
+    loop
+      item = parseItem()
+      if consume '←' then return expr.concat [['assign', item, parseExpr()]]
+      expr.push item
+      if token.type in ') ] } : ; separator newline eof'.split ' '
+        return expr
 
-    # The parser is a recursive descent parser.  Various `parseXXX()` functions
-    # roughly correspond to the set of non-terminals in an imaginary grammar.
-    parseBody = ->
-      body = ['body']
-      loop
-        if token.type in ['eof', '}'] then return body
-        while consume 'separator newline' then ;
-        if token.type in ['eof', '}'] then return body
-        expr = parseExpr()
-        if consume ':' then expr = ['guard', expr, parseExpr()]
-        body.push expr
+  parseItem = ->
+    item = parseIndexable()
+    if consume '['
+      item = ['index', item].concat parseIndices()
+      demand ']'
+    item
 
-    parseExpr = ->
-      expr = ['expr']
-      loop
-        item = parseItem()
-        if consume '←' then return expr.concat [['assign', item, parseExpr()]]
-        expr.push item
-        if token.type in ') ] } : ; separator newline eof'.split ' '
-          return expr
+  parseIndices = ->
+    indices = []
+    loop
+      if consume ';' then indices.push null
+      else if token.type is ']' then (indices.push null; return indices)
+      else
+        indices.push parseExpr()
+        if token.type is ']' then return indices
+        demand ';'
 
-    parseItem = ->
-      item = parseIndexable()
-      if consume '['
-        item = ['index', item].concat parseIndices()
-        demand ']'
-      item
+  parseIndexable = ->
+    t = token
+    if consume 'number string symbol embedded' then [t.type, t.value]
+    else if consume '(' then (expr = parseExpr(); demand ')'; expr)
+    else if consume '{' then (b = parseBody(); demand '}'; ['lambda', b])
+    else fail "Expected indexable but got #{token.type}"
 
-    parseIndices = ->
-      indices = []
-      loop
-        if consume ';' then indices.push null
-        else if token.type is ']' then (indices.push null; return indices)
-        else
-          indices.push parseExpr()
-          if token.type is ']' then return indices
-          demand ';'
-
-    parseIndexable = ->
-      t = token
-      if consume 'number string symbol embedded' then [t.type, t.value]
-      else if consume '(' then (expr = parseExpr(); demand ')'; expr)
-      else if consume '{' then (b = parseBody(); demand '}'; ['lambda', b])
-      else fail "Expected indexable but got #{token.type}"
-
-    parseBody()
+  parseBody()

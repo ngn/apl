@@ -17,8 +17,6 @@
   "main": "./lib/apl",
   "repository": {"type": "git", "url": "https://github.com/ngn/apl.git"},
   "dependencies": {
-    "amdefine": "",
-    "requirejs": "",
     "optimist": "",
     "coffee-subscript": ""
   },
