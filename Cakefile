@@ -102,3 +102,23 @@ task 'web', ->
   s += readFileSync 'web/jquery.tipsy.js',              'utf8'
   s += readFileSync 'web/index.js',                     'utf8'
   writeFileSync 'web/all.js', s, 'utf8'
+
+task 'm', ->
+  cs = require 'coffee-script'
+  if newer 'm/index.coffee', 'm/index.js'
+    console.info 'Compiling m/index.js...'
+    coffeeCode = readFileSync 'm/index.coffee', 'utf8'
+    jsCode = cs.compile coffeeCode, filename: 'm/index.coffee'
+    writeFileSync 'm/index.js', jsCode, 'utf8'
+  s = readFileSync 'web/fake-require.js', 'utf8'
+  for f in readdirSync 'lib' when f isnt 'command.js' and f.match /^\w+\.js$/
+    s += """
+      defModule('./#{f.replace /\.js$/, ''}', function (exports, require) {
+        #{readFileSync 'lib/' + f, 'utf8'}
+        return exports;
+      });
+    """
+  s += readFileSync 'web/examples.js',         'utf8'
+  s += readFileSync 'web/jquery-1.9.1.min.js', 'utf8'
+  s += readFileSync 'm/index.js',              'utf8'
+  writeFileSync 'm/all.js', s, 'utf8'
