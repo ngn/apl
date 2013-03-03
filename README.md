@@ -190,7 +190,6 @@ welcome:
 * format by specification (dyadic `⍎`)
 * expand (`\` and `⍀` when applied to nouns)
 * inner product (`.`) for ranks higher than 2
-* a power limit operator (`⍣≡`), a.k.a. fixpoint
 * synchronous readline from stdin (getters for `⎕` and `⍞`)
 * an APL keyboard layout
 * an APL mode for Emacs
