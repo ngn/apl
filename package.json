@@ -23,7 +23,8 @@
   "devDependencies": {
     "coffee-script": "",
     "docco": "",
-    "jade": ""
+    "jade": "",
+    "glob": ""
   },
   "engines": {"node": ""},
   "licenses": [
