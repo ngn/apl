@@ -805,6 +805,8 @@ catenate = (b, a, axis = -1) ->
   withShape sr, r
 
 # Ravel (`,`)
+#
+#     ,2 3 4⍴'abcdefghijklmnopqrstuvwx' ⍝ returns 'abcdefghijklmnopqrstuvwx'
 monadic ',', 'Ravel', (a) -> array(a)[0...]
 
 # Catenate (`,`)
