@@ -56,7 +56,7 @@ defModule('./parser', function (exports, require) {
         if ((_ref = token.type) === 'eof' || _ref === '}') {
           return body;
         }
-        while (consume('separator newline')) {}
+        while (consume('separator newline')) {undefined}
         if ((_ref1 = token.type) === 'eof' || _ref1 === '}') {
           return body;
         }

@@ -279,37 +279,12 @@ and makes it propagate through arrays, if it has
 ⍳ 0         ⍝ returns ⍬
 ⍴ ⍳ 0       ⍝ returns ,0
 ⍳ 2 3 4     ⍝ returns (2 3 4 3 ⍴
-...
-...                   0 0 0
-...                   0 0 1
-...                   0 0 2
-...                   0 0 3
-...
-...                   0 1 0
-...                   0 1 1
-...                   0 1 2
-...                   0 1 3
-...
-...                   0 2 0
-...                   0 2 1
-...                   0 2 2
-...                   0 2 3
-...
-...                   1 0 0
-...                   1 0 1
-...                   1 0 2
-...                   1 0 3
-...
-...                   1 1 0
-...                   1 1 1
-...                   1 1 2
-...                   1 1 3
-...
-...                   1 2 0
-...                   1 2 1
-...                   1 2 2
-...                   1 2 3)
-
+...             0 0 0  0 0 1  0 0 2  0 0 3
+...             0 1 0  0 1 1  0 1 2  0 1 3
+...             0 2 0  0 2 1  0 2 2  0 2 3
+...             1 0 0  1 0 1  1 0 2  1 0 3
+...             1 1 0  1 1 1  1 1 2  1 1 3
+...             1 2 0  1 2 1  1 2 2  1 2 3)
 ⍴⍳ 2 3 4    ⍝ returns 2 3 4 3
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">monadic</span> <span class="s">&#39;⍳&#39;</span><span class="p">,</span> <span class="s">&#39;Index generate&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span>
   <span class="k">if</span> <span class="k">typeof</span> <span class="nx">a</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span> <span class="k">then</span> <span class="k">return</span> <span class="p">(</span><span class="k">for</span> <span class="nx">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">a</span><span class="p">]</span> <span class="k">by</span> <span class="mi">1</span> <span class="k">then</span> <span class="nx">i</span><span class="p">)</span>
@@ -696,7 +671,10 @@ t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  ∧/ t  ⍝ returns 1 0 0
       <span class="nx">r</span><span class="p">.</span><span class="nx">push</span> <span class="nx">b</span><span class="p">[</span><span class="nx">k</span> <span class="o">+</span> <span class="nx">nk</span> <span class="o">*</span> <span class="p">(</span><span class="nx">j</span> <span class="o">+</span> <span class="nx">njb</span> <span class="o">*</span> <span class="nx">i</span><span class="p">)]</span>
   <span class="nv">sr = </span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">sa</span> <span class="k">then</span> <span class="nx">x</span>
   <span class="nx">sr</span><span class="p">[</span><span class="nx">axis</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">sb</span><span class="p">[</span><span class="nx">axis</span><span class="p">]</span>
-  <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-48">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-48">&#182;</a>               </div>               <p>Ravel (<code>,</code>)</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">monadic</span> <span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="s">&#39;Ravel&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span> <span class="nx">array</span><span class="p">(</span><span class="nx">a</span><span class="p">)[</span><span class="mi">0</span><span class="p">...]</span></pre></div>             </td>           </tr>                               <tr id="section-49">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-49">&#182;</a>               </div>               <p>Catenate (<code>,</code>)</p>
+  <span class="nx">withShape</span> <span class="nx">sr</span><span class="p">,</span> <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-48">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-48">&#182;</a>               </div>               <p>Ravel (<code>,</code>)</p>
+
+<pre><code>,2 3 4⍴'abcdefghijklmnopqrstuvwx' ⍝ returns 'abcdefghijklmnopqrstuvwx'
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">monadic</span> <span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="s">&#39;Ravel&#39;</span><span class="p">,</span> <span class="nf">(a) -&gt;</span> <span class="nx">array</span><span class="p">(</span><span class="nx">a</span><span class="p">)[</span><span class="mi">0</span><span class="p">...]</span></pre></div>             </td>           </tr>                               <tr id="section-49">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-49">&#182;</a>               </div>               <p>Catenate (<code>,</code>)</p>
 
 <pre><code>10,66                ⍝ returns 10, 66
 '10 ','MAY ','1985'  ⍝ returns '10 MAY 1985'
