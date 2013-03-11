@@ -6,7 +6,11 @@
 fs = require 'fs'
 glob = require 'glob'
 assert = require 'assert'
-{build, action, coffee, jade, sass, docco} = require '../ake/lib/ake'
+{build, action, coffee, jade, sass, docco, cat} = require '../ake/lib/ake'
+
+libFiles =
+  glob.sync('src/*.coffee').map (f) ->
+    f.replace /^src\/(.+)\.coffee$/, 'lib/$1.js'
 
 build(
   coffee 'src/*.coffee', 'lib/'
@@ -17,35 +21,25 @@ build(
   coffee 'web/index.coffee'
   jade   'web/index.jade'
   sass   'web/index.sass'
-  action(
-    # inputs:
-    [].concat(
-      ['web/fake-require.js']
-      glob.sync('src/*.coffee').map (f) ->
-        f.replace /^src\/(.+)\.coffee$/, 'lib/$1.js'
-      glob.sync('web/jquery*.js')
-      ['web/examples.js', 'web/index.js']
-    )
-    # output:
-    ['web/all.js']
-    # action:
-    ({callback, inPaths, outPaths, log}) ->
-      log 'combining .js files for the web'
-      s = ''
-      for p in inPaths
-        jsCode = fs.readFileSync p, 'utf8' # todo: async
-        if m = p.match /^lib\/(\w+)\.js$/
-          jsCode = """
-            defModule('./#{m[1]}', function (exports, require) {
-                #{jsCode}
-                return exports;
-            });
-          """
-        s += jsCode
-      assert outPaths.length is 1
-      fs.writeFile outPaths[0], s, (err) ->
-        if err then throw err
-        callback()
+  cat(
+    [
+      'web/fake-require.js'
+      libFiles
+      'web/jquery*.js'
+      'web/examples.js'
+      'web/index.js'
+    ]
+    'web/all.js'
+    transform: (content, {path}) ->
+      if not path.match /^lib\// then return content
+      if path is 'lib/command.js' then return ''
+      moduleName = path.replace /^.*\/([^\/]+).js/, '$1'
+      """
+        defModule('./#{moduleName}', function (exports, require) {
+          #{content}
+          return exports;
+        });\n
+      """
   )
 
   # mobile demo
