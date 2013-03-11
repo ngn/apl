@@ -4,10 +4,9 @@
 vocabulary = require './vocabulary'
 {inherit} = require './helpers'
 
-browserVocabulary = ctx = inherit vocabulary
-ctx['⍵'] = ('' + location).split ''
-ctx['get_⎕'] = -> (prompt('⎕:') or '').split ''
-ctx['set_⎕'] = (x) -> alert x
-ctx['get_⍞'] = -> (prompt() or '').split ''
-ctx['set_⍞'] = (x) -> alert x
-exports.browserVocabulary = browserVocabulary
+@browserVocabulary = inherit vocabulary,
+  '⍵': ('' + location).split ''
+  'get_⎕': -> (prompt('⎕:') or '').split ''
+  'set_⎕': (x) -> alert x
+  'get_⍞': -> (prompt() or '').split ''
+  'set_⍞': (x) -> alert x

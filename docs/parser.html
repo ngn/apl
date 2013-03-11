@@ -18,7 +18,7 @@ produce the tree:</p>
 
 <p>Note, that at right after parsing stage we don't yet know which symbols
 represent verbs and which represent nouns.  This will be resolved later in
-the <code>compiler</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">exports.parse = </span><span class="nf">(aplCode) -&gt;</span>
+the <code>compiler</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="vi">@parse = </span><span class="nf">(aplCode) -&gt;</span>
   <span class="nv">tokenStream = </span><span class="nx">lexer</span><span class="p">.</span><span class="nx">tokenize</span> <span class="nx">aplCode</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>A single-token lookahead is used.  Variable <code>token</code> stores the upcoming
 token.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">token = </span><span class="nx">tokenStream</span><span class="p">.</span><span class="nx">next</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p><code>consume(tt)</code> consumes the upcoming token and returns a truthy value only
 if its type matches <code>tt</code>.  A space-separated value of <code>tt</code> matches any of

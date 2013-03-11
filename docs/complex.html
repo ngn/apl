@@ -6,7 +6,7 @@ custom APL objects.</p>             </td>             <td class="code">         
 
 <span class="nv">C = </span><span class="nf">(re, im) -&gt;</span> <span class="k">if</span> <span class="nx">im</span> <span class="k">then</span> <span class="k">new</span> <span class="nx">Complex</span> <span class="nx">re</span><span class="p">,</span> <span class="nx">im</span> <span class="k">else</span> <span class="nx">re</span>
 
-<span class="k">class</span> <span class="nx">Complex</span>
+<span class="vi">@Complex = </span><span class="k">class</span> <span class="nx">Complex</span>
 
   <span class="nv">constructor: </span><span class="nf">(@re = 0, @im = 0) -&gt;</span>
     <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">@re</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span>
@@ -77,7 +77,5 @@ custom APL objects.</p>             </td>             <td class="code">         
 
   <span class="s">&#39;right_÷&#39;</span><span class="o">:</span> <span class="nf">(x) -&gt;</span>
     <span class="p">(</span><span class="k">if</span> <span class="nx">x</span> <span class="k">instanceof</span> <span class="nx">Complex</span> <span class="k">then</span> <span class="nx">x</span> <span class="k">else</span> <span class="k">new</span> <span class="nx">Complex</span> <span class="nx">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)[</span><span class="s">&#39;÷&#39;</span><span class="p">]</span> <span class="nx">@</span>
-
-<span class="nv">exports.Complex = </span><span class="nx">Complex</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

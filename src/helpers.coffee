@@ -4,7 +4,7 @@
 #
 # This implementation allows extra properties to be assigned
 # to the newly-created object.
-inherit = (x, extraProperties = {}) ->
+@inherit = (x, extraProperties = {}) ->
   f = (->); f:: = x; r = new f
   for k, v of extraProperties then r[k] = v
   r
@@ -12,21 +12,21 @@ inherit = (x, extraProperties = {}) ->
 
 
 # Helpers for the APL data model
-isSimple = (x) -> not (x instanceof Array)
+@isSimple = isSimple = (x) -> not (x instanceof Array)
 
-shapeOf = (a) ->
+@shapeOf = shapeOf = (a) ->
   a.shape or
     if a.length? and not (typeof a is 'string' and a.length is 1)
       [a.length]
     else
       []
 
-withShape = (shape, a) ->
+@withShape = withShape = (shape, a) ->
   assert (not shape?) or a.length is prod shape
   if shape? and shape.length isnt 1 then a.shape = shape
   a
 
-prototypeOf = (x) ->
+@prototypeOf = prototypeOf = (x) ->
   if typeof x is 'number' then 0
   else if typeof x is 'string' then ' '
   else if x.aplPrototype? then x.aplPrototype
@@ -36,12 +36,12 @@ prototypeOf = (x) ->
     p = prototypeOf x[0]
     withShape shapeOf(x[0]), (for [0...x[0].length] then p)
 
-withPrototype = withPrototype = (p, x) ->
+@withPrototype = withPrototype = (p, x) ->
   if (x instanceof Array) and (not x.length) and (p isnt 0)
     x.aplPrototype = p
   x
 
-withPrototypeCopiedFrom = (y, x) ->
+@withPrototypeCopiedFrom = (y, x) ->
   if x instanceof Array and not x.length
     withPrototype prototypeOf(y), x
   x
@@ -49,26 +49,13 @@ withPrototypeCopiedFrom = (y, x) ->
 
 
 # Sum and product;  I wish JavaScript had a _reduce_ operator :)
-sum = (xs) -> r = 0; (for x in xs then r += x); r
-prod = (xs) -> r = 1; (for x in xs then r *= x); r
-all = (xs) -> (for x in xs when not x then return false); true
+@sum = (xs) -> r = 0; (for x in xs then r += x); r
+@prod = prod = (xs) -> r = 1; (for x in xs then r *= x); r
+@all = (xs) -> (for x in xs when not x then return false); true
 
 # `repeat(s, n)` catenates `n` instances of a string `s`.
-repeat = (s, n) -> r = ''; (for [0...n] then r += s); r
+@repeat = (s, n) -> r = ''; (for [0...n] then r += s); r
 
-die = (s) -> throw Error s
-assert = (flag, s = 'Assertion failed') -> if not flag then throw Error s
-
-exports.inherit = inherit
-exports.isSimple = isSimple
-exports.shapeOf = shapeOf
-exports.withShape = withShape
-exports.prototypeOf = prototypeOf
-exports.withPrototype = withPrototype
-exports.withPrototypeCopiedFrom = withPrototypeCopiedFrom
-exports.sum = sum
-exports.prod = prod
-exports.all = all
-exports.repeat = repeat
-exports.die = die
-exports.assert = assert
+@die = (s) -> throw Error s
+@assert = assert = (flag, s = 'Assertion failed') ->
+  if not flag then throw Error s

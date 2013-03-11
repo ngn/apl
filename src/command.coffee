@@ -8,7 +8,7 @@ optimist = require 'optimist'
 fs = require 'fs'
 {nodes, compile, exec} = require './compiler'
 
-main = ->
+@main = ->
 
   # We use [optimist](https://github.com/substack/node-optimist#readme) to
   # parse the arguments.
@@ -178,7 +178,3 @@ printAST = (x, indent = '') ->
   return
 
 isArray = (x) -> x?.length? and typeof x isnt 'string'
-
-
-
-exports.main = main

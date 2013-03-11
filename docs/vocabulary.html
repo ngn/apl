@@ -104,9 +104,7 @@ leave <code>0</code> as an implicit default.</p>             </td>             <
 <span class="nv">bool = </span><span class="nf">(x) -&gt;</span>
   <span class="nv">x = </span><span class="nx">num</span> <span class="nx">x</span>
   <span class="nx">assert</span> <span class="nx">x</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s">&#39;Boolean values must be either 0 or 1&#39;</span>
-  <span class="nx">x</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h1>DSL for defining built-in symbols</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">vocabulary = </span><span class="p">{}</span>
-
-<span class="nv">tmp = monadic: </span><span class="p">{},</span> <span class="nv">dyadic: </span><span class="p">{}</span>
+  <span class="nx">x</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h1>DSL for defining built-in symbols</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">tmp = monadic: </span><span class="p">{},</span> <span class="nv">dyadic: </span><span class="p">{}</span>
 
 <span class="nv">def = </span><span class="nf">(h, name, description, f) -&gt;</span>
   <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">name</span> <span class="o">is</span> <span class="s">&#39;string&#39;</span>
@@ -168,6 +166,7 @@ x ← «{'⍟': function () { return 1234; }}» ◇ ⍟ x x
   <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">f2</span> <span class="o">is</span> <span class="s">&#39;function&#39;</span>
   <span class="nv">F = </span><span class="nf">(b, a, args...) -&gt;</span> <span class="k">if</span> <span class="nx">a</span><span class="o">?</span> <span class="k">then</span> <span class="nx">f2</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">args</span><span class="p">...</span> <span class="k">else</span> <span class="nx">f1</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">args</span><span class="p">...</span>
 
+<span class="nv">vocabulary = </span><span class="nx">@</span>
 <span class="nv">endOfVocabulary = </span><span class="o">-&gt;</span>
   <span class="nv">ks = </span><span class="p">(</span><span class="k">for</span> <span class="nx">k</span> <span class="k">of</span> <span class="nx">tmp</span><span class="p">.</span><span class="nx">monadic</span> <span class="k">then</span> <span class="nx">k</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span>
     <span class="k">for</span> <span class="nx">k</span> <span class="k">of</span> <span class="nx">tmp</span><span class="p">.</span><span class="nx">dyadic</span> <span class="k">when</span> <span class="o">not</span> <span class="nx">tmp</span><span class="p">.</span><span class="nx">monadic</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span><span class="o">?</span> <span class="k">then</span> <span class="nx">k</span>
@@ -1211,8 +1210,8 @@ M ← (3 8 ⍴
 ⍬     ⍝ returns ⍬
 ⍬⍬    ⍝ returns ⍬ ⍬
 1⍬2⍬3 ⍝ returns 1 ⍬ 2 ⍬ 3
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;get_⍬&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> <span class="p">[]</span>
-<span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;set_⍬&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> <span class="nx">die</span> <span class="s">&#39;Symbol zilde (⍬) is read-only.&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-71">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-71">&#182;</a>               </div>               <p>Index origin (<code>⎕IO</code>)</p>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">@</span><span class="p">[</span><span class="s">&#39;get_⍬&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> <span class="p">[]</span>
+<span class="nx">@</span><span class="p">[</span><span class="s">&#39;set_⍬&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> <span class="nx">die</span> <span class="s">&#39;Symbol zilde (⍬) is read-only.&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-71">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-71">&#182;</a>               </div>               <p>Index origin (<code>⎕IO</code>)</p>
 
 <p>The index origin is fixed at 0.  Reading it returns 0.  Attempts to set it
 to anything other than that fail.</p>
@@ -1220,8 +1219,8 @@ to anything other than that fail.</p>
 <pre><code>⎕IO     ⍝ returns 0
 ⎕IO←0   ⍝ returns 0
 ⎕IO←1   ⍝ fails
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;get_⎕IO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> <span class="mi">0</span>
-<span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;set_⎕IO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(x) -&gt;</span>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">@</span><span class="p">[</span><span class="s">&#39;get_⎕IO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+<span class="nx">@</span><span class="p">[</span><span class="s">&#39;set_⎕IO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(x) -&gt;</span>
   <span class="k">if</span> <span class="nx">x</span> <span class="o">isnt</span> <span class="mi">0</span> <span class="k">then</span> <span class="k">throw</span> <span class="nb">Error</span> <span class="s">&#39;The index origin (⎕IO) is fixed at 0&#39;</span> <span class="k">else</span> <span class="nx">x</span></pre></div>             </td>           </tr>                               <tr id="section-72">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-72">&#182;</a>               </div>               <h1>Built-in adverbs and conjunctions</h1>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-73">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-73">&#182;</a>               </div>               <p>Helper for <code>/</code> and <code>⌿</code> in their adverbial sense</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">reduce = </span><span class="nf">(f, _, axis = -1) -&gt;</span> <span class="nf">(b, a) -&gt;</span>
   <span class="nv">invokedAsMonadic = </span><span class="o">not</span> <span class="nx">a</span><span class="o">?</span>
   <span class="k">if</span> <span class="nx">invokedAsMonadic</span> <span class="k">then</span> <span class="nv">a = </span><span class="mi">0</span>
@@ -1519,25 +1518,25 @@ T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK
 −⍨ 123      ⍝ returns ¯123
 </code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">postfixAdverb</span> <span class="s">&#39;⍨&#39;</span><span class="p">,</span> <span class="s">&#39;Commute&#39;</span><span class="p">,</span> <span class="nf">(f) -&gt;</span>
   <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s">&#39;function&#39;</span>
-  <span class="nf">(b, a) -&gt;</span> <span class="k">if</span> <span class="nx">a</span><span class="o">?</span> <span class="k">then</span> <span class="nx">f</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="k">else</span> <span class="nx">f</span> <span class="nx">b</span></pre></div>             </td>           </tr>                               <tr id="section-87">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-87">&#182;</a>               </div>               <p><code>⎕</code> and <code>⍞</code> will be overridden for the web.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;set_⎕&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(x) -&gt;</span>
+  <span class="nf">(b, a) -&gt;</span> <span class="k">if</span> <span class="nx">a</span><span class="o">?</span> <span class="k">then</span> <span class="nx">f</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="k">else</span> <span class="nx">f</span> <span class="nx">b</span></pre></div>             </td>           </tr>                               <tr id="section-87">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-87">&#182;</a>               </div>               <p><code>⎕</code> and <code>⍞</code> will be overridden for the web.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">@</span><span class="p">[</span><span class="s">&#39;set_⎕&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(x) -&gt;</span>
   <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span> <span class="nx">require</span><span class="p">(</span><span class="s">&#39;./formatter&#39;</span><span class="p">).</span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s">&#39;\n&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;\n&#39;</span><span class="p">;</span> <span class="nx">x</span>
-<span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;get_⎕&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span>
+<span class="nx">@</span><span class="p">[</span><span class="s">&#39;get_⎕&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span>
   <span class="nx">die</span> <span class="s">&#39;Reading from ⎕ is not implemented.&#39;</span>
-<span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;set_⍞&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(x) -&gt;</span>
+<span class="nx">@</span><span class="p">[</span><span class="s">&#39;set_⍞&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(x) -&gt;</span>
   <span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span> <span class="nx">require</span><span class="p">(</span><span class="s">&#39;./formatter&#39;</span><span class="p">).</span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s">&#39;\n&#39;</span><span class="p">);</span> <span class="nx">x</span>
-<span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;get_⍞&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span>
+<span class="nx">@</span><span class="p">[</span><span class="s">&#39;get_⍞&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span>
   <span class="nx">die</span> <span class="s">&#39;Reading from ⍞ is not implemented.&#39;</span>
 
-<span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;⎕aplify&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(x) -&gt;</span>
+<span class="nx">@</span><span class="p">[</span><span class="s">&#39;⎕aplify&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(x) -&gt;</span>
   <span class="nx">assert</span> <span class="nx">x</span> <span class="o">isnt</span> <span class="kc">null</span>
   <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">isnt</span> <span class="s">&#39;undefined&#39;</span>
   <span class="k">if</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">is</span> <span class="s">&#39;string&#39;</span> <span class="o">and</span> <span class="nx">x</span><span class="p">.</span><span class="nx">length</span> <span class="o">isnt</span> <span class="mi">1</span>
     <span class="nv">x = </span><span class="nx">withPrototype</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="nx">x</span><span class="p">.</span><span class="nx">split</span> <span class="s">&#39;&#39;</span>
   <span class="nx">x</span>
 
-<span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;⎕bool&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">bool</span>
+<span class="nx">@</span><span class="p">[</span><span class="s">&#39;⎕bool&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">bool</span>
 
-<span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;⎕complex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s">&#39;./complex&#39;</span><span class="p">).</span><span class="nx">Complex</span></pre></div>             </td>           </tr>                               <tr id="section-88">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-88">&#182;</a>               </div>               <p><a href="http://www.jsoftware.com/papers/fork1.htm">Phrasal forms</a></p>
+<span class="nx">@</span><span class="p">[</span><span class="s">&#39;⎕complex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s">&#39;./complex&#39;</span><span class="p">).</span><span class="nx">Complex</span></pre></div>             </td>           </tr>                               <tr id="section-88">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-88">&#182;</a>               </div>               <p><a href="http://www.jsoftware.com/papers/fork1.htm">Phrasal forms</a></p>
 
 <p>Hook: <code>(fg)⍵ ←→ ⍵fg⍵</code> ; <code>⍺(fg)⍵ ←→ ⍺fg⍵</code></p>
 
@@ -1554,7 +1553,7 @@ T←"ONE(TWO) BOOK(S)" ◇ ((T∈"()")⍱≠\T∈"()")/T   ⍝ returns 'ONE BOOK
 
 # Approximation of the number of primes below a certain limit
 (÷⍟) 1000    ⍝ returns 144.76482730108395
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;⎕hook&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(g, f) -&gt;</span>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">@</span><span class="p">[</span><span class="s">&#39;⎕hook&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(g, f) -&gt;</span>
   <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s">&#39;function&#39;</span>
   <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">g</span> <span class="o">is</span> <span class="s">&#39;function&#39;</span>
   <span class="nf">(b, a) -&gt;</span> <span class="nx">f</span> <span class="nx">g</span><span class="p">(</span><span class="nx">b</span><span class="p">),</span> <span class="p">(</span><span class="nx">a</span> <span class="o">?</span> <span class="nx">b</span><span class="p">)</span></pre></div>             </td>           </tr>                               <tr id="section-89">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-89">&#182;</a>               </div>               <p>Fork: <code>(fgh)⍵ ←→ (f⍵)g(h⍵)</code> ; <code>⍺(fgh)⍵ ←→ (⍺f⍵)g(⍺h⍵)</code></p>
@@ -1571,7 +1570,7 @@ a←1 ◇ b←¯22 ◇ c←85
 # Trains (longer forks)
 (+,−,×,÷) 2     ⍝ returns 2 ¯2 1 .5
 1 (+,−,×,÷) 2   ⍝ returns 3 ¯1 2 .5
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">vocabulary</span><span class="p">[</span><span class="s">&#39;⎕fork&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(verbs) -&gt;</span>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">@</span><span class="p">[</span><span class="s">&#39;⎕fork&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nf">(verbs) -&gt;</span>
   <span class="nx">assert</span> <span class="nx">verbs</span><span class="p">.</span><span class="nx">length</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">is</span> <span class="mi">1</span>
   <span class="nx">assert</span> <span class="nx">verbs</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">3</span>
   <span class="k">for</span> <span class="nx">f</span> <span class="k">in</span> <span class="nx">verbs</span> <span class="k">then</span> <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s">&#39;function&#39;</span>
@@ -1581,11 +1580,6 @@ a←1 ◇ b←¯22 ◇ c←85
       <span class="nv">r = </span><span class="nx">verbs</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="nx">r</span><span class="p">,</span> <span class="nx">verbs</span><span class="p">[</span><span class="nx">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span>
     <span class="nx">r</span>
 
-
-
 <span class="nx">endOfVocabulary</span><span class="p">()</span>
-<span class="nx">do</span> <span class="o">-&gt;</span>
-  <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="k">of</span> <span class="nx">vocabulary</span>
-    <span class="nx">exports</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

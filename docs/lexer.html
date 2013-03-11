@@ -30,7 +30,7 @@ dropped when the latest unclosed bracket is <code>'('</code> or <code>'['</code>
 for newlines inside expressions without having them treated as statement
 separators.</p>
 
-<p>A sentry <code>'eof'</code> token is generated at the end.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">exports.tokenize = </span><span class="nf">(aplCode) -&gt;</span>
+<p>A sentry <code>'eof'</code> token is generated at the end.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="vi">@tokenize = </span><span class="nf">(aplCode) -&gt;</span>
   <span class="nv">line = col = </span><span class="mi">1</span>
   <span class="nv">stack = </span><span class="p">[</span><span class="s">&#39;{&#39;</span><span class="p">]</span> <span class="c1"># a stack of brackets</span>
   <span class="nv">next: </span><span class="o">-&gt;</span>

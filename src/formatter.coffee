@@ -4,7 +4,7 @@
 {isSimple, shapeOf, prod, repeat} = require './helpers'
 
 # Format an APL object as an vector of strings
-exports.format = format = (a) ->
+@format = format = (a) ->
   if typeof a is 'undefined' then ['undefined']
   else if a is null then ['null']
   else if typeof a is 'string' then [a]

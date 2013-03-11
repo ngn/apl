@@ -378,13 +378,13 @@ closestScope = (node) ->
 
 # # Public interface to this module
 
-nodes = (aplCode, opts = {}) ->
+@nodes = nodes = (aplCode, opts = {}) ->
   ast = parser.parse aplCode
   assignParents ast
   resolveExprs ast, opts
   ast
 
-compile = (aplCode, opts = {}) ->
+@compile = compile = (aplCode, opts = {}) ->
   jsCode = toJavaScript nodes aplCode, opts
   if opts.embedded
     jsCode = """
@@ -396,12 +396,8 @@ compile = (aplCode, opts = {}) ->
   jsCode
 
 
-exec = (aplCode, opts = {}) ->
+@exec = (aplCode, opts = {}) ->
   (new Function """
     var _ = arguments[0];
     #{compile aplCode, opts}
   """) inherit vocabulary, opts.extraContext
-
-exports.nodes = nodes
-exports.compile = compile
-exports.exec = exec

@@ -319,13 +319,13 @@ A×A←2 5   ⍝ returns 4 25
 
   <span class="sr">visit ast</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>A helper to find the nearest <code>body</code> ancestor</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="sr">closestScope = (node) -&gt;</span>
 <span class="sr">  while node[0] isnt &#39;body&#39; then node = node.parent</span>
-<span class="sr">  node</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h1>Public interface to this module</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="sr">nodes = (aplCode, opts = {}) -&gt;</span>
+<span class="sr">  node</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h1>Public interface to this module</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="sr">@nodes = nodes = (aplCode, opts = {}) -&gt;</span>
 <span class="sr">  ast = parser.parse aplCode</span>
 <span class="sr">  assignParents ast</span>
 <span class="sr">  resolveExprs ast, opts</span>
 <span class="sr">  ast</span>
 
-<span class="sr">compile = (aplCode, opts = {}) -&gt;</span>
+<span class="sr">@compile = compile = (aplCode, opts = {}) -&gt;</span>
 <span class="sr">  jsCode = toJavaScript nodes aplCode, opts</span>
 <span class="sr">  if opts.embedded</span>
 <span class="sr">    jsCode = &quot;&quot;&quot;</span>
@@ -337,14 +337,10 @@ A×A←2 5   ⍝ returns 4 25
 <span class="sr">  jsCode</span>
 
 
-<span class="sr">exec = (aplCode, opts = {}) -&gt;</span>
+<span class="sr">@exec = (aplCode, opts = {}) -&gt;</span>
 <span class="sr">  (new Function &quot;&quot;&quot;</span>
 <span class="sr">    var _ = arguments[0];</span>
 <span class="sr">    </span><span class="c1">#{compile aplCode, opts}</span>
   <span class="sr">&quot;&quot;&quot;) inherit vocabulary, opts.extraContext</span>
-
-<span class="sr">exports.nodes = nodes</span>
-<span class="sr">exports.compile = compile</span>
-<span class="sr">exports.exec = exec</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

@@ -6,7 +6,7 @@ invoked as a shell command.</p>
 <span class="nv">fs = </span><span class="nx">require</span> <span class="s">&#39;fs&#39;</span>
 <span class="p">{</span><span class="nx">nodes</span><span class="p">,</span> <span class="nx">compile</span><span class="p">,</span> <span class="nx">exec</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;./compiler&#39;</span>
 
-<span class="nv">main = </span><span class="o">-&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>We use <a href="https://github.com/substack/node-optimist#readme">optimist</a> to
+<span class="vi">@main = </span><span class="o">-&gt;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>We use <a href="https://github.com/substack/node-optimist#readme">optimist</a> to
 parse the arguments.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="p">{</span><span class="nx">argv</span><span class="p">}</span> <span class="o">=</span> <span class="nx">optimist</span>
     <span class="p">.</span><span class="nx">usage</span><span class="p">(</span><span class="s">&#39;&#39;&#39;</span>
 <span class="s">      Usage: apl [options] path/to/script.apl [args]\n</span>
@@ -139,9 +139,5 @@ depending on where it will be executed, but really it's straightforward)</p>    
   <span class="k">return</span>
 
 <span class="nv">isArray = </span><span class="nf">(x) -&gt;</span> <span class="nx">x</span><span class="o">?</span><span class="p">.</span><span class="nx">length</span><span class="o">?</span> <span class="o">and</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">isnt</span> <span class="s">&#39;string&#39;</span>
-
-
-
-<span class="nv">exports.main = </span><span class="nx">main</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

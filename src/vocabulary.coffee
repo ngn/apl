@@ -121,8 +121,6 @@ bool = (x) ->
 
 # # DSL for defining built-in symbols
 
-vocabulary = {}
-
 tmp = monadic: {}, dyadic: {}
 
 def = (h, name, description, f) ->
@@ -187,6 +185,7 @@ ambivalent = (symbol, f1, f2) ->
   assert typeof f2 is 'function'
   F = (b, a, args...) -> if a? then f2 b, a, args... else f1 b, a, args...
 
+vocabulary = @
 endOfVocabulary = ->
   ks = (for k of tmp.monadic then k).concat(
     for k of tmp.dyadic when not tmp.monadic[k]? then k
@@ -1365,8 +1364,8 @@ dyadic '⊢', 'Right', (b, a) -> b
 #     ⍬     ⍝ returns ⍬
 #     ⍬⍬    ⍝ returns ⍬ ⍬
 #     1⍬2⍬3 ⍝ returns 1 ⍬ 2 ⍬ 3
-vocabulary['get_⍬'] = -> []
-vocabulary['set_⍬'] = -> die 'Symbol zilde (⍬) is read-only.'
+@['get_⍬'] = -> []
+@['set_⍬'] = -> die 'Symbol zilde (⍬) is read-only.'
 
 # Index origin (`⎕IO`)
 #
@@ -1376,8 +1375,8 @@ vocabulary['set_⍬'] = -> die 'Symbol zilde (⍬) is read-only.'
 #     ⎕IO     ⍝ returns 0
 #     ⎕IO←0   ⍝ returns 0
 #     ⎕IO←1   ⍝ fails
-vocabulary['get_⎕IO'] = -> 0
-vocabulary['set_⎕IO'] = (x) ->
+@['get_⎕IO'] = -> 0
+@['set_⎕IO'] = (x) ->
   if x isnt 0 then throw Error 'The index origin (⎕IO) is fixed at 0' else x
 
 
@@ -1714,25 +1713,25 @@ postfixAdverb '⍨', 'Commute', (f) ->
 
 
 # `⎕` and `⍞` will be overridden for the web.
-vocabulary['set_⎕'] = (x) ->
+@['set_⎕'] = (x) ->
   process.stdout.write require('./formatter').format(x).join('\n') + '\n'; x
-vocabulary['get_⎕'] = ->
+@['get_⎕'] = ->
   die 'Reading from ⎕ is not implemented.'
-vocabulary['set_⍞'] = (x) ->
+@['set_⍞'] = (x) ->
   process.stdout.write require('./formatter').format(x).join('\n'); x
-vocabulary['get_⍞'] = ->
+@['get_⍞'] = ->
   die 'Reading from ⍞ is not implemented.'
 
-vocabulary['⎕aplify'] = (x) ->
+@['⎕aplify'] = (x) ->
   assert x isnt null
   assert typeof x isnt 'undefined'
   if typeof x is 'string' and x.length isnt 1
     x = withPrototype ' ', x.split ''
   x
 
-vocabulary['⎕bool'] = bool
+@['⎕bool'] = bool
 
-vocabulary['⎕complex'] = require('./complex').Complex
+@['⎕complex'] = require('./complex').Complex
 
 # [Phrasal forms](http://www.jsoftware.com/papers/fork1.htm)
 #
@@ -1751,7 +1750,7 @@ vocabulary['⎕complex'] = require('./complex').Complex
 #
 #     # Approximation of the number of primes below a certain limit
 #     (÷⍟) 1000    ⍝ returns 144.76482730108395
-vocabulary['⎕hook'] = (g, f) ->
+@['⎕hook'] = (g, f) ->
   assert typeof f is 'function'
   assert typeof g is 'function'
   (b, a) -> f g(b), (a ? b)
@@ -1770,7 +1769,7 @@ vocabulary['⎕hook'] = (g, f) ->
 #     # Trains (longer forks)
 #     (+,−,×,÷) 2     ⍝ returns 2 ¯2 1 .5
 #     1 (+,−,×,÷) 2   ⍝ returns 3 ¯1 2 .5
-vocabulary['⎕fork'] = (verbs) ->
+@['⎕fork'] = (verbs) ->
   assert verbs.length % 2 is 1
   assert verbs.length >= 3
   for f in verbs then assert typeof f is 'function'
@@ -1780,9 +1779,4 @@ vocabulary['⎕fork'] = (verbs) ->
       r = verbs[i] r, verbs[i - 1] b, a
     r
 
-
-
 endOfVocabulary()
-do ->
-  for k, v of vocabulary
-    exports[k] = v

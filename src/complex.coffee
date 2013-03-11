@@ -7,7 +7,7 @@
 
 C = (re, im) -> if im then new Complex re, im else re
 
-class Complex
+@Complex = class Complex
 
   constructor: (@re = 0, @im = 0) ->
     assert typeof @re is 'number'
@@ -95,5 +95,3 @@ class Complex
 
   'right_÷': (x) ->
     (if x instanceof Complex then x else new Complex x, 0)['÷'] @
-
-exports.Complex = Complex
