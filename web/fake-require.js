@@ -9,7 +9,7 @@
         }
         if (m.state === 'unloaded') {
             m.state = 'beingloaded';
-            m.exports = m.init(m.exports, window.require);
+            m.exports = m.init.apply(m.exports, [m.exports, window.require]);
             m.state = 'loaded';
         }
         return m.exports;

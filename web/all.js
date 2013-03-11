@@ -9,17 +9,17 @@
         }
         if (m.state === 'unloaded') {
             m.state = 'beingloaded';
-            m.instance = m.init(m.instance, window.require);
+            m.exports = m.init.apply(m.exports, [m.exports, window.require]);
             m.state = 'loaded';
         }
-        return m.instance;
+        return m.exports;
     };
 
     window.defModule = function (name, init) {
         if (modules[name]) {
             throw Error('Redefinition of module ' + JSON.stringify(name));
         }
-        modules[name] = {state: 'unloaded', init: init, instance: {}};
+        modules[name] = {state: 'unloaded', init: init, exports: {}};
     };
 
 })();
@@ -56,7 +56,7 @@ defModule('./parser', function (exports, require) {
         if ((_ref = token.type) === 'eof' || _ref === '}') {
           return body;
         }
-        while (consume('separator newline')) {undefined}
+        while (consume('separator newline')) {}
         if ((_ref1 = token.type) === 'eof' || _ref1 === '}') {
           return body;
         }
