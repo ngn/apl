@@ -6,7 +6,7 @@
 fs = require 'fs'
 glob = require 'glob'
 assert = require 'assert'
-{build, action, coffee, jade, sass, docco, cat} = require '../ake/lib/ake'
+{build, action, coffee, jade, sass, docco, cat} = require 'ake'
 
 libFiles =
   glob.sync('src/*.coffee').map (f) ->

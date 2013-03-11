@@ -24,7 +24,8 @@
     "coffee-script": "",
     "docco": "",
     "jade": "",
-    "glob": ""
+    "glob": "",
+    "ake": ""
   },
   "engines": {"node": ""},
   "licenses": [
