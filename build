@@ -1,0 +1,54 @@
+#!/usr/bin/env coffee
+
+# This is an experimental alternative build procedure using the ake project
+# https://github.com/ngn/ake
+
+fs = require 'fs'
+glob = require 'glob'
+assert = require 'assert'
+{build, action, coffee, jade, sass, docco} = require '../ake/lib/ake'
+
+build(
+  coffee 'src/*.coffee', 'lib/'
+  coffee 'test/doctest.coffee'
+  docco  'src/*.coffee', 'docs'
+
+  # web demo
+  coffee 'web/index.coffee'
+  jade   'web/index.jade'
+  sass   'web/index.sass'
+  action(
+    # inputs:
+    [].concat(
+      ['web/fake-require.js']
+      glob.sync('lib/*.js')
+      glob.sync('web/jquery*.js')
+      ['web/examples.js', 'web/index.js']
+    )
+    # output:
+    ['web/all.js']
+    # action:
+    ({callback, inPaths, outPaths, log}) ->
+      log 'combining .js files for the web'
+      s = ''
+      for p in inPaths
+        jsCode = fs.readFileSync p, 'utf8' # todo: async
+        if m = p.match /^lib\/(\w+)\.js$/
+          jsCode = """
+            defModule('./#{m[1]}', function (exports, require) {
+                #{jsCode}
+                return exports;
+            });
+          """
+        s += jsCode
+      assert outPaths.length is 1
+      fs.writeFile outPaths[0], s, (err) ->
+        if err then throw err
+        callback()
+  )
+
+  # mobile demo
+  coffee 'm/index.coffee'
+  jade   'm/index.jade'
+  sass   'm/index.sass'
+)
