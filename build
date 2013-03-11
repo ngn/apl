@@ -21,7 +21,8 @@ build(
     # inputs:
     [].concat(
       ['web/fake-require.js']
-      glob.sync('lib/*.js')
+      glob.sync('src/*.coffee').map (f) ->
+        f.replace /^src\/(.+)\.coffee$/, 'lib/$1.js'
       glob.sync('web/jquery*.js')
       ['web/examples.js', 'web/index.js']
     )
