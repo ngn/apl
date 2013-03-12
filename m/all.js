@@ -2514,7 +2514,7 @@ defModule('./vocabulary', function (exports, require) {
   });
 
   monadic('⊤', 'Encode', function(b, a) {
-    var i, isNeg, j, k, m, n, r, sa, sb, x, y, _i, _j, _k, _len, _ref1;
+    var i, isNeg, j, k, m, n, r, sa, sb, sr, x, y, _i, _j, _k, _len, _ref1;
     sa = shapeOf(a);
     sb = shapeOf(b);
     if (isSimple(a)) {
@@ -2544,7 +2544,12 @@ defModule('./vocabulary', function (exports, require) {
         }
       }
     }
-    return withShape(sa.concat(sb), r);
+    sr = sa.concat(sb);
+    if (sr.length) {
+      return withShape(sr, r);
+    } else {
+      return r[0];
+    }
   });
 
   monadic('⊥', 'Decode', function(b, a) {

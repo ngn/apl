@@ -1238,7 +1238,8 @@ monadic '⊤', 'Encode', (b, a) ->
         else
           r[(k * m + i) * b.length + j] = y % x
           y = round((y - (y % x)) / x)
-  withShape sa.concat(sb), r
+  sr = sa.concat sb
+  if sr.length then withShape sr, r else r[0]
 
 # Decode (`⊥`)
 #
