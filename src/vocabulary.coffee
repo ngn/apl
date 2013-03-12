@@ -212,6 +212,9 @@ pervasive = (f) ->
 # `maybeMakePervasive(f)` is a decorator which takes a scalar function `f`
 # and makes it propagate through arrays, if it has
 # `f.aplMetaInfo.isPervasive`.
+#
+#     ⍴1⍴1   ⍝ returns ,1
+#     ⍴1 1⍴1 ⍝ returns 1 1
 maybeMakePervasive = (f) ->
   assert typeof f is 'function'
   if not f.aplMetaInfo?.isPervasive

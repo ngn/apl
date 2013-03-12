@@ -187,7 +187,11 @@ pervasive later in <code>endOfVocabulary()</code>.</p>             </td>        
   <span class="p">(</span><span class="nx">f</span><span class="p">.</span><span class="nx">aplMetaInfo</span> <span class="o">?=</span> <span class="p">{}).</span><span class="nv">isPervasive = </span><span class="kc">true</span>
   <span class="nx">f</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p><code>maybeMakePervasive(f)</code> is a decorator which takes a scalar function <code>f</code>
 and makes it propagate through arrays, if it has
-<code>f.aplMetaInfo.isPervasive</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">maybeMakePervasive = </span><span class="nf">(f) -&gt;</span>
+<code>f.aplMetaInfo.isPervasive</code>.</p>
+
+<pre><code>⍴1⍴1   ⍝ returns ,1
+⍴1 1⍴1 ⍝ returns 1 1
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">maybeMakePervasive = </span><span class="nf">(f) -&gt;</span>
   <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">f</span> <span class="o">is</span> <span class="s">&#39;function&#39;</span>
   <span class="k">if</span> <span class="o">not</span> <span class="nx">f</span><span class="p">.</span><span class="nx">aplMetaInfo</span><span class="o">?</span><span class="p">.</span><span class="nx">isPervasive</span>
     <span class="nx">f</span>
