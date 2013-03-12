@@ -8,6 +8,16 @@ glob = require 'glob'
 assert = require 'assert'
 {build, action, coffee, jade, sass, docco, cat} = require 'ake'
 
+process.chdir __dirname
+
+# Sanity check
+if not fs.existsSync 'node_modules'
+  console.error '''
+    Directory "node_modules/" does not exist.
+    You should run "npm install" first.
+  '''
+  process.exit 1
+
 libFiles =
   glob.sync('src/*.coffee').map (f) ->
     f.replace /^src\/(.+)\.coffee$/, 'lib/$1.js'
@@ -46,4 +56,24 @@ build(
   coffee 'm/index.coffee'
   jade   'm/index.jade'
   sass   'm/index.sass'
+  cat(
+    [
+      'web/fake-require.js'
+      libFiles
+      'web/jquery-1.9.1.min.js'
+      'web/examples.js'
+      'm/index.js'
+    ]
+    'm/all.js'
+    transform: (content, {path}) ->
+      if not path.match /^lib\// then return content
+      if path is 'lib/command.js' then return ''
+      moduleName = path.replace /^.*\/([^\/]+).js/, '$1'
+      """
+        defModule('./#{moduleName}', function (exports, require) {
+          #{content}
+          return exports;
+        });\n
+      """
+  )
 )
