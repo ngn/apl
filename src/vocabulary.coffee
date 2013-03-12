@@ -219,8 +219,6 @@ maybeMakePervasive = (f) ->
   else
     withMetaInfoFrom f, (F = (b, a) ->
       if a? # dyadic pervasiveness
-        if (not isSimple a) and a.length is 1 and isSimple a[0] then a = a[0]
-        if (not isSimple b) and b.length is 1 and isSimple b[0] then b = b[0]
         if isSimple(b) and isSimple(a) then f b, a
         else if isSimple a then withShape b.shape, (for x in b then F x, a)
         else if isSimple b then withShape a.shape, (for x in a then F b, x)
@@ -1758,7 +1756,7 @@ postfixAdverb '⍨', 'Commute', (f) ->
 # Fork: `(fgh)⍵ ←→ (f⍵)g(h⍵)` ; `⍺(fgh)⍵ ←→ (⍺f⍵)g(⍺h⍵)`
 #
 #     # Arithmetic mean
-#     avg ← +/ ÷ ⍴   ◇ avg 4 5 10 7   ⍝ returns 6.5
+#     avg ← +/ ÷ ⍴   ◇ avg 4 5 10 7   ⍝ returns ,6.5
 #
 #     # Quadratic equation
 #     a←1 ◇ b←¯22 ◇ c←85
