@@ -1,6 +1,4 @@
 {exec} = require './compiler'
-{browserVocabulary} = require './browser'
-{inherit} = require './helpers'
 {format} = require './formatter'
 
 $.fn.toggleVisibility = ->
@@ -106,7 +104,6 @@ jQuery ($) ->
     enter: -> $('<br>').insertBefore '#cursor'
     backspace: -> $('#cursor').prev().remove()
     exec: ->
-      ctx = inherit browserVocabulary
       try
         code = extractTextFromDOM(document.getElementById 'editor')
                 .replace /\xa0/g, ' '

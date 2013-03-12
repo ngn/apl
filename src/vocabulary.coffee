@@ -1712,17 +1712,33 @@ postfixAdverb '⍨', 'Commute', (f) ->
   assert typeof f is 'function'
   (b, a) -> if a? then f a, b else f b
 
-
-
-# `⎕` and `⍞` will be overridden for the web.
-@['set_⎕'] = (x) ->
-  process.stdout.write require('./formatter').format(x).join('\n') + '\n'; x
 @['get_⎕'] = ->
-  die 'Reading from ⎕ is not implemented.'
-@['set_⍞'] = (x) ->
-  process.stdout.write require('./formatter').format(x).join('\n'); x
+  if typeof window?.prompt is 'function'
+    prompt('⎕:') or ''
+  else
+    die 'Reading from ⎕ is not implemented.'
+
+@['set_⎕'] = (x) ->
+  s = formatter.format(x).join('\n') + '\n'; x
+  if typeof window?.alert is 'function'
+    window.alert s
+  else
+    process.stdout.write s
+  x
+
 @['get_⍞'] = ->
-  die 'Reading from ⍞ is not implemented.'
+  if typeof window?.prompt is 'function'
+    prompt('') or ''
+  else
+    die 'Reading from ⍞ is not implemented.'
+
+@['set_⍞'] = (x) ->
+  s = formatter.format(x).join('\n'); x
+  if typeof window?.alert is 'function'
+    window.alert s
+  else
+    process.stdout.write s
+  x
 
 @['⎕aplify'] = (x) ->
   assert x isnt null

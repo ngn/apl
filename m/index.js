@@ -1,11 +1,7 @@
 (function() {
-  var browserVocabulary, exec, extractTextFromDOM, format, inherit;
+  var exec, extractTextFromDOM, format;
 
   exec = require('./compiler').exec;
-
-  browserVocabulary = require('./browser').browserVocabulary;
-
-  inherit = require('./helpers').inherit;
 
   format = require('./formatter').format;
 
@@ -122,8 +118,7 @@
         return $('#cursor').prev().remove();
       },
       exec: function() {
-        var code, ctx, result;
-        ctx = inherit(browserVocabulary);
+        var code, result;
         try {
           code = extractTextFromDOM(document.getElementById('editor')).replace(/\xa0/g, ' ');
           result = exec(code);

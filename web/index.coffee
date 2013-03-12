@@ -1,6 +1,4 @@
 {exec} = require './compiler'
-{browserVocabulary} = require './browser'
-{inherit} = require './helpers'
 {format} = require './formatter'
 
 jQuery ($) ->
@@ -22,7 +20,6 @@ jQuery ($) ->
 
   # "Execute" button {{{1
   execute = ->
-    ctx = inherit browserVocabulary
     try
       result = exec $('#code').val()
       $('#result').removeClass('error').text format(result).join '\n'

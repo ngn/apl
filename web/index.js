@@ -1,11 +1,7 @@
 (function() {
-  var browserVocabulary, exec, format, inherit;
+  var exec, format;
 
   exec = require('./compiler').exec;
-
-  browserVocabulary = require('./browser').browserVocabulary;
-
-  inherit = require('./helpers').inherit;
 
   format = require('./formatter').format;
 
@@ -30,8 +26,7 @@
       return false;
     });
     execute = function() {
-      var ctx, result;
-      ctx = inherit(browserVocabulary);
+      var result;
       try {
         result = exec($('#code').val());
         $('#result').removeClass('error').text(format(result).join('\n'));

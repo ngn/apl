@@ -41,34 +41,6 @@ defModule('./apl', function (exports, require) {
 
   return exports;
 });
-defModule('./browser', function (exports, require) {
-  (function() {
-  var inherit, vocabulary;
-
-  vocabulary = require('./vocabulary');
-
-  inherit = require('./helpers').inherit;
-
-  this.browserVocabulary = inherit(vocabulary, {
-    '⍵': ('' + location).split(''),
-    'get_⎕': function() {
-      return (prompt('⎕:') || '').split('');
-    },
-    'set_⎕': function(x) {
-      return alert(x);
-    },
-    'get_⍞': function() {
-      return (prompt() || '').split('');
-    },
-    'set_⍞': function(x) {
-      return alert(x);
-    }
-  });
-
-}).call(this);
-
-  return exports;
-});
 defModule('./compiler', function (exports, require) {
   (function() {
   var Complex, all, assert, assignParents, closestScope, compile, die, inherit, nodes, parser, resolveExprs, toJavaScript, vocabulary, _ref;
@@ -3026,22 +2998,44 @@ defModule('./vocabulary', function (exports, require) {
     };
   });
 
-  this['set_⎕'] = function(x) {
-    process.stdout.write(require('./formatter').format(x).join('\n') + '\n');
-    return x;
-  };
-
   this['get_⎕'] = function() {
-    return die('Reading from ⎕ is not implemented.');
+    if (typeof (typeof window !== "undefined" && window !== null ? window.prompt : void 0) === 'function') {
+      return prompt('⎕:') || '';
+    } else {
+      return die('Reading from ⎕ is not implemented.');
+    }
   };
 
-  this['set_⍞'] = function(x) {
-    process.stdout.write(require('./formatter').format(x).join('\n'));
+  this['set_⎕'] = function(x) {
+    var s;
+    s = formatter.format(x).join('\n') + '\n';
+    x;
+    if (typeof (typeof window !== "undefined" && window !== null ? window.alert : void 0) === 'function') {
+      window.alert(s);
+    } else {
+      process.stdout.write(s);
+    }
     return x;
   };
 
   this['get_⍞'] = function() {
-    return die('Reading from ⍞ is not implemented.');
+    if (typeof (typeof window !== "undefined" && window !== null ? window.prompt : void 0) === 'function') {
+      return prompt('') || '';
+    } else {
+      return die('Reading from ⍞ is not implemented.');
+    }
+  };
+
+  this['set_⍞'] = function(x) {
+    var s;
+    s = formatter.format(x).join('\n');
+    x;
+    if (typeof (typeof window !== "undefined" && window !== null ? window.alert : void 0) === 'function') {
+      window.alert(s);
+    } else {
+      process.stdout.write(s);
+    }
+    return x;
   };
 
   this['⎕aplify'] = function(x) {
@@ -3330,13 +3324,9 @@ window.examples = [
   ["life","⍝ Conway's game of life\n\n⍝ This example was inspired by the impressive demo at\n⍝ http://www.youtube.com/watch?v=a9xAKttWgP4\n\n⍝ Create a matrix:\n⍝     0 1 1\n⍝     1 1 0\n⍝     0 1 0\ncreature ← (3 3 ⍴ ⍳ 9) ∈ 1 2 3 4 7   ⍝ Original creature from demo\ncreature ← (3 3 ⍴ ⍳ 9) ∈ 1 3 6 7 8   ⍝ Glider\n\n⍝ Place the creature on a larger board, near the centre\nboard ← ¯1 ⊖ ¯2 ⌽ 5 7 ↑ creature\n\n⍝ A function to move from one generation to the next\nlife ← {∨/ 1 ⍵ ∧ 3 4 = ⊂+/ +⌿ 1 0 ¯1 ∘.⊖ 1 0 ¯1 ⌽¨ ⊂⍵}\n\n⍝ Compute n-th generation and format it as a\n⍝ character matrix\ngen ← {' #'[(life ⍣ ⍵) board]}\n\n⍝ Show first three generations\n(gen 1) (gen 2) (gen 3)"],
   ["langton","⍝ Langton's ant\n⍝\n⍝ It lives in an infinite boolean matrix and has a position and a direction\n⍝ (north, south, east, or west).  At every step the ant:\n⍝   * turns left or right depending on whether the occupied cell is true or false\n⍝   * inverts the value of the occupied cell\n⍝   * moves one cell forward\n⍝\n⍝ In this program, we use a finite matrix with torus topology, and we keep the\n⍝ ant in the centre, pointing upwards (north), rotating the whole matrix\n⍝ instead.\n\nm ← 5\nn ← 1+2×m\n\nA0 ← (−m) ⊖ (−m) ⌽ n n ↑ 1 1 ⍴ 1\nnext ← {0≠A0−¯1⊖⌽[⍵[m;m]]⍉⍵}\n\n' #'[(next⍣300) A0]"]
 ];(function() {
-  var browserVocabulary, exec, format, inherit;
+  var exec, format;
 
   exec = require('./compiler').exec;
-
-  browserVocabulary = require('./browser').browserVocabulary;
-
-  inherit = require('./helpers').inherit;
 
   format = require('./formatter').format;
 
@@ -3361,8 +3351,7 @@ window.examples = [
       return false;
     });
     execute = function() {
-      var ctx, result;
-      ctx = inherit(browserVocabulary);
+      var result;
       try {
         result = exec($('#code').val());
         $('#result').removeClass('error').text(format(result).join('\n'));
