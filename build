@@ -67,7 +67,7 @@ build(
     'm/all.js'
     transform: (content, {path}) ->
       if not path.match /^lib\// then return content
-      if path is 'lib/command.js' then return ''
+      if path in ['lib/command.js', 'lib/apl.js'] then return ''
       moduleName = path.replace /^.*\/([^\/]+).js/, '$1'
       """
         defModule('./#{moduleName}', function (exports, require) {
