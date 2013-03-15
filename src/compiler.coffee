@@ -2,7 +2,6 @@
 
 parser = require './parser'
 vocabulary = require './vocabulary'
-{Complex} = require './complex'
 {inherit, die, assert, all} = require './helpers'
 
 # # Stage 1: Assign parents
