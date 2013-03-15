@@ -161,42 +161,40 @@ type <code>apl -n filename.apl</code></p>             </td>             <td clas
     <span class="k">for</span> <span class="nx">node</span> <span class="k">in</span> <span class="nx">scopeNode</span><span class="p">[</span><span class="mi">1</span><span class="p">...]</span>
       <span class="nx">visit</span> <span class="nx">node</span>
 
-  <span class="k">return</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h1>Stage 3: Render JavaScript code</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">toJavaScript = </span><span class="nf">(ast) -&gt;</span>
+  <span class="k">return</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h1>Stage 3: Render JavaScript code</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">toJavaScript = </span><span class="nf">(node) -&gt;</span>
+  <span class="k">switch</span> <span class="nx">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-  <span class="nv">visit = </span><span class="nf">(node) -&gt;</span>
-    <span class="k">switch</span> <span class="nx">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">when</span> <span class="s">&#39;body&#39;</span>
+      <span class="k">if</span> <span class="nx">node</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span>
+        <span class="s">&#39;return [];\n&#39;</span>
+      <span class="k">else</span>
+        <span class="nv">a = </span><span class="p">[</span><span class="s">&quot;var _</span><span class="si">#{</span><span class="nx">node</span><span class="p">.</span><span class="nx">scopeId</span><span class="si">}</span><span class="s"> = {};\n&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">...]</span> <span class="k">then</span> <span class="nx">a</span><span class="p">.</span><span class="nx">push</span> <span class="nx">toJavaScript</span> <span class="nx">child</span>
+        <span class="nx">a</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;return </span><span class="si">#{</span><span class="nx">a</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s">;\n&quot;</span>
+        <span class="nx">a</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s">&#39;;\n&#39;</span><span class="p">)</span>
 
-      <span class="k">when</span> <span class="s">&#39;body&#39;</span>
-        <span class="k">if</span> <span class="nx">node</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span>
-          <span class="s">&#39;return [];\n&#39;</span>
-        <span class="k">else</span>
-          <span class="nv">a = </span><span class="p">[</span><span class="s">&quot;var _</span><span class="si">#{</span><span class="nx">node</span><span class="p">.</span><span class="nx">scopeId</span><span class="si">}</span><span class="s"> = {};\n&quot;</span><span class="p">]</span>
-          <span class="k">for</span> <span class="nx">child</span> <span class="k">in</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">...]</span> <span class="k">then</span> <span class="nx">a</span><span class="p">.</span><span class="nx">push</span> <span class="nx">visit</span> <span class="nx">child</span>
-          <span class="nx">a</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;return </span><span class="si">#{</span><span class="nx">a</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s">;\n&quot;</span>
-          <span class="nx">a</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s">&#39;;\n&#39;</span><span class="p">)</span>
-
-      <span class="k">when</span> <span class="s">&#39;guard&#39;</span>
-        <span class="s">&quot;&quot;&quot;</span>
-<span class="s">          if (_[&#39;⎕bool&#39;](</span><span class="si">#{</span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s">)) {</span>
-<span class="s">            return </span><span class="si">#{</span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s">;</span>
-<span class="s">          }</span>
-<span class="s">        &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>Assignment</p>
+    <span class="k">when</span> <span class="s">&#39;guard&#39;</span>
+      <span class="s">&quot;&quot;&quot;</span>
+<span class="s">        if (_[&#39;⎕bool&#39;](</span><span class="si">#{</span><span class="nx">toJavaScript</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s">)) {</span>
+<span class="s">          return </span><span class="si">#{</span><span class="nx">toJavaScript</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s">;</span>
+<span class="s">        }</span>
+<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>Assignment</p>
 
 <pre><code>A←5       ⍝ returns 5
 A×A←2 5   ⍝ returns 4 25
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">when</span> <span class="s">&#39;assign&#39;</span>
-        <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">constructor</span> <span class="o">is</span> <span class="nb">Array</span>
-        <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">2</span>
-        <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">is</span> <span class="s">&#39;symbol&#39;</span>
-        <span class="nv">name = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-        <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">name</span> <span class="o">is</span> <span class="s">&#39;string&#39;</span>
-        <span class="nx">assert</span> <span class="nx">name</span> <span class="o">isnt</span> <span class="s">&#39;∇&#39;</span><span class="p">,</span> <span class="s">&#39;Assignment to ∇ is not allowed.&#39;</span>
-        <span class="nv">vars = </span><span class="nx">closestScope</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">vars</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nv">v = </span><span class="nx">vars</span><span class="p">[</span><span class="s">&quot;set_</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">&quot;</span><span class="p">])</span><span class="o">?</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;F&#39;</span>
-          <span class="nv">v.used = </span><span class="kc">true</span>
-          <span class="s">&quot;</span><span class="si">#{</span><span class="nx">v</span><span class="p">.</span><span class="nx">jsCode</span><span class="si">}</span><span class="s">(</span><span class="si">#{</span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s">)&quot;</span> <span class="c1"># todo: pass-through value</span>
-        <span class="k">else</span>
-          <span class="s">&quot;</span><span class="si">#{</span><span class="nx">vars</span><span class="p">[</span><span class="nx">name</span><span class="p">].</span><span class="nx">jsCode</span><span class="si">}</span><span class="s"> = </span><span class="si">#{</span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s">&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>Symbols</p>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">when</span> <span class="s">&#39;assign&#39;</span>
+      <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">constructor</span> <span class="o">is</span> <span class="nb">Array</span>
+      <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">2</span>
+      <span class="nx">assert</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">is</span> <span class="s">&#39;symbol&#39;</span>
+      <span class="nv">name = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+      <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">name</span> <span class="o">is</span> <span class="s">&#39;string&#39;</span>
+      <span class="nx">assert</span> <span class="nx">name</span> <span class="o">isnt</span> <span class="s">&#39;∇&#39;</span><span class="p">,</span> <span class="s">&#39;Assignment to ∇ is not allowed.&#39;</span>
+      <span class="nv">vars = </span><span class="nx">closestScope</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">vars</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nv">v = </span><span class="nx">vars</span><span class="p">[</span><span class="s">&quot;set_</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">&quot;</span><span class="p">])</span><span class="o">?</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;F&#39;</span>
+        <span class="nv">v.used = </span><span class="kc">true</span>
+        <span class="s">&quot;</span><span class="si">#{</span><span class="nx">v</span><span class="p">.</span><span class="nx">jsCode</span><span class="si">}</span><span class="s">(</span><span class="si">#{</span><span class="nx">toJavaScript</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s">)&quot;</span> <span class="c1"># todo: pass-through value</span>
+      <span class="k">else</span>
+        <span class="s">&quot;</span><span class="si">#{</span><span class="nx">vars</span><span class="p">[</span><span class="nx">name</span><span class="p">].</span><span class="nx">jsCode</span><span class="si">}</span><span class="s"> = </span><span class="si">#{</span><span class="nx">toJavaScript</span> <span class="nx">node</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s">&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>Symbols</p>
 
 <p>Test get<em>/set</em> convention for niladics:</p>
 
@@ -210,26 +208,26 @@ A×A←2 5   ⍝ returns 4 25
 ...
 ... before after
 ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">when</span> <span class="s">&#39;symbol&#39;</span>
-        <span class="nv">name = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="nv">vars = </span><span class="nx">closestScope</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">vars</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nv">v = </span><span class="nx">vars</span><span class="p">[</span><span class="s">&quot;get_</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">&quot;</span><span class="p">])</span><span class="o">?</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;F&#39;</span>
-          <span class="nv">v.used = </span><span class="kc">true</span>
-          <span class="s">&quot;</span><span class="si">#{</span><span class="nx">v</span><span class="p">.</span><span class="nx">jsCode</span><span class="si">}</span><span class="s">()&quot;</span>
-        <span class="k">else</span>
-          <span class="nv">v = </span><span class="nx">vars</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span>
-          <span class="nv">v.used = </span><span class="kc">true</span>
-          <span class="nx">v</span><span class="p">.</span><span class="nx">jsCode</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>Lambda expressions</p>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">when</span> <span class="s">&#39;symbol&#39;</span>
+      <span class="nv">name = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+      <span class="nv">vars = </span><span class="nx">closestScope</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">vars</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nv">v = </span><span class="nx">vars</span><span class="p">[</span><span class="s">&quot;get_</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">&quot;</span><span class="p">])</span><span class="o">?</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;F&#39;</span>
+        <span class="nv">v.used = </span><span class="kc">true</span>
+        <span class="s">&quot;</span><span class="si">#{</span><span class="nx">v</span><span class="p">.</span><span class="nx">jsCode</span><span class="si">}</span><span class="s">()&quot;</span>
+      <span class="k">else</span>
+        <span class="nv">v = </span><span class="nx">vars</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span>
+        <span class="nv">v.used = </span><span class="kc">true</span>
+        <span class="nx">v</span><span class="p">.</span><span class="nx">jsCode</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <p>Lambda expressions</p>
 
 <pre><code>{1 + 1} 1                      ⍝ returns 2
 {⍵=0:1 ◇ 2×∇⍵−1} 5             ⍝ returns 32 # two to the power of
 {⍵&lt;2 : 1 ◇ (∇⍵−1)+(∇⍵−2) } 8   ⍝ returns 34 # Fibonacci sequence
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">when</span> <span class="s">&#39;lambda&#39;</span>
-        <span class="s">&quot;&quot;&quot;</span>
-<span class="s">          function (_w, _a) {</span>
-<span class="s">            </span><span class="si">#{</span><span class="nx">visit</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s"></span>
-<span class="s">          }</span>
-<span class="s">        &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>Strings of length one are scalars, all other strings are vectors.</p>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">when</span> <span class="s">&#39;lambda&#39;</span>
+      <span class="s">&quot;&quot;&quot;</span>
+<span class="s">        function (_w, _a) {</span>
+<span class="s">          </span><span class="si">#{</span><span class="nx">toJavaScript</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s"></span>
+<span class="s">        }</span>
+<span class="s">      &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <p>Strings of length one are scalars, all other strings are vectors.</p>
 
 <pre><code>⍴⍴''     ⍝ returns ,1
 ⍴⍴'x'    ⍝ returns ,0
@@ -243,10 +241,10 @@ A×A←2 5   ⍝ returns 4 25
 ⍴"\f\t\n\r\u1234\xff"      ⍝ returns ,6
 
 "unclosed string           ⍝ fails
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="k">when</span> <span class="s">&#39;string&#39;</span>
-        <span class="nv">s = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="nv">d = </span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># the delimiter: &#39;&quot;&#39; or &quot;&#39;&quot;</span>
-        <span class="s">&quot;_[&#39;⎕aplify&#39;](</span><span class="si">#{</span><span class="nx">d</span> <span class="o">+</span> <span class="nx">s</span><span class="p">[</span><span class="mi">1</span><span class="p">...</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">///</span><span class="c1">#{d + d}///g, &#39;\\&#39; + d) + d})&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>Numbers</p>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">when</span> <span class="s">&#39;string&#39;</span>
+      <span class="nv">s = </span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+      <span class="nv">d = </span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># the delimiter: &#39;&quot;&#39; or &quot;&#39;&quot;</span>
+      <span class="s">&quot;_[&#39;⎕aplify&#39;](</span><span class="si">#{</span><span class="nx">d</span> <span class="o">+</span> <span class="nx">s</span><span class="p">[</span><span class="mi">1</span><span class="p">...</span><span class="o">-</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">///</span><span class="c1">#{d + d}///g, &#39;\\&#39; + d) + d})&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <p>Numbers</p>
 
 <pre><code>1234567890  ⍝ returns «1234567890»
 12.34e56    ⍝ returns «12.34e56»
@@ -259,65 +257,63 @@ A×A←2 5   ⍝ returns 4 25
 ¯           ⍝ returns «Infinity»
 ¯¯          ⍝ returns «-Infinity»
 −¯          ⍝ returns «-Infinity»
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="sr">when &#39;number&#39;</span>
-<span class="sr">        s = node[1].replace /¯/g, &#39;-&#39;</span>
-<span class="sr">        a =</span>
-<span class="sr">          for x in s.split /j/i</span>
-<span class="sr">            if x is &#39;-&#39;</span>
-<span class="sr">              &#39;Infinity&#39;</span>
-<span class="sr">            else if x is &#39;--&#39;</span>
-<span class="sr">              &#39;-Infinity&#39;</span>
-<span class="sr">            else if x.match /^-?0x/i</span>
-<span class="sr">              parseInt x, 16</span>
-<span class="sr">            else</span>
-<span class="sr">              parseFloat x</span>
-<span class="sr">        if a.length is 1 or a[1] is 0 then &#39;&#39; + a[0]</span>
-<span class="sr">        else &quot;new _[&#39;⎕complex&#39;](</span><span class="c1">#{a[0]}, #{a[1]})&quot;</span>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="sr">when &#39;number&#39;</span>
+<span class="sr">      s = node[1].replace /¯/g, &#39;-&#39;</span>
+<span class="sr">      a =</span>
+<span class="sr">        for x in s.split /j/i</span>
+<span class="sr">          if x is &#39;-&#39;</span>
+<span class="sr">            &#39;Infinity&#39;</span>
+<span class="sr">          else if x is &#39;--&#39;</span>
+<span class="sr">            &#39;-Infinity&#39;</span>
+<span class="sr">          else if x.match /^-?0x/i</span>
+<span class="sr">            parseInt x, 16</span>
+<span class="sr">          else</span>
+<span class="sr">            parseFloat x</span>
+<span class="sr">      if a.length is 1 or a[1] is 0 then &#39;&#39; + a[0]</span>
+<span class="sr">      else &quot;new _[&#39;⎕complex&#39;](</span><span class="c1">#{a[0]}, #{a[1]})&quot;</span>
 
-      <span class="sr">when &#39;index&#39;</span>
-<span class="sr">        &quot;_[&#39;⌷&#39;](</span><span class="c1">#{visit node[1]}, [#{</span>
-          <span class="sr">(for c in node[2...] when c isnt null then visit c).join &#39;, &#39;</span>
-<span class="sr">        }], [</span><span class="c1">#{</span>
-          <span class="sr">(for c, i in node[2...] when c isnt null then i)</span>
-<span class="sr">        }])&quot;</span>
+    <span class="sr">when &#39;index&#39;</span>
+<span class="sr">      &quot;_[&#39;⌷&#39;](</span><span class="c1">#{toJavaScript node[1]}, [#{</span>
+        <span class="sr">(for c in node[2...] when c isnt null then toJavaScript c).join &#39;, &#39;</span>
+<span class="sr">      }], [</span><span class="c1">#{</span>
+        <span class="sr">(for c, i in node[2...] when c isnt null then i)</span>
+<span class="sr">      }])&quot;</span>
 
-<span class="sr">      when &#39;expr&#39;</span>
-<span class="sr">        die &#39;No &quot;expr&quot; nodes are expected at this stage.&#39;</span>
+<span class="sr">    when &#39;expr&#39;</span>
+<span class="sr">      die &#39;No &quot;expr&quot; nodes are expected at this stage.&#39;</span>
 
-<span class="sr">      when &#39;vector&#39;</span>
-<span class="sr">        n = node.length - 1</span>
-<span class="sr">        &quot;[</span><span class="c1">#{(for child in node[1...] then visit child).join &#39;, &#39;}]&quot;</span>
+<span class="sr">    when &#39;vector&#39;</span>
+<span class="sr">      n = node.length - 1</span>
+<span class="sr">      &quot;[</span><span class="c1">#{(for child in node[1...] then toJavaScript child).join &#39;, &#39;}]&quot;</span>
 
-      <span class="sr">when &#39;monadic&#39;</span>
-<span class="sr">        &quot;</span><span class="c1">#{visit node[1]}(#{visit node[2]})&quot;</span>
+    <span class="sr">when &#39;monadic&#39;</span>
+<span class="sr">      &quot;</span><span class="c1">#{toJavaScript node[1]}(#{toJavaScript node[2]})&quot;</span>
 
-      <span class="sr">when &#39;dyadic&#39;</span>
-<span class="sr">        &quot;</span><span class="c1">#{visit node[2]}(#{visit node[3]}, #{visit node[1]})&quot;</span>
+    <span class="sr">when &#39;dyadic&#39;</span>
+<span class="sr">      &quot;</span><span class="c1">#{toJavaScript node[2]}(#{toJavaScript node[3]}, #{toJavaScript node[1]})&quot;</span>
 
-      <span class="sr">when &#39;prefixAdverb&#39;</span>
-<span class="sr">        &quot;</span><span class="c1">#{visit node[1]}(#{visit node[2]})&quot;</span>
+    <span class="sr">when &#39;prefixAdverb&#39;</span>
+<span class="sr">      &quot;</span><span class="c1">#{toJavaScript node[1]}(#{toJavaScript node[2]})&quot;</span>
 
-      <span class="sr">when &#39;conjunction&#39;</span>
-<span class="sr">        &quot;</span><span class="c1">#{visit node[2]}(#{visit node[3]}, #{visit node[1]})&quot;</span>
+    <span class="sr">when &#39;conjunction&#39;</span>
+<span class="sr">      &quot;</span><span class="c1">#{toJavaScript node[2]}(#{toJavaScript node[3]}, #{toJavaScript node[1]})&quot;</span>
 
-      <span class="sr">when &#39;postfixAdverb&#39;</span>
-<span class="sr">        &quot;</span><span class="c1">#{visit node[2]}(#{visit node[1]})&quot;</span>
+    <span class="sr">when &#39;postfixAdverb&#39;</span>
+<span class="sr">      &quot;</span><span class="c1">#{toJavaScript node[2]}(#{toJavaScript node[1]})&quot;</span>
 
-      <span class="sr">when &#39;hook&#39;</span>
-<span class="sr">        &quot;_[&#39;⎕hook&#39;](</span><span class="c1">#{visit node[2]}, #{visit node[1]})&quot;</span>
+    <span class="sr">when &#39;hook&#39;</span>
+<span class="sr">      &quot;_[&#39;⎕hook&#39;](</span><span class="c1">#{toJavaScript node[2]}, #{toJavaScript node[1]})&quot;</span>
 
-      <span class="sr">when &#39;fork&#39;</span>
-<span class="sr">        &quot;_[&#39;⎕fork&#39;]([</span><span class="c1">#{for c in node[1...] then visit c}])&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>Embedded JavaScript</p>
+    <span class="sr">when &#39;fork&#39;</span>
+<span class="sr">      &quot;_[&#39;⎕fork&#39;]([</span><span class="c1">#{for c in node[1...] then toJavaScript c}])&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <p>Embedded JavaScript</p>
 
 <pre><code>«1234+5678» ⍝ returns 6912
 «"asdf"» ⍝ returns 'asdf'
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="sr">when &#39;embedded&#39;</span>
-<span class="sr">        &quot;_[&#39;⎕aplify&#39;](</span><span class="c1">#{node[1].replace /(^«|»$)/g, &#39;&#39;})&quot;</span>
+</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="sr">when &#39;embedded&#39;</span>
+<span class="sr">      &quot;_[&#39;⎕aplify&#39;](</span><span class="c1">#{node[1].replace /(^«|»$)/g, &#39;&#39;})&quot;</span>
 
-      <span class="sr">else</span>
-<span class="sr">        die &quot;Unrecognised node type, &#39;</span><span class="c1">#{node[0]}&#39;&quot;</span>
-
-  <span class="sr">visit ast</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>A helper to find the nearest <code>body</code> ancestor</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="sr">closestScope = (node) -&gt;</span>
+    <span class="sr">else</span>
+<span class="sr">      die &quot;Unrecognised node type, &#39;</span><span class="c1">#{node[0]}&#39;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <p>A helper to find the nearest <code>body</code> ancestor</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="sr">closestScope = (node) -&gt;</span>
 <span class="sr">  while node[0] isnt &#39;body&#39; then node = node.parent</span>
 <span class="sr">  node</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h1>Public interface to this module</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="sr">@nodes = nodes = (aplCode, opts = {}) -&gt;</span>
 <span class="sr">  ast = parser.parse aplCode</span>

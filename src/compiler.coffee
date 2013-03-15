@@ -199,175 +199,171 @@ resolveExprs = (ast, opts = {}) ->
 
 
 # # Stage 3: Render JavaScript code
-toJavaScript = (ast) ->
+toJavaScript = (node) ->
+  switch node[0]
 
-  visit = (node) ->
-    switch node[0]
-
-      when 'body'
-        if node.length is 1
-          'return [];\n'
-        else
-          a = ["var _#{node.scopeId} = {};\n"]
-          for child in node[1...] then a.push visit child
-          a[a.length - 1] = "return #{a[a.length - 1]};\n"
-          a.join(';\n')
-
-      when 'guard'
-        """
-          if (_['⎕bool'](#{visit node[1]})) {
-            return #{visit node[2]};
-          }
-        """
-
-      # Assignment
-      #
-      #     A←5       ⍝ returns 5
-      #     A×A←2 5   ⍝ returns 4 25
-      when 'assign'
-        assert node[1].constructor is Array
-        assert node[1].length is 2
-        assert node[1][0] is 'symbol'
-        name = node[1][1]
-        assert typeof name is 'string'
-        assert name isnt '∇', 'Assignment to ∇ is not allowed.'
-        vars = closestScope(node).vars
-        if (v = vars["set_#{name}"])?.type is 'F'
-          v.used = true
-          "#{v.jsCode}(#{visit node[2]})" # todo: pass-through value
-        else
-          "#{vars[name].jsCode} = #{visit node[2]}"
-
-      # Symbols
-      #
-      # Test get_/set_ convention for niladics:
-      #
-      #     radius ← 3
-      #     ... get_circumference ← {2 × ○ radius}
-      #     ... get_surface ← {○ radius ⋆ 2}
-      #     ...
-      #     ... before ← 0.01× ⌊ 100× radius circumference surface
-      #     ... radius ← radius + 1
-      #     ... after  ← 0.01× ⌊ 100× radius circumference surface
-      #     ...
-      #     ... before after
-      #     ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
-      when 'symbol'
-        name = node[1]
-        vars = closestScope(node).vars
-        if (v = vars["get_#{name}"])?.type is 'F'
-          v.used = true
-          "#{v.jsCode}()"
-        else
-          v = vars[name]
-          v.used = true
-          v.jsCode
-
-      # Lambda expressions
-      #
-      #     {1 + 1} 1                      ⍝ returns 2
-      #     {⍵=0:1 ◇ 2×∇⍵−1} 5             ⍝ returns 32 # two to the power of
-      #     {⍵<2 : 1 ◇ (∇⍵−1)+(∇⍵−2) } 8   ⍝ returns 34 # Fibonacci sequence
-      when 'lambda'
-        """
-          function (_w, _a) {
-            #{visit node[1]}
-          }
-        """
-
-      # Strings of length one are scalars, all other strings are vectors.
-      #
-      #     ⍴⍴''     ⍝ returns ,1
-      #     ⍴⍴'x'    ⍝ returns ,0
-      #     ⍴⍴'xx'   ⍝ returns ,1
-      #
-      # Pairs of quotes inside strings:
-      #
-      #     'Let''s parse it!'         ⍝ returns 'Let\'s parse it!'
-      #     "0x22's the code for ""."  ⍝ returns '0x22\'s the code for ".'
-      #     ⍴"\f\t\n\r\u1234\xff"      ⍝ returns ,6
-      #
-      #     "unclosed string           ⍝ fails
-      when 'string'
-        s = node[1]
-        d = s[0] # the delimiter: '"' or "'"
-        "_['⎕aplify'](#{d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d})"
-
-
-      # Numbers
-      #
-      #     1234567890  ⍝ returns «1234567890»
-      #     12.34e56    ⍝ returns «12.34e56»
-      #     12.34e+56   ⍝ returns «12.34e+56»
-      #     12.34E56    ⍝ returns «12.34e56»
-      #     ¯12.34e¯56  ⍝ returns «-12.34e-56»
-      #     0Xffff      ⍝ returns «0xffff»
-      #     ¯0xffff     ⍝ returns «-0xffff»
-      #     ¯0xaBcD1234 ⍝ returns «-0xabcd1234»
-      #     ¯           ⍝ returns «Infinity»
-      #     ¯¯          ⍝ returns «-Infinity»
-      #     −¯          ⍝ returns «-Infinity»
-      when 'number'
-        s = node[1].replace /¯/g, '-'
-        a =
-          for x in s.split /j/i
-            if x is '-'
-              'Infinity'
-            else if x is '--'
-              '-Infinity'
-            else if x.match /^-?0x/i
-              parseInt x, 16
-            else
-              parseFloat x
-        if a.length is 1 or a[1] is 0 then '' + a[0]
-        else "new _['⎕complex'](#{a[0]}, #{a[1]})"
-
-      when 'index'
-        "_['⌷'](#{visit node[1]}, [#{
-          (for c in node[2...] when c isnt null then visit c).join ', '
-        }], [#{
-          (for c, i in node[2...] when c isnt null then i)
-        }])"
-
-      when 'expr'
-        die 'No "expr" nodes are expected at this stage.'
-
-      when 'vector'
-        n = node.length - 1
-        "[#{(for child in node[1...] then visit child).join ', '}]"
-
-      when 'monadic'
-        "#{visit node[1]}(#{visit node[2]})"
-
-      when 'dyadic'
-        "#{visit node[2]}(#{visit node[3]}, #{visit node[1]})"
-
-      when 'prefixAdverb'
-        "#{visit node[1]}(#{visit node[2]})"
-
-      when 'conjunction'
-        "#{visit node[2]}(#{visit node[3]}, #{visit node[1]})"
-
-      when 'postfixAdverb'
-        "#{visit node[2]}(#{visit node[1]})"
-
-      when 'hook'
-        "_['⎕hook'](#{visit node[2]}, #{visit node[1]})"
-
-      when 'fork'
-        "_['⎕fork']([#{for c in node[1...] then visit c}])"
-
-      # Embedded JavaScript
-      #
-      #     «1234+5678» ⍝ returns 6912
-      #     «"asdf"» ⍝ returns 'asdf'
-      when 'embedded'
-        "_['⎕aplify'](#{node[1].replace /(^«|»$)/g, ''})"
-
+    when 'body'
+      if node.length is 1
+        'return [];\n'
       else
-        die "Unrecognised node type, '#{node[0]}'"
+        a = ["var _#{node.scopeId} = {};\n"]
+        for child in node[1...] then a.push toJavaScript child
+        a[a.length - 1] = "return #{a[a.length - 1]};\n"
+        a.join(';\n')
 
-  visit ast
+    when 'guard'
+      """
+        if (_['⎕bool'](#{toJavaScript node[1]})) {
+          return #{toJavaScript node[2]};
+        }
+      """
+
+    # Assignment
+    #
+    #     A←5       ⍝ returns 5
+    #     A×A←2 5   ⍝ returns 4 25
+    when 'assign'
+      assert node[1].constructor is Array
+      assert node[1].length is 2
+      assert node[1][0] is 'symbol'
+      name = node[1][1]
+      assert typeof name is 'string'
+      assert name isnt '∇', 'Assignment to ∇ is not allowed.'
+      vars = closestScope(node).vars
+      if (v = vars["set_#{name}"])?.type is 'F'
+        v.used = true
+        "#{v.jsCode}(#{toJavaScript node[2]})" # todo: pass-through value
+      else
+        "#{vars[name].jsCode} = #{toJavaScript node[2]}"
+
+    # Symbols
+    #
+    # Test get_/set_ convention for niladics:
+    #
+    #     radius ← 3
+    #     ... get_circumference ← {2 × ○ radius}
+    #     ... get_surface ← {○ radius ⋆ 2}
+    #     ...
+    #     ... before ← 0.01× ⌊ 100× radius circumference surface
+    #     ... radius ← radius + 1
+    #     ... after  ← 0.01× ⌊ 100× radius circumference surface
+    #     ...
+    #     ... before after
+    #     ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
+    when 'symbol'
+      name = node[1]
+      vars = closestScope(node).vars
+      if (v = vars["get_#{name}"])?.type is 'F'
+        v.used = true
+        "#{v.jsCode}()"
+      else
+        v = vars[name]
+        v.used = true
+        v.jsCode
+
+    # Lambda expressions
+    #
+    #     {1 + 1} 1                      ⍝ returns 2
+    #     {⍵=0:1 ◇ 2×∇⍵−1} 5             ⍝ returns 32 # two to the power of
+    #     {⍵<2 : 1 ◇ (∇⍵−1)+(∇⍵−2) } 8   ⍝ returns 34 # Fibonacci sequence
+    when 'lambda'
+      """
+        function (_w, _a) {
+          #{toJavaScript node[1]}
+        }
+      """
+
+    # Strings of length one are scalars, all other strings are vectors.
+    #
+    #     ⍴⍴''     ⍝ returns ,1
+    #     ⍴⍴'x'    ⍝ returns ,0
+    #     ⍴⍴'xx'   ⍝ returns ,1
+    #
+    # Pairs of quotes inside strings:
+    #
+    #     'Let''s parse it!'         ⍝ returns 'Let\'s parse it!'
+    #     "0x22's the code for ""."  ⍝ returns '0x22\'s the code for ".'
+    #     ⍴"\f\t\n\r\u1234\xff"      ⍝ returns ,6
+    #
+    #     "unclosed string           ⍝ fails
+    when 'string'
+      s = node[1]
+      d = s[0] # the delimiter: '"' or "'"
+      "_['⎕aplify'](#{d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d})"
+
+
+    # Numbers
+    #
+    #     1234567890  ⍝ returns «1234567890»
+    #     12.34e56    ⍝ returns «12.34e56»
+    #     12.34e+56   ⍝ returns «12.34e+56»
+    #     12.34E56    ⍝ returns «12.34e56»
+    #     ¯12.34e¯56  ⍝ returns «-12.34e-56»
+    #     0Xffff      ⍝ returns «0xffff»
+    #     ¯0xffff     ⍝ returns «-0xffff»
+    #     ¯0xaBcD1234 ⍝ returns «-0xabcd1234»
+    #     ¯           ⍝ returns «Infinity»
+    #     ¯¯          ⍝ returns «-Infinity»
+    #     −¯          ⍝ returns «-Infinity»
+    when 'number'
+      s = node[1].replace /¯/g, '-'
+      a =
+        for x in s.split /j/i
+          if x is '-'
+            'Infinity'
+          else if x is '--'
+            '-Infinity'
+          else if x.match /^-?0x/i
+            parseInt x, 16
+          else
+            parseFloat x
+      if a.length is 1 or a[1] is 0 then '' + a[0]
+      else "new _['⎕complex'](#{a[0]}, #{a[1]})"
+
+    when 'index'
+      "_['⌷'](#{toJavaScript node[1]}, [#{
+        (for c in node[2...] when c isnt null then toJavaScript c).join ', '
+      }], [#{
+        (for c, i in node[2...] when c isnt null then i)
+      }])"
+
+    when 'expr'
+      die 'No "expr" nodes are expected at this stage.'
+
+    when 'vector'
+      n = node.length - 1
+      "[#{(for child in node[1...] then toJavaScript child).join ', '}]"
+
+    when 'monadic'
+      "#{toJavaScript node[1]}(#{toJavaScript node[2]})"
+
+    when 'dyadic'
+      "#{toJavaScript node[2]}(#{toJavaScript node[3]}, #{toJavaScript node[1]})"
+
+    when 'prefixAdverb'
+      "#{toJavaScript node[1]}(#{toJavaScript node[2]})"
+
+    when 'conjunction'
+      "#{toJavaScript node[2]}(#{toJavaScript node[3]}, #{toJavaScript node[1]})"
+
+    when 'postfixAdverb'
+      "#{toJavaScript node[2]}(#{toJavaScript node[1]})"
+
+    when 'hook'
+      "_['⎕hook'](#{toJavaScript node[2]}, #{toJavaScript node[1]})"
+
+    when 'fork'
+      "_['⎕fork']([#{for c in node[1...] then toJavaScript c}])"
+
+    # Embedded JavaScript
+    #
+    #     «1234+5678» ⍝ returns 6912
+    #     «"asdf"» ⍝ returns 'asdf'
+    when 'embedded'
+      "_['⎕aplify'](#{node[1].replace /(^«|»$)/g, ''})"
+
+    else
+      die "Unrecognised node type, '#{node[0]}'"
 
 # A helper to find the nearest `body` ancestor
 closestScope = (node) ->

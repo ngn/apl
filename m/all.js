@@ -305,154 +305,150 @@ defModule('./compiler', function (exports, require) {
     }
   };
 
-  toJavaScript = function(ast) {
-    var visit;
-    visit = function(node) {
-      var a, c, child, d, i, n, name, s, v, vars, x, _i, _len, _ref1, _ref2, _ref3;
-      switch (node[0]) {
-        case 'body':
-          if (node.length === 1) {
-            return 'return [];\n';
-          } else {
-            a = ["var _" + node.scopeId + " = {};\n"];
-            _ref1 = node.slice(1);
-            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              child = _ref1[_i];
-              a.push(visit(child));
-            }
-            a[a.length - 1] = "return " + a[a.length - 1] + ";\n";
-            return a.join(';\n');
+  toJavaScript = function(node) {
+    var a, c, child, d, i, n, name, s, v, vars, x, _i, _len, _ref1, _ref2, _ref3;
+    switch (node[0]) {
+      case 'body':
+        if (node.length === 1) {
+          return 'return [];\n';
+        } else {
+          a = ["var _" + node.scopeId + " = {};\n"];
+          _ref1 = node.slice(1);
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            child = _ref1[_i];
+            a.push(toJavaScript(child));
           }
-          break;
-        case 'guard':
-          return "if (_['⎕bool'](" + (visit(node[1])) + ")) {\n  return " + (visit(node[2])) + ";\n}";
-        case 'assign':
-          assert(node[1].constructor === Array);
-          assert(node[1].length === 2);
-          assert(node[1][0] === 'symbol');
-          name = node[1][1];
-          assert(typeof name === 'string');
-          assert(name !== '∇', 'Assignment to ∇ is not allowed.');
-          vars = closestScope(node).vars;
-          if (((_ref2 = (v = vars["set_" + name])) != null ? _ref2.type : void 0) === 'F') {
-            v.used = true;
-            return "" + v.jsCode + "(" + (visit(node[2])) + ")";
-          } else {
-            return "" + vars[name].jsCode + " = " + (visit(node[2]));
+          a[a.length - 1] = "return " + a[a.length - 1] + ";\n";
+          return a.join(';\n');
+        }
+        break;
+      case 'guard':
+        return "if (_['⎕bool'](" + (toJavaScript(node[1])) + ")) {\n  return " + (toJavaScript(node[2])) + ";\n}";
+      case 'assign':
+        assert(node[1].constructor === Array);
+        assert(node[1].length === 2);
+        assert(node[1][0] === 'symbol');
+        name = node[1][1];
+        assert(typeof name === 'string');
+        assert(name !== '∇', 'Assignment to ∇ is not allowed.');
+        vars = closestScope(node).vars;
+        if (((_ref2 = (v = vars["set_" + name])) != null ? _ref2.type : void 0) === 'F') {
+          v.used = true;
+          return "" + v.jsCode + "(" + (toJavaScript(node[2])) + ")";
+        } else {
+          return "" + vars[name].jsCode + " = " + (toJavaScript(node[2]));
+        }
+        break;
+      case 'symbol':
+        name = node[1];
+        vars = closestScope(node).vars;
+        if (((_ref3 = (v = vars["get_" + name])) != null ? _ref3.type : void 0) === 'F') {
+          v.used = true;
+          return "" + v.jsCode + "()";
+        } else {
+          v = vars[name];
+          v.used = true;
+          return v.jsCode;
+        }
+        break;
+      case 'lambda':
+        return "function (_w, _a) {\n  " + (toJavaScript(node[1])) + "\n}";
+      case 'string':
+        s = node[1];
+        d = s[0];
+        return "_['⎕aplify'](" + (d + s.slice(1, -1).replace(RegExp("" + (d + d), "g"), '\\' + d) + d) + ")";
+      case 'number':
+        s = node[1].replace(/¯/g, '-');
+        a = (function() {
+          var _j, _len1, _ref4, _results;
+          _ref4 = s.split(/j/i);
+          _results = [];
+          for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
+            x = _ref4[_j];
+            if (x === '-') {
+              _results.push('Infinity');
+            } else if (x === '--') {
+              _results.push('-Infinity');
+            } else if (x.match(/^-?0x/i)) {
+              _results.push(parseInt(x, 16));
+            } else {
+              _results.push(parseFloat(x));
+            }
           }
-          break;
-        case 'symbol':
-          name = node[1];
-          vars = closestScope(node).vars;
-          if (((_ref3 = (v = vars["get_" + name])) != null ? _ref3.type : void 0) === 'F') {
-            v.used = true;
-            return "" + v.jsCode + "()";
-          } else {
-            v = vars[name];
-            v.used = true;
-            return v.jsCode;
+          return _results;
+        })();
+        if (a.length === 1 || a[1] === 0) {
+          return '' + a[0];
+        } else {
+          return "new _['⎕complex'](" + a[0] + ", " + a[1] + ")";
+        }
+        break;
+      case 'index':
+        return "_['⌷'](" + (toJavaScript(node[1])) + ", [" + (((function() {
+          var _j, _len1, _ref4, _results;
+          _ref4 = node.slice(2);
+          _results = [];
+          for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
+            c = _ref4[_j];
+            if (c !== null) {
+              _results.push(toJavaScript(c));
+            }
           }
-          break;
-        case 'lambda':
-          return "function (_w, _a) {\n  " + (visit(node[1])) + "\n}";
-        case 'string':
-          s = node[1];
-          d = s[0];
-          return "_['⎕aplify'](" + (d + s.slice(1, -1).replace(RegExp("" + (d + d), "g"), '\\' + d) + d) + ")";
-        case 'number':
-          s = node[1].replace(/¯/g, '-');
-          a = (function() {
-            var _j, _len1, _ref4, _results;
-            _ref4 = s.split(/j/i);
-            _results = [];
-            for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
-              x = _ref4[_j];
-              if (x === '-') {
-                _results.push('Infinity');
-              } else if (x === '--') {
-                _results.push('-Infinity');
-              } else if (x.match(/^-?0x/i)) {
-                _results.push(parseInt(x, 16));
-              } else {
-                _results.push(parseFloat(x));
-              }
+          return _results;
+        })()).join(', ')) + "], [" + ((function() {
+          var _j, _len1, _ref4, _results;
+          _ref4 = node.slice(2);
+          _results = [];
+          for (i = _j = 0, _len1 = _ref4.length; _j < _len1; i = ++_j) {
+            c = _ref4[i];
+            if (c !== null) {
+              _results.push(i);
             }
-            return _results;
-          })();
-          if (a.length === 1 || a[1] === 0) {
-            return '' + a[0];
-          } else {
-            return "new _['⎕complex'](" + a[0] + ", " + a[1] + ")";
           }
-          break;
-        case 'index':
-          return "_['⌷'](" + (visit(node[1])) + ", [" + (((function() {
-            var _j, _len1, _ref4, _results;
-            _ref4 = node.slice(2);
-            _results = [];
-            for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
-              c = _ref4[_j];
-              if (c !== null) {
-                _results.push(visit(c));
-              }
-            }
-            return _results;
-          })()).join(', ')) + "], [" + ((function() {
-            var _j, _len1, _ref4, _results;
-            _ref4 = node.slice(2);
-            _results = [];
-            for (i = _j = 0, _len1 = _ref4.length; _j < _len1; i = ++_j) {
-              c = _ref4[i];
-              if (c !== null) {
-                _results.push(i);
-              }
-            }
-            return _results;
-          })()) + "])";
-        case 'expr':
-          return die('No "expr" nodes are expected at this stage.');
-        case 'vector':
-          n = node.length - 1;
-          return "[" + (((function() {
-            var _j, _len1, _ref4, _results;
-            _ref4 = node.slice(1);
-            _results = [];
-            for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
-              child = _ref4[_j];
-              _results.push(visit(child));
-            }
-            return _results;
-          })()).join(', ')) + "]";
-        case 'monadic':
-          return "" + (visit(node[1])) + "(" + (visit(node[2])) + ")";
-        case 'dyadic':
-          return "" + (visit(node[2])) + "(" + (visit(node[3])) + ", " + (visit(node[1])) + ")";
-        case 'prefixAdverb':
-          return "" + (visit(node[1])) + "(" + (visit(node[2])) + ")";
-        case 'conjunction':
-          return "" + (visit(node[2])) + "(" + (visit(node[3])) + ", " + (visit(node[1])) + ")";
-        case 'postfixAdverb':
-          return "" + (visit(node[2])) + "(" + (visit(node[1])) + ")";
-        case 'hook':
-          return "_['⎕hook'](" + (visit(node[2])) + ", " + (visit(node[1])) + ")";
-        case 'fork':
-          return "_['⎕fork']([" + ((function() {
-            var _j, _len1, _ref4, _results;
-            _ref4 = node.slice(1);
-            _results = [];
-            for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
-              c = _ref4[_j];
-              _results.push(visit(c));
-            }
-            return _results;
-          })()) + "])";
-        case 'embedded':
-          return "_['⎕aplify'](" + (node[1].replace(/(^«|»$)/g, '')) + ")";
-        default:
-          return die("Unrecognised node type, '" + node[0] + "'");
-      }
-    };
-    return visit(ast);
+          return _results;
+        })()) + "])";
+      case 'expr':
+        return die('No "expr" nodes are expected at this stage.');
+      case 'vector':
+        n = node.length - 1;
+        return "[" + (((function() {
+          var _j, _len1, _ref4, _results;
+          _ref4 = node.slice(1);
+          _results = [];
+          for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
+            child = _ref4[_j];
+            _results.push(toJavaScript(child));
+          }
+          return _results;
+        })()).join(', ')) + "]";
+      case 'monadic':
+        return "" + (toJavaScript(node[1])) + "(" + (toJavaScript(node[2])) + ")";
+      case 'dyadic':
+        return "" + (toJavaScript(node[2])) + "(" + (toJavaScript(node[3])) + ", " + (toJavaScript(node[1])) + ")";
+      case 'prefixAdverb':
+        return "" + (toJavaScript(node[1])) + "(" + (toJavaScript(node[2])) + ")";
+      case 'conjunction':
+        return "" + (toJavaScript(node[2])) + "(" + (toJavaScript(node[3])) + ", " + (toJavaScript(node[1])) + ")";
+      case 'postfixAdverb':
+        return "" + (toJavaScript(node[2])) + "(" + (toJavaScript(node[1])) + ")";
+      case 'hook':
+        return "_['⎕hook'](" + (toJavaScript(node[2])) + ", " + (toJavaScript(node[1])) + ")";
+      case 'fork':
+        return "_['⎕fork']([" + ((function() {
+          var _j, _len1, _ref4, _results;
+          _ref4 = node.slice(1);
+          _results = [];
+          for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
+            c = _ref4[_j];
+            _results.push(toJavaScript(c));
+          }
+          return _results;
+        })()) + "])";
+      case 'embedded':
+        return "_['⎕aplify'](" + (node[1].replace(/(^«|»$)/g, '')) + ")";
+      default:
+        return die("Unrecognised node type, '" + node[0] + "'");
+    }
   };
 
   closestScope = function(node) {
