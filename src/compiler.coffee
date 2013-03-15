@@ -116,10 +116,9 @@ resolveExprs = (ast, opts = {}) ->
           t1
         when 'expr'
           a = node[1...]
-          a.reverse()
-          h = for child in a then visit child
-          h.reverse()
-          a.reverse()
+          h = Array a.length
+          for i in [a.length - 1 .. 0]
+            h[i] = visit a[i]
 
           # Form vectors from sequences of data
           i = 0
