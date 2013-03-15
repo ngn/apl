@@ -1,18 +1,15 @@
 fs = require 'fs'
-{statSync, readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync} = require 'fs'
+glob = require 'glob'
 {spawn} = require 'child_process'
+{coffee, docco, cat, jade, sass} = ake = require 'ake'
 
 # Sanity check
-if not existsSync 'node_modules'
+if not fs.existsSync 'node_modules'
   console.error '''
     Directory "node_modules/" does not exist.
     You should run "npm install" first.
   '''
   process.exit(1)
-
-# Executables
-coffee = 'node_modules/coffee-script/bin/coffee'
-docco = 'node_modules/docco/bin/docco'
 
 exec = (cmd, args, opts, cont) ->
   child = spawn cmd, args, opts
@@ -22,44 +19,84 @@ exec = (cmd, args, opts, cont) ->
     if code then throw Error "Child process '#{cmd}' returned exit code #{code}."
     cont()
 
-newer = (x, y) ->
-  (not existsSync y) or statSync(x).mtime.getTime() > statSync(y).mtime.getTime()
+buildActions = [
+  coffee 'src/*.coffee', 'lib/'
+]
 
 task 'build', ->
-  cs = require 'coffee-script'
-  if not existsSync 'lib' then mkdirSync 'lib'
-  jobs = readdirSync('src')
-            .filter((f) -> f.match /^\w+\.coffee$/)
-            .map((f) ->
-              coffeeFile: 'src/' + f
-              jsFile: 'lib/' + f.replace /\.coffee$/, '.js'
-            )
-            .filter (job) -> newer job.coffeeFile, job.jsFile
-  if jobs.length
-    console.info "Compiling #{jobs.map((x) -> x.coffeeFile).join ' '}..."
-    jobs.forEach (job) ->
-      fs.readFile job.coffeeFile, 'utf8', (err, coffeeCode) ->
-        if err then throw err
-        jsCode = cs.compile coffeeCode, filename: job.coffeeFile
-        fs.writeFile job.jsFile, jsCode, (err) ->
-          if err then throw err
+  ake buildActions
 
 task 'test', ->
-  console.info 'Running doctests...'
-  exec 'node', ['doctest.js'], {cwd: 'test'}, ->
-    console.info 'Done'
+  ake buildActions.concat [
+    coffee 'test/doctest.coffee'
+    ->
+      console.info 'Running doctests...'
+      exec 'node', ['doctest.js'], {cwd: 'test'}, ->
+        console.info 'OK'
+  ]
 
 task 'docs', ->
-  filenames = for f in readdirSync 'src' when f.match /^\w+\.coffee$/ then f
-  mustGenerateDocs = false
-  for f in filenames
-    if newer "src/#{f}", "docs/#{f.replace /\.coffee$/, '.html'}"
-      mustGenerateDocs = true
-      console.info "* #{f} has changed"
-  if mustGenerateDocs
-    console.info 'Generating docs...'
-    exec docco, (for f in filenames then "src/#{f}"), {}, ->
-      console.info 'Done'
+  ake buildActions.concat [
+    docco  'src/*.coffee', 'docs'
+  ]
+
+getLibFiles = ->
+  glob.sync('src/*.coffee').map (f) ->
+    f.replace /^src\/(.+)\.coffee$/, 'lib/$1.js'
+
+task 'web', ->
+  ake buildActions.concat [
+    coffee 'web/index.coffee'
+    jade   'web/index.jade'
+    sass   'web/index.sass'
+    cat(
+      [
+        'web/fake-require.js'
+        getLibFiles()
+        'web/jquery*.js'
+        'web/examples.js'
+        'web/index.js'
+      ]
+      'web/all.js'
+      transform: (content, {path}) ->
+        if not path.match /^lib\// then return content
+        if path is 'lib/command.js' then return ''
+        moduleName = path.replace /^.*\/([^\/]+).js/, '$1'
+        """
+          defModule('./#{moduleName}', function (exports, require) {
+            #{content}
+            return exports;
+          });\n
+        """
+    )
+  ]
+
+task 'm', ->
+  ake buildActions.concat [
+    coffee 'm/index.coffee'
+    jade   'm/index.jade'
+    sass   'm/index.sass'
+    cat(
+      [
+        'web/fake-require.js'
+        getLibFiles()
+        'web/jquery-1.9.1.min.js'
+        'web/examples.js'
+        'm/index.js'
+      ]
+      'm/all.js'
+      transform: (content, {path}) ->
+        if not path.match /^lib\// then return content
+        if path in ['lib/command.js', 'lib/apl.js'] then return ''
+        moduleName = path.replace /^.*\/([^\/]+).js/, '$1'
+        """
+          defModule('./#{moduleName}', function (exports, require) {
+            #{content}
+            return exports;
+          });\n
+        """
+    )
+  ]
 
 task 'stats', ->
   console.info 'Lines of code, not counting empty lines and comments:'
@@ -67,7 +104,7 @@ task 'stats', ->
   stats =
     for file in readdirSync 'src' when file.match /^\w+\.coffee$/
       loc = 0
-      for line in readFileSync("src/#{file}").toString().split '\n'
+      for line in fs.readFileSync("src/#{file}").toString().split '\n'
         if /^ *[^ #]/.test line
           loc++
       total += loc
@@ -78,47 +115,3 @@ task 'stats', ->
     (s = '    ' + x.loc)[s.length - 4...]
   )
   console.info "TOTAL: #{total}"
-
-task 'web', ->
-  cs = require 'coffee-script'
-  if newer 'web/index.coffee', 'web/index.js'
-    console.info 'Compiling web/index.js...'
-    coffeeCode = readFileSync 'web/index.coffee', 'utf8'
-    jsCode = cs.compile coffeeCode, filename: 'web/index.coffee'
-    writeFileSync 'web/index.js', jsCode, 'utf8'
-  s = readFileSync 'web/fake-require.js', 'utf8'
-  for f in readdirSync 'lib' when f isnt 'command.js' and f.match /^\w+\.js$/
-    s += """
-      defModule('./#{f.replace /\.js$/, ''}', function (exports, require) {
-        #{readFileSync 'lib/' + f, 'utf8'}
-        return exports;
-      });
-    """
-  s += readFileSync 'web/examples.js',                  'utf8'
-  s += readFileSync 'web/jquery-1.9.1.min.js',          'utf8'
-  s += readFileSync 'web/jquery.fieldselection.min.js', 'utf8'
-  s += readFileSync 'web/jquery.retype.min.js',         'utf8'
-  s += readFileSync 'web/jquery.keyboard.min.js',       'utf8'
-  s += readFileSync 'web/jquery.tipsy.js',              'utf8'
-  s += readFileSync 'web/index.js',                     'utf8'
-  writeFileSync 'web/all.js', s, 'utf8'
-
-task 'm', ->
-  cs = require 'coffee-script'
-  if newer 'm/index.coffee', 'm/index.js'
-    console.info 'Compiling m/index.js...'
-    coffeeCode = readFileSync 'm/index.coffee', 'utf8'
-    jsCode = cs.compile coffeeCode, filename: 'm/index.coffee'
-    writeFileSync 'm/index.js', jsCode, 'utf8'
-  s = readFileSync 'web/fake-require.js', 'utf8'
-  for f in readdirSync 'lib' when f isnt 'command.js' and f.match /^\w+\.js$/
-    s += """
-      defModule('./#{f.replace /\.js$/, ''}', function (exports, require) {
-        #{readFileSync 'lib/' + f, 'utf8'}
-        return exports;
-      });
-    """
-  s += readFileSync 'web/examples.js',         'utf8'
-  s += readFileSync 'web/jquery-1.9.1.min.js', 'utf8'
-  s += readFileSync 'm/index.js',              'utf8'
-  writeFileSync 'm/all.js', s, 'utf8'
