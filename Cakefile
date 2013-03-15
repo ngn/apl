@@ -23,10 +23,10 @@ buildActions = [
   coffee 'src/*.coffee', 'lib/'
 ]
 
-task 'build', ->
+task 'build', 'Compile src/*.coffee to lib/*.js', ->
   ake buildActions
 
-task 'test', ->
+task 'test', 'Run doctests', ->
   ake buildActions.concat [
     coffee 'test/doctest.coffee'
     ->
@@ -35,7 +35,7 @@ task 'test', ->
         console.info 'OK'
   ]
 
-task 'docs', ->
+task 'docs', 'Generate literate documentation with docco', ->
   ake buildActions.concat [
     docco  'src/*.coffee', 'docs'
   ]
@@ -44,7 +44,7 @@ getLibFiles = ->
   glob.sync('src/*.coffee').map (f) ->
     f.replace /^src\/(.+)\.coffee$/, 'lib/$1.js'
 
-task 'web', ->
+task 'web', 'Build everything for the web demo', ->
   ake buildActions.concat [
     coffee 'web/index.coffee'
     jade   'web/index.jade'
@@ -71,7 +71,7 @@ task 'web', ->
     )
   ]
 
-task 'm', ->
+task 'm', 'Build everything for the mobile demo', ->
   ake buildActions.concat [
     coffee 'm/index.coffee'
     jade   'm/index.jade'
@@ -98,11 +98,11 @@ task 'm', ->
     )
   ]
 
-task 'stats', ->
+task 'stats', 'Show some lines-of-code nonsense', ->
   console.info 'Lines of code, not counting empty lines and comments:'
   total = 0
   stats =
-    for file in readdirSync 'src' when file.match /^\w+\.coffee$/
+    for file in fs.readdirSync 'src' when file.match /^\w+\.coffee$/
       loc = 0
       for line in fs.readFileSync("src/#{file}").toString().split '\n'
         if /^ *[^ #]/.test line
