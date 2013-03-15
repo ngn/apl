@@ -79,15 +79,17 @@ resolveExprs = (ast, opts = {}) ->
           visit node[1]
           visit node[2]
         when 'assign'
-          assert node[1].constructor is Array
-          assert node[1][0] is 'symbol', 'Compound assignment is not supported.'
+          if not (node[1] instanceof Array and node[1][0] is 'symbol')
+            throw new CompilerError node,
+              'Compound assignment is not supported.'
           name = node[1][1]
           assert typeof name is 'string'
           h = visit node[2]
           if vars[name]
-            assert vars[name].type is h.type,
-              "Inconsistent usage of symbol '#{name}', it is " +
-              "assigned both data and functions"
+            if vars[name].type isnt h.type
+              throw new CompilerError node,
+                "Inconsistent usage of symbol '#{name}', it is " +
+                "assigned both data and functions."
           else
             vars[name] =
               type: h.type
@@ -100,7 +102,9 @@ resolveExprs = (ast, opts = {}) ->
             {type: 'X'}
           else
             v = vars[name]
-            assert v, "Symbol '#{name}' referenced before assignment"
+            if not v
+              throw new CompilerError node,
+                "Symbol '#{name}' is referenced before assignment."
             v.used = true
             v
         when 'lambda'
@@ -112,7 +116,9 @@ resolveExprs = (ast, opts = {}) ->
           t1 = visit node[1]
           for c in node[2...] when c isnt null
             t = visit c
-            assert t.type is 'X', 'Only data can be used as an index'
+            if t.type isnt 'X'
+              throw new CompilerError node,
+                'Only expressions of type data can be used as an index.'
           t1
         when 'expr'
           a = node[1...]
@@ -168,7 +174,9 @@ resolveExprs = (ast, opts = {}) ->
             h = [{type: 'F'}]
 
           if h[h.length - 1].type is 'F'
-            assert h.length <= 1, 'Trailing function in expression'
+            if h.length > 1
+              throw new CompilerError a[h.length - 1],
+                'Trailing function in expression'
           else
             # Apply monadic and dyadic functions
             while h.length > 1
@@ -221,12 +229,15 @@ toJavaScript = (node) ->
     #     A←5       ⍝ returns 5
     #     A×A←2 5   ⍝ returns 4 25
     when 'assign'
-      assert node[1].constructor is Array
-      assert node[1].length is 2
-      assert node[1][0] is 'symbol'
+      if not (node[1] instanceof Array and
+              node[1].length is 2 and
+              node[1][0] is 'symbol')
+        throw new CompilerError node,
+          'Compound assignment is not supported.'
       name = node[1][1]
       assert typeof name is 'string'
-      assert name isnt '∇', 'Assignment to ∇ is not allowed.'
+      if name is '∇'
+        throw new CompilerError node, 'Assignment to ∇ is not allowed.'
       vars = closestScope(node).vars
       if (v = vars["set_#{name}"])?.type is 'F'
         v.used = true
@@ -326,7 +337,7 @@ toJavaScript = (node) ->
       }])"
 
     when 'expr'
-      die 'No "expr" nodes are expected at this stage.'
+      throw Error 'No "expr" nodes are expected at this stage.'
 
     when 'vector'
       n = node.length - 1
@@ -368,7 +379,13 @@ closestScope = (node) ->
   while node[0] isnt 'body' then node = node.parent
   node
 
-
+# Used to report the AST node where the error happened
+@CompilerError =
+  class CompilerError extends Error
+    constructor: (@astNode, @message, args...) ->
+      assert @astNode instanceof Array
+      assert typeof @message is 'string'
+      assert not args.length
 
 # # Public interface to this module
 
