@@ -4,17 +4,7 @@ parser = require './parser'
 vocabulary = require './vocabulary'
 {inherit, die, assert, all} = require './helpers'
 
-# # Stage 1: Assign parents
-
-# This is a simple recursive procedure to assign a `.parent` property to each
-# node, so we can walk the tree up as well as down.
-assignParents = (node) ->
-  for child in node[1...] when child
-    assignParents child
-    child.parent = node
-  return
-
-# # Stage 2: Resolve expr nodes
+# # Stage 1: Resolve expr nodes
 
 # For each scope (`body` node), determine the type of each pronoun (`symbol`
 # node) used in it.
@@ -69,6 +59,7 @@ resolveExprs = (ast, opts = {}) ->
     {vars} = scopeNode = queue.shift()
 
     visit = (node) ->
+      node.scopeNode = scopeNode
       switch node[0]
         when 'body'
           node.vars = inherit vars
@@ -80,14 +71,14 @@ resolveExprs = (ast, opts = {}) ->
           visit node[2]
         when 'assign'
           if not (node[1] instanceof Array and node[1][0] is 'symbol')
-            throw new CompilerError node,
+            throw new CompilerError node, opts,
               'Compound assignment is not supported.'
           name = node[1][1]
           assert typeof name is 'string'
           h = visit node[2]
           if vars[name]
             if vars[name].type isnt h.type
-              throw new CompilerError node,
+              throw new CompilerError node, opts,
                 "Inconsistent usage of symbol '#{name}', it is " +
                 "assigned both data and functions."
           else
@@ -103,7 +94,7 @@ resolveExprs = (ast, opts = {}) ->
           else
             v = vars[name]
             if not v
-              throw new CompilerError node,
+              throw new CompilerError node, opts,
                 "Symbol '#{name}' is referenced before assignment."
             v.used = true
             v
@@ -117,7 +108,7 @@ resolveExprs = (ast, opts = {}) ->
           for c in node[2...] when c isnt null
             t = visit c
             if t.type isnt 'X'
-              throw new CompilerError node,
+              throw new CompilerError node, opts,
                 'Only expressions of type data can be used as an index.'
           t1
         when 'expr'
@@ -175,7 +166,7 @@ resolveExprs = (ast, opts = {}) ->
 
           if h[h.length - 1].type is 'F'
             if h.length > 1
-              throw new CompilerError a[h.length - 1],
+              throw new CompilerError a[h.length - 1], opts,
                 'Trailing function in expression'
           else
             # Apply monadic and dyadic functions
@@ -189,9 +180,6 @@ resolveExprs = (ast, opts = {}) ->
 
           # Replace `"expr"` node with `a[0]` in the AST
           node[0...] = a[0]
-          a[0].parent = null
-          for c in node[1...] when c then c.parent = node
-
           h[0]
 
         else
@@ -204,7 +192,7 @@ resolveExprs = (ast, opts = {}) ->
 
 
 
-# # Stage 3: Render JavaScript code
+# # Stage 2: Render JavaScript code
 toJavaScript = (node) ->
   switch node[0]
 
@@ -232,13 +220,14 @@ toJavaScript = (node) ->
       if not (node[1] instanceof Array and
               node[1].length is 2 and
               node[1][0] is 'symbol')
-        throw new CompilerError node,
+        throw new CompilerError node, opts,
           'Compound assignment is not supported.'
       name = node[1][1]
       assert typeof name is 'string'
       if name is '∇'
-        throw new CompilerError node, 'Assignment to ∇ is not allowed.'
-      vars = closestScope(node).vars
+        throw new CompilerError node, opts,
+          'Assignment to ∇ is not allowed.'
+      vars = node.scopeNode.vars
       if (v = vars["set_#{name}"])?.type is 'F'
         v.used = true
         "#{v.jsCode}(#{toJavaScript node[2]})" # todo: pass-through value
@@ -261,7 +250,7 @@ toJavaScript = (node) ->
     #     ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
     when 'symbol'
       name = node[1]
-      vars = closestScope(node).vars
+      vars = node.scopeNode.vars
       if (v = vars["get_#{name}"])?.type is 'F'
         v.used = true
         "#{v.jsCode}()"
@@ -374,24 +363,31 @@ toJavaScript = (node) ->
     else
       die "Unrecognised node type, '#{node[0]}'"
 
-# A helper to find the nearest `body` ancestor
-closestScope = (node) ->
-  while node[0] isnt 'body' then node = node.parent
-  node
-
 # Used to report the AST node where the error happened
 @CompilerError =
   class CompilerError extends Error
-    constructor: (@astNode, @message, args...) ->
+    constructor: (@astNode, opts, @message, args...) ->
       assert @astNode instanceof Array
+      assert typeof opts is 'object'
       assert typeof @message is 'string'
       assert not args.length
+      {@aplCode} = opts
+    toString: ->
+      s = 'CompilerError: ' + @message
+      if @astNode.line?
+        s += "\n:#{@astNode.line}:#{@astNode.col}"
+        if @aplCode
+          s += (
+            '\n' + @aplCode.split('\n')[@astNode.line - 1] +
+            '\n' + repeat('_', @astNode.col - 1) + '^'
+          )
+      s
 
 # # Public interface to this module
 
 @nodes = nodes = (aplCode, opts = {}) ->
   ast = parser.parse aplCode
-  assignParents ast
+  ast.aplCode = aplCode
   resolveExprs ast, opts
   ast
 
