@@ -51,13 +51,13 @@ resolveExprs = (ast, opts = {}) ->
     '⍵': {type: 'X', jsCode: '_w'}
     '∇': {type: 'F', jsCode: 'arguments.callee'}
   for k, v of vocabulary
-    ast.vars[k] = h = {type: 'X', jsCode: "_[#{JSON.stringify k}]"}
+    ast.vars[k] = varInfo = {type: 'X', jsCode: "_[#{JSON.stringify k}]"}
     if typeof v is 'function'
-      h.type = 'F'
+      varInfo.type = 'F'
       if (m = v.aplMetaInfo)?
-        if m.isPrefixAdverb  then h.isPrefixAdverb  = true
-        if m.isPostfixAdverb then h.isPostfixAdverb = true
-        if m.isConjunction   then h.isConjunction   = true
+        if m.isPrefixAdverb  then varInfo.isPrefixAdverb  = true
+        if m.isPostfixAdverb then varInfo.isPostfixAdverb = true
+        if m.isConjunction   then varInfo.isConjunction   = true
       if /^[gs]et_.*/.test k
         ast.vars[k[4...]] = {type: 'X'}
   if opts.vars
