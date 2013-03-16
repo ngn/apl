@@ -1,15 +1,15 @@
-fs = require 'fs'
-glob = require 'glob'
-{spawn} = require 'child_process'
-{coffee, docco, cat, jade, sass} = ake = require 'ake'
-
 # Sanity check
+fs = require 'fs'
 if not fs.existsSync 'node_modules'
   console.error '''
     Directory "node_modules/" does not exist.
     You should run "npm install" first.
   '''
-  process.exit(1)
+  process.exit 1
+
+glob = require 'glob'
+{spawn} = require 'child_process'
+{coffee, docco, cat, jade, sass} = ake = require 'ake'
 
 exec = (cmd, args, opts, cont) ->
   child = spawn cmd, args, opts
