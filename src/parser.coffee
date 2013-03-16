@@ -21,7 +21,7 @@ lexer = require './lexer'
 # represent verbs and which represent nouns.  This will be resolved later in
 # the `compiler`.
 
-@parse = (aplCode) ->
+@parse = (aplCode, opts = {}) ->
   tokenStream = lexer.tokenize aplCode
 
   # A single-token lookahead is used.  Variable `token` stores the upcoming

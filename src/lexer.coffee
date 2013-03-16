@@ -33,7 +33,7 @@ tokenDefs = [
 # separators.
 #
 # A sentry `'eof'` token is generated at the end.
-@tokenize = (aplCode) ->
+@tokenize = (aplCode, opts = {}) ->
   line = col = 1
   stack = ['{'] # a stack of brackets
   next: ->

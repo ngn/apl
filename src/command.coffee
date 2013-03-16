@@ -72,21 +72,24 @@ fs = require 'fs'
     return repl ctx
 
   # Determine input.
-  aplCode =
-    if argv.stdio
+  opts = {}
+  if argv.stdio
+    opts.file = '<stdin>'
+    aplCode =
       Buffer.concat(loop # read all of stdin
         b = new Buffer 1024
         k = fs.readSync 0, b, 0, b.length, null
         break unless k
         b.slice 0, k
       ).toString 'utf8'
-    else
-      isCoffeeScript = /\.coffee$/.test argv._[0]
-      fs.readFileSync argv._[0], 'utf8'
+  else
+    opts.file = argv._[0]
+    isCoffeeScript = /\.coffee$/.test opts.file
+    aplCode = fs.readFileSync opts.file, 'utf8'
 
   # If printing of nodes is requested, do it and stop.
   if argv.nodes
-    printAST nodes aplCode
+    printAST nodes aplCode, opts
     return
 
   # Compile.
@@ -94,9 +97,9 @@ fs = require 'fs'
     if isCoffeeScript
       cs = require 'coffee-script'
       pp = require 'coffee-subscript'
-      jsCode = cs.compile pp.preprocess aplCode
+      jsCode = cs.compile pp.preprocess aplCode, opts
     else
-      jsCode = compile aplCode
+      jsCode = compile aplCode, opts
   catch e
     process.stderr.write(
       (if e instanceof CompilerError then e.toString() else e.stack) + '\n'
