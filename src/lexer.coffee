@@ -1,3 +1,5 @@
+{die} = require './helpers'
+
 # The lexer transforms APL source into a stream of tokens.
 #
 # It does so by trying to match regular expressions at the current source
@@ -48,7 +50,13 @@ tokenDefs = [
       for [t, re] in tokenDefs when m = aplCode.match re
         type = t or m[0]
         break
-      if not type then throw Error "Lexical error at #{line}:#{col}"
+      if not type
+        die 'Unrecognised token',
+          name: 'APLLexicalError'
+          file: opts.file
+          line: line
+          col: col
+          aplCode: opts.aplCode
       a = m[0].split '\n'
       line += a.length - 1
       col = (if a.length is 1 then col else 1) + a[a.length - 1].length

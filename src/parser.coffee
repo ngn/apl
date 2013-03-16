@@ -1,4 +1,5 @@
 lexer = require './lexer'
+{die} = require './helpers'
 
 # The parser builds an AST from a stream of tokens.
 #
@@ -36,17 +37,24 @@ lexer = require './lexer'
 
   # `demand(tt)` is like `consume(tt)` but intolerant to a mismatch.
   demand = (tt) ->
-    if token.type isnt tt then fail "Expected #{tt} but got #{token.type}"
+    if token.type isnt tt
+      parserError "Expected token of type '#{tt}' but got '#{token.type}'"
     token = tokenStream.next()
     return
 
-  # `fail(message)` politely points at the location where things went awry.
-  fail = (message) ->
-    throw Error """
-      Syntax error: #{message} at #{token.startLine}:#{token.startCol}
-      #{aplCode.split('\n')[token.startLine - 1]}
-      #{new Array(token.startCol).join('-') + '^'}
-    """
+  parserError = (message) ->
+    console.info
+      name: 'APLParserError'
+      file: opts.file
+      line: token.startLine
+      col: token.startCol
+      aplCode: aplCode
+    die message,
+      name: 'APLParserError'
+      file: opts.file
+      line: token.startLine
+      col: token.startCol
+      aplCode: aplCode
 
   # The parser is a recursive descent parser.  Various `parseXXX()` functions
   # roughly correspond to the set of non-terminals in an imaginary grammar.
@@ -91,6 +99,6 @@ lexer = require './lexer'
     if consume 'number string symbol embedded' then [t.type, t.value]
     else if consume '(' then (expr = parseExpr(); demand ')'; expr)
     else if consume '{' then (b = parseBody(); demand '}'; ['lambda', b])
-    else fail "Expected indexable but got #{token.type}"
+    else parserError "Encountered unexpected token of type '#{token.type}'"
 
   parseBody()

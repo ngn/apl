@@ -71,14 +71,13 @@ resolveExprs = (ast, opts = {}) ->
           visit node[2]
         when 'assign'
           if not (node[1] instanceof Array and node[1][0] is 'symbol')
-            throw new CompilerError node, opts,
-              'Compound assignment is not supported.'
+            compilerError node, opts, 'Compound assignment is not supported.'
           name = node[1][1]
           assert typeof name is 'string'
           h = visit node[2]
           if vars[name]
             if vars[name].type isnt h.type
-              throw new CompilerError node, opts,
+              compilerError node, opts,
                 "Inconsistent usage of symbol '#{name}', it is " +
                 "assigned both data and functions."
           else
@@ -94,7 +93,7 @@ resolveExprs = (ast, opts = {}) ->
           else
             v = vars[name]
             if not v
-              throw new CompilerError node, opts,
+              compilerError node, opts,
                 "Symbol '#{name}' is referenced before assignment."
             v.used = true
             v
@@ -108,7 +107,7 @@ resolveExprs = (ast, opts = {}) ->
           for c in node[2...] when c isnt null
             t = visit c
             if t.type isnt 'X'
-              throw new CompilerError node, opts,
+              compilerError node, opts,
                 'Only expressions of type data can be used as an index.'
           t1
         when 'expr'
@@ -166,7 +165,7 @@ resolveExprs = (ast, opts = {}) ->
 
           if h[h.length - 1].type is 'F'
             if h.length > 1
-              throw new CompilerError a[h.length - 1], opts,
+              compilerError a[h.length - 1], opts,
                 'Trailing function in expression'
           else
             # Apply monadic and dyadic functions
@@ -220,12 +219,12 @@ toJavaScript = (node) ->
       if not (node[1] instanceof Array and
               node[1].length is 2 and
               node[1][0] is 'symbol')
-        throw new CompilerError node, opts,
+        compilerError node, opts,
           'Compound assignment is not supported.'
       name = node[1][1]
       assert typeof name is 'string'
       if name is '∇'
-        throw new CompilerError node, opts,
+        compilerError node, opts,
           'Assignment to ∇ is not allowed.'
       vars = node.scopeNode.vars
       if (v = vars["set_#{name}"])?.type is 'F'
@@ -326,7 +325,7 @@ toJavaScript = (node) ->
       }])"
 
     when 'expr'
-      throw Error 'No "expr" nodes are expected at this stage.'
+      die 'No "expr" nodes are expected at this stage.'
 
     when 'vector'
       n = node.length - 1
@@ -364,34 +363,24 @@ toJavaScript = (node) ->
       die "Unrecognised node type, '#{node[0]}'"
 
 # Used to report the AST node where the error happened
-@CompilerError =
-  class CompilerError extends Error
-    constructor: (@astNode, opts, @message, args...) ->
-      assert @astNode instanceof Array
-      assert typeof opts is 'object'
-      assert typeof @message is 'string'
-      assert not args.length
-      {@aplCode} = opts
-    toString: ->
-      s = 'CompilerError: ' + @message
-      if @astNode.line?
-        s += "\n:#{@astNode.line}:#{@astNode.col}"
-        if @aplCode
-          s += (
-            '\n' + @aplCode.split('\n')[@astNode.line - 1] +
-            '\n' + repeat('_', @astNode.col - 1) + '^'
-          )
-      s
+compilerError = (node, opts, message) ->
+  die message,
+    name: 'APLCompilerError'
+    file: opts.file
+    line: node.startLine
+    col: node.startCol
+    aplCode: opts.aplCode
 
 # # Public interface to this module
 
 @nodes = nodes = (aplCode, opts = {}) ->
-  ast = parser.parse aplCode
-  ast.aplCode = aplCode
+  opts.aplCode = aplCode
+  ast = parser.parse aplCode, opts
   resolveExprs ast, opts
   ast
 
 @compile = compile = (aplCode, opts = {}) ->
+  opts.aplCode = aplCode
   jsCode = toJavaScript nodes aplCode, opts
   if opts.embedded
     jsCode = """
@@ -404,6 +393,7 @@ toJavaScript = (node) ->
 
 
 @exec = (aplCode, opts = {}) ->
+  opts.aplCode = aplCode
   (new Function """
     var _ = arguments[0];
     #{compile aplCode, opts}

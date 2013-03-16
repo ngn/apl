@@ -6,7 +6,7 @@
 
 optimist = require 'optimist'
 fs = require 'fs'
-{nodes, compile, exec, CompilerError} = require './compiler'
+{nodes, compile, exec} = require './compiler'
 
 @main = ->
 
@@ -93,18 +93,12 @@ fs = require 'fs'
     return
 
   # Compile.
-  try
-    if isCoffeeScript
-      cs = require 'coffee-script'
-      pp = require 'coffee-subscript'
-      jsCode = cs.compile pp.preprocess aplCode, opts
-    else
-      jsCode = compile aplCode, opts
-  catch e
-    process.stderr.write(
-      (if e instanceof CompilerError then e.toString() else e.stack) + '\n'
-    )
-    process.exit 1
+  if isCoffeeScript
+    cs = require 'coffee-script'
+    pp = require 'coffee-subscript'
+    jsCode = cs.compile pp.preprocess aplCode, opts
+  else
+    jsCode = compile aplCode, opts
 
   # Print or execute compiler output
   #

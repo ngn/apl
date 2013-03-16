@@ -54,8 +54,27 @@
 @all = (xs) -> (for x in xs when not x then return false); true
 
 # `repeat(s, n)` catenates `n` instances of a string `s`.
-@repeat = (s, n) -> r = ''; (for [0...n] then r += s); r
+@repeat = repeat = (s, n) -> r = ''; (for [0...n] then r += s); r
 
-@die = (s) -> throw Error s
 @assert = assert = (flag, s = 'Assertion failed') ->
   if not flag then throw Error s
+
+@die = (message, opts = {}, args...) ->
+  assert typeof message is 'string'
+  assert typeof opts is 'object'
+  assert not args.length
+  if opts.aplCode? and opts.line? and opts.col?
+    assert typeof opts.aplCode is 'string'
+    assert typeof opts.line is 'number'
+    assert typeof opts.col is 'number'
+    assert typeof opts.file in ['string', 'undefined']
+    message += """
+      \n#{opts.file or '-'}:##{opts.line}:#{opts.col}
+      #{opts.aplCode.split('\n')[opts.line - 1]}
+      #{repeat('_', opts.col - 1)}^
+    """
+  e = Error message
+  for k, v of opts
+    assert k in ['aplCode', 'line', 'col', 'file', 'name']
+    e[k] = v
+  throw e
