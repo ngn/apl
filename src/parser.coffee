@@ -43,12 +43,6 @@ lexer = require './lexer'
     return
 
   parserError = (message) ->
-    console.info
-      name: 'APLParserError'
-      file: opts.file
-      line: token.startLine
-      col: token.startCol
-      aplCode: aplCode
     die message,
       name: 'APLParserError'
       file: opts.file
