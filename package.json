@@ -25,7 +25,8 @@
     "docco": "",
     "jade": "",
     "glob": "",
-    "ake": ""
+    "ake": "",
+    "async": ""
   },
   "engines": {"node": ""},
   "licenses": [
