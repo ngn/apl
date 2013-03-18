@@ -25,31 +25,16 @@
 })();
 defModule('./compiler', function (exports, require) {
   (function() {
-  var Complex, all, assert, assignParents, closestScope, compile, die, inherit, nodes, parser, resolveExprs, toJavaScript, vocabulary, _ref;
+  var all, assert, compile, compilerError, die, inherit, nodes, parser, resolveExprs, toJavaScript, vocabulary, _ref;
 
   parser = require('./parser');
 
   vocabulary = require('./vocabulary');
 
-  Complex = require('./complex').Complex;
-
   _ref = require('./helpers'), inherit = _ref.inherit, die = _ref.die, assert = _ref.assert, all = _ref.all;
 
-  assignParents = function(node) {
-    var child, _i, _len, _ref1;
-    _ref1 = node.slice(1);
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      child = _ref1[_i];
-      if (!(child)) {
-        continue;
-      }
-      assignParents(child);
-      child.parent = node;
-    }
-  };
-
   resolveExprs = function(ast, opts) {
-    var h, k, m, node, queue, scopeCounter, scopeNode, v, vars, visit, _i, _j, _len, _len1, _ref1, _ref2;
+    var k, m, node, queue, scopeCounter, scopeNode, v, varInfo, vars, visit, _i, _j, _len, _len1, _ref1, _ref2;
     if (opts == null) {
       opts = {};
     }
@@ -69,21 +54,21 @@ defModule('./compiler', function (exports, require) {
     };
     for (k in vocabulary) {
       v = vocabulary[k];
-      ast.vars[k] = h = {
+      ast.vars[k] = varInfo = {
         type: 'X',
         jsCode: "_[" + (JSON.stringify(k)) + "]"
       };
       if (typeof v === 'function') {
-        h.type = 'F';
+        varInfo.type = 'F';
         if ((m = v.aplMetaInfo) != null) {
           if (m.isPrefixAdverb) {
-            h.isPrefixAdverb = true;
+            varInfo.isPrefixAdverb = true;
           }
           if (m.isPostfixAdverb) {
-            h.isPostfixAdverb = true;
+            varInfo.isPostfixAdverb = true;
           }
           if (m.isConjunction) {
-            h.isConjunction = true;
+            varInfo.isConjunction = true;
           }
         }
         if (/^[gs]et_.*/.test(k)) {
@@ -109,7 +94,8 @@ defModule('./compiler', function (exports, require) {
     while (queue.length) {
       vars = (scopeNode = queue.shift()).vars;
       visit = function(node) {
-        var a, c, child, i, j, name, t, t1, x, _j, _k, _len1, _len2, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref2, _ref20, _ref21, _ref22, _ref23, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+        var a, c, h, i, j, name, t, t1, x, _j, _k, _len1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref2, _ref20, _ref21, _ref22, _ref23, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+        node.scopeNode = scopeNode;
         switch (node[0]) {
           case 'body':
             node.vars = inherit(vars);
@@ -120,13 +106,16 @@ defModule('./compiler', function (exports, require) {
             visit(node[1]);
             return visit(node[2]);
           case 'assign':
-            assert(node[1].constructor === Array);
-            assert(node[1][0] === 'symbol', 'Compound assignment is not supported.');
+            if (!(node[1] instanceof Array && node[1][0] === 'symbol')) {
+              compilerError(node, opts, 'Compound assignment is not supported.');
+            }
             name = node[1][1];
             assert(typeof name === 'string');
             h = visit(node[2]);
             if (vars[name]) {
-              assert(vars[name].type === h.type, ("Inconsistent usage of symbol '" + name + "', it is ") + "assigned both data and functions");
+              if (vars[name].type !== h.type) {
+                compilerError(node, opts, ("Inconsistent usage of symbol '" + name + "', it is ") + "assigned both data and functions.");
+              }
             } else {
               vars[name] = {
                 type: h.type,
@@ -143,7 +132,9 @@ defModule('./compiler', function (exports, require) {
               };
             } else {
               v = vars[name];
-              assert(v, "Symbol '" + name + "' referenced before assignment");
+              if (!v) {
+                compilerError(node, opts, "Symbol '" + name + "' is referenced before assignment.");
+              }
               v.used = true;
               return v;
             }
@@ -168,36 +159,30 @@ defModule('./compiler', function (exports, require) {
                 continue;
               }
               t = visit(c);
-              assert(t.type === 'X', 'Only data can be used as an index');
+              if (t.type !== 'X') {
+                compilerError(node, opts, 'Only expressions of type data can be used as an index.');
+              }
             }
             return t1;
           case 'expr':
             a = node.slice(1);
-            a.reverse();
-            h = (function() {
-              var _k, _len2, _results;
-              _results = [];
-              for (_k = 0, _len2 = a.length; _k < _len2; _k++) {
-                child = a[_k];
-                _results.push(visit(child));
-              }
-              return _results;
-            })();
-            h.reverse();
-            a.reverse();
+            h = Array(a.length);
+            for (i = _k = _ref4 = a.length - 1; _ref4 <= 0 ? _k <= 0 : _k >= 0; i = _ref4 <= 0 ? ++_k : --_k) {
+              h[i] = visit(a[i]);
+            }
             i = 0;
             while (i < a.length - 1) {
-              if ((h[i].type === (_ref4 = h[i + 1].type) && _ref4 === 'X')) {
+              if ((h[i].type === (_ref5 = h[i + 1].type) && _ref5 === 'X')) {
                 j = i + 2;
                 while (j < a.length && h[j].type === 'X') {
                   j++;
                 }
-                [].splice.apply(a, [i, j - i].concat(_ref5 = [['vector'].concat(a.slice(i, j))])), _ref5;
-                [].splice.apply(h, [i, j - i].concat(_ref6 = [
+                [].splice.apply(a, [i, j - i].concat(_ref6 = [['vector'].concat(a.slice(i, j))])), _ref6;
+                [].splice.apply(h, [i, j - i].concat(_ref7 = [
                   {
                     type: 'X'
                   }
-                ])), _ref6;
+                ])), _ref7;
               } else {
                 i++;
               }
@@ -205,24 +190,24 @@ defModule('./compiler', function (exports, require) {
             i = a.length - 2;
             while (--i >= 0) {
               if (h[i + 1].isConjunction && (h[i].type === 'F' || h[i + 2].type === 'F')) {
-                [].splice.apply(a, [i, (i + 3) - i].concat(_ref7 = [['conjunction'].concat(a.slice(i, i + 3))])), _ref7;
-                [].splice.apply(h, [i, (i + 3) - i].concat(_ref8 = [
+                [].splice.apply(a, [i, (i + 3) - i].concat(_ref8 = [['conjunction'].concat(a.slice(i, i + 3))])), _ref8;
+                [].splice.apply(h, [i, (i + 3) - i].concat(_ref9 = [
                   {
                     type: 'F'
                   }
-                ])), _ref8;
+                ])), _ref9;
                 i--;
               }
             }
             i = 0;
             while (i < a.length - 1) {
               if (h[i].type === 'F' && h[i + 1].isPostfixAdverb) {
-                [].splice.apply(a, [i, (i + 2) - i].concat(_ref9 = [['postfixAdverb'].concat(a.slice(i, i + 2))])), _ref9;
-                [].splice.apply(h, [i, (i + 2) - i].concat(_ref10 = [
+                [].splice.apply(a, [i, (i + 2) - i].concat(_ref10 = [['postfixAdverb'].concat(a.slice(i, i + 2))])), _ref10;
+                [].splice.apply(h, [i, (i + 2) - i].concat(_ref11 = [
                   {
                     type: 'F'
                   }
-                ])), _ref10;
+                ])), _ref11;
               } else {
                 i++;
               }
@@ -230,15 +215,15 @@ defModule('./compiler', function (exports, require) {
             i = a.length - 1;
             while (--i >= 0) {
               if (h[i].isPrefixAdverb && h[i + 1].type === 'F') {
-                [].splice.apply(a, [i, (i + 2) - i].concat(_ref11 = [['prefixAdverb'].concat(a.slice(i, i + 2))])), _ref11;
-                [].splice.apply(h, [i, (i + 2) - i].concat(_ref12 = [
+                [].splice.apply(a, [i, (i + 2) - i].concat(_ref12 = [['prefixAdverb'].concat(a.slice(i, i + 2))])), _ref12;
+                [].splice.apply(h, [i, (i + 2) - i].concat(_ref13 = [
                   {
                     type: 'F'
                   }
-                ])), _ref12;
+                ])), _ref13;
               }
             }
-            if (h.length === 2 && (h[0].type === (_ref13 = h[1].type) && _ref13 === 'F')) {
+            if (h.length === 2 && (h[0].type === (_ref14 = h[1].type) && _ref14 === 'F')) {
               a = [['hook'].concat(a)];
               h = [
                 {
@@ -247,10 +232,10 @@ defModule('./compiler', function (exports, require) {
               ];
             }
             if (h.length >= 3 && h.length % 2 === 1 && all((function() {
-              var _k, _len2, _results;
+              var _l, _len2, _results;
               _results = [];
-              for (_k = 0, _len2 = h.length; _k < _len2; _k++) {
-                x = h[_k];
+              for (_l = 0, _len2 = h.length; _l < _len2; _l++) {
+                x = h[_l];
                 _results.push(x.type === 'F');
               }
               return _results;
@@ -263,35 +248,29 @@ defModule('./compiler', function (exports, require) {
               ];
             }
             if (h[h.length - 1].type === 'F') {
-              assert(h.length <= 1, 'Trailing function in expression');
+              if (h.length > 1) {
+                compilerError(a[h.length - 1], opts, 'Trailing function in expression');
+              }
             } else {
               while (h.length > 1) {
                 if (h.length === 2 || h[h.length - 3].type === 'F') {
-                  [].splice.apply(a, [(_ref14 = h.length - 2), 9e9].concat(_ref15 = [['monadic'].concat(a.slice(h.length - 2))])), _ref15;
-                  [].splice.apply(h, [(_ref16 = h.length - 2), 9e9].concat(_ref17 = [
+                  [].splice.apply(a, [(_ref15 = h.length - 2), 9e9].concat(_ref16 = [['monadic'].concat(a.slice(h.length - 2))])), _ref16;
+                  [].splice.apply(h, [(_ref17 = h.length - 2), 9e9].concat(_ref18 = [
                     {
                       type: 'X'
                     }
-                  ])), _ref17;
+                  ])), _ref18;
                 } else {
-                  [].splice.apply(a, [(_ref18 = h.length - 3), 9e9].concat(_ref19 = [['dyadic'].concat(a.slice(h.length - 3))])), _ref19;
-                  [].splice.apply(h, [(_ref20 = h.length - 3), 9e9].concat(_ref21 = [
+                  [].splice.apply(a, [(_ref19 = h.length - 3), 9e9].concat(_ref20 = [['dyadic'].concat(a.slice(h.length - 3))])), _ref20;
+                  [].splice.apply(h, [(_ref21 = h.length - 3), 9e9].concat(_ref22 = [
                     {
                       type: 'X'
                     }
-                  ])), _ref21;
+                  ])), _ref22;
                 }
               }
             }
-            [].splice.apply(node, [0, 9e9].concat(_ref22 = a[0])), _ref22;
-            a[0].parent = null;
-            _ref23 = node.slice(1);
-            for (_k = 0, _len2 = _ref23.length; _k < _len2; _k++) {
-              c = _ref23[_k];
-              if (c) {
-                c.parent = node;
-              }
-            }
+            [].splice.apply(node, [0, 9e9].concat(_ref23 = a[0])), _ref23;
             return h[0];
           default:
             return die("Unrecognised node type, '" + node[0] + "'");
@@ -325,13 +304,15 @@ defModule('./compiler', function (exports, require) {
       case 'guard':
         return "if (_['⎕bool'](" + (toJavaScript(node[1])) + ")) {\n  return " + (toJavaScript(node[2])) + ";\n}";
       case 'assign':
-        assert(node[1].constructor === Array);
-        assert(node[1].length === 2);
-        assert(node[1][0] === 'symbol');
+        if (!(node[1] instanceof Array && node[1].length === 2 && node[1][0] === 'symbol')) {
+          compilerError(node, opts, 'Compound assignment is not supported.');
+        }
         name = node[1][1];
         assert(typeof name === 'string');
-        assert(name !== '∇', 'Assignment to ∇ is not allowed.');
-        vars = closestScope(node).vars;
+        if (name === '∇') {
+          compilerError(node, opts, 'Assignment to ∇ is not allowed.');
+        }
+        vars = node.scopeNode.vars;
         if (((_ref2 = (v = vars["set_" + name])) != null ? _ref2.type : void 0) === 'F') {
           v.used = true;
           return "" + v.jsCode + "(" + (toJavaScript(node[2])) + ")";
@@ -341,7 +322,7 @@ defModule('./compiler', function (exports, require) {
         break;
       case 'symbol':
         name = node[1];
-        vars = closestScope(node).vars;
+        vars = node.scopeNode.vars;
         if (((_ref3 = (v = vars["get_" + name])) != null ? _ref3.type : void 0) === 'F') {
           v.used = true;
           return "" + v.jsCode + "()";
@@ -451,11 +432,14 @@ defModule('./compiler', function (exports, require) {
     }
   };
 
-  closestScope = function(node) {
-    while (node[0] !== 'body') {
-      node = node.parent;
-    }
-    return node;
+  compilerError = function(node, opts, message) {
+    return die(message, {
+      name: 'APLCompilerError',
+      file: opts.file,
+      line: node.startLine,
+      col: node.startCol,
+      aplCode: opts.aplCode
+    });
   };
 
   this.nodes = nodes = function(aplCode, opts) {
@@ -463,8 +447,8 @@ defModule('./compiler', function (exports, require) {
     if (opts == null) {
       opts = {};
     }
-    ast = parser.parse(aplCode);
-    assignParents(ast);
+    opts.aplCode = aplCode;
+    ast = parser.parse(aplCode, opts);
     resolveExprs(ast, opts);
     return ast;
   };
@@ -474,6 +458,7 @@ defModule('./compiler', function (exports, require) {
     if (opts == null) {
       opts = {};
     }
+    opts.aplCode = aplCode;
     jsCode = toJavaScript(nodes(aplCode, opts));
     if (opts.embedded) {
       jsCode = "var _ = require('apl').createGlobalContext(),\n    _a = arguments[0],\n    _w = arguments[1];\n" + jsCode;
@@ -485,6 +470,7 @@ defModule('./compiler', function (exports, require) {
     if (opts == null) {
       opts = {};
     }
+    opts.aplCode = aplCode;
     return (new Function("var _ = arguments[0];\n" + (compile(aplCode, opts))))(inherit(vocabulary, opts.extraContext));
   };
 
@@ -769,7 +755,8 @@ defModule('./formatter', function (exports, require) {
 });
 defModule('./helpers', function (exports, require) {
   (function() {
-  var assert, isSimple, prod, prototypeOf, shapeOf, withPrototype, withShape;
+  var assert, isSimple, prod, prototypeOf, repeat, shapeOf, withPrototype, withShape,
+    __slice = [].slice;
 
   this.inherit = function(x, extraProperties) {
     var f, k, r, v;
@@ -872,17 +859,13 @@ defModule('./helpers', function (exports, require) {
     return true;
   };
 
-  this.repeat = function(s, n) {
+  this.repeat = repeat = function(s, n) {
     var r, _i;
     r = '';
     for (_i = 0; 0 <= n ? _i < n : _i > n; 0 <= n ? _i++ : _i--) {
       r += s;
     }
     return r;
-  };
-
-  this.die = function(s) {
-    throw Error(s);
   };
 
   this.assert = assert = function(flag, s) {
@@ -894,18 +877,48 @@ defModule('./helpers', function (exports, require) {
     }
   };
 
+  this.die = function() {
+    var args, e, k, message, opts, v, _ref;
+    message = arguments[0], opts = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+    if (opts == null) {
+      opts = {};
+    }
+    assert(typeof message === 'string');
+    assert(typeof opts === 'object');
+    assert(!args.length);
+    if ((opts.aplCode != null) && (opts.line != null) && (opts.col != null)) {
+      assert(typeof opts.aplCode === 'string');
+      assert(typeof opts.line === 'number');
+      assert(typeof opts.col === 'number');
+      assert((_ref = typeof opts.file) === 'string' || _ref === 'undefined');
+      message += "\n" + (opts.file || '-') + ":#" + opts.line + ":" + opts.col + "\n" + (opts.aplCode.split('\n')[opts.line - 1]) + "\n" + (repeat('_', opts.col - 1)) + "^";
+    }
+    e = Error(message);
+    for (k in opts) {
+      v = opts[k];
+      assert(k === 'aplCode' || k === 'line' || k === 'col' || k === 'file' || k === 'name');
+      e[k] = v;
+    }
+    throw e;
+  };
+
 }).call(this);
 
   return exports;
 });
 defModule('./lexer', function (exports, require) {
   (function() {
-  var tokenDefs;
+  var die, tokenDefs;
+
+  die = require('./helpers').die;
 
   tokenDefs = [['-', /^(?:[ \t]+|[⍝\#].*)+/], ['newline', /^[\n\r]+/], ['separator', /^[◇⋄]/], ['number', /^¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯)(?:j¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯))?/i], ['string', /^(?:'(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*")+/], ['', /^[\(\)\[\]\{\}:;←]/], ['embedded', /^«[^»]*»/], ['symbol', /^(?:∘\.|⎕?[a-z_][0-9a-z_]*|[^¯'":«»])/i]];
 
-  this.tokenize = function(aplCode) {
+  this.tokenize = function(aplCode, opts) {
     var col, line, stack;
+    if (opts == null) {
+      opts = {};
+    }
     line = col = 1;
     stack = ['{'];
     return {
@@ -934,7 +947,13 @@ defModule('./lexer', function (exports, require) {
             break;
           }
           if (!type) {
-            throw Error("Lexical error at " + line + ":" + col);
+            die('Unrecognised token', {
+              name: 'APLLexicalError',
+              file: opts.file,
+              line: line,
+              col: col,
+              aplCode: opts.aplCode
+            });
           }
           a = m[0].split('\n');
           line += a.length - 1;
@@ -968,13 +987,18 @@ defModule('./lexer', function (exports, require) {
 });
 defModule('./parser', function (exports, require) {
   (function() {
-  var lexer,
+  var die, lexer,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   lexer = require('./lexer');
 
-  this.parse = function(aplCode) {
-    var consume, demand, fail, parseBody, parseExpr, parseIndexable, parseIndices, parseItem, token, tokenStream;
+  die = require('./helpers').die;
+
+  this.parse = function(aplCode, opts) {
+    var consume, demand, parseBody, parseExpr, parseIndexable, parseIndices, parseItem, parserError, token, tokenStream;
+    if (opts == null) {
+      opts = {};
+    }
     tokenStream = lexer.tokenize(aplCode);
     token = tokenStream.next();
     consume = function(tt) {
@@ -985,12 +1009,18 @@ defModule('./parser', function (exports, require) {
     };
     demand = function(tt) {
       if (token.type !== tt) {
-        fail("Expected " + tt + " but got " + token.type);
+        parserError("Expected token of type '" + tt + "' but got '" + token.type + "'");
       }
       token = tokenStream.next();
     };
-    fail = function(message) {
-      throw Error("Syntax error: " + message + " at " + token.startLine + ":" + token.startCol + "\n" + (aplCode.split('\n')[token.startLine - 1]) + "\n" + (new Array(token.startCol).join('-') + '^'));
+    parserError = function(message) {
+      return die(message, {
+        name: 'APLParserError',
+        file: opts.file,
+        line: token.startLine,
+        col: token.startCol,
+        aplCode: aplCode
+      });
     };
     parseBody = function() {
       var body, expr, _ref, _ref1;
@@ -1065,7 +1095,7 @@ defModule('./parser', function (exports, require) {
         demand('}');
         return ['lambda', b];
       } else {
-        return fail("Expected indexable but got " + token.type);
+        return parserError("Encountered unexpected token of type '" + token.type + "'");
       }
     };
     return parseBody();
