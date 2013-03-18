@@ -36,7 +36,7 @@ task 'test', 'Run doctests', ->
   ]
 
 task 'docs', 'Generate literate documentation with docco', ->
-  ake buildActions.concat [
+  ake [
     docco  'src/*.coffee', 'docs'
   ]
 
