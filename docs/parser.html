@@ -1,80 +1,249 @@
-<!DOCTYPE html>  <html> <head>   <title>parser.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="apl.html">                 apl.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="compiler.html">                 compiler.coffee               </a>                                           <a class="source" href="complex.html">                 complex.coffee               </a>                                           <a class="source" href="formatter.html">                 formatter.coffee               </a>                                           <a class="source" href="helpers.html">                 helpers.coffee               </a>                                           <a class="source" href="lexer.html">                 lexer.coffee               </a>                                           <a class="source" href="parser.html">                 parser.coffee               </a>                                           <a class="source" href="vocabulary.html">                 vocabulary.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               parser.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nv">lexer = </span><span class="nx">require</span> <span class="s">&#39;./lexer&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>The parser builds an AST from a stream of tokens.</p>
+<!DOCTYPE html>
 
+<html>
+<head>
+  <title>parser.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="apl.html">
+                apl.coffee
+              </a>
+            
+              
+              <a class="source" href="command.html">
+                command.coffee
+              </a>
+            
+              
+              <a class="source" href="compiler.html">
+                compiler.coffee
+              </a>
+            
+              
+              <a class="source" href="complex.html">
+                complex.coffee
+              </a>
+            
+              
+              <a class="source" href="formatter.html">
+                formatter.coffee
+              </a>
+            
+              
+              <a class="source" href="helpers.html">
+                helpers.coffee
+              </a>
+            
+              
+              <a class="source" href="lexer.html">
+                lexer.coffee
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.coffee
+              </a>
+            
+              
+              <a class="source" href="vocabulary.html">
+                vocabulary.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>parser.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>lexer = require <span class="string">'./lexer'</span>
+{die} = require <span class="string">'./helpers'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>The parser builds an AST from a stream of tokens.</p>
 <p>A node in the AST is a JavaScript array whose first item is a string
 indicating the type of node.  The rest of the items are either the children
 or they represent the content of a node.  For instance <code>(1 + 2) × 3 4</code> will
 produce the tree:</p>
-
-<pre><code>['body',
-  ['expr',
-    ['expr',
-      ['number', '1'],
-      ['symbol', '+'],
-      ['number', '2']],
-    ['symbol', '×'],
-    ['number', '3'],
-    ['number', '4']]]
-</code></pre>
-
-<p>Note, that at right after parsing stage we don't yet know which symbols
+<pre><code>[&#39;body&#39;,
+  [&#39;expr&#39;,
+    [&#39;expr&#39;,
+      [&#39;number&#39;, &#39;1&#39;],
+      [&#39;symbol&#39;, &#39;+&#39;],
+      [&#39;number&#39;, &#39;2&#39;]],
+    [&#39;symbol&#39;, &#39;×&#39;],
+    [&#39;number&#39;, &#39;3&#39;],
+    [&#39;number&#39;, &#39;4&#39;]]]</code></pre>
+<p>Note, that at right after parsing stage we don&#39;t yet know which symbols
 represent verbs and which represent nouns.  This will be resolved later in
-the <code>compiler</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="vi">@parse = </span><span class="nf">(aplCode) -&gt;</span>
-  <span class="nv">tokenStream = </span><span class="nx">lexer</span><span class="p">.</span><span class="nx">tokenize</span> <span class="nx">aplCode</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>A single-token lookahead is used.  Variable <code>token</code> stores the upcoming
-token.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">token = </span><span class="nx">tokenStream</span><span class="p">.</span><span class="nx">next</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p><code>consume(tt)</code> consumes the upcoming token and returns a truthy value only
+the <code>compiler</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="property">@parse</span> = (aplCode, opts = {}) -&gt;
+  tokenStream = lexer.tokenize aplCode</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>A single-token lookahead is used.  Variable <code>token</code> stores the upcoming
+token.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  token = tokenStream.next()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p><code>consume(tt)</code> consumes the upcoming token and returns a truthy value only
 if its type matches <code>tt</code>.  A space-separated value of <code>tt</code> matches any of
-a set of token types.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">consume = </span><span class="nf">(tt) -&gt;</span>
-    <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="k">in</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">split</span> <span class="s">&#39; &#39;</span> <span class="k">then</span> <span class="nv">token = </span><span class="nx">tokenStream</span><span class="p">.</span><span class="nx">next</span><span class="p">()</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p><code>demand(tt)</code> is like <code>consume(tt)</code> but intolerant to a mismatch.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">demand = </span><span class="nf">(tt) -&gt;</span>
-    <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="o">isnt</span> <span class="nx">tt</span> <span class="k">then</span> <span class="nx">fail</span> <span class="s">&quot;Expected </span><span class="si">#{</span><span class="nx">tt</span><span class="si">}</span><span class="s"> but got </span><span class="si">#{</span><span class="nx">token</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="s">&quot;</span>
-    <span class="nv">token = </span><span class="nx">tokenStream</span><span class="p">.</span><span class="nx">next</span><span class="p">()</span>
-    <span class="k">return</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p><code>fail(message)</code> politely points at the location where things went awry.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">fail = </span><span class="nf">(message) -&gt;</span>
-    <span class="k">throw</span> <span class="nb">Error</span> <span class="s">&quot;&quot;&quot;</span>
-<span class="s">      Syntax error: </span><span class="si">#{</span><span class="nx">message</span><span class="si">}</span><span class="s"> at </span><span class="si">#{</span><span class="nx">token</span><span class="p">.</span><span class="nx">startLine</span><span class="si">}</span><span class="s">:</span><span class="si">#{</span><span class="nx">token</span><span class="p">.</span><span class="nx">startCol</span><span class="si">}</span><span class="s"></span>
-<span class="s">      </span><span class="si">#{</span><span class="nx">aplCode</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s">&#39;\n&#39;</span><span class="p">)[</span><span class="nx">token</span><span class="p">.</span><span class="nx">startLine</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s"></span>
-<span class="s">      </span><span class="si">#{</span><span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="nx">token</span><span class="p">.</span><span class="nx">startCol</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;^&#39;</span><span class="si">}</span><span class="s"></span>
-<span class="s">    &quot;&quot;&quot;</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>The parser is a recursive descent parser.  Various <code>parseXXX()</code> functions
-roughly correspond to the set of non-terminals in an imaginary grammar.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nv">parseBody = </span><span class="o">-&gt;</span>
-    <span class="nv">body = </span><span class="p">[</span><span class="s">&#39;body&#39;</span><span class="p">]</span>
-    <span class="nx">loop</span>
-      <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;eof&#39;</span><span class="p">,</span> <span class="s">&#39;}&#39;</span><span class="p">]</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">body</span>
-      <span class="k">while</span> <span class="nx">consume</span> <span class="s">&#39;separator newline&#39;</span> <span class="k">then</span> <span class="p">;</span>
-      <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="k">in</span> <span class="p">[</span><span class="s">&#39;eof&#39;</span><span class="p">,</span> <span class="s">&#39;}&#39;</span><span class="p">]</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">body</span>
-      <span class="nv">expr = </span><span class="nx">parseExpr</span><span class="p">()</span>
-      <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;:&#39;</span> <span class="k">then</span> <span class="nv">expr = </span><span class="p">[</span><span class="s">&#39;guard&#39;</span><span class="p">,</span> <span class="nx">expr</span><span class="p">,</span> <span class="nx">parseExpr</span><span class="p">()]</span>
-      <span class="nx">body</span><span class="p">.</span><span class="nx">push</span> <span class="nx">expr</span>
+a set of token types.</p>
 
-  <span class="nv">parseExpr = </span><span class="o">-&gt;</span>
-    <span class="nv">expr = </span><span class="p">[</span><span class="s">&#39;expr&#39;</span><span class="p">]</span>
-    <span class="nx">loop</span>
-      <span class="nv">item = </span><span class="nx">parseItem</span><span class="p">()</span>
-      <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;←&#39;</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">expr</span><span class="p">.</span><span class="nx">concat</span> <span class="p">[[</span><span class="s">&#39;assign&#39;</span><span class="p">,</span> <span class="nx">item</span><span class="p">,</span> <span class="nx">parseExpr</span><span class="p">()]]</span>
-      <span class="nx">expr</span><span class="p">.</span><span class="nx">push</span> <span class="nx">item</span>
-      <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="k">in</span> <span class="s">&#39;) ] } : ; separator newline eof&#39;</span><span class="p">.</span><span class="nx">split</span> <span class="s">&#39; &#39;</span>
-        <span class="k">return</span> <span class="nx">expr</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="title">consume</span></span> = (tt) -&gt;
+    <span class="keyword">if</span> token.type <span class="keyword">in</span> tt.split <span class="string">' '</span> <span class="keyword">then</span> token = tokenStream.next()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p><code>demand(tt)</code> is like <code>consume(tt)</code> but intolerant to a mismatch.</p>
 
-  <span class="nv">parseItem = </span><span class="o">-&gt;</span>
-    <span class="nv">item = </span><span class="nx">parseIndexable</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;[&#39;</span>
-      <span class="nv">item = </span><span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">,</span> <span class="nx">item</span><span class="p">].</span><span class="nx">concat</span> <span class="nx">parseIndices</span><span class="p">()</span>
-      <span class="nx">demand</span> <span class="s">&#39;]&#39;</span>
-    <span class="nx">item</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="title">demand</span></span> = (tt) -&gt;
+    <span class="keyword">if</span> token.type <span class="keyword">isnt</span> tt
+      parserError <span class="string">"Expected token of type '<span class="subst">#{tt}</span>' but got '<span class="subst">#{token.type}</span>'"</span>
+    token = tokenStream.next()
+    <span class="keyword">return</span>
 
-  <span class="nv">parseIndices = </span><span class="o">-&gt;</span>
-    <span class="nv">indices = </span><span class="p">[]</span>
-    <span class="nx">loop</span>
-      <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;;&#39;</span> <span class="k">then</span> <span class="nx">indices</span><span class="p">.</span><span class="nx">push</span> <span class="kc">null</span>
-      <span class="k">else</span> <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;]&#39;</span> <span class="k">then</span> <span class="p">(</span><span class="nx">indices</span><span class="p">.</span><span class="nx">push</span> <span class="kc">null</span><span class="p">;</span> <span class="k">return</span> <span class="nx">indices</span><span class="p">)</span>
-      <span class="k">else</span>
-        <span class="nx">indices</span><span class="p">.</span><span class="nx">push</span> <span class="nx">parseExpr</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nx">token</span><span class="p">.</span><span class="nx">type</span> <span class="o">is</span> <span class="s">&#39;]&#39;</span> <span class="k">then</span> <span class="k">return</span> <span class="nx">indices</span>
-        <span class="nx">demand</span> <span class="s">&#39;;&#39;</span>
+  <span class="function"><span class="title">parserError</span></span> = (message) -&gt;
+    die message,
+      name: <span class="string">'APLParserError'</span>
+      file: opts.file
+      line: token.startLine
+      col: token.startCol
+      aplCode: aplCode</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>The parser is a recursive descent parser.  Various <code>parseXXX()</code> functions
+roughly correspond to the set of non-terminals in an imaginary grammar.</p>
 
-  <span class="nv">parseIndexable = </span><span class="o">-&gt;</span>
-    <span class="nv">t = </span><span class="nx">token</span>
-    <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;number string symbol embedded&#39;</span> <span class="k">then</span> <span class="p">[</span><span class="nx">t</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span> <span class="nx">t</span><span class="p">.</span><span class="nx">value</span><span class="p">]</span>
-    <span class="k">else</span> <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;(&#39;</span> <span class="k">then</span> <span class="p">(</span><span class="nv">expr = </span><span class="nx">parseExpr</span><span class="p">();</span> <span class="nx">demand</span> <span class="s">&#39;)&#39;</span><span class="p">;</span> <span class="nx">expr</span><span class="p">)</span>
-    <span class="k">else</span> <span class="k">if</span> <span class="nx">consume</span> <span class="s">&#39;{&#39;</span> <span class="k">then</span> <span class="p">(</span><span class="nv">b = </span><span class="nx">parseBody</span><span class="p">();</span> <span class="nx">demand</span> <span class="s">&#39;}&#39;</span><span class="p">;</span> <span class="p">[</span><span class="s">&#39;lambda&#39;</span><span class="p">,</span> <span class="nx">b</span><span class="p">])</span>
-    <span class="k">else</span> <span class="nx">fail</span> <span class="s">&quot;Expected indexable but got </span><span class="si">#{</span><span class="nx">token</span><span class="p">.</span><span class="nx">type</span><span class="si">}</span><span class="s">&quot;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="function"><span class="title">parseBody</span></span> = -&gt;
+    body = [<span class="string">'body'</span>]
+    <span class="keyword">loop</span>
+      <span class="keyword">if</span> token.type <span class="keyword">in</span> [<span class="string">'eof'</span>, <span class="string">'}'</span>] <span class="keyword">then</span> <span class="keyword">return</span> body
+      <span class="keyword">while</span> consume <span class="string">'separator newline'</span> <span class="keyword">then</span> ;
+      <span class="keyword">if</span> token.type <span class="keyword">in</span> [<span class="string">'eof'</span>, <span class="string">'}'</span>] <span class="keyword">then</span> <span class="keyword">return</span> body
+      expr = parseExpr()
+      <span class="keyword">if</span> consume <span class="string">':'</span> <span class="keyword">then</span> expr = [<span class="string">'guard'</span>, expr, parseExpr()]
+      body.push expr
 
-  <span class="nx">parseBody</span><span class="p">()</span>
+  <span class="function"><span class="title">parseExpr</span></span> = -&gt;
+    expr = [<span class="string">'expr'</span>]
+    <span class="keyword">loop</span>
+      item = parseItem()
+      <span class="keyword">if</span> consume <span class="string">'←'</span> <span class="keyword">then</span> <span class="keyword">return</span> expr.concat [[<span class="string">'assign'</span>, item, parseExpr()]]
+      expr.push item
+      <span class="keyword">if</span> token.type <span class="keyword">in</span> <span class="string">') ] } : ; separator newline eof'</span>.split <span class="string">' '</span>
+        <span class="keyword">return</span> expr
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
+  <span class="function"><span class="title">parseItem</span></span> = -&gt;
+    item = parseIndexable()
+    <span class="keyword">if</span> consume <span class="string">'['</span>
+      item = [<span class="string">'index'</span>, item].concat parseIndices()
+      demand <span class="string">']'</span>
+    item
+
+  <span class="function"><span class="title">parseIndices</span></span> = -&gt;
+    indices = []
+    <span class="keyword">loop</span>
+      <span class="keyword">if</span> consume <span class="string">';'</span> <span class="keyword">then</span> indices.push <span class="literal">null</span>
+      <span class="keyword">else</span> <span class="keyword">if</span> token.type <span class="keyword">is</span> <span class="string">']'</span> <span class="keyword">then</span> (indices.push <span class="literal">null</span>; <span class="keyword">return</span> indices)
+      <span class="keyword">else</span>
+        indices.push parseExpr()
+        <span class="keyword">if</span> token.type <span class="keyword">is</span> <span class="string">']'</span> <span class="keyword">then</span> <span class="keyword">return</span> indices
+        demand <span class="string">';'</span>
+
+  <span class="function"><span class="title">parseIndexable</span></span> = -&gt;
+    t = token
+    <span class="keyword">if</span> consume <span class="string">'number string symbol embedded'</span> <span class="keyword">then</span> [t.type, t.value]
+    <span class="keyword">else</span> <span class="keyword">if</span> consume <span class="string">'('</span> <span class="keyword">then</span> (expr = parseExpr(); demand <span class="string">')'</span>; expr)
+    <span class="keyword">else</span> <span class="keyword">if</span> consume <span class="string">'{'</span> <span class="keyword">then</span> (b = parseBody(); demand <span class="string">'}'</span>; [<span class="string">'lambda'</span>, b])
+    <span class="keyword">else</span> parserError <span class="string">"Encountered unexpected token of type '<span class="subst">#{token.type}</span>'"</span>
+
+  parseBody()</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

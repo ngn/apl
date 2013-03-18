@@ -1,81 +1,282 @@
-<!DOCTYPE html>  <html> <head>   <title>complex.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="apl.html">                 apl.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="compiler.html">                 compiler.coffee               </a>                                           <a class="source" href="complex.html">                 complex.coffee               </a>                                           <a class="source" href="formatter.html">                 formatter.coffee               </a>                                           <a class="source" href="helpers.html">                 helpers.coffee               </a>                                           <a class="source" href="lexer.html">                 lexer.coffee               </a>                                           <a class="source" href="parser.html">                 parser.coffee               </a>                                           <a class="source" href="vocabulary.html">                 vocabulary.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               complex.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p><code>complex.coffee</code> is a rather meagre implementation of complex numbers.  Only
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>complex.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="apl.html">
+                apl.coffee
+              </a>
+            
+              
+              <a class="source" href="command.html">
+                command.coffee
+              </a>
+            
+              
+              <a class="source" href="compiler.html">
+                compiler.coffee
+              </a>
+            
+              
+              <a class="source" href="complex.html">
+                complex.coffee
+              </a>
+            
+              
+              <a class="source" href="formatter.html">
+                formatter.coffee
+              </a>
+            
+              
+              <a class="source" href="helpers.html">
+                helpers.coffee
+              </a>
+            
+              
+              <a class="source" href="lexer.html">
+                lexer.coffee
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.coffee
+              </a>
+            
+              
+              <a class="source" href="vocabulary.html">
+                vocabulary.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>complex.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p><code>complex.coffee</code> is a rather meagre implementation of complex numbers.  Only
 basic arithmetic operations are supported.</p>
-
 <p>More importantly, <code>complex.coffee</code> demonstrates how one can implement
-custom APL objects.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">{</span><span class="nx">die</span><span class="p">,</span> <span class="nx">assert</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">&#39;./helpers&#39;</span>
+custom APL objects.</p>
 
-<span class="nv">C = </span><span class="nf">(re, im) -&gt;</span> <span class="k">if</span> <span class="nx">im</span> <span class="k">then</span> <span class="k">new</span> <span class="nx">Complex</span> <span class="nx">re</span><span class="p">,</span> <span class="nx">im</span> <span class="k">else</span> <span class="nx">re</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>{die, assert} = require <span class="string">'./helpers'</span>
 
-<span class="vi">@Complex = </span><span class="k">class</span> <span class="nx">Complex</span>
+<span class="function"><span class="title">C</span></span> = (re, im) -&gt; <span class="keyword">if</span> im <span class="keyword">then</span> <span class="keyword">new</span> Complex re, im <span class="keyword">else</span> re
 
-  <span class="nv">constructor: </span><span class="nf">(@re = 0, @im = 0) -&gt;</span>
-    <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">@re</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span>
-    <span class="nx">assert</span> <span class="k">typeof</span> <span class="nx">@im</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span>
+<span class="property">@Complex</span> = <span class="class"><span class="keyword">class</span> <span class="title">Complex</span></span>
 
-  <span class="nv">toString: </span><span class="o">-&gt;</span>
-    <span class="s">&quot;</span><span class="si">#{</span><span class="nx">@re</span><span class="si">}</span><span class="s">J</span><span class="si">#{</span><span class="nx">@im</span><span class="si">}</span><span class="s">&quot;</span><span class="p">.</span><span class="nx">replace</span> <span class="sr">/-/g</span><span class="p">,</span> <span class="s">&#39;¯&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Compare (<code>=</code>)</p>
+  constructor: (<span class="property">@re</span> = <span class="number">0</span>, <span class="property">@im</span> = <span class="number">0</span>) -&gt;
+    assert <span class="keyword">typeof</span> <span class="property">@re</span> <span class="keyword">is</span> <span class="string">'number'</span>
+    assert <span class="keyword">typeof</span> <span class="property">@im</span> <span class="keyword">is</span> <span class="string">'number'</span>
 
+  toString: -&gt;
+    <span class="string">"<span class="subst">#{@re}</span>J<span class="subst">#{@im}</span>"</span>.replace <span class="regexp">/-/g</span>, <span class="string">'¯'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Compare (<code>=</code>)</p>
 <pre><code>2j3 = 2j3   ⍝ returns 1
 2j3 = 3j2   ⍝ returns 0
 0j0         ⍝ returns 0
 123j0       ⍝ returns «123»
-2j¯3 + ¯2j3 ⍝ returns «0»
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="s">&#39;=&#39;</span><span class="o">:</span> <span class="nf">(x) -&gt;</span>
-    <span class="k">if</span> <span class="nx">x</span> <span class="k">instanceof</span> <span class="nx">Complex</span> <span class="k">then</span> <span class="o">+</span><span class="p">(</span><span class="nx">@re</span> <span class="o">is</span> <span class="nx">x</span><span class="p">.</span><span class="nx">re</span> <span class="o">and</span> <span class="nx">@im</span> <span class="o">is</span> <span class="nx">x</span><span class="p">.</span><span class="nx">im</span><span class="p">)</span>
-    <span class="k">else</span> <span class="k">if</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span> <span class="k">then</span> <span class="o">+</span><span class="p">(</span><span class="nx">@re</span> <span class="o">is</span> <span class="nx">x</span> <span class="o">and</span> <span class="nx">@im</span> <span class="o">is</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="k">else</span> <span class="mi">0</span>
+2j¯3 + ¯2j3 ⍝ returns «0»</code></pre>
 
-  <span class="s">&#39;right_=&#39;</span><span class="o">:</span> <span class="nf">(args...) -&gt;</span> <span class="nx">@</span><span class="p">[</span><span class="s">&#39;=&#39;</span><span class="p">]</span> <span class="nx">args</span><span class="p">...</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Match (<code>≡</code>)</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="s">&#39;≡&#39;</span><span class="o">:</span>       <span class="nf">(args...) -&gt;</span> <span class="nx">@</span><span class="p">[</span><span class="s">&#39;=&#39;</span><span class="p">]</span> <span class="nx">args</span><span class="p">...</span>
-  <span class="s">&#39;right_≡&#39;</span><span class="o">:</span> <span class="nf">(args...) -&gt;</span> <span class="nx">@</span><span class="p">[</span><span class="s">&#39;=&#39;</span><span class="p">]</span> <span class="nx">args</span><span class="p">...</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Add / Conjugate (<code>+</code>)</p>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="string">'='</span>: (x) -&gt;
+    <span class="keyword">if</span> x <span class="keyword">instanceof</span> Complex <span class="keyword">then</span> +(<span class="property">@re</span> <span class="keyword">is</span> x.re <span class="keyword">and</span> <span class="property">@im</span> <span class="keyword">is</span> x.im)
+    <span class="keyword">else</span> <span class="keyword">if</span> <span class="keyword">typeof</span> x <span class="keyword">is</span> <span class="string">'number'</span> <span class="keyword">then</span> +(<span class="property">@re</span> <span class="keyword">is</span> x <span class="keyword">and</span> <span class="property">@im</span> <span class="keyword">is</span> <span class="number">0</span>)
+    <span class="keyword">else</span> <span class="number">0</span>
 
+  <span class="string">'right_='</span>: (args...) -&gt; @[<span class="string">'='</span>] args...</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Match (<code>≡</code>)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="string">'≡'</span>:       (args...) -&gt; @[<span class="string">'='</span>] args...
+  <span class="string">'right_≡'</span>: (args...) -&gt; @[<span class="string">'='</span>] args...</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Add / Conjugate (<code>+</code>)</p>
 <pre><code>1j¯2 + ¯2j3   ⍝ returns ¯1j1
-+1j¯2         ⍝ returns 1j2
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="s">&#39;+&#39;</span><span class="o">:</span> <span class="nf">(x) -&gt;</span>
-    <span class="k">if</span> <span class="nx">x</span><span class="o">?</span>
-      <span class="k">if</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span> <span class="k">then</span> <span class="nx">C</span> <span class="nx">@re</span> <span class="o">+</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">@im</span>
-      <span class="k">else</span> <span class="k">if</span> <span class="nx">x</span> <span class="k">instanceof</span> <span class="nx">Complex</span> <span class="k">then</span> <span class="nx">C</span> <span class="nx">@re</span> <span class="o">+</span> <span class="nx">x</span><span class="p">.</span><span class="nx">re</span><span class="p">,</span> <span class="nx">@im</span> <span class="o">+</span> <span class="nx">x</span><span class="p">.</span><span class="nx">im</span>
-      <span class="k">else</span> <span class="k">throw</span> <span class="nb">Error</span> <span class="s">&#39;Unsupported operation&#39;</span>
-    <span class="k">else</span>
-      <span class="nx">C</span> <span class="nx">@re</span><span class="p">,</span> <span class="o">-</span><span class="nx">@im</span>
++1j¯2         ⍝ returns 1j2</code></pre>
 
-  <span class="s">&#39;right_+&#39;</span><span class="o">:</span> <span class="nf">(args...) -&gt;</span> <span class="nx">@</span><span class="p">[</span><span class="s">&#39;+&#39;</span><span class="p">]</span> <span class="nx">args</span><span class="p">...</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Subtract / Negate (<code>−</code>)</p>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="string">'+'</span>: (x) -&gt;
+    <span class="keyword">if</span> x?
+      <span class="keyword">if</span> <span class="keyword">typeof</span> x <span class="keyword">is</span> <span class="string">'number'</span> <span class="keyword">then</span> C <span class="property">@re</span> + x, <span class="property">@im</span>
+      <span class="keyword">else</span> <span class="keyword">if</span> x <span class="keyword">instanceof</span> Complex <span class="keyword">then</span> C <span class="property">@re</span> + x.re, <span class="property">@im</span> + x.im
+      <span class="keyword">else</span> <span class="keyword">throw</span> Error <span class="string">'Unsupported operation'</span>
+    <span class="keyword">else</span>
+      C <span class="property">@re</span>, -<span class="property">@im</span>
 
-<pre><code>5j2 − 3j8   ⍝ returns 2j¯6
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="s">&#39;−&#39;</span><span class="o">:</span> <span class="nf">(x) -&gt;</span>
-    <span class="k">if</span> <span class="nx">x</span><span class="o">?</span>
-      <span class="k">if</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span> <span class="k">then</span> <span class="nx">C</span> <span class="nx">@re</span> <span class="o">-</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">@im</span>
-      <span class="k">else</span> <span class="k">if</span> <span class="nx">x</span> <span class="k">instanceof</span> <span class="nx">Complex</span> <span class="k">then</span> <span class="nx">C</span> <span class="nx">@re</span> <span class="o">-</span> <span class="nx">x</span><span class="p">.</span><span class="nx">re</span><span class="p">,</span> <span class="nx">@im</span> <span class="o">-</span> <span class="nx">x</span><span class="p">.</span><span class="nx">im</span>
-      <span class="k">else</span> <span class="k">throw</span> <span class="nb">Error</span> <span class="s">&#39;Unsupported operation&#39;</span>
-    <span class="k">else</span>
-      <span class="nx">C</span> <span class="o">-</span><span class="nx">@re</span><span class="p">,</span> <span class="o">-</span><span class="nx">@im</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <pre><code>5 − 3j8   ⍝ returns 2j¯8
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="s">&#39;right_−&#39;</span><span class="o">:</span> <span class="nf">(x) -&gt;</span>
-    <span class="p">(</span><span class="k">if</span> <span class="nx">x</span> <span class="k">instanceof</span> <span class="nx">Complex</span> <span class="k">then</span> <span class="nx">x</span> <span class="k">else</span> <span class="k">new</span> <span class="nx">Complex</span> <span class="nx">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)[</span><span class="s">&#39;−&#39;</span><span class="p">]</span> <span class="nx">@</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Multiply / Sign of (<code>×</code>)</p>
+  <span class="string">'right_+'</span>: (args...) -&gt; @[<span class="string">'+'</span>] args...</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Subtract / Negate (<code>−</code>)</p>
+<pre><code>5j2 − 3j8   ⍝ returns 2j¯6</code></pre>
 
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="string">'−'</span>: (x) -&gt;
+    <span class="keyword">if</span> x?
+      <span class="keyword">if</span> <span class="keyword">typeof</span> x <span class="keyword">is</span> <span class="string">'number'</span> <span class="keyword">then</span> C <span class="property">@re</span> - x, <span class="property">@im</span>
+      <span class="keyword">else</span> <span class="keyword">if</span> x <span class="keyword">instanceof</span> Complex <span class="keyword">then</span> C <span class="property">@re</span> - x.re, <span class="property">@im</span> - x.im
+      <span class="keyword">else</span> <span class="keyword">throw</span> Error <span class="string">'Unsupported operation'</span>
+    <span class="keyword">else</span>
+      C -<span class="property">@re</span>, -<span class="property">@im</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <pre><code>5 − 3j8   ⍝ returns 2j¯8</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="string">'right_−'</span>: (x) -&gt;
+    (<span class="keyword">if</span> x <span class="keyword">instanceof</span> Complex <span class="keyword">then</span> x <span class="keyword">else</span> <span class="keyword">new</span> Complex x, <span class="number">0</span>)[<span class="string">'−'</span>] @</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Multiply / Sign of (<code>×</code>)</p>
 <pre><code>1j¯2 × ¯2j3   ⍝ returns 4j7
-× 1j¯2        ⍝ fails
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="s">&#39;×&#39;</span><span class="o">:</span> <span class="nf">(x) -&gt;</span>
-    <span class="k">if</span> <span class="nx">x</span><span class="o">?</span>
-      <span class="k">if</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span> <span class="k">then</span> <span class="nx">C</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">@re</span><span class="p">,</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">@im</span>
-      <span class="k">else</span> <span class="k">if</span> <span class="nx">x</span> <span class="k">instanceof</span> <span class="nx">Complex</span>
-        <span class="nx">C</span> <span class="nx">@re</span> <span class="o">*</span> <span class="nx">x</span><span class="p">.</span><span class="nx">re</span> <span class="o">-</span> <span class="nx">@im</span> <span class="o">*</span> <span class="nx">x</span><span class="p">.</span><span class="nx">im</span><span class="p">,</span> <span class="nx">@re</span> <span class="o">*</span> <span class="nx">x</span><span class="p">.</span><span class="nx">im</span> <span class="o">+</span> <span class="nx">@im</span> <span class="o">*</span> <span class="nx">x</span><span class="p">.</span><span class="nx">re</span>
-      <span class="k">else</span> <span class="k">throw</span> <span class="nb">Error</span> <span class="s">&#39;Unsupported operation&#39;</span>
-    <span class="k">else</span>
-      <span class="k">throw</span> <span class="nb">Error</span> <span class="s">&#39;Unsupported operation&#39;</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <pre><code>2 × 1j¯2      ⍝ returns 2j¯4
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="s">&#39;right_×&#39;</span><span class="o">:</span> <span class="nf">(args...) -&gt;</span> <span class="nx">@</span><span class="p">[</span><span class="s">&#39;×&#39;</span><span class="p">]</span> <span class="nx">args</span><span class="p">...</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <p>Divide / Reciprocal (<code>÷</code>)</p>
+× 1j¯2        ⍝ fails</code></pre>
 
-<pre><code>1j¯2 ÷ 4j7    ⍝ returns ¯2j3
-</code></pre>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="s">&#39;÷&#39;</span><span class="o">:</span> <span class="nf">(x) -&gt;</span>
-    <span class="k">if</span> <span class="nx">x</span><span class="o">?</span>
-      <span class="k">if</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span> <span class="k">then</span> <span class="nx">C</span> <span class="nx">@re</span> <span class="o">/</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">@im</span> <span class="o">/</span> <span class="nx">x</span>
-      <span class="k">else</span> <span class="k">if</span> <span class="nx">x</span> <span class="k">instanceof</span> <span class="nx">Complex</span>
-        <span class="nv">d = </span><span class="nx">@re</span> <span class="o">*</span> <span class="nx">@re</span> <span class="o">+</span> <span class="nx">@im</span> <span class="o">*</span> <span class="nx">@im</span>
-        <span class="nx">C</span> <span class="p">(</span><span class="nx">@re</span> <span class="o">*</span> <span class="nx">x</span><span class="p">.</span><span class="nx">re</span> <span class="o">+</span> <span class="nx">@im</span> <span class="o">*</span> <span class="nx">x</span><span class="p">.</span><span class="nx">im</span><span class="p">)</span> <span class="o">/</span> <span class="nx">d</span><span class="p">,</span> <span class="p">(</span><span class="nx">@re</span> <span class="o">*</span> <span class="nx">x</span><span class="p">.</span><span class="nx">im</span> <span class="o">-</span> <span class="nx">@im</span> <span class="o">*</span> <span class="nx">x</span><span class="p">.</span><span class="nx">re</span><span class="p">)</span> <span class="o">/</span> <span class="nx">d</span>
-      <span class="k">else</span> <span class="k">throw</span> <span class="nb">Error</span> <span class="s">&#39;Unsupported operation&#39;</span>
-    <span class="k">else</span>
-      <span class="nv">d = </span><span class="nx">@re</span> <span class="o">*</span> <span class="nx">@re</span> <span class="o">+</span> <span class="nx">@im</span> <span class="o">*</span> <span class="nx">@im</span>
-      <span class="nx">C</span> <span class="nx">@re</span> <span class="o">/</span> <span class="nx">d</span><span class="p">,</span> <span class="o">-</span><span class="nx">@im</span> <span class="o">/</span> <span class="nx">d</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="string">'×'</span>: (x) -&gt;
+    <span class="keyword">if</span> x?
+      <span class="keyword">if</span> <span class="keyword">typeof</span> x <span class="keyword">is</span> <span class="string">'number'</span> <span class="keyword">then</span> C x * <span class="property">@re</span>, x * <span class="property">@im</span>
+      <span class="keyword">else</span> <span class="keyword">if</span> x <span class="keyword">instanceof</span> Complex
+        C <span class="property">@re</span> * x.re - <span class="property">@im</span> * x.im, <span class="property">@re</span> * x.im + <span class="property">@im</span> * x.re
+      <span class="keyword">else</span> <span class="keyword">throw</span> Error <span class="string">'Unsupported operation'</span>
+    <span class="keyword">else</span>
+      <span class="keyword">throw</span> Error <span class="string">'Unsupported operation'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <pre><code>2 × 1j¯2      ⍝ returns 2j¯4</code></pre>
 
-  <span class="s">&#39;right_÷&#39;</span><span class="o">:</span> <span class="nf">(x) -&gt;</span>
-    <span class="p">(</span><span class="k">if</span> <span class="nx">x</span> <span class="k">instanceof</span> <span class="nx">Complex</span> <span class="k">then</span> <span class="nx">x</span> <span class="k">else</span> <span class="k">new</span> <span class="nx">Complex</span> <span class="nx">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)[</span><span class="s">&#39;÷&#39;</span><span class="p">]</span> <span class="nx">@</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="string">'right_×'</span>: (args...) -&gt; @[<span class="string">'×'</span>] args...</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Divide / Reciprocal (<code>÷</code>)</p>
+<pre><code>1j¯2 ÷ 4j7    ⍝ returns ¯2j3</code></pre>
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="string">'÷'</span>: (x) -&gt;
+    <span class="keyword">if</span> x?
+      <span class="keyword">if</span> <span class="keyword">typeof</span> x <span class="keyword">is</span> <span class="string">'number'</span> <span class="keyword">then</span> C <span class="property">@re</span> / x, <span class="property">@im</span> / x
+      <span class="keyword">else</span> <span class="keyword">if</span> x <span class="keyword">instanceof</span> Complex
+        d = <span class="property">@re</span> * <span class="property">@re</span> + <span class="property">@im</span> * <span class="property">@im</span>
+        C (<span class="property">@re</span> * x.re + <span class="property">@im</span> * x.im) / d, (<span class="property">@re</span> * x.im - <span class="property">@im</span> * x.re) / d
+      <span class="keyword">else</span> <span class="keyword">throw</span> Error <span class="string">'Unsupported operation'</span>
+    <span class="keyword">else</span>
+      d = <span class="property">@re</span> * <span class="property">@re</span> + <span class="property">@im</span> * <span class="property">@im</span>
+      C <span class="property">@re</span> / d, -<span class="property">@im</span> / d
+
+  <span class="string">'right_÷'</span>: (x) -&gt;
+    (<span class="keyword">if</span> x <span class="keyword">instanceof</span> Complex <span class="keyword">then</span> x <span class="keyword">else</span> <span class="keyword">new</span> Complex x, <span class="number">0</span>)[<span class="string">'÷'</span>] @</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,49 +1,206 @@
-<!DOCTYPE html>  <html> <head>   <title>helpers.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="apl.html">                 apl.coffee               </a>                                           <a class="source" href="command.html">                 command.coffee               </a>                                           <a class="source" href="compiler.html">                 compiler.coffee               </a>                                           <a class="source" href="complex.html">                 complex.coffee               </a>                                           <a class="source" href="formatter.html">                 formatter.coffee               </a>                                           <a class="source" href="helpers.html">                 helpers.coffee               </a>                                           <a class="source" href="lexer.html">                 lexer.coffee               </a>                                           <a class="source" href="parser.html">                 parser.coffee               </a>                                           <a class="source" href="vocabulary.html">                 vocabulary.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               helpers.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>Prototypal inheritance of JavaScript objects
-(see <a href="http://javascript.crockford.com/prototypal.html">Douglas Crockford's
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>helpers.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="apl.html">
+                apl.coffee
+              </a>
+            
+              
+              <a class="source" href="command.html">
+                command.coffee
+              </a>
+            
+              
+              <a class="source" href="compiler.html">
+                compiler.coffee
+              </a>
+            
+              
+              <a class="source" href="complex.html">
+                complex.coffee
+              </a>
+            
+              
+              <a class="source" href="formatter.html">
+                formatter.coffee
+              </a>
+            
+              
+              <a class="source" href="helpers.html">
+                helpers.coffee
+              </a>
+            
+              
+              <a class="source" href="lexer.html">
+                lexer.coffee
+              </a>
+            
+              
+              <a class="source" href="parser.html">
+                parser.coffee
+              </a>
+            
+              
+              <a class="source" href="vocabulary.html">
+                vocabulary.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>helpers.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Prototypal inheritance of JavaScript objects
+(see <a href="http://javascript.crockford.com/prototypal.html">Douglas Crockford&#39;s
 explanation</a>)</p>
-
 <p>This implementation allows extra properties to be assigned
-to the newly-created object.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="vi">@inherit = </span><span class="nf">(x, extraProperties = {}) -&gt;</span>
-  <span class="nv">f = </span><span class="p">(</span><span class="o">-&gt;</span><span class="p">);</span> <span class="nv">f:: = </span><span class="nx">x</span><span class="p">;</span> <span class="nv">r = </span><span class="k">new</span> <span class="nx">f</span>
-  <span class="k">for</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">v</span> <span class="k">of</span> <span class="nx">extraProperties</span> <span class="k">then</span> <span class="nx">r</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span>
-  <span class="nx">r</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Helpers for the APL data model</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="vi">@isSimple = </span><span class="nv">isSimple = </span><span class="nf">(x) -&gt;</span> <span class="o">not</span> <span class="p">(</span><span class="nx">x</span> <span class="k">instanceof</span> <span class="nb">Array</span><span class="p">)</span>
+to the newly-created object.</p>
 
-<span class="vi">@shapeOf = </span><span class="nv">shapeOf = </span><span class="nf">(a) -&gt;</span>
-  <span class="nx">a</span><span class="p">.</span><span class="nx">shape</span> <span class="o">or</span>
-    <span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="o">?</span> <span class="o">and</span> <span class="o">not</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">a</span> <span class="o">is</span> <span class="s">&#39;string&#39;</span> <span class="o">and</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">1</span><span class="p">)</span>
-      <span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span>
-    <span class="k">else</span>
-      <span class="p">[]</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="property">@inherit</span> = (x, extraProperties = {}) -&gt;
+  f = (-&gt;); f:: = x; r = <span class="keyword">new</span> f
+  <span class="keyword">for</span> k, v <span class="keyword">of</span> extraProperties <span class="keyword">then</span> r[k] = v
+  r</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Helpers for the APL data model</p>
 
-<span class="vi">@withShape = </span><span class="nv">withShape = </span><span class="nf">(shape, a) -&gt;</span>
-  <span class="nx">assert</span> <span class="p">(</span><span class="o">not</span> <span class="nx">shape</span><span class="o">?</span><span class="p">)</span> <span class="o">or</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="nx">prod</span> <span class="nx">shape</span>
-  <span class="k">if</span> <span class="nx">shape</span><span class="o">?</span> <span class="o">and</span> <span class="nx">shape</span><span class="p">.</span><span class="nx">length</span> <span class="o">isnt</span> <span class="mi">1</span> <span class="k">then</span> <span class="nv">a.shape = </span><span class="nx">shape</span>
-  <span class="nx">a</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="property">@isSimple</span> = <span class="function"><span class="title">isSimple</span></span> = (x) -&gt; <span class="keyword">not</span> (x <span class="keyword">instanceof</span> Array)
 
-<span class="vi">@prototypeOf = </span><span class="nv">prototypeOf = </span><span class="nf">(x) -&gt;</span>
-  <span class="k">if</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">is</span> <span class="s">&#39;number&#39;</span> <span class="k">then</span> <span class="mi">0</span>
-  <span class="k">else</span> <span class="k">if</span> <span class="k">typeof</span> <span class="nx">x</span> <span class="o">is</span> <span class="s">&#39;string&#39;</span> <span class="k">then</span> <span class="s">&#39; &#39;</span>
-  <span class="k">else</span> <span class="k">if</span> <span class="nx">x</span><span class="p">.</span><span class="nx">aplPrototype</span><span class="o">?</span> <span class="k">then</span> <span class="nx">x</span><span class="p">.</span><span class="nx">aplPrototype</span>
-  <span class="k">else</span> <span class="k">if</span> <span class="nx">isSimple</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">or</span> <span class="o">not</span> <span class="nx">x</span><span class="p">.</span><span class="nx">length</span> <span class="k">then</span> <span class="mi">0</span>
-  <span class="k">else</span> <span class="k">if</span> <span class="nx">isSimple</span> <span class="nx">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">then</span> <span class="nx">prototypeOf</span> <span class="nx">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-  <span class="k">else</span>
-    <span class="nv">p = </span><span class="nx">prototypeOf</span> <span class="nx">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="nx">withShape</span> <span class="nx">shapeOf</span><span class="p">(</span><span class="nx">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="k">for</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">x</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">length</span><span class="p">]</span> <span class="k">then</span> <span class="nx">p</span><span class="p">)</span>
+<span class="property">@shapeOf</span> = <span class="function"><span class="title">shapeOf</span></span> = (a) -&gt;
+  a.shape <span class="keyword">or</span>
+    <span class="keyword">if</span> a.length? <span class="keyword">and</span> <span class="keyword">not</span> (<span class="keyword">typeof</span> a <span class="keyword">is</span> <span class="string">'string'</span> <span class="keyword">and</span> a.length <span class="keyword">is</span> <span class="number">1</span>)
+      [a.length]
+    <span class="keyword">else</span>
+      []
 
-<span class="vi">@withPrototype = </span><span class="nv">withPrototype = </span><span class="nf">(p, x) -&gt;</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="k">instanceof</span> <span class="nb">Array</span><span class="p">)</span> <span class="o">and</span> <span class="p">(</span><span class="o">not</span> <span class="nx">x</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">and</span> <span class="p">(</span><span class="nx">p</span> <span class="o">isnt</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="nv">x.aplPrototype = </span><span class="nx">p</span>
-  <span class="nx">x</span>
+<span class="property">@withShape</span> = <span class="function"><span class="title">withShape</span></span> = (shape, a) -&gt;
+  assert (<span class="keyword">not</span> shape?) <span class="keyword">or</span> a.length <span class="keyword">is</span> prod shape
+  <span class="keyword">if</span> shape? <span class="keyword">and</span> shape.length <span class="keyword">isnt</span> <span class="number">1</span> <span class="keyword">then</span> a.shape = shape
+  a
 
-<span class="vi">@withPrototypeCopiedFrom = </span><span class="nf">(y, x) -&gt;</span>
-  <span class="k">if</span> <span class="nx">x</span> <span class="k">instanceof</span> <span class="nb">Array</span> <span class="o">and</span> <span class="o">not</span> <span class="nx">x</span><span class="p">.</span><span class="nx">length</span>
-    <span class="nx">withPrototype</span> <span class="nx">prototypeOf</span><span class="p">(</span><span class="nx">y</span><span class="p">),</span> <span class="nx">x</span>
-  <span class="nx">x</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>Sum and product;  I wish JavaScript had a <em>reduce</em> operator :)</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="vi">@sum = </span><span class="nf">(xs) -&gt;</span> <span class="nv">r = </span><span class="mi">0</span><span class="p">;</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">xs</span> <span class="k">then</span> <span class="nx">r</span> <span class="o">+=</span> <span class="nx">x</span><span class="p">);</span> <span class="nx">r</span>
-<span class="vi">@prod = </span><span class="nv">prod = </span><span class="nf">(xs) -&gt;</span> <span class="nv">r = </span><span class="mi">1</span><span class="p">;</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">xs</span> <span class="k">then</span> <span class="nx">r</span> <span class="o">*=</span> <span class="nx">x</span><span class="p">);</span> <span class="nx">r</span>
-<span class="vi">@all = </span><span class="nf">(xs) -&gt;</span> <span class="p">(</span><span class="k">for</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">xs</span> <span class="k">when</span> <span class="o">not</span> <span class="nx">x</span> <span class="k">then</span> <span class="k">return</span> <span class="kc">false</span><span class="p">);</span> <span class="kc">true</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p><code>repeat(s, n)</code> catenates <code>n</code> instances of a string <code>s</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="vi">@repeat = </span><span class="nf">(s, n) -&gt;</span> <span class="nv">r = </span><span class="s">&#39;&#39;</span><span class="p">;</span> <span class="p">(</span><span class="k">for</span> <span class="p">[</span><span class="mi">0</span><span class="p">...</span><span class="nx">n</span><span class="p">]</span> <span class="k">then</span> <span class="nx">r</span> <span class="o">+=</span> <span class="nx">s</span><span class="p">);</span> <span class="nx">r</span>
+<span class="property">@prototypeOf</span> = <span class="function"><span class="title">prototypeOf</span></span> = (x) -&gt;
+  <span class="keyword">if</span> <span class="keyword">typeof</span> x <span class="keyword">is</span> <span class="string">'number'</span> <span class="keyword">then</span> <span class="number">0</span>
+  <span class="keyword">else</span> <span class="keyword">if</span> <span class="keyword">typeof</span> x <span class="keyword">is</span> <span class="string">'string'</span> <span class="keyword">then</span> <span class="string">' '</span>
+  <span class="keyword">else</span> <span class="keyword">if</span> x.aplPrototype? <span class="keyword">then</span> x.aplPrototype
+  <span class="keyword">else</span> <span class="keyword">if</span> isSimple(x) <span class="keyword">or</span> <span class="keyword">not</span> x.length <span class="keyword">then</span> <span class="number">0</span>
+  <span class="keyword">else</span> <span class="keyword">if</span> isSimple x[<span class="number">0</span>] <span class="keyword">then</span> prototypeOf x[<span class="number">0</span>]
+  <span class="keyword">else</span>
+    p = prototypeOf x[<span class="number">0</span>]
+    withShape shapeOf(x[<span class="number">0</span>]), (<span class="keyword">for</span> [<span class="number">0.</span>..x[<span class="number">0</span>].length] <span class="keyword">then</span> p)
 
-<span class="vi">@die = </span><span class="nf">(s) -&gt;</span> <span class="k">throw</span> <span class="nb">Error</span> <span class="nx">s</span>
-<span class="vi">@assert = </span><span class="nv">assert = </span><span class="nf">(flag, s = &#39;Assertion failed&#39;) -&gt;</span>
-  <span class="k">if</span> <span class="o">not</span> <span class="nx">flag</span> <span class="k">then</span> <span class="k">throw</span> <span class="nb">Error</span> <span class="nx">s</span>
+<span class="property">@withPrototype</span> = <span class="function"><span class="title">withPrototype</span></span> = (p, x) -&gt;
+  <span class="keyword">if</span> (x <span class="keyword">instanceof</span> Array) <span class="keyword">and</span> (<span class="keyword">not</span> x.length) <span class="keyword">and</span> (p <span class="keyword">isnt</span> <span class="number">0</span>)
+    x.aplPrototype = p
+  x
 
-</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
+<span class="property">@withPrototypeCopiedFrom</span> = (y, x) -&gt;
+  <span class="keyword">if</span> x <span class="keyword">instanceof</span> Array <span class="keyword">and</span> <span class="keyword">not</span> x.length
+    withPrototype prototypeOf(y), x
+  x</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Sum and product;  I wish JavaScript had a <em>reduce</em> operator :)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="property">@sum</span> = (xs) -&gt; r = <span class="number">0</span>; (<span class="keyword">for</span> x <span class="keyword">in</span> xs <span class="keyword">then</span> r += x); r
+<span class="property">@prod</span> = <span class="function"><span class="title">prod</span></span> = (xs) -&gt; r = <span class="number">1</span>; (<span class="keyword">for</span> x <span class="keyword">in</span> xs <span class="keyword">then</span> r *= x); r
+<span class="property">@all</span> = (xs) -&gt; (<span class="keyword">for</span> x <span class="keyword">in</span> xs <span class="keyword">when</span> <span class="keyword">not</span> x <span class="keyword">then</span> <span class="keyword">return</span> <span class="literal">false</span>); <span class="literal">true</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p><code>repeat(s, n)</code> catenates <code>n</code> instances of a string <code>s</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="property">@repeat</span> = <span class="function"><span class="title">repeat</span></span> = (s, n) -&gt; r = <span class="string">''</span>; (<span class="keyword">for</span> [<span class="number">0.</span>..n] <span class="keyword">then</span> r += s); r
+
+<span class="property">@assert</span> = <span class="function"><span class="title">assert</span></span> = (flag, s = <span class="string">'Assertion failed'</span>) -&gt;
+  <span class="keyword">if</span> <span class="keyword">not</span> flag <span class="keyword">then</span> <span class="keyword">throw</span> Error s
+
+<span class="property">@die</span> = (message, opts = {}, args...) -&gt;
+  assert <span class="keyword">typeof</span> message <span class="keyword">is</span> <span class="string">'string'</span>
+  assert <span class="keyword">typeof</span> opts <span class="keyword">is</span> <span class="string">'object'</span>
+  assert <span class="keyword">not</span> args.length
+  <span class="keyword">if</span> opts.aplCode? <span class="keyword">and</span> opts.line? <span class="keyword">and</span> opts.col?
+    assert <span class="keyword">typeof</span> opts.aplCode <span class="keyword">is</span> <span class="string">'string'</span>
+    assert <span class="keyword">typeof</span> opts.line <span class="keyword">is</span> <span class="string">'number'</span>
+    assert <span class="keyword">typeof</span> opts.col <span class="keyword">is</span> <span class="string">'number'</span>
+    assert <span class="keyword">typeof</span> opts.file <span class="keyword">in</span> [<span class="string">'string'</span>, <span class="string">'undefined'</span>]
+    message += <span class="string">"""
+      \n<span class="subst">#{opts.file <span class="keyword">or</span> '-'}</span>:#<span class="subst">#{opts.line}</span>:<span class="subst">#{opts.col}</span>
+      <span class="subst">#{opts.aplCode.split('\n')[opts.line - <span class="number">1</span>]}</span>
+      <span class="subst">#{repeat('_', opts.col - <span class="number">1</span>)}</span>^
+    """</span>
+  e = Error message
+  <span class="keyword">for</span> k, v <span class="keyword">of</span> opts
+    assert k <span class="keyword">in</span> [<span class="string">'aplCode'</span>, <span class="string">'line'</span>, <span class="string">'col'</span>, <span class="string">'file'</span>, <span class="string">'name'</span>]
+    e[k] = v
+  <span class="keyword">throw</span> e</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
