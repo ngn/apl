@@ -1,0 +1,12 @@
+!!!5
+html
+  head
+    meta(charset='UTF-8')
+    title APL Browser Test
+    style: @font-face { font-family: apl; src: url(../../fonts/apl385.ttf) format(truetype); }
+    style
+      body { font-family: apl, monospace; }
+  body
+    input#run(type="button", value="Run")
+    script(src="testcases.js")
+    script(src="all.js")

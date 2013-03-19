@@ -15,11 +15,13 @@
     return s.replace(/(^ +| +$)/g, '');
   };
 
-  forEachDoctest = function(handler, ret) {
+  this.forEachDoctest = forEachDoctest = function(handler, ret) {
     var d;
+
     d = __dirname + '/../src';
     return fs.readdir(d, function(err, files) {
       var f, i, line, lines, m, _i, _len;
+
       if (err) {
         throw err;
       }
@@ -50,6 +52,7 @@
 
   runDoctests = function(ret) {
     var fail, lastTestTimestamp, nFailed, nTests, t0;
+
     nTests = nFailed = 0;
     fail = function(reason, err) {
       nFailed++;
@@ -61,7 +64,8 @@
     t0 = Date.now();
     lastTestTimestamp = 0;
     return forEachDoctest(function(_arg) {
-      var actual, code, expectation, expected, expectedErrorMessage, m;
+      var actual, code, e, expectation, expected, expectedErrorMessage, m;
+
       code = _arg.code, expectation = _arg.expectation;
       nTests++;
       if (m = expectation.match(/^returns ([^]*)$/)) {
@@ -71,7 +75,8 @@
           if (!match(actual, expected)) {
             fail(("Test " + (repr(code)) + " failed: ") + ("expected " + (repr(expected)) + " but got " + (repr(actual))));
           }
-        } catch (e) {
+        } catch (_error) {
+          e = _error;
           fail("Test " + (repr(code)) + " failed with " + e, e);
         }
       } else if (m = expectation.match(/^fails( [^]*)?$/)) {
@@ -79,7 +84,8 @@
         try {
           exec(code);
           fail("Code " + (repr(code)) + " should have failed, but didn't");
-        } catch (e) {
+        } catch (_error) {
+          e = _error;
           if (expectedErrorMessage && e.message.slice(0, expectedErrorMessage.length) !== expectedErrorMessage) {
             fail("Code " + (repr(code)) + " should have failed with " + (repr(expectedErrorMessage)) + ", but it failed with " + (repr(e.message)), e);
           }

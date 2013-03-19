@@ -9,7 +9,7 @@ if not fs.existsSync 'node_modules'
 
 glob = require 'glob'
 {spawn} = require 'child_process'
-{coffee, docco, cat, jade, sass} = ake = require 'ake'
+{coffee, docco, cat, jade, sass, action} = ake = require 'ake'
 
 exec = (cmd, args, opts, cont) ->
   child = spawn cmd, args, opts
@@ -29,6 +29,33 @@ task 'build', 'Compile src/*.coffee to lib/*.js', ->
 task 'test', 'Run doctests', ->
   ake buildActions.concat [
     coffee 'test/doctest.coffee'
+    coffee 'test/browsertest/generate.coffee'
+    coffee 'test/browsertest/index.coffee'
+    jade   'test/browsertest/index.jade'
+    action(
+      ['test/browsertest/generate.js'].concat(glob.sync 'src/*.coffee')
+      ['test/browsertest/testcases.js']
+      (callback) -> require('./test/browsertest/generate').main callback
+    )
+    cat(
+      [
+        'web/fake-require.js'
+        getLibFiles()
+        'web/jquery-1.9.1.min.js'
+        'test/browsertest/index.js'
+      ]
+      'test/browsertest/all.js'
+      transform: (content, {path}) ->
+        if not path.match /^lib\// then return content
+        if path in ['lib/command.js', 'lib/apl.js'] then return ''
+        moduleName = path.replace /^.*\/([^\/]+).js/, '$1'
+        """
+          defModule('./#{moduleName}', function (exports, require) {
+            #{content}
+            return exports;
+          });\n
+        """
+    )
     ->
       console.info 'Running doctests...'
       exec 'node', ['doctest.js'], {cwd: 'test'}, ->

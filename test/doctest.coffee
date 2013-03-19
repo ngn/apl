@@ -8,7 +8,7 @@ repr = JSON.stringify
 
 trim = (s) -> s.replace /(^ +| +$)/g, ''
 
-forEachDoctest = (handler, ret) ->
+@forEachDoctest = forEachDoctest = (handler, ret) ->
   d = __dirname + '/../src'
   fs.readdir d, (err, files) ->
     if err then throw err
