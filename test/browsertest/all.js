@@ -95,7 +95,7 @@ defModule('./compiler', function (exports, require) {
     while (queue.length) {
       vars = (scopeNode = queue.shift()).vars;
       visit = function(node) {
-        var a, c, h, i, j, name, t, t1, x, _j, _k, _len1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref2, _ref20, _ref21, _ref22, _ref23, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+        var a, c, h, i, j, name, t, x, _j, _k, _len1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref2, _ref20, _ref21, _ref22, _ref23, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
 
         node.scopeNode = scopeNode;
         switch (node[0]) {
@@ -153,7 +153,6 @@ defModule('./compiler', function (exports, require) {
               type: 'X'
             };
           case 'index':
-            t1 = visit(node[1]);
             _ref3 = node.slice(2);
             for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
               c = _ref3[_j];
@@ -165,7 +164,7 @@ defModule('./compiler', function (exports, require) {
                 compilerError(node, opts, 'Only expressions of type data can be used as an index.');
               }
             }
-            return t1;
+            return visit(node[1]);
           case 'expr':
             a = node.slice(1);
             h = Array(a.length);
@@ -370,19 +369,19 @@ defModule('./compiler', function (exports, require) {
         }
         break;
       case 'index':
-        return "_['⌷'](" + (toJavaScript(node[1])) + ", [" + (((function() {
+        return "_['⍨'](_['⌷'])(        [" + (((function() {
           var _j, _len1, _ref4, _results;
 
           _ref4 = node.slice(2);
           _results = [];
           for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
             c = _ref4[_j];
-            if (c !== null) {
+            if (c) {
               _results.push(toJavaScript(c));
             }
           }
           return _results;
-        })()).join(', ')) + "], [" + ((function() {
+        })()).join(', ')) + "],        " + (toJavaScript(node[1])) + ",        [" + ((function() {
           var _j, _len1, _ref4, _results;
 
           _ref4 = node.slice(2);
@@ -394,7 +393,7 @@ defModule('./compiler', function (exports, require) {
             }
           }
           return _results;
-        })()) + "])";
+        })()) + "]      )";
       case 'expr':
         return die('No "expr" nodes are expected at this stage.');
       case 'vector':
@@ -3137,11 +3136,11 @@ defModule('./vocabulary', function (exports, require) {
 
   postfixAdverb('⍨', 'Commute', function(f) {
     assert(typeof f === 'function');
-    return function(b, a) {
+    return function(b, a, axis) {
       if (a != null) {
-        return f(a, b);
+        return f(a, b, axis);
       } else {
-        return f(b);
+        return f(b, void 0, axis);
       }
     };
   });

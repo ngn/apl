@@ -198,13 +198,12 @@ type <code>apl -n filename.apl</code></p>
         <span class="keyword">when</span> <span class="string">'string'</span>, <span class="string">'number'</span>, <span class="string">'embedded'</span>
           {type: <span class="string">'X'</span>}
         <span class="keyword">when</span> <span class="string">'index'</span>
-          t1 = visit node[<span class="number">1</span>]
           <span class="keyword">for</span> c <span class="keyword">in</span> node[<span class="number">2.</span>..] <span class="keyword">when</span> c <span class="keyword">isnt</span> <span class="literal">null</span>
             t = visit c
             <span class="keyword">if</span> t.type <span class="keyword">isnt</span> <span class="string">'X'</span>
               compilerError node, opts,
                 <span class="string">'Only expressions of type data can be used as an index.'</span>
-          t1
+          visit node[<span class="number">1</span>]
         <span class="keyword">when</span> <span class="string">'expr'</span>
           a = node[<span class="number">1.</span>..]
           h = Array a.length
@@ -568,14 +567,31 @@ A×A←2 5   ⍝ returns 4 25</code></pre>
           <span class="keyword">else</span>
             parseFloat x
       <span class="keyword">if</span> a.length <span class="keyword">is</span> <span class="number">1</span> <span class="keyword">or</span> a[<span class="number">1</span>] <span class="keyword">is</span> <span class="number">0</span> <span class="keyword">then</span> <span class="string">''</span> + a[<span class="number">0</span>]
-      <span class="keyword">else</span> <span class="string">"new _['⎕complex'](<span class="subst">#{a[<span class="number">0</span>]}</span>, <span class="subst">#{a[<span class="number">1</span>]}</span>)"</span>
+      <span class="keyword">else</span> <span class="string">"new _['⎕complex'](<span class="subst">#{a[<span class="number">0</span>]}</span>, <span class="subst">#{a[<span class="number">1</span>]}</span>)"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>We translate square-bracket indexing (<code>A[B]</code>) to indexing using the
+squish quad function (<code>B⌷A</code>).  The arguments are reversed in the process,
+so <code>B</code> gets evaluated before <code>A</code> as one would expect from APL&#39;s
+right-to-left order of execution.</p>
+<pre><code>⍴ x[⍋x←6?40]    ⍝ returns ,6</code></pre>
 
-    <span class="keyword">when</span> <span class="string">'index'</span>
-      <span class="string">"_['⌷'](<span class="subst">#{toJavaScript node[<span class="number">1</span>]}</span>, [<span class="subst">#{
-        (<span class="keyword">for</span> c <span class="keyword">in</span> node[<span class="number">2.</span>..] <span class="keyword">when</span> c <span class="keyword">isnt</span> <span class="literal">null</span> <span class="keyword">then</span> toJavaScript c).join ', '
-      }</span>], [<span class="subst">#{
-        (<span class="keyword">for</span> c, i <span class="keyword">in</span> node[<span class="number">2.</span>..] <span class="keyword">when</span> c <span class="keyword">isnt</span> <span class="literal">null</span> <span class="keyword">then</span> i)
-      }</span>])"</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">when</span> <span class="string">'index'</span>
+      <span class="string">"_['⍨'](_['⌷'])(
+        [<span class="subst">#{(<span class="keyword">for</span> c <span class="keyword">in</span> node[<span class="number">2.</span>..] <span class="keyword">when</span> c <span class="keyword">then</span> toJavaScript c).join ', '}</span>],
+        <span class="subst">#{toJavaScript node[<span class="number">1</span>]}</span>,
+        [<span class="subst">#{(<span class="keyword">for</span> c, i <span class="keyword">in</span> node[<span class="number">2.</span>..] <span class="keyword">when</span> c <span class="keyword">isnt</span> <span class="literal">null</span> <span class="keyword">then</span> i)}</span>]
+      )"</span>
 
     <span class="keyword">when</span> <span class="string">'expr'</span>
       die <span class="string">'No "expr" nodes are expected at this stage.'</span>
@@ -608,11 +624,11 @@ A×A←2 5   ⍝ returns 4 25</code></pre>
         </li>
         
         
-        <li id="section-17">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <p>Embedded JavaScript</p>
 <pre><code>«1234+5678» ⍝ returns 6912
@@ -629,11 +645,11 @@ A×A←2 5   ⍝ returns 4 25</code></pre>
         </li>
         
         
-        <li id="section-18">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>Used to report the AST node where the error happened</p>
 
@@ -650,11 +666,11 @@ A×A←2 5   ⍝ returns 4 25</code></pre>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <h1>Public interface to this module</h1>
 

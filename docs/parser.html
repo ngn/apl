@@ -239,7 +239,23 @@ roughly correspond to the set of non-terminals in an imaginary grammar.</p>
     <span class="keyword">else</span> <span class="keyword">if</span> consume <span class="string">'{'</span> <span class="keyword">then</span> (b = parseBody(); demand <span class="string">'}'</span>; [<span class="string">'lambda'</span>, b])
     <span class="keyword">else</span> parserError <span class="string">"Encountered unexpected token of type '<span class="subst">#{token.type}</span>'"</span>
 
-  parseBody()</pre></div></div>
+  result = parseBody()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <pre><code>&#39;hello&#39;} ⍝ fails</code></pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  demand <span class="string">'eof'</span>
+  result</pre></div></div>
             
         </li>
         
