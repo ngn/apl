@@ -39,6 +39,7 @@ var testcases = [
 ["× 1j¯2","fails"],
 ["2 × 1j¯2","returns 2j¯4"],
 ["1j¯2 ÷ 4j7","returns ¯2j3"],
+["'hello'}","fails 'ParserError'"],
 ["5 ↑ 1 2 3","returns      1 2 3 0 0"],
 ["5 ↑ 'abc'","returns      'abc  '"],
 ["x ← «{'⍟': function (y) { return y + 1234; }}» ◇ x ⍟ 1\n","returns 1235"],

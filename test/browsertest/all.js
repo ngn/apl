@@ -1027,7 +1027,7 @@ defModule('./parser', function (exports, require) {
   die = require('./helpers').die;
 
   this.parse = function(aplCode, opts) {
-    var consume, demand, parseBody, parseExpr, parseIndexable, parseIndices, parseItem, parserError, token, tokenStream;
+    var consume, demand, parseBody, parseExpr, parseIndexable, parseIndices, parseItem, parserError, result, token, tokenStream;
 
     if (opts == null) {
       opts = {};
@@ -1137,7 +1137,9 @@ defModule('./parser', function (exports, require) {
         return parserError("Encountered unexpected token of type '" + token.type + "'");
       }
     };
-    return parseBody();
+    result = parseBody();
+    demand('eof');
+    return result;
   };
 
 }).call(this);

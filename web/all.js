@@ -53,6 +53,7 @@ defModule('./compiler', function (exports, require) {
 
   resolveExprs = function(ast, opts) {
     var k, m, node, queue, scopeCounter, scopeNode, v, varInfo, vars, visit, _i, _j, _len, _len1, _ref1, _ref2;
+
     if (opts == null) {
       opts = {};
     }
@@ -113,6 +114,7 @@ defModule('./compiler', function (exports, require) {
       vars = (scopeNode = queue.shift()).vars;
       visit = function(node) {
         var a, c, h, i, j, name, t, t1, x, _j, _k, _len1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref2, _ref20, _ref21, _ref22, _ref23, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+
         node.scopeNode = scopeNode;
         switch (node[0]) {
           case 'body':
@@ -251,6 +253,7 @@ defModule('./compiler', function (exports, require) {
             }
             if (h.length >= 3 && h.length % 2 === 1 && all((function() {
               var _l, _len2, _results;
+
               _results = [];
               for (_l = 0, _len2 = h.length; _l < _len2; _l++) {
                 x = h[_l];
@@ -304,6 +307,7 @@ defModule('./compiler', function (exports, require) {
 
   toJavaScript = function(node) {
     var a, c, child, d, i, n, name, s, v, vars, x, _i, _len, _ref1, _ref2, _ref3;
+
     switch (node[0]) {
       case 'body':
         if (node.length === 1) {
@@ -360,6 +364,7 @@ defModule('./compiler', function (exports, require) {
         s = node[1].replace(/¯/g, '-');
         a = (function() {
           var _j, _len1, _ref4, _results;
+
           _ref4 = s.split(/j/i);
           _results = [];
           for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
@@ -385,6 +390,7 @@ defModule('./compiler', function (exports, require) {
       case 'index':
         return "_['⌷'](" + (toJavaScript(node[1])) + ", [" + (((function() {
           var _j, _len1, _ref4, _results;
+
           _ref4 = node.slice(2);
           _results = [];
           for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
@@ -396,6 +402,7 @@ defModule('./compiler', function (exports, require) {
           return _results;
         })()).join(', ')) + "], [" + ((function() {
           var _j, _len1, _ref4, _results;
+
           _ref4 = node.slice(2);
           _results = [];
           for (i = _j = 0, _len1 = _ref4.length; _j < _len1; i = ++_j) {
@@ -412,6 +419,7 @@ defModule('./compiler', function (exports, require) {
         n = node.length - 1;
         return "[" + (((function() {
           var _j, _len1, _ref4, _results;
+
           _ref4 = node.slice(1);
           _results = [];
           for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
@@ -435,6 +443,7 @@ defModule('./compiler', function (exports, require) {
       case 'fork':
         return "_['⎕fork']([" + ((function() {
           var _j, _len1, _ref4, _results;
+
           _ref4 = node.slice(1);
           _results = [];
           for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
@@ -462,6 +471,7 @@ defModule('./compiler', function (exports, require) {
 
   this.nodes = nodes = function(aplCode, opts) {
     var ast;
+
     if (opts == null) {
       opts = {};
     }
@@ -473,6 +483,7 @@ defModule('./compiler', function (exports, require) {
 
   this.compile = compile = function(aplCode, opts) {
     var jsCode;
+
     if (opts == null) {
       opts = {};
     }
@@ -512,7 +523,6 @@ defModule('./complex', function (exports, require) {
   };
 
   this.Complex = Complex = (function() {
-
     function Complex(re, im) {
       this.re = re != null ? re : 0;
       this.im = im != null ? im : 0;
@@ -536,18 +546,21 @@ defModule('./complex', function (exports, require) {
 
     Complex.prototype['right_='] = function() {
       var args;
+
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['='].apply(this, args);
     };
 
     Complex.prototype['≡'] = function() {
       var args;
+
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['='].apply(this, args);
     };
 
     Complex.prototype['right_≡'] = function() {
       var args;
+
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['='].apply(this, args);
     };
@@ -568,6 +581,7 @@ defModule('./complex', function (exports, require) {
 
     Complex.prototype['right_+'] = function() {
       var args;
+
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['+'].apply(this, args);
     };
@@ -606,12 +620,14 @@ defModule('./complex', function (exports, require) {
 
     Complex.prototype['right_×'] = function() {
       var args;
+
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['×'].apply(this, args);
     };
 
     Complex.prototype['÷'] = function(x) {
       var d;
+
       if (x != null) {
         if (typeof x === 'number') {
           return C(this.re / x, this.im / x);
@@ -647,6 +663,7 @@ defModule('./formatter', function (exports, require) {
 
   this.format = format = function(a) {
     var bottom, box, c, cols, d, grid, i, j, k, left, nCols, nRows, r, result, right, rows, sa, step, t, x, _i, _j, _k, _l, _len, _len1, _len2, _m, _n, _o, _p, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
+
     if (typeof a === 'undefined') {
       return ['undefined'];
     } else if (a === null) {
@@ -670,6 +687,7 @@ defModule('./formatter', function (exports, require) {
       nCols = sa[sa.length - 1];
       rows = (function() {
         var _i, _results;
+
         _results = [];
         for (_i = 0; 0 <= nRows ? _i < nRows : _i > nRows; 0 <= nRows ? _i++ : _i--) {
           _results.push({
@@ -681,6 +699,7 @@ defModule('./formatter', function (exports, require) {
       })();
       cols = (function() {
         var _i, _results;
+
         _results = [];
         for (_i = 0; 0 <= nCols ? _i < nCols : _i > nCols; 0 <= nCols ? _i++ : _i--) {
           _results.push({
@@ -694,11 +713,13 @@ defModule('./formatter', function (exports, require) {
       })();
       grid = (function() {
         var _i, _len, _results;
+
         _results = [];
         for (i = _i = 0, _len = rows.length; _i < _len; i = ++_i) {
           r = rows[i];
           _results.push((function() {
             var _j, _len1, _results1;
+
             _results1 = [];
             for (j = _j = 0, _len1 = cols.length; _j < _len1; j = ++_j) {
               c = cols[j];
@@ -755,6 +776,7 @@ defModule('./formatter', function (exports, require) {
         for (k = _p = 0, _ref8 = r.height + r.bottomMargin; 0 <= _ref8 ? _p < _ref8 : _p > _ref8; k = 0 <= _ref8 ? ++_p : --_p) {
           result.push(((function() {
             var _q, _results;
+
             _results = [];
             for (j = _q = 0; 0 <= nCols ? _q < nCols : _q > nCols; j = 0 <= nCols ? ++_q : --_q) {
               _results.push(grid[i][j][k]);
@@ -778,6 +800,7 @@ defModule('./helpers', function (exports, require) {
 
   this.inherit = function(x, extraProperties) {
     var f, k, r, v;
+
     if (extraProperties == null) {
       extraProperties = {};
     }
@@ -809,6 +832,7 @@ defModule('./helpers', function (exports, require) {
 
   this.prototypeOf = prototypeOf = function(x) {
     var p;
+
     if (typeof x === 'number') {
       return 0;
     } else if (typeof x === 'string') {
@@ -823,6 +847,7 @@ defModule('./helpers', function (exports, require) {
       p = prototypeOf(x[0]);
       return withShape(shapeOf(x[0]), (function() {
         var _i, _ref, _results;
+
         _results = [];
         for (_i = 0, _ref = x[0].length; 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--) {
           _results.push(p);
@@ -848,6 +873,7 @@ defModule('./helpers', function (exports, require) {
 
   this.sum = function(xs) {
     var r, x, _i, _len;
+
     r = 0;
     for (_i = 0, _len = xs.length; _i < _len; _i++) {
       x = xs[_i];
@@ -858,6 +884,7 @@ defModule('./helpers', function (exports, require) {
 
   this.prod = prod = function(xs) {
     var r, x, _i, _len;
+
     r = 1;
     for (_i = 0, _len = xs.length; _i < _len; _i++) {
       x = xs[_i];
@@ -868,6 +895,7 @@ defModule('./helpers', function (exports, require) {
 
   this.all = function(xs) {
     var x, _i, _len;
+
     for (_i = 0, _len = xs.length; _i < _len; _i++) {
       x = xs[_i];
       if (!x) {
@@ -879,6 +907,7 @@ defModule('./helpers', function (exports, require) {
 
   this.repeat = repeat = function(s, n) {
     var r, _i;
+
     r = '';
     for (_i = 0; 0 <= n ? _i < n : _i > n; 0 <= n ? _i++ : _i--) {
       r += s;
@@ -897,6 +926,7 @@ defModule('./helpers', function (exports, require) {
 
   this.die = function() {
     var args, e, k, message, opts, v, _ref;
+
     message = arguments[0], opts = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
     if (opts == null) {
       opts = {};
@@ -934,6 +964,7 @@ defModule('./lexer', function (exports, require) {
 
   this.tokenize = function(aplCode, opts) {
     var col, line, stack;
+
     if (opts == null) {
       opts = {};
     }
@@ -942,6 +973,7 @@ defModule('./lexer', function (exports, require) {
     return {
       next: function() {
         var a, m, re, startCol, startLine, t, type, _i, _len, _ref;
+
         while (true) {
           if (!aplCode) {
             return {
@@ -1014,6 +1046,7 @@ defModule('./parser', function (exports, require) {
 
   this.parse = function(aplCode, opts) {
     var consume, demand, parseBody, parseExpr, parseIndexable, parseIndices, parseItem, parserError, token, tokenStream;
+
     if (opts == null) {
       opts = {};
     }
@@ -1021,6 +1054,7 @@ defModule('./parser', function (exports, require) {
     token = tokenStream.next();
     consume = function(tt) {
       var _ref;
+
       if (_ref = token.type, __indexOf.call(tt.split(' '), _ref) >= 0) {
         return token = tokenStream.next();
       }
@@ -1042,6 +1076,7 @@ defModule('./parser', function (exports, require) {
     };
     parseBody = function() {
       var body, expr, _ref, _ref1;
+
       body = ['body'];
       while (true) {
         if ((_ref = token.type) === 'eof' || _ref === '}') {
@@ -1060,6 +1095,7 @@ defModule('./parser', function (exports, require) {
     };
     parseExpr = function() {
       var expr, item, _ref;
+
       expr = ['expr'];
       while (true) {
         item = parseItem();
@@ -1074,6 +1110,7 @@ defModule('./parser', function (exports, require) {
     };
     parseItem = function() {
       var item;
+
       item = parseIndexable();
       if (consume('[')) {
         item = ['index', item].concat(parseIndices());
@@ -1083,6 +1120,7 @@ defModule('./parser', function (exports, require) {
     };
     parseIndices = function() {
       var indices;
+
       indices = [];
       while (true) {
         if (consume(';')) {
@@ -1101,6 +1139,7 @@ defModule('./parser', function (exports, require) {
     };
     parseIndexable = function() {
       var b, expr, t;
+
       t = token;
       if (consume('number string symbol embedded')) {
         return [t.type, t.value];
@@ -1177,30 +1216,35 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic = function() {
     var a;
+
     a = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     return def.apply(null, [tmp.monadic].concat(__slice.call(a)));
   };
 
   dyadic = function() {
     var a;
+
     a = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     return def.apply(null, [tmp.dyadic].concat(__slice.call(a)));
   };
 
   prefixAdverb = function() {
     var a, _base, _ref1;
+
     a = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     return ((_ref1 = (_base = def.apply(null, [tmp.monadic].concat(__slice.call(a)))).aplMetaInfo) != null ? _ref1 : _base.aplMetaInfo = {}).isPrefixAdverb = true;
   };
 
   postfixAdverb = function() {
     var a, _base, _ref1;
+
     a = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     return ((_ref1 = (_base = def.apply(null, [tmp.monadic].concat(__slice.call(a)))).aplMetaInfo) != null ? _ref1 : _base.aplMetaInfo = {}).isPostfixAdverb = true;
   };
 
   conjunction = function() {
     var a, _base, _ref1;
+
     a = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     return ((_ref1 = (_base = def.apply(null, [tmp.dyadic].concat(__slice.call(a)))).aplMetaInfo) != null ? _ref1 : _base.aplMetaInfo = {}).isConjunction = true;
   };
@@ -1217,6 +1261,7 @@ defModule('./vocabulary', function (exports, require) {
     assert(typeof f === 'function');
     return withMetaInfoFrom(f, function() {
       var a, args, b;
+
       b = arguments[0], a = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       if (a == null) {
         if (typeof (b != null ? b[symbol] : void 0) === 'function') {
@@ -1238,6 +1283,7 @@ defModule('./vocabulary', function (exports, require) {
 
   ambivalent = function(symbol, f1, f2) {
     var F;
+
     assert(typeof symbol === 'string');
     if (!(f1 && f2)) {
       return f1 || f2;
@@ -1246,6 +1292,7 @@ defModule('./vocabulary', function (exports, require) {
     assert(typeof f2 === 'function');
     return F = function() {
       var a, args, b;
+
       b = arguments[0], a = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       if (a != null) {
         return f2.apply(null, [b, a].concat(__slice.call(args)));
@@ -1259,8 +1306,10 @@ defModule('./vocabulary', function (exports, require) {
 
   endOfVocabulary = function() {
     var f1, f2, k, ks, _i, _len;
+
     ks = ((function() {
       var _results;
+
       _results = [];
       for (k in tmp.monadic) {
         _results.push(k);
@@ -1268,6 +1317,7 @@ defModule('./vocabulary', function (exports, require) {
       return _results;
     })()).concat((function() {
       var _results;
+
       _results = [];
       for (k in tmp.dyadic) {
         if (tmp.monadic[k] == null) {
@@ -1295,6 +1345,7 @@ defModule('./vocabulary', function (exports, require) {
 
   pervasive = function(f) {
     var _ref1;
+
     assert(typeof f === 'function');
     ((_ref1 = f.aplMetaInfo) != null ? _ref1 : f.aplMetaInfo = {}).isPervasive = true;
     return f;
@@ -1302,18 +1353,21 @@ defModule('./vocabulary', function (exports, require) {
 
   maybeMakePervasive = function(f) {
     var F, _ref1;
+
     assert(typeof f === 'function');
     if (!((_ref1 = f.aplMetaInfo) != null ? _ref1.isPervasive : void 0)) {
       return f;
     } else {
       return withMetaInfoFrom(f, (F = function(b, a) {
         var i, k, sa, sb, x, _i, _ref2;
+
         if (a != null) {
           if (isSimple(b) && isSimple(a)) {
             return f(b, a);
           } else if (isSimple(a)) {
             return withShape(b.shape, (function() {
               var _i, _len, _results;
+
               _results = [];
               for (_i = 0, _len = b.length; _i < _len; _i++) {
                 x = b[_i];
@@ -1324,6 +1378,7 @@ defModule('./vocabulary', function (exports, require) {
           } else if (isSimple(b)) {
             return withShape(a.shape, (function() {
               var _i, _len, _results;
+
               _results = [];
               for (_i = 0, _len = a.length; _i < _len; _i++) {
                 x = a[_i];
@@ -1341,6 +1396,7 @@ defModule('./vocabulary', function (exports, require) {
               k = prod(sa.slice(sb.length));
               return withShape(sa, (function() {
                 var _j, _ref3, _results;
+
                 _results = [];
                 for (i = _j = 0, _ref3 = a.length; 0 <= _ref3 ? _j < _ref3 : _j > _ref3; i = 0 <= _ref3 ? ++_j : --_j) {
                   _results.push(F(b[floor(i / k)], a[i]));
@@ -1351,6 +1407,7 @@ defModule('./vocabulary', function (exports, require) {
               k = prod(sb.slice(sa.length));
               return withShape(sb, (function() {
                 var _j, _ref3, _results;
+
                 _results = [];
                 for (i = _j = 0, _ref3 = b.length; 0 <= _ref3 ? _j < _ref3 : _j > _ref3; i = 0 <= _ref3 ? ++_j : --_j) {
                   _results.push(F(b[i], a[floor(i / k)]));
@@ -1360,6 +1417,7 @@ defModule('./vocabulary', function (exports, require) {
             } else {
               return withShape(sa, (function() {
                 var _j, _ref3, _results;
+
                 _results = [];
                 for (i = _j = 0, _ref3 = a.length; 0 <= _ref3 ? _j < _ref3 : _j > _ref3; i = 0 <= _ref3 ? ++_j : --_j) {
                   _results.push(F(b[i], a[i]));
@@ -1374,6 +1432,7 @@ defModule('./vocabulary', function (exports, require) {
           } else {
             return withShape(b.shape, (function() {
               var _j, _len, _results;
+
               _results = [];
               for (_j = 0, _len = b.length; _j < _len; _j++) {
                 x = b[_j];
@@ -1445,9 +1504,11 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('⍳', 'Index generate', function(a) {
     var i, indices, r, v, x, _i, _j, _len, _len1;
+
     if (typeof a === 'number') {
       return (function() {
         var _i, _results;
+
         _results = [];
         for (i = _i = 0; _i < a; i = _i += 1) {
           _results.push(i);
@@ -1462,6 +1523,7 @@ defModule('./vocabulary', function (exports, require) {
     r = [];
     indices = (function() {
       var _j, _ref1, _results;
+
       _results = [];
       for (i = _j = 0, _ref1 = a.length; _j < _ref1; i = _j += 1) {
         _results.push(0);
@@ -1484,6 +1546,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('⍳', 'Index of', function(b, a) {
     var i, pos, x, y, _i, _j, _len, _len1, _results;
+
     if (isSimple(a)) {
       a = [a];
     } else {
@@ -1515,6 +1578,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('?', 'Deal', function(y, x) {
     var available, _i, _j, _results, _results1;
+
     x = max(0, floor(num(x)));
     y = max(0, floor(num(y)));
     assert(x <= y, 'Domain error: left argument of ? must not be greater ' + 'than its right argument.');
@@ -1552,6 +1616,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('○', 'Circular and hyperbolic functions', pervasive(function(x, i) {
     var ex;
+
     switch (i) {
       case 0:
         return sqrt(1 - x * x);
@@ -1591,6 +1656,7 @@ defModule('./vocabulary', function (exports, require) {
 
   Gamma = function(x) {
     var a, i, p, t, _i, _ref1;
+
     p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
     if (x < 0.5) {
       return PI / (sin(PI * x) * Gamma(1 - x));
@@ -1606,6 +1672,7 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('!', 'Factorial', pervasive(factorial = function(x) {
     var i, r;
+
     if ((0 <= x && x < 25) && x === floor(x)) {
       r = 1;
       i = 2;
@@ -1624,6 +1691,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('!', 'Binomial', pervasive(function(n, k) {
     var i, u, v, _i;
+
     if ((0 <= k && k < 100) && (0 <= n && n < 100) && n === floor(n) && k === floor(k)) {
       if (n < k) {
         return 0;
@@ -1672,6 +1740,7 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('≡', 'Depth', depthOf = function(a) {
     var r, x, _i, _len;
+
     if (isSimple(a)) {
       return 0;
     }
@@ -1685,6 +1754,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('≡', 'Match', match = function(b, a) {
     var i, sa, sb, _i, _j, _ref1, _ref2;
+
     if (isSimple(a) && isSimple(b)) {
       return +(a === b);
     }
@@ -1724,9 +1794,11 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('∈', 'Enlist', function(a) {
     var r, rec;
+
     r = [];
     rec = function(x) {
       var y, _i, _len;
+
       if (isSimple(x)) {
         r.push(x);
       } else {
@@ -1742,12 +1814,14 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('∈', 'Membership', function(b, a) {
     var x;
+
     b = array(b);
     if (isSimple(a)) {
       return +(__indexOf.call(b, a) >= 0);
     } else {
       return withShape(a.shape, (function() {
         var _i, _len, _results;
+
         _results = [];
         for (_i = 0, _len = a.length; _i < _len; _i++) {
           x = a[_i];
@@ -1760,6 +1834,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('⍷', 'Find', function(b, a) {
     var i, indices, r, rec, rec2, sa, sb, _i, _ref1;
+
     sa = shapeOf(a);
     sb = shapeOf(b);
     if (isSimple(b)) {
@@ -1770,6 +1845,7 @@ defModule('./vocabulary', function (exports, require) {
     }
     r = withShape(sb, (function() {
       var _i, _ref1, _results;
+
       _results = [];
       for (_i = 0, _ref1 = b.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--) {
         _results.push(0);
@@ -1790,6 +1866,7 @@ defModule('./vocabulary', function (exports, require) {
     indices = Array(sb.length);
     rec = function(d, ir) {
       var _j, _ref2, _results;
+
       if (d < sb.length) {
         _results = [];
         for (i = _j = 0, _ref2 = sb[d] - sa[d] + 1; 0 <= _ref2 ? _j < _ref2 : _j > _ref2; i = 0 <= _ref2 ? ++_j : --_j) {
@@ -1803,6 +1880,7 @@ defModule('./vocabulary', function (exports, require) {
     };
     rec2 = function(d, ia, ib) {
       var _j, _ref2;
+
       if (d < sb.length) {
         for (i = _j = 0, _ref2 = sa[d]; 0 <= _ref2 ? _j < _ref2 : _j > _ref2; i = 0 <= _ref2 ? ++_j : --_j) {
           if (!rec2(d + 1, ia * sa[d] + i, ib * sb[d] + indices[d] + i)) {
@@ -1820,6 +1898,7 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('∪', 'Unique', function(a) {
     var r, x, _i, _len, _ref1;
+
     r = [];
     _ref1 = array(a);
     for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -1833,6 +1912,7 @@ defModule('./vocabulary', function (exports, require) {
 
   contains = function(a, x) {
     var y, _i, _len;
+
     for (_i = 0, _len = a.length; _i < _len; _i++) {
       y = a[_i];
       if (match(x, y)) {
@@ -1844,10 +1924,12 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('∪', 'Union', function(b, a) {
     var x;
+
     a = array(a);
     b = array(b);
     return a.concat((function() {
       var _i, _len, _results;
+
       _results = [];
       for (_i = 0, _len = b.length; _i < _len; _i++) {
         x = b[_i];
@@ -1861,6 +1943,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('∩', 'Intersection', function(b, a) {
     var x, _i, _len, _results;
+
     a = array(a);
     b = array(b);
     _results = [];
@@ -1879,6 +1962,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('∼', 'Without', function(b, a) {
     var excluded, r, x, y, _i, _j, _len, _len1;
+
     if (isSimple(a)) {
       a = [a];
     } else {
@@ -1907,6 +1991,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('∨', 'Or', pervasive(function(y, x) {
     var _ref1, _ref2;
+
     x = abs(num(x));
     y = abs(num(y));
     assert(x === floor(x) && y === floor(y), '∨ is defined only for integers');
@@ -1924,6 +2009,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('∧', 'And', pervasive(function(y, x) {
     var p, _ref1, _ref2;
+
     x = abs(num(x));
     y = abs(num(y));
     assert(x === floor(x) && y === floor(y), '∧ is defined only for integers');
@@ -1952,6 +2038,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('⍴', 'Reshape', function(b, a) {
     var i, x;
+
     if (isSimple(a)) {
       a = [a];
     }
@@ -1960,6 +2047,7 @@ defModule('./vocabulary', function (exports, require) {
     }
     a = (function() {
       var _i, _len, _results;
+
       _results = [];
       for (_i = 0, _len = a.length; _i < _len; _i++) {
         x = a[_i];
@@ -1970,6 +2058,7 @@ defModule('./vocabulary', function (exports, require) {
     })();
     return withShape(a, withPrototypeCopiedFrom(b, (function() {
       var _i, _ref1, _results;
+
       _results = [];
       for (i = _i = 0, _ref1 = prod(a); 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
         _results.push(b[i % b.length]);
@@ -1980,6 +2069,7 @@ defModule('./vocabulary', function (exports, require) {
 
   catenate = function(b, a, axis) {
     var i, j, k, ni, nja, njb, nk, r, sa, sb, sr, x, _i, _j, _k, _l, _m, _n, _ref1;
+
     if (axis == null) {
       axis = -1;
     }
@@ -2021,6 +2111,7 @@ defModule('./vocabulary', function (exports, require) {
     }
     sr = (function() {
       var _len, _o, _results;
+
       _results = [];
       for (_o = 0, _len = sa.length; _o < _len; _o++) {
         x = sa[_o];
@@ -2044,6 +2135,7 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('⌽', 'Reverse', reverse = function(b, _1, axis) {
     var i, j, k, ni, nj, nk, r, sb, _i, _j, _k, _ref1;
+
     if (axis == null) {
       axis = -1;
     }
@@ -2071,6 +2163,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('⌽', 'Rotate', function(b, a) {
     var i, n, sb;
+
     a = num(a);
     if (a === 0 || isSimple(b) || (b.length <= 1)) {
       return b;
@@ -2083,6 +2176,7 @@ defModule('./vocabulary', function (exports, require) {
     }
     return withShape(sb, (function() {
       var _i, _ref1, _results;
+
       _results = [];
       for (i = _i = 0, _ref1 = b.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
         _results.push(b[i - (i % n) + ((i % n) + a) % n]);
@@ -2100,6 +2194,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('⊖', '1st axis rotate', function(b, a) {
     var i, k, n, sb;
+
     a = num(a);
     if (a === 0 || isSimple(b) || (b.length <= 1)) {
       return b;
@@ -2113,6 +2208,7 @@ defModule('./vocabulary', function (exports, require) {
     }
     return withShape(sb, (function() {
       var _i, _ref1, _results;
+
       _results = [];
       for (i = _i = 0, _ref1 = b.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
         _results.push(b[((floor(i / k) + a) % n) * k + (i % k)]);
@@ -2123,6 +2219,7 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('⍉', 'Transpose', function(a) {
     var i, psr, r, rec, sa, sr, _i, _ref1;
+
     sa = shapeOf(a);
     if (sa.length <= 1) {
       return a;
@@ -2135,6 +2232,7 @@ defModule('./vocabulary', function (exports, require) {
     r = [];
     rec = function(d, i) {
       var j, _j, _ref2;
+
       if (d >= sa.length) {
         r.push(a[i]);
       } else {
@@ -2159,6 +2257,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('↑', 'Take', function(b, a) {
     var filler, i, pa, r, rec, sb, x, _i, _len;
+
     if (isSimple(a)) {
       a = [a];
     }
@@ -2174,6 +2273,7 @@ defModule('./vocabulary', function (exports, require) {
     r = [];
     pa = (function() {
       var _j, _ref1, _results;
+
       _results = [];
       for (_j = 0, _ref1 = a.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; 0 <= _ref1 ? _j++ : _j--) {
         _results.push(0);
@@ -2189,6 +2289,7 @@ defModule('./vocabulary', function (exports, require) {
     filler = prototypeOf(b);
     rec = function(d, i, k) {
       var j, _j, _k, _l, _m, _ref1, _ref2, _ref3, _ref4, _ref5;
+
       if (d >= sb.length) {
         r.push(b[i]);
       } else {
@@ -2218,6 +2319,7 @@ defModule('./vocabulary', function (exports, require) {
     rec(0, 0, b.length);
     return withShape((function() {
       var _j, _len1, _results;
+
       _results = [];
       for (_j = 0, _len1 = a.length; _j < _len1; _j++) {
         x = a[_j];
@@ -2229,6 +2331,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('↓', 'Drop', function(b, a) {
     var hi, i, lims, lo, r, rec, sb, sr, x, _i, _j, _len, _ref1, _ref2;
+
     if (isSimple(a)) {
       a = [a];
     }
@@ -2241,6 +2344,7 @@ defModule('./vocabulary', function (exports, require) {
     if (isSimple(b)) {
       b = withShape((function() {
         var _j, _ref1, _results;
+
         _results = [];
         for (_j = 0, _ref1 = a.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; 0 <= _ref1 ? _j++ : _j--) {
           _results.push(1);
@@ -2257,6 +2361,7 @@ defModule('./vocabulary', function (exports, require) {
     }
     lims = (function() {
       var _k, _ref3, _results;
+
       _results = [];
       for (i = _k = 0, _ref3 = a.length; 0 <= _ref3 ? _k < _ref3 : _k > _ref3; i = 0 <= _ref3 ? ++_k : --_k) {
         if (a[i] >= 0) {
@@ -2270,6 +2375,7 @@ defModule('./vocabulary', function (exports, require) {
     r = [];
     rec = function(d, i, n) {
       var j, _k, _ref3, _ref4;
+
       if (d >= sb.length) {
         r.push(b[i]);
       } else {
@@ -2283,6 +2389,7 @@ defModule('./vocabulary', function (exports, require) {
     rec(0, 0, b.length);
     sr = (function() {
       var _k, _len1, _ref3, _results;
+
       _results = [];
       for (_k = 0, _len1 = lims.length; _k < _len1; _k++) {
         _ref3 = lims[_k], lo = _ref3[0], hi = _ref3[1];
@@ -2305,6 +2412,7 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('⊃', 'Disclose', function(a) {
     var i, r, rec, sa, sr, sr1, sx, x, _i, _j, _k, _len, _len1, _ref1, _ref2;
+
     if (isSimple(a)) {
       return a;
     }
@@ -2331,6 +2439,7 @@ defModule('./vocabulary', function (exports, require) {
       sx = shapeOf(x);
       rec = function(d, i, n, N) {
         var filler, j, _l, _m, _ref3, _ref4, _results;
+
         if (d >= sr1.length) {
           return r.push(x[i]);
         } else {
@@ -2358,6 +2467,7 @@ defModule('./vocabulary', function (exports, require) {
 
   dyadic('⌷', 'Index', function(b, a, axes) {
     var a1, axis, d, i, r, rec, sb, sr, x, y, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _len6, _m, _n, _o, _p, _q, _ref1, _ref2, _ref3, _results, _results1;
+
     if (axes == null) {
       axes = null;
     }
@@ -2380,6 +2490,7 @@ defModule('./vocabulary', function (exports, require) {
     assert(a.length === axes.length, 'The number of indices must be equal to the number of axes specified.');
     a1 = (function() {
       var _j, _len, _results1;
+
       _results1 = [];
       for (_j = 0, _len = sb.length; _j < _len; _j++) {
         x = sb[_j];
@@ -2431,6 +2542,7 @@ defModule('./vocabulary', function (exports, require) {
     r = [];
     rec = function(d, i, n) {
       var _len7, _r, _ref4;
+
       if (d >= a.length) {
         r.push(b[i]);
       } else {
@@ -2452,6 +2564,7 @@ defModule('./vocabulary', function (exports, require) {
 
   grade = function(b, a, direction) {
     var h, i, m, n, r, sa, sb, _i, _j, _ref1, _ref2, _results;
+
     if (a == null) {
       a = [];
     }
@@ -2474,6 +2587,7 @@ defModule('./vocabulary', function (exports, require) {
     }).apply(this);
     r.sort(function(i, j) {
       var k, tx, ty, x, y, _k;
+
       for (k = _k = 0; 0 <= m ? _k < m : _k > m; k = 0 <= m ? ++_k : --_k) {
         x = b[m * i + k];
         y = b[m * j + k];
@@ -2513,6 +2627,7 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('⊤', 'Encode', function(b, a) {
     var i, isNeg, j, k, m, n, r, sa, sb, sr, x, y, _i, _j, _k, _len, _ref1;
+
     sa = shapeOf(a);
     sb = shapeOf(b);
     if (isSimple(a)) {
@@ -2552,6 +2667,7 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('⊥', 'Decode', function(b, a) {
     var firstDimB, i, j, k, lastDimA, r, sa, sb, x, y, z, _i, _j, _k, _ref1, _ref2, _ref3;
+
     sa = shapeOf(a);
     sb = shapeOf(b);
     lastDimA = sa.length ? sa[sa.length - 1] : 1;
@@ -2569,6 +2685,7 @@ defModule('./vocabulary', function (exports, require) {
         x = a.slice(i * lastDimA, (i + 1) * lastDimA);
         y = (function() {
           var _k, _results;
+
           _results = [];
           for (k = _k = 0; 0 <= firstDimB ? _k < firstDimB : _k > firstDimB; k = 0 <= firstDimB ? ++_k : --_k) {
             _results.push(b[j + k * (b.length / firstDimB)]);
@@ -2578,6 +2695,7 @@ defModule('./vocabulary', function (exports, require) {
         if (x.length === 1) {
           x = (function() {
             var _k, _ref3, _results;
+
             _results = [];
             for (_k = 0, _ref3 = y.length; 0 <= _ref3 ? _k < _ref3 : _k > _ref3; 0 <= _ref3 ? _k++ : _k--) {
               _results.push(x[0]);
@@ -2588,6 +2706,7 @@ defModule('./vocabulary', function (exports, require) {
         if (y.length === 1) {
           y = (function() {
             var _k, _ref3, _results;
+
             _results = [];
             for (_k = 0, _ref3 = x.length; 0 <= _ref3 ? _k < _ref3 : _k > _ref3; 0 <= _ref3 ? _k++ : _k--) {
               _results.push(y[0]);
@@ -2611,6 +2730,7 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('⍕', 'Format', function(b) {
     var t;
+
     t = formatter.format(b);
     return withShape([t.length, t[0].length], t.join('').split(''));
   });
@@ -2619,6 +2739,7 @@ defModule('./vocabulary', function (exports, require) {
 
   monadic('⍎', 'Execute', function(b) {
     var c, s, _i, _len, _ref1;
+
     s = '';
     _ref1 = array(b);
     for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -2671,6 +2792,7 @@ defModule('./vocabulary', function (exports, require) {
     }
     return function(b, a) {
       var i, invokedAsMonadic, isBackwards, items, j, k, n, r, sItem, sb, x, _i, _j, _ref1;
+
       invokedAsMonadic = a == null;
       if (invokedAsMonadic) {
         a = 0;
@@ -2697,6 +2819,7 @@ defModule('./vocabulary', function (exports, require) {
         k = prod(sb.slice(axis + 1));
         items = (function() {
           var _i, _results;
+
           _results = [];
           for (_i = 0; 0 <= n ? _i < n : _i > n; 0 <= n ? _i++ : _i--) {
             _results.push([]);
@@ -2712,6 +2835,7 @@ defModule('./vocabulary', function (exports, require) {
       }
       r = (function() {
         var _k, _l, _m, _n, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _results, _results1;
+
         if (isBackwards) {
           _results = [];
           for (i = _k = 0, _ref2 = n - a + 1; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
@@ -2744,6 +2868,7 @@ defModule('./vocabulary', function (exports, require) {
 
   compressOrReplicate = function(b, a, axis) {
     var filler, i, isExpansive, isExtensive, isHyperexpansive, j, k, nNonNegative, ni, nj, nk, r, sb, sr, x, _i, _j, _k, _l, _len, _len1, _m, _n, _ref1;
+
     if (axis == null) {
       axis = -1;
     }
@@ -2761,6 +2886,7 @@ defModule('./vocabulary', function (exports, require) {
     if (!a.length) {
       a = (function() {
         var _i, _ref1, _results;
+
         _results = [];
         for (_i = 0, _ref1 = sb[axis]; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--) {
           _results.push(a);
@@ -2838,6 +2964,7 @@ defModule('./vocabulary', function (exports, require) {
     }
     return function(b, a) {
       var i, ijk, j, k, ni, nj, nk, r, sb, t, x, _i, _j, _k, _l, _ref1;
+
       assert(a == null, 'Scan can only be applied monadically.');
       sb = shapeOf(b);
       if (sb.length === 0) {
@@ -2894,9 +3021,11 @@ defModule('./vocabulary', function (exports, require) {
   postfixAdverb('¨', 'Each', function(f) {
     return function(b, a) {
       var i, x;
+
       if (a == null) {
         return withShape(shapeOf(b), (function() {
           var _i, _len, _ref1, _results;
+
           _ref1 = array(b);
           _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -2909,6 +3038,7 @@ defModule('./vocabulary', function (exports, require) {
       if (isSimple(a)) {
         return withShape(shapeOf(b), (function() {
           var _i, _len, _ref1, _results;
+
           _ref1 = array(b);
           _results = [];
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -2921,6 +3051,7 @@ defModule('./vocabulary', function (exports, require) {
       if (match(shapeOf(a), shapeOf(b))) {
         return withShape(shapeOf(b), (function() {
           var _i, _ref1, _results;
+
           _results = [];
           for (i = _i = 0, _ref1 = a.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
             _results.push(f(b[i], a[i]));
@@ -2931,6 +3062,7 @@ defModule('./vocabulary', function (exports, require) {
       if (a.length === 1) {
         return withShape(shapeOf(b), (function() {
           var _i, _len, _results;
+
           _results = [];
           for (_i = 0, _len = b.length; _i < _len; _i++) {
             x = b[_i];
@@ -2942,6 +3074,7 @@ defModule('./vocabulary', function (exports, require) {
       if (b.length === 1) {
         return withShape(shapeOf(a), (function() {
           var _i, _len, _results;
+
           _results = [];
           for (_i = 0, _len = a.length; _i < _len; _i++) {
             x = a[_i];
@@ -2958,6 +3091,7 @@ defModule('./vocabulary', function (exports, require) {
     assert(typeof f === 'function');
     return function(b, a) {
       var r, x, y, _i, _j, _len, _len1;
+
       assert(a != null, 'Adverb ∘. (Outer product) can be applied to dyadic verbs only');
       a = array(a);
       b = array(b);
@@ -2975,6 +3109,7 @@ defModule('./vocabulary', function (exports, require) {
 
   conjunction('.', 'Inner product', function(g, f) {
     var F;
+
     F = reduce(f);
     return function(b, a) {
       assert(shapeOf(a).length <= 1 && shapeOf(b).length <= 1, 'Inner product (.) is implemented only for ' + 'arrays of rank no more than 1.');
@@ -2984,6 +3119,7 @@ defModule('./vocabulary', function (exports, require) {
 
   conjunction('⍣', 'Power operator', function(g, f) {
     var h;
+
     if (typeof f === 'number' && typeof g === 'function') {
       h = f;
       f = g;
@@ -2994,6 +3130,7 @@ defModule('./vocabulary', function (exports, require) {
     if (typeof g === 'number') {
       return function(y, x) {
         var _i;
+
         for (_i = 0; 0 <= g ? _i < g : _i > g; 0 <= g ? _i++ : _i--) {
           y = f(y, x);
         }
@@ -3002,6 +3139,7 @@ defModule('./vocabulary', function (exports, require) {
     } else {
       return function(y, x) {
         var y1;
+
         while (true) {
           y1 = f(y, x);
           if (g(y, y1)) {
@@ -3034,6 +3172,7 @@ defModule('./vocabulary', function (exports, require) {
 
   this['set_⎕'] = function(x) {
     var s;
+
     s = formatter.format(x).join('\n') + '\n';
     x;
     if (typeof (typeof window !== "undefined" && window !== null ? window.alert : void 0) === 'function') {
@@ -3054,6 +3193,7 @@ defModule('./vocabulary', function (exports, require) {
 
   this['set_⍞'] = function(x) {
     var s;
+
     s = formatter.format(x).join('\n');
     x;
     if (typeof (typeof window !== "undefined" && window !== null ? window.alert : void 0) === 'function') {
@@ -3087,6 +3227,7 @@ defModule('./vocabulary', function (exports, require) {
 
   this['⎕fork'] = function(verbs) {
     var f, _i, _len;
+
     assert(verbs.length % 2 === 1);
     assert(verbs.length >= 3);
     for (_i = 0, _len = verbs.length; _i < _len; _i++) {
@@ -3095,6 +3236,7 @@ defModule('./vocabulary', function (exports, require) {
     }
     return function(b, a) {
       var i, r, _j, _ref1;
+
       r = verbs[verbs.length - 1](b, a);
       for (i = _j = _ref1 = verbs.length - 2; _j > 0; i = _j += -2) {
         r = verbs[i](r, verbs[i - 1](b, a));
