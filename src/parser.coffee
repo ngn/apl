@@ -96,6 +96,6 @@ lexer = require './lexer'
     else parserError "Encountered unexpected token of type '#{token.type}'"
 
   result = parseBody()
-  #     'hello'} ⍝ fails 'ParserError'
+  #     'hello'} ⍝ fails
   demand 'eof'
   result
