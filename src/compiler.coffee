@@ -103,13 +103,12 @@ resolveExprs = (ast, opts = {}) ->
         when 'string', 'number', 'embedded'
           {type: 'X'}
         when 'index'
-          t1 = visit node[1]
           for c in node[2...] when c isnt null
             t = visit c
             if t.type isnt 'X'
               compilerError node, opts,
                 'Only expressions of type data can be used as an index.'
-          t1
+          visit node[1]
         when 'expr'
           a = node[1...]
           h = Array a.length
@@ -317,12 +316,18 @@ toJavaScript = (node) ->
       if a.length is 1 or a[1] is 0 then '' + a[0]
       else "new _['⎕complex'](#{a[0]}, #{a[1]})"
 
+    # We translate square-bracket indexing (`A[B]`) to indexing using the
+    # squish quad function (`B⌷A`).  The arguments are reversed in the process,
+    # so `B` gets evaluated before `A` as one would expect from APL's
+    # right-to-left order of execution.
+    #
+    #     ⍴ x[⍋x←6?40]    ⍝ returns ,6
     when 'index'
-      "_['⌷'](#{toJavaScript node[1]}, [#{
-        (for c in node[2...] when c isnt null then toJavaScript c).join ', '
-      }], [#{
-        (for c, i in node[2...] when c isnt null then i)
-      }])"
+      "_['⍨'](_['⌷'])(
+        [#{(for c in node[2...] when c then toJavaScript c).join ', '}],
+        #{toJavaScript node[1]},
+        [#{(for c, i in node[2...] when c isnt null then i)}]
+      )"
 
     when 'expr'
       die 'No "expr" nodes are expected at this stage.'

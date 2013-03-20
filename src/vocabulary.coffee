@@ -1710,7 +1710,7 @@ conjunction '⍣', 'Power operator', (g, f) ->
 #     −⍨ 123      ⍝ returns ¯123
 postfixAdverb '⍨', 'Commute', (f) ->
   assert typeof f is 'function'
-  (b, a) -> if a? then f a, b else f b
+  (b, a, axis) -> if a? then f a, b, axis else f b, undefined, axis
 
 @['get_⎕'] = ->
   if typeof window?.prompt is 'function'
