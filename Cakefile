@@ -17,7 +17,7 @@ exec = (cmd, args, opts, cont) ->
   child.stderr.on 'data', (data) -> process.stderr.write data
   child.on 'exit', (code) ->
     if code then throw Error "Child process '#{cmd}' returned exit code #{code}."
-    cont()
+    cont?()
 
 buildActions = [
   coffee 'src/*.coffee', 'lib/'
@@ -58,8 +58,7 @@ task 'test', 'Run doctests', ->
     )
     ->
       console.info 'Running doctests...'
-      exec 'node', ['doctest.js'], {cwd: 'test'}, ->
-        console.info 'OK'
+      exec 'node', ['doctest.js'], cwd: 'test'
   ]
 
 task 'docs', 'Generate literate documentation with docco', ->
