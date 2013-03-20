@@ -95,4 +95,7 @@ lexer = require './lexer'
     else if consume '{' then (b = parseBody(); demand '}'; ['lambda', b])
     else parserError "Encountered unexpected token of type '#{token.type}'"
 
-  parseBody()
+  result = parseBody()
+  #     'hello'} ⍝ fails 'ParserError'
+  demand 'eof'
+  result
