@@ -35,7 +35,7 @@ task 'test', 'Run doctests', ->
     action(
       ['test/browsertest/generate.js'].concat(glob.sync 'src/*.coffee')
       ['test/browsertest/testcases.js']
-      (callback) -> require('./test/browsertest/generate').main callback
+      ({callback}) -> require('./test/browsertest/generate').main callback
     )
     cat(
       [
