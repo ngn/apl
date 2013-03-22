@@ -1656,11 +1656,15 @@ monadic <span class="string">'↑'</span>, <span class="string">'First'</span>, 
               </div>
               <p>Enclose (<code>⊂</code>)</p>
 <pre><code>⍴ ⊂ 2 3⍴⍳6    ⍝ returns ⍬
-⍴⍴ ⊂ 2 3⍴⍳6   ⍝ returns ,0</code></pre>
+⍴⍴ ⊂ 2 3⍴⍳6   ⍝ returns ,0
+⊂[2] 1 2 3    ⍝ fails</code></pre>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>monadic <span class="string">'⊂'</span>, <span class="string">'Enclose'</span>, (a) -&gt; <span class="keyword">if</span> isSimple a <span class="keyword">then</span> a <span class="keyword">else</span> withShape [], [a]</pre></div></div>
+            <div class="content"><div class='highlight'><pre>monadic <span class="string">'⊂'</span>, <span class="string">'Enclose'</span>, (a, _, axis) -&gt;
+  assert <span class="keyword">typeof</span> axis <span class="keyword">is</span> <span class="string">'undefined'</span>,
+    <span class="string">'Monadic enclose (⊂) does not support axis specification.'</span>
+  <span class="keyword">if</span> isSimple a <span class="keyword">then</span> a <span class="keyword">else</span> withShape [], [a]</pre></div></div>
             
         </li>
         

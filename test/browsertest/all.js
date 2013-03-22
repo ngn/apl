@@ -2383,7 +2383,8 @@ defModule('./vocabulary', function (exports, require) {
     return withShape(sr, r);
   });
 
-  monadic('⊂', 'Enclose', function(a) {
+  monadic('⊂', 'Enclose', function(a, _, axis) {
+    assert(typeof axis === 'undefined', 'Monadic enclose (⊂) does not support axis specification.');
     if (isSimple(a)) {
       return a;
     } else {

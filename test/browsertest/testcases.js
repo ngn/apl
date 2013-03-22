@@ -235,6 +235,7 @@ var testcases = [
 ["¯1 ¯1↓ 2 3 4⍴\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"","returns 1 2 4 ⍴ 'ABCDEFGH'"],
 ["⍴ ⊂ 2 3⍴⍳6","returns ⍬"],
 ["⍴⍴ ⊂ 2 3⍴⍳6","returns ,0"],
+["⊂[2] 1 2 3","fails"],
 ["⊃ (1 2 3) (4 5 6)","returns 2 3 ⍴ 1 2 3 4 5 6"],
 ["⍴⊃ (1 2 3) (4 5 6)","returns 2 3"],
 ["⊃ (1 2) (3 4 5)","returns 2 3 ⍴ 1 2 0 3 4 5"],

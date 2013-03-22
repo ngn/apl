@@ -982,7 +982,11 @@ dyadic '↓', 'Drop', (b, a) ->
 #
 #     ⍴ ⊂ 2 3⍴⍳6    ⍝ returns ⍬
 #     ⍴⍴ ⊂ 2 3⍴⍳6   ⍝ returns ,0
-monadic '⊂', 'Enclose', (a) -> if isSimple a then a else withShape [], [a]
+#     ⊂[2] 1 2 3    ⍝ fails
+monadic '⊂', 'Enclose', (a, _, axis) ->
+  assert typeof axis is 'undefined',
+    'Monadic enclose (⊂) does not support axis specification.'
+  if isSimple a then a else withShape [], [a]
 
 # Partition (with axis) (`⊂`)
 dyadic '⊂', 'Partition (with axis)' # todo
