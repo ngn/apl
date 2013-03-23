@@ -93,7 +93,7 @@
 # leave `0` as an implicit default.
 
 {assert, die, inherit, isSimple, shapeOf, withShape, prod, prototypeOf,
-  withPrototype, withPrototypeCopiedFrom} = require './helpers'
+  withPrototype, withPrototypeCopiedFrom, enc, dec} = require './helpers'
 {min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin,
   cos, tan, asin, acos, atan} = Math
 formatter = require './formatter'
@@ -982,11 +982,46 @@ dyadic '↓', 'Drop', (b, a) ->
 #
 #     ⍴ ⊂ 2 3⍴⍳6    ⍝ returns ⍬
 #     ⍴⍴ ⊂ 2 3⍴⍳6   ⍝ returns ,0
-#     ⊂[2] 1 2 3    ⍝ fails
-monadic '⊂', 'Enclose', (a, _, axis) ->
-  assert typeof axis is 'undefined',
-    'Monadic enclose (⊂) does not support axis specification.'
-  if isSimple a then a else withShape [], [a]
+#     ⊂[0]2 3⍴⍳6    ⍝ returns (0 3)(1 4)(2 5)
+#     ⍴⊂[0]2 3⍴⍳6   ⍝ returns ,3
+#     ⊂[1]2 3⍴⍳6    ⍝ returns (0 1 2)(3 4 5)
+#     ⍴⊂[1]2 3⍴⍳6   ⍝ returns ,2
+#     ⊃⊂[1 0]2 3⍴⍳6 ⍝ returns 3 2⍴0 3 1 4 2 5
+#     ⍴⊂[1 0]2 3⍴⍳6 ⍝ returns ⍬
+monadic '⊂', 'Enclose', (a, _, axes) ->
+  sa = shapeOf a
+  if typeof axes is 'undefined'
+    axes = [0...sa.length]
+  else
+    assert axes.length is 1,
+      'Axes cannot be specified using strand notation.'
+    axes = axes[0]
+    if typeof axes is 'number' then axes = [axes]
+    for axis, i in axes
+      assert typeof axis is 'number', 'Axes must be numbers.'
+      assert axis is Math.floor axis, 'Axes must be integers.'
+      assert 0 <= axis < sa.length,
+        'Axes must be between 0 and the argument\'s rank.'
+      assert axis not in axes[...i],
+        'Axes must be unique.'
+  if isSimple a then return a
+  su = for axis in axes then sa[axis]
+  nu = prod su
+  rAxes = for axis in [0...sa.length] when axis not in axes then axis
+  sr = for axis in rAxes then sa[axis]
+  nr = prod sr
+  withShape sr,
+    for j in [0...nr]
+      jj = enc j, sr
+      withShape su,
+        for k in [0...nu]
+          kk = enc k, su
+          ii =
+            for axis in [0...sa.length]
+              if axis in axes then kk[axes.indexOf axis]
+              else jj[rAxes.indexOf axis]
+          i = dec ii, sa
+          a[i]
 
 # Partition (with axis) (`⊂`)
 dyadic '⊂', 'Partition (with axis)' # todo

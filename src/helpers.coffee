@@ -53,6 +53,19 @@
 @prod = prod = (xs) -> r = 1; (for x in xs then r *= x); r
 @all = (xs) -> (for x in xs when not x then return false); true
 
+@enc = (x, a) ->
+  r = []
+  for i in [a.length - 1 .. 0] by -1
+    r.push x % a[i]
+    x = Math.floor x / a[i]
+  r.reverse()
+
+@dec = (xs, a) ->
+  assert xs.length is a.length
+  r = 0
+  for x, i in xs then r = r * a[i] + x
+  r
+
 # `repeat(s, n)` catenates `n` instances of a string `s`.
 @repeat = repeat = (s, n) -> r = ''; (for [0...n] then r += s); r
 
