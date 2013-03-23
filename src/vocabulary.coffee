@@ -757,8 +757,14 @@ dyadic '⍴', 'Reshape', (b, a) ->
 
 # Helper for verbs `,` and `⍪`
 catenate = (b, a, axis = -1) ->
-  sa = shapeOf a; if sa.length is 0 then sa = [1]; a = [a]
-  sb = shapeOf b; if sb.length is 0 then sb = [1]; b = [b]
+  sa = shapeOf a
+  if sa.length is 0
+    sa = [1]
+    a = if isSimple a then [a] else [a[0]]
+  sb = shapeOf b
+  if sb.length is 0
+    sb = [1]
+    b = if isSimple b then [b] else [b[0]]
   assert sa.length is sb.length,
     'Length error: Cannot catenate arrays of different ranks'
   if axis < 0 then axis += sa.length
