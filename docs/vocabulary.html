@@ -176,7 +176,7 @@ leave <code>0</code> as an implicit default.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>{assert, die, inherit, isSimple, shapeOf, withShape, prod, prototypeOf,
-  withPrototype, withPrototypeCopiedFrom} = require <span class="string">'./helpers'</span>
+  withPrototype, withPrototypeCopiedFrom, enc, dec} = require <span class="string">'./helpers'</span>
 {min, max, floor, ceil, round, abs, random, exp, pow, log, PI, sqrt, sin,
   cos, tan, asin, acos, atan} = Math
 formatter = require <span class="string">'./formatter'</span></pre></div></div>
@@ -1657,14 +1657,49 @@ monadic <span class="string">'↑'</span>, <span class="string">'First'</span>, 
               <p>Enclose (<code>⊂</code>)</p>
 <pre><code>⍴ ⊂ 2 3⍴⍳6    ⍝ returns ⍬
 ⍴⍴ ⊂ 2 3⍴⍳6   ⍝ returns ,0
-⊂[2] 1 2 3    ⍝ fails</code></pre>
+⊂[0]2 3⍴⍳6    ⍝ returns (0 3)(1 4)(2 5)
+⍴⊂[0]2 3⍴⍳6   ⍝ returns ,3
+⊂[1]2 3⍴⍳6    ⍝ returns (0 1 2)(3 4 5)
+⍴⊂[1]2 3⍴⍳6   ⍝ returns ,2
+⊃⊂[1 0]2 3⍴⍳6 ⍝ returns 3 2⍴0 3 1 4 2 5
+⍴⊂[1 0]2 3⍴⍳6 ⍝ returns ⍬</code></pre>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>monadic <span class="string">'⊂'</span>, <span class="string">'Enclose'</span>, (a, _, axis) -&gt;
-  assert <span class="keyword">typeof</span> axis <span class="keyword">is</span> <span class="string">'undefined'</span>,
-    <span class="string">'Monadic enclose (⊂) does not support axis specification.'</span>
-  <span class="keyword">if</span> isSimple a <span class="keyword">then</span> a <span class="keyword">else</span> withShape [], [a]</pre></div></div>
+            <div class="content"><div class='highlight'><pre>monadic <span class="string">'⊂'</span>, <span class="string">'Enclose'</span>, (a, _, axes) -&gt;
+  sa = shapeOf a
+  <span class="keyword">if</span> <span class="keyword">typeof</span> axes <span class="keyword">is</span> <span class="string">'undefined'</span>
+    axes = [<span class="number">0.</span>..sa.length]
+  <span class="keyword">else</span>
+    assert axes.length <span class="keyword">is</span> <span class="number">1</span>,
+      <span class="string">'Axes cannot be specified using strand notation.'</span>
+    axes = axes[<span class="number">0</span>]
+    <span class="keyword">if</span> <span class="keyword">typeof</span> axes <span class="keyword">is</span> <span class="string">'number'</span> <span class="keyword">then</span> axes = [axes]
+    <span class="keyword">for</span> axis, i <span class="keyword">in</span> axes
+      assert <span class="keyword">typeof</span> axis <span class="keyword">is</span> <span class="string">'number'</span>, <span class="string">'Axes must be numbers.'</span>
+      assert axis <span class="keyword">is</span> Math.floor axis, <span class="string">'Axes must be integers.'</span>
+      assert <span class="number">0</span> &lt;= axis &lt; sa.length,
+        <span class="string">'Axes must be between 0 and the argument\'s rank.'</span>
+      assert axis <span class="keyword">not</span> <span class="keyword">in</span> axes[...i],
+        <span class="string">'Axes must be unique.'</span>
+  <span class="keyword">if</span> isSimple a <span class="keyword">then</span> <span class="keyword">return</span> a
+  su = <span class="keyword">for</span> axis <span class="keyword">in</span> axes <span class="keyword">then</span> sa[axis]
+  nu = prod su
+  rAxes = <span class="keyword">for</span> axis <span class="keyword">in</span> [<span class="number">0.</span>..sa.length] <span class="keyword">when</span> axis <span class="keyword">not</span> <span class="keyword">in</span> axes <span class="keyword">then</span> axis
+  sr = <span class="keyword">for</span> axis <span class="keyword">in</span> rAxes <span class="keyword">then</span> sa[axis]
+  nr = prod sr
+  withShape sr,
+    <span class="keyword">for</span> j <span class="keyword">in</span> [<span class="number">0.</span>..nr]
+      jj = enc j, sr
+      withShape su,
+        <span class="keyword">for</span> k <span class="keyword">in</span> [<span class="number">0.</span>..nu]
+          kk = enc k, su
+          ii =
+            <span class="keyword">for</span> axis <span class="keyword">in</span> [<span class="number">0.</span>..sa.length]
+              <span class="keyword">if</span> axis <span class="keyword">in</span> axes <span class="keyword">then</span> kk[axes.indexOf axis]
+              <span class="keyword">else</span> jj[rAxes.indexOf axis]
+          i = dec ii, sa
+          a[i]</pre></div></div>
             
         </li>
         

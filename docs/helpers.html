@@ -158,7 +158,20 @@ to the newly-created object.</p>
             
             <div class="content"><div class='highlight'><pre><span class="property">@sum</span> = (xs) -&gt; r = <span class="number">0</span>; (<span class="keyword">for</span> x <span class="keyword">in</span> xs <span class="keyword">then</span> r += x); r
 <span class="property">@prod</span> = <span class="function"><span class="title">prod</span></span> = (xs) -&gt; r = <span class="number">1</span>; (<span class="keyword">for</span> x <span class="keyword">in</span> xs <span class="keyword">then</span> r *= x); r
-<span class="property">@all</span> = (xs) -&gt; (<span class="keyword">for</span> x <span class="keyword">in</span> xs <span class="keyword">when</span> <span class="keyword">not</span> x <span class="keyword">then</span> <span class="keyword">return</span> <span class="literal">false</span>); <span class="literal">true</span></pre></div></div>
+<span class="property">@all</span> = (xs) -&gt; (<span class="keyword">for</span> x <span class="keyword">in</span> xs <span class="keyword">when</span> <span class="keyword">not</span> x <span class="keyword">then</span> <span class="keyword">return</span> <span class="literal">false</span>); <span class="literal">true</span>
+
+<span class="property">@enc</span> = (x, a) -&gt;
+  r = []
+  <span class="keyword">for</span> i <span class="keyword">in</span> [a.length - <span class="number">1</span> .. <span class="number">0</span>] <span class="keyword">by</span> -<span class="number">1</span>
+    r.push x % a[i]
+    x = Math.floor x / a[i]
+  r.reverse()
+
+<span class="property">@dec</span> = (xs, a) -&gt;
+  assert xs.length <span class="keyword">is</span> a.length
+  r = <span class="number">0</span>
+  <span class="keyword">for</span> x, i <span class="keyword">in</span> xs <span class="keyword">then</span> r = r * a[i] + x
+  r</pre></div></div>
             
         </li>
         

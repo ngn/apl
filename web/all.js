@@ -904,6 +904,29 @@ defModule('./helpers', function (exports, require) {
     return true;
   };
 
+  this.enc = function(x, a) {
+    var i, r, _i, _ref;
+
+    r = [];
+    for (i = _i = _ref = a.length - 1; _i >= 0; i = _i += -1) {
+      r.push(x % a[i]);
+      x = Math.floor(x / a[i]);
+    }
+    return r.reverse();
+  };
+
+  this.dec = function(xs, a) {
+    var i, r, x, _i, _len;
+
+    assert(xs.length === a.length);
+    r = 0;
+    for (i = _i = 0, _len = xs.length; _i < _len; i = ++_i) {
+      x = xs[i];
+      r = r * a[i] + x;
+    }
+    return r;
+  };
+
   this.repeat = repeat = function(s, n) {
     var r, _i;
 
@@ -1165,11 +1188,11 @@ defModule('./parser', function (exports, require) {
 });
 defModule('./vocabulary', function (exports, require) {
   (function() {
-  var Gamma, PI, abs, acos, ambivalent, array, asin, assert, atan, bool, catenate, ceil, compressOrReplicate, conjunction, contains, cos, def, depthOf, die, dyadic, endOfVocabulary, exp, expand, factorial, floor, formatter, grade, inherit, isSimple, log, match, max, maybeMakePervasive, min, monadic, num, outerProduct, overloadable, pervasive, postfixAdverb, pow, prefixAdverb, prod, prototypeOf, random, reduce, reverse, round, scan, shapeOf, sin, sqrt, tan, tmp, vocabulary, withMetaInfoFrom, withPrototype, withPrototypeCopiedFrom, withShape, _ref,
+  var Gamma, PI, abs, acos, ambivalent, array, asin, assert, atan, bool, catenate, ceil, compressOrReplicate, conjunction, contains, cos, dec, def, depthOf, die, dyadic, enc, endOfVocabulary, exp, expand, factorial, floor, formatter, grade, inherit, isSimple, log, match, max, maybeMakePervasive, min, monadic, num, outerProduct, overloadable, pervasive, postfixAdverb, pow, prefixAdverb, prod, prototypeOf, random, reduce, reverse, round, scan, shapeOf, sin, sqrt, tan, tmp, vocabulary, withMetaInfoFrom, withPrototype, withPrototypeCopiedFrom, withShape, _ref,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  _ref = require('./helpers'), assert = _ref.assert, die = _ref.die, inherit = _ref.inherit, isSimple = _ref.isSimple, shapeOf = _ref.shapeOf, withShape = _ref.withShape, prod = _ref.prod, prototypeOf = _ref.prototypeOf, withPrototype = _ref.withPrototype, withPrototypeCopiedFrom = _ref.withPrototypeCopiedFrom;
+  _ref = require('./helpers'), assert = _ref.assert, die = _ref.die, inherit = _ref.inherit, isSimple = _ref.isSimple, shapeOf = _ref.shapeOf, withShape = _ref.withShape, prod = _ref.prod, prototypeOf = _ref.prototypeOf, withPrototype = _ref.withPrototype, withPrototypeCopiedFrom = _ref.withPrototypeCopiedFrom, enc = _ref.enc, dec = _ref.dec;
 
   min = Math.min, max = Math.max, floor = Math.floor, ceil = Math.ceil, round = Math.round, abs = Math.abs, random = Math.random, exp = Math.exp, pow = Math.pow, log = Math.log, PI = Math.PI, sqrt = Math.sqrt, sin = Math.sin, cos = Math.cos, tan = Math.tan, asin = Math.asin, acos = Math.acos, atan = Math.atan;
 
@@ -2401,13 +2424,99 @@ defModule('./vocabulary', function (exports, require) {
     return withShape(sr, r);
   });
 
-  monadic('⊂', 'Enclose', function(a, _, axis) {
-    assert(typeof axis === 'undefined', 'Monadic enclose (⊂) does not support axis specification.');
+  monadic('⊂', 'Enclose', function(a, _, axes) {
+    var axis, i, ii, j, jj, k, kk, nr, nu, rAxes, sa, sr, su, _i, _j, _len, _ref1, _results;
+
+    sa = shapeOf(a);
+    if (typeof axes === 'undefined') {
+      axes = (function() {
+        _results = [];
+        for (var _i = 0, _ref1 = sa.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--){ _results.push(_i); }
+        return _results;
+      }).apply(this);
+    } else {
+      assert(axes.length === 1, 'Axes cannot be specified using strand notation.');
+      axes = axes[0];
+      if (typeof axes === 'number') {
+        axes = [axes];
+      }
+      for (i = _j = 0, _len = axes.length; _j < _len; i = ++_j) {
+        axis = axes[i];
+        assert(typeof axis === 'number', 'Axes must be numbers.');
+        assert(axis === Math.floor(axis, 'Axes must be integers.'));
+        assert((0 <= axis && axis < sa.length), 'Axes must be between 0 and the argument\'s rank.');
+        assert(__indexOf.call(axes.slice(0, i), axis) < 0, 'Axes must be unique.');
+      }
+    }
     if (isSimple(a)) {
       return a;
-    } else {
-      return withShape([], [a]);
     }
+    su = (function() {
+      var _k, _len1, _results1;
+
+      _results1 = [];
+      for (_k = 0, _len1 = axes.length; _k < _len1; _k++) {
+        axis = axes[_k];
+        _results1.push(sa[axis]);
+      }
+      return _results1;
+    })();
+    nu = prod(su);
+    rAxes = (function() {
+      var _k, _ref2, _results1;
+
+      _results1 = [];
+      for (axis = _k = 0, _ref2 = sa.length; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; axis = 0 <= _ref2 ? ++_k : --_k) {
+        if (__indexOf.call(axes, axis) < 0) {
+          _results1.push(axis);
+        }
+      }
+      return _results1;
+    })();
+    sr = (function() {
+      var _k, _len1, _results1;
+
+      _results1 = [];
+      for (_k = 0, _len1 = rAxes.length; _k < _len1; _k++) {
+        axis = rAxes[_k];
+        _results1.push(sa[axis]);
+      }
+      return _results1;
+    })();
+    nr = prod(sr);
+    return withShape(sr, (function() {
+      var _k, _results1;
+
+      _results1 = [];
+      for (j = _k = 0; 0 <= nr ? _k < nr : _k > nr; j = 0 <= nr ? ++_k : --_k) {
+        jj = enc(j, sr);
+        _results1.push(withShape(su, (function() {
+          var _l, _results2;
+
+          _results2 = [];
+          for (k = _l = 0; 0 <= nu ? _l < nu : _l > nu; k = 0 <= nu ? ++_l : --_l) {
+            kk = enc(k, su);
+            ii = (function() {
+              var _m, _ref2, _results3;
+
+              _results3 = [];
+              for (axis = _m = 0, _ref2 = sa.length; 0 <= _ref2 ? _m < _ref2 : _m > _ref2; axis = 0 <= _ref2 ? ++_m : --_m) {
+                if (__indexOf.call(axes, axis) >= 0) {
+                  _results3.push(kk[axes.indexOf(axis)]);
+                } else {
+                  _results3.push(jj[rAxes.indexOf(axis)]);
+                }
+              }
+              return _results3;
+            })();
+            i = dec(ii, sa);
+            _results2.push(a[i]);
+          }
+          return _results2;
+        })()));
+      }
+      return _results1;
+    })());
   });
 
   dyadic('⊂', 'Partition (with axis)');
