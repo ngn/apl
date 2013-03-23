@@ -1315,8 +1315,14 @@ monadic <span class="string">'⍴'</span>, <span class="string">'Shape of'</span
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="function"><span class="title">catenate</span></span> = (b, a, axis = -<span class="number">1</span>) -&gt;
-  sa = shapeOf a; <span class="keyword">if</span> sa.length <span class="keyword">is</span> <span class="number">0</span> <span class="keyword">then</span> sa = [<span class="number">1</span>]; a = [a]
-  sb = shapeOf b; <span class="keyword">if</span> sb.length <span class="keyword">is</span> <span class="number">0</span> <span class="keyword">then</span> sb = [<span class="number">1</span>]; b = [b]
+  sa = shapeOf a
+  <span class="keyword">if</span> sa.length <span class="keyword">is</span> <span class="number">0</span>
+    sa = [<span class="number">1</span>]
+    a = <span class="keyword">if</span> isSimple a <span class="keyword">then</span> [a] <span class="keyword">else</span> [a[<span class="number">0</span>]]
+  sb = shapeOf b
+  <span class="keyword">if</span> sb.length <span class="keyword">is</span> <span class="number">0</span>
+    sb = [<span class="number">1</span>]
+    b = <span class="keyword">if</span> isSimple b <span class="keyword">then</span> [b] <span class="keyword">else</span> [b[<span class="number">0</span>]]
   assert sa.length <span class="keyword">is</span> sb.length,
     <span class="string">'Length error: Cannot catenate arrays of different ranks'</span>
   <span class="keyword">if</span> axis &lt; <span class="number">0</span> <span class="keyword">then</span> axis += sa.length

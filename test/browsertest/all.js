@@ -2082,12 +2082,12 @@ defModule('./vocabulary', function (exports, require) {
     sa = shapeOf(a);
     if (sa.length === 0) {
       sa = [1];
-      a = [a];
+      a = isSimple(a) ? [a] : [a[0]];
     }
     sb = shapeOf(b);
     if (sb.length === 0) {
       sb = [1];
-      b = [b];
+      b = isSimple(b) ? [b] : [b[0]];
     }
     assert(sa.length === sb.length, 'Length error: Cannot catenate arrays of different ranks');
     if (axis < 0) {
