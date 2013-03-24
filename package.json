@@ -26,7 +26,8 @@
     "jade": "",
     "glob": "",
     "ake": "",
-    "async": ""
+    "async": "",
+    "stitch": "git+https://github.com/ngn/stitch"
   },
   "engines": {"node": ""},
   "licenses": [

@@ -10,6 +10,7 @@ if not fs.existsSync 'node_modules'
 glob = require 'glob'
 {spawn} = require 'child_process'
 {coffee, docco, cat, jade, sass, action} = ake = require 'ake'
+stitch = require 'stitch'
 
 exec = (cmd, args, opts, cont) ->
   child = spawn cmd, args, opts
@@ -19,15 +20,29 @@ exec = (cmd, args, opts, cont) ->
     if code then throw Error "Child process '#{cmd}' returned exit code #{code}."
     cont?()
 
-buildActions = [
+basicBuildActions = [
   coffee 'src/*.coffee', 'lib/'
+  action(
+    glob.sync('src/*.coffee').map (f) ->
+      f.replace /^src\/(.+)\.coffee$/, 'lib/$1.js'
+    ['web/apl-stitched.js']
+    ({callback, log}) ->
+      stitch.createPackage(paths: ['lib']).compile (err, jsCode) ->
+        if err then throw err
+        log 'writing stitched file'
+        fs.writeFile 'web/apl-stitched.js', jsCode, (err) ->
+          if err then throw err
+          callback()
+  )
 ]
 
+
 task 'build', 'Compile src/*.coffee to lib/*.js', ->
-  ake buildActions
+  ake basicBuildActions
 
 task 'test', 'Run doctests', ->
-  ake buildActions.concat [
+  ake [
+    basicBuildActions
     coffee 'test/doctest.coffee'
     coffee 'test/browsertest/generate.coffee'
     coffee 'test/browsertest/index.coffee'
@@ -36,25 +51,6 @@ task 'test', 'Run doctests', ->
       ['test/browsertest/generate.js'].concat(glob.sync 'src/*.coffee')
       ['test/browsertest/testcases.js']
       ({callback}) -> require('./test/browsertest/generate').main callback
-    )
-    cat(
-      [
-        'web/fake-require.js'
-        getLibFiles()
-        'web/jquery-1.9.1.min.js'
-        'test/browsertest/index.js'
-      ]
-      'test/browsertest/all.js'
-      transform: (content, {path}) ->
-        if not path.match /^lib\// then return content
-        if path in ['lib/command.js', 'lib/apl.js'] then return ''
-        moduleName = path.replace /^.*\/([^\/]+).js/, '$1'
-        """
-          defModule('./#{moduleName}', function (exports, require) {
-            #{content}
-            return exports;
-          });\n
-        """
     )
     ->
       console.info 'Running doctests...'
@@ -66,62 +62,20 @@ task 'docs', 'Generate literate documentation with docco', ->
     docco  'src/*.coffee', 'docs'
   ]
 
-getLibFiles = ->
-  glob.sync('src/*.coffee').map (f) ->
-    f.replace /^src\/(.+)\.coffee$/, 'lib/$1.js'
-
 task 'web', 'Build everything for the web demo', ->
-  ake buildActions.concat [
+  ake [
+    basicBuildActions
     coffee 'web/index.coffee'
     jade   'web/index.jade'
     sass   'web/index.sass'
-    cat(
-      [
-        'web/fake-require.js'
-        getLibFiles()
-        'web/jquery*.js'
-        'web/examples.js'
-        'web/index.js'
-      ]
-      'web/all.js'
-      transform: (content, {path}) ->
-        if not path.match /^lib\// then return content
-        if path is 'lib/command.js' then return ''
-        moduleName = path.replace /^.*\/([^\/]+).js/, '$1'
-        """
-          defModule('./#{moduleName}', function (exports, require) {
-            #{content}
-            return exports;
-          });\n
-        """
-    )
   ]
 
 task 'm', 'Build everything for the mobile demo', ->
-  ake buildActions.concat [
+  ake [
+    basicBuildActions
     coffee 'm/index.coffee'
     jade   'm/index.jade'
     sass   'm/index.sass'
-    cat(
-      [
-        'web/fake-require.js'
-        getLibFiles()
-        'web/jquery-1.9.1.min.js'
-        'web/examples.js'
-        'm/index.js'
-      ]
-      'm/all.js'
-      transform: (content, {path}) ->
-        if not path.match /^lib\// then return content
-        if path in ['lib/command.js', 'lib/apl.js'] then return ''
-        moduleName = path.replace /^.*\/([^\/]+).js/, '$1'
-        """
-          defModule('./#{moduleName}', function (exports, require) {
-            #{content}
-            return exports;
-          });\n
-        """
-    )
   ]
 
 task 'stats', 'Show some lines-of-code nonsense', ->
