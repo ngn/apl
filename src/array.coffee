@@ -35,5 +35,5 @@ class @APLArray
 
   map: (f) ->
     data = []
-    @each (x) -> data.push x
+    @each (x) -> data.push f x
     new APLArray data, @shape
