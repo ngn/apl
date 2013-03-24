@@ -146,8 +146,10 @@ As a library:
 # Integration with CoffeeScript
 
 The `apl` command is capable of compiling and running `.coffee` files which
-contain a mixture of CoffeeScript and APL.  APL fragments should be enclosed in
-guillemets (`«»`) or indented as the body of a squiggly arrow function (`~>`):
+contain a mixture of CoffeeScript and APL (it uses
+[coffee-subscript](https://github.com/ngn/coffee-subscript) to do that).  APL
+fragments should be enclosed in guillemets (`«»`) or indented as the body of a
+squiggly arrow function (`~>`):
 
     #!/usr/bin/env apl
 
