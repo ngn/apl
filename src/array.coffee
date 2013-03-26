@@ -92,9 +92,9 @@
 
 
 extend APLArray,
-  zero:  new APLArray [0], []
-  one:   new APLArray [1], []
-  zilde: new APLArray [], [0]
+  zero:   new APLArray [0], []
+  one:    new APLArray [1], []
+  zilde:  new APLArray [], [0]
   scalar: (x) -> new APLArray [x], []
 
 APLArray.bool = [APLArray.zero, APLArray.one]

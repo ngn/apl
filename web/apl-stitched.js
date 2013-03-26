@@ -1761,21 +1761,6 @@
     })
   });
 
-  this['⌽'] = function(omega, alpha, axis) {
-    var offset, stride;
-
-    if (alpha == null) {
-      if (omega.shape.length === 0) {
-        return omega;
-      } else {
-        stride = omega.stride.slice(0);
-        offset = omega.offset + omega.shape[0] * stride[0];
-        stride[0] = -stride[0];
-        return new APLArray(omega.data, omega.shape, stride, offset);
-      }
-    }
-  };
-
   this['='] = pervasive({
     dyad: function(y, x) {
       return +(x === y);
@@ -1890,6 +1875,10 @@
 
   this['⍴'] = require('./vocabulary/rho')['⍴'];
 
+  this['⌽'] = require('./vocabulary/rotate')['⌽'];
+
+  this['⊖'] = require('./vocabulary/rotate')['⊖'];
+
   this['set_⎕'] = console.info;
 
   (function() {
@@ -1940,6 +1929,52 @@
     } else {
       return new APLArray(omega.shape);
     }
+  };
+
+}).call(this);
+}, "vocabulary/rotate": function(exports, require, module) {(function() {
+  var APLArray, assert, prod, rotate, _ref;
+
+  APLArray = require('../array').APLArray;
+
+  _ref = require('../helpers'), assert = _ref.assert, prod = _ref.prod;
+
+  this['⌽'] = rotate = function(omega, alpha, axis) {
+    var offset, stride;
+
+    assert(typeof axis === 'undefined' || axis instanceof APLArray);
+    if (alpha) {
+      throw Error('Not implemented');
+    } else {
+      if (axis) {
+        if (!axis.isSingleton()) {
+          throw Error('LENGTH ERROR');
+        }
+        axis = axis.unbox();
+        if (typeof axis !== 'number' || axis !== Math.floor(axis)) {
+          throw Error('DOMAIN ERROR');
+        }
+        if (!((0 <= axis && axis < omega.shape.length))) {
+          throw Error('INDEX ERROR');
+        }
+      } else {
+        axis = [omega.shape.length - 1];
+      }
+      if (omega.shape.length === 0) {
+        return omega;
+      }
+      stride = omega.stride.slice(0);
+      stride[axis] = -stride[axis];
+      offset = omega.offset + (omega.shape[axis] - 1) * omega.stride[axis];
+      return new APLArray(omega.data, omega.shape, stride, offset);
+    }
+  };
+
+  this['⊖'] = function(omega, alpha, axes) {
+    if (axes == null) {
+      axes = APLArray.zero;
+    }
+    return rotate(omega, alpha, axes);
   };
 
 }).call(this);

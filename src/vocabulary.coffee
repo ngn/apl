@@ -94,16 +94,6 @@ numeric = (f) -> (x, y, axis) ->
   monad: numeric Math.exp
   dyad:  numeric (y, x) -> Math.pow x, y
 
-@['⌽'] = (omega, alpha, axis) ->
-  if not alpha?
-    if omega.shape.length is 0
-      omega
-    else
-      stride = omega.stride[...]
-      offset = omega.offset + omega.shape[0] * stride[0]
-      stride[0] = -stride[0]
-      new APLArray omega.data, omega.shape, stride, offset
-
 @['='] = pervasive dyad: (y, x) -> +(x is y)
 @['≠'] = pervasive dyad: (y, x) -> +(x isnt y)
 @['<'] = pervasive dyad: numeric (y, x) -> +(x < y)
@@ -155,6 +145,8 @@ match = (x, y) ->
     new APLArray omega.realize()
 
 @['⍴'] = require('./vocabulary/rho')['⍴']
+@['⌽'] = require('./vocabulary/rotate')['⌽']
+@['⊖'] = require('./vocabulary/rotate')['⊖']
 
 @['set_⎕'] = console.info
 
