@@ -1,7 +1,9 @@
 (function() {
-  var exec, forEachDoctest, fs, match, path, repr, runDoctests, trim;
+  var exec, forEachDoctest, fs, glob, match, path, repr, runDoctests, trim;
 
   fs = require('fs');
+
+  glob = require('glob');
 
   path = require('path');
 
@@ -16,10 +18,7 @@
   };
 
   this.forEachDoctest = forEachDoctest = function(handler, ret) {
-    var d;
-
-    d = __dirname + '/../src';
-    return fs.readdir(d, function(err, files) {
+    return glob(__dirname + '/../src/**/*.coffee', function(err, files) {
       var f, i, line, lines, m, _i, _len;
 
       if (err) {
@@ -27,10 +26,7 @@
       }
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         f = files[_i];
-        if (!(f.match(/^\w+.coffee$/))) {
-          continue;
-        }
-        lines = fs.readFileSync(d + '/' + f, 'utf8').split('\n');
+        lines = fs.readFileSync(f, 'utf8').split('\n');
         i = 0;
         while (i < lines.length) {
           line = lines[i++];

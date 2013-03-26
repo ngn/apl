@@ -1,6 +1,7 @@
 #!/usr/bin/env coffee
 
 fs = require 'fs'
+glob = require 'glob'
 path = require 'path'
 {exec} = require '../lib/compiler'
 match = require('../lib/vocabulary')['≡']
@@ -9,11 +10,10 @@ repr = JSON.stringify
 trim = (s) -> s.replace /(^ +| +$)/g, ''
 
 @forEachDoctest = forEachDoctest = (handler, ret) ->
-  d = __dirname + '/../src'
-  fs.readdir d, (err, files) ->
+  glob __dirname + '/../src/**/*.coffee', (err, files) ->
     if err then throw err
-    for f in files when f.match /^\w+.coffee$/
-      lines = fs.readFileSync(d + '/' + f, 'utf8').split '\n'
+    for f in files
+      lines = fs.readFileSync(f, 'utf8').split '\n'
       i = 0
       while i < lines.length
         line = lines[i++]
