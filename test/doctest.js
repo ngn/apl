@@ -67,17 +67,26 @@
       var actual, code, e, expectation, expected, expectedErrorMessage, m;
 
       code = _arg.code, expectation = _arg.expectation;
+      console.info('Running doctest ' + JSON.stringify(code));
       nTests++;
       if (m = expectation.match(/^returns ([^]*)$/)) {
-        expected = exec(m[1]);
+        expected = null;
         try {
-          actual = exec(code);
-          if (!match(actual, expected)) {
-            fail(("Test " + (repr(code)) + " failed: ") + ("expected " + (repr(expected)) + " but got " + (repr(actual))));
-          }
+          expected = exec(m[1]);
         } catch (_error) {
           e = _error;
-          fail("Test " + (repr(code)) + " failed with " + e, e);
+          fail("Cannot compute expected value " + (repr(m[1])) + " for test " + (repr(code)), e);
+        }
+        if (expected != null) {
+          try {
+            actual = exec(code);
+            if (!match(actual, expected)) {
+              fail(("Test " + (repr(code)) + " failed: ") + ("expected " + (repr(expected)) + " but got " + (repr(actual))));
+            }
+          } catch (_error) {
+            e = _error;
+            fail("Test " + (repr(code)) + " failed with " + e, e);
+          }
         }
       } else if (m = expectation.match(/^fails( [^]*)?$/)) {
         expectedErrorMessage = m[1] ? eval(m[1]) : '';

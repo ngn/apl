@@ -34,16 +34,22 @@ runDoctests = (ret) ->
   lastTestTimestamp = 0
   forEachDoctest(
     ({code, expectation}) ->
+      console.info 'Running doctest ' + JSON.stringify code
       nTests++
       if m = expectation.match /^returns ([^]*)$/
-        expected = exec m[1]
+        expected = null
         try
-          actual = exec code
-          if not match actual, expected
-            fail("Test #{repr code} failed: " +
-                 "expected #{repr expected} but got #{repr actual}")
+          expected = exec m[1]
         catch e
-          fail "Test #{repr code} failed with #{e}", e
+          fail "Cannot compute expected value #{repr m[1]} for test #{repr code}", e
+        if expected?
+          try
+            actual = exec code
+            if not match actual, expected
+              fail("Test #{repr code} failed: " +
+                   "expected #{repr expected} but got #{repr actual}")
+          catch e
+            fail "Test #{repr code} failed with #{e}", e
       else if m = expectation.match /^fails( [^]*)?$/
         expectedErrorMessage = if m[1] then eval m[1] else ''
         try
