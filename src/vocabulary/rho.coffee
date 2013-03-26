@@ -1,6 +1,14 @@
 {APLArray} = require '../array'
 {assert, prod} = require '../helpers'
 
+# Shape of (`⍴`)
+#
+# Reshape (`⍴`)
+#
+#     ⍴ 1 2 3 ⍴ 0    ⍝ returns 1 2 3
+#     ⍴ ⍴ 1 2 3 ⍴ 0  ⍝ returns ,3
+#     3 3 ⍴ ⍳ 4      ⍝ returns 3 3 ⍴ 0 1 2 3 0 1 2 3 0
+#     ⍴ 3 3 ⍴ ⍳ 4    ⍝ returns 3 3
 @['⍴'] = (omega, alpha) ->
   if alpha
     if alpha.shape.length > 1 then throw Error 'RANK ERROR'
