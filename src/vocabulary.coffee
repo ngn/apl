@@ -34,23 +34,23 @@
 multiplicitySymbol = (z) ->
   if z instanceof APLArray then (if z.isSingleton() then '1' else '*') else '.'
 
-pervasive = ({monadic, dyadic}) ->
+pervasive = ({monad, dyad}) ->
   pervadeMonadic =
-    if monadic
+    if monad
       (x) ->
         if x instanceof APLArray
           x.map pervadeMonadic
         else
-          (x[F.aplName]?()) ? monadic x
+          (x[F.aplName]?()) ? monad x
     else
       -> throw Error 'Not implemented'
   pervadeDyadic =
-    if dyadic
+    if dyad
       (x, y) ->
         tx = multiplicitySymbol x
         ty = multiplicitySymbol y
         switch tx + ty
-          when '..' then (x?[F.aplName]?(y)) ? (y?['right_' + F.aplName]?(x)) ? (dyadic x, y)
+          when '..' then (x?[F.aplName]?(y)) ? (y?['right_' + F.aplName]?(x)) ? (dyad x, y)
           when '.1' then y.map (yi) -> pervadeDyadic x, yi
           when '.*' then y.map (yi) -> pervadeDyadic x, yi
           when '1.' then x.map (xi) -> pervadeDyadic xi, y
@@ -75,24 +75,24 @@ numeric = (f) -> (x, y, axis) ->
   f x, y, axis
 
 @['+'] = pervasive
-  monadic: numeric (x) -> x
-  dyadic:  numeric (y, x) -> x + y
+  monad: numeric (x) -> x
+  dyad:  numeric (y, x) -> x + y
 
 @['−'] = pervasive
-  monadic: numeric (x) -> -x
-  dyadic:  numeric (y, x) -> x - y
+  monad: numeric (x) -> -x
+  dyad:  numeric (y, x) -> x - y
 
 @['×'] = pervasive
-  monadic: numeric (x) -> (x > 0) - (x < 0)
-  dyadic:  numeric (y, x) -> x * y
+  monad: numeric (x) -> (x > 0) - (x < 0)
+  dyad:  numeric (y, x) -> x * y
 
 @['÷'] = pervasive
-  monadic: numeric (x) -> 1 / x
-  dyadic:  numeric (y, x) -> x / y
+  monad: numeric (x) -> 1 / x
+  dyad:  numeric (y, x) -> x / y
 
 @['⋆'] = pervasive
-  monadic: numeric Math.exp
-  dyadic:  numeric (y, x) -> Math.pow x, y
+  monad: numeric Math.exp
+  dyad:  numeric (y, x) -> Math.pow x, y
 
 @['⌽'] = (omega, alpha, axis) ->
   if not alpha?
@@ -104,28 +104,28 @@ numeric = (f) -> (x, y, axis) ->
       stride[0] = -stride[0]
       new APLArray omega.data, omega.shape, stride, offset
 
-@['='] = pervasive dyadic: (y, x) -> +(x is y)
-@['≠'] = pervasive dyadic: (y, x) -> +(x isnt y)
-@['<'] = pervasive dyadic: numeric (y, x) -> +(x < y)
-@['>'] = pervasive dyadic: numeric (y, x) -> +(x > y)
-@['≤'] = pervasive dyadic: numeric (y, x) -> +(x <= y)
-@['≥'] = pervasive dyadic: numeric (y, x) -> +(x >= y)
+@['='] = pervasive dyad: (y, x) -> +(x is y)
+@['≠'] = pervasive dyad: (y, x) -> +(x isnt y)
+@['<'] = pervasive dyad: numeric (y, x) -> +(x < y)
+@['>'] = pervasive dyad: numeric (y, x) -> +(x > y)
+@['≤'] = pervasive dyad: numeric (y, x) -> +(x <= y)
+@['≥'] = pervasive dyad: numeric (y, x) -> +(x >= y)
 
 @['⌊'] = pervasive
-  monadic: numeric Math.ceil
-  dyadic: numeric Math.max
+  monad: numeric Math.ceil
+  dyad: numeric Math.max
 
 @['⌈'] = pervasive
-  monadic: numeric Math.floor
-  dyadic: numeric Math.min
+  monad: numeric Math.floor
+  dyad: numeric Math.min
 
 @['?'] = pervasive
-  monadic: numeric (x) ->
+  monad: numeric (x) ->
     if x isnt Math.floor(x) or x <= 0 then throw Error 'DOMAIN ERROR'
     Math.floor Math.random() * x
 
 @['○'] = pervasive
-  monadic: numeric (x) -> Math.PI * x
+  monad: numeric (x) -> Math.PI * x
 
 match = (x, y) ->
   if x instanceof APLArray
@@ -154,20 +154,7 @@ match = (x, y) ->
   else
     new APLArray omega.realize()
 
-@['⍴'] = (omega, alpha) ->
-  if alpha
-    if alpha.shape.length > 1 then throw Error 'RANK ERROR'
-    shape = alpha.realize()
-    for d in shape when typeof d isnt 'number' or d isnt Math.floor(d) or d < 0
-      throw Error 'DOMAIN ERROR'
-    n = prod shape
-    a = omega.realize n
-    assert a.length <= n
-    while 2 * a.length < n then a = a.concat a
-    if a.length isnt n then a = a.concat a[... n - a.length]
-    new APLArray a, shape
-  else
-    new APLArray omega.shape
+@['⍴'] = require('./vocabulary/rho')['⍴']
 
 @['set_⎕'] = console.info
 

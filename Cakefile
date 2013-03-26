@@ -21,9 +21,9 @@ exec = (cmd, args, opts, cont) ->
     cont?()
 
 basicBuildActions = [
-  coffee 'src/*.coffee', 'lib/'
+  coffee 'src/**/*.coffee', (f) -> f.replace /^src\/(.+)\.coffee$/, 'lib/$1.js'
   action(
-    glob.sync('src/*.coffee').map (f) ->
+    glob.sync('src/**/*.coffee').map (f) ->
       f.replace /^src\/(.+)\.coffee$/, 'lib/$1.js'
     ['web/apl-stitched.js']
     ({callback, log}) ->
@@ -37,7 +37,7 @@ basicBuildActions = [
 ]
 
 
-task 'build', 'Compile src/*.coffee to lib/*.js', ->
+task 'build', 'Compile src/**/*.coffee to lib/**/*.js', ->
   ake basicBuildActions
 
 task 'test', 'Run doctests', ->
@@ -48,7 +48,7 @@ task 'test', 'Run doctests', ->
     coffee 'test/browsertest/index.coffee'
     jade   'test/browsertest/index.jade'
     action(
-      ['test/browsertest/generate.js'].concat(glob.sync 'src/*.coffee')
+      ['test/browsertest/generate.js'].concat(glob.sync 'src/**/*.coffee')
       ['test/browsertest/testcases.js']
       ({callback}) -> require('./test/browsertest/generate').main callback
     )
@@ -59,7 +59,7 @@ task 'test', 'Run doctests', ->
 
 task 'docs', 'Generate literate documentation with docco', ->
   ake [
-    docco  'src/*.coffee', 'docs'
+    docco  'src/**/*.coffee', 'docs'
   ]
 
 task 'web', 'Build everything for the web demo', ->

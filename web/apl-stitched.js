@@ -1635,28 +1635,28 @@
   };
 
   pervasive = function(_arg) {
-    var F, dyadic, monadic, pervadeDyadic, pervadeMonadic;
+    var F, dyad, monad, pervadeDyadic, pervadeMonadic;
 
-    monadic = _arg.monadic, dyadic = _arg.dyadic;
-    pervadeMonadic = monadic ? function(x) {
+    monad = _arg.monad, dyad = _arg.dyad;
+    pervadeMonadic = monad ? function(x) {
       var _name, _ref1;
 
       if (x instanceof APLArray) {
         return x.map(pervadeMonadic);
       } else {
-        return (_ref1 = typeof x[_name = F.aplName] === "function" ? x[_name]() : void 0) != null ? _ref1 : monadic(x);
+        return (_ref1 = typeof x[_name = F.aplName] === "function" ? x[_name]() : void 0) != null ? _ref1 : monad(x);
       }
     } : function() {
       throw Error('Not implemented');
     };
-    pervadeDyadic = dyadic ? function(x, y) {
+    pervadeDyadic = dyad ? function(x, y) {
       var axis, tx, ty, xi, yi, _i, _name, _name1, _ref1, _ref2, _ref3;
 
       tx = multiplicitySymbol(x);
       ty = multiplicitySymbol(y);
       switch (tx + ty) {
         case '..':
-          return (_ref1 = (_ref2 = x != null ? typeof x[_name = F.aplName] === "function" ? x[_name](y) : void 0 : void 0) != null ? _ref2 : y != null ? typeof y[_name1 = 'right_' + F.aplName] === "function" ? y[_name1](x) : void 0 : void 0) != null ? _ref1 : dyadic(x, y);
+          return (_ref1 = (_ref2 = x != null ? typeof x[_name = F.aplName] === "function" ? x[_name](y) : void 0 : void 0) != null ? _ref2 : y != null ? typeof y[_name1 = 'right_' + F.aplName] === "function" ? y[_name1](x) : void 0 : void 0) != null ? _ref1 : dyad(x, y);
         case '.1':
           return y.map(function(yi) {
             return pervadeDyadic(x, yi);
@@ -1719,44 +1719,44 @@
   };
 
   this['+'] = pervasive({
-    monadic: numeric(function(x) {
+    monad: numeric(function(x) {
       return x;
     }),
-    dyadic: numeric(function(y, x) {
+    dyad: numeric(function(y, x) {
       return x + y;
     })
   });
 
   this['−'] = pervasive({
-    monadic: numeric(function(x) {
+    monad: numeric(function(x) {
       return -x;
     }),
-    dyadic: numeric(function(y, x) {
+    dyad: numeric(function(y, x) {
       return x - y;
     })
   });
 
   this['×'] = pervasive({
-    monadic: numeric(function(x) {
+    monad: numeric(function(x) {
       return (x > 0) - (x < 0);
     }),
-    dyadic: numeric(function(y, x) {
+    dyad: numeric(function(y, x) {
       return x * y;
     })
   });
 
   this['÷'] = pervasive({
-    monadic: numeric(function(x) {
+    monad: numeric(function(x) {
       return 1 / x;
     }),
-    dyadic: numeric(function(y, x) {
+    dyad: numeric(function(y, x) {
       return x / y;
     })
   });
 
   this['⋆'] = pervasive({
-    monadic: numeric(Math.exp),
-    dyadic: numeric(function(y, x) {
+    monad: numeric(Math.exp),
+    dyad: numeric(function(y, x) {
       return Math.pow(x, y);
     })
   });
@@ -1777,53 +1777,53 @@
   };
 
   this['='] = pervasive({
-    dyadic: function(y, x) {
+    dyad: function(y, x) {
       return +(x === y);
     }
   });
 
   this['≠'] = pervasive({
-    dyadic: function(y, x) {
+    dyad: function(y, x) {
       return +(x !== y);
     }
   });
 
   this['<'] = pervasive({
-    dyadic: numeric(function(y, x) {
+    dyad: numeric(function(y, x) {
       return +(x < y);
     })
   });
 
   this['>'] = pervasive({
-    dyadic: numeric(function(y, x) {
+    dyad: numeric(function(y, x) {
       return +(x > y);
     })
   });
 
   this['≤'] = pervasive({
-    dyadic: numeric(function(y, x) {
+    dyad: numeric(function(y, x) {
       return +(x <= y);
     })
   });
 
   this['≥'] = pervasive({
-    dyadic: numeric(function(y, x) {
+    dyad: numeric(function(y, x) {
       return +(x >= y);
     })
   });
 
   this['⌊'] = pervasive({
-    monadic: numeric(Math.ceil),
-    dyadic: numeric(Math.max)
+    monad: numeric(Math.ceil),
+    dyad: numeric(Math.max)
   });
 
   this['⌈'] = pervasive({
-    monadic: numeric(Math.floor),
-    dyadic: numeric(Math.min)
+    monad: numeric(Math.floor),
+    dyad: numeric(Math.min)
   });
 
   this['?'] = pervasive({
-    monadic: numeric(function(x) {
+    monad: numeric(function(x) {
       if (x !== Math.floor(x) || x <= 0) {
         throw Error('DOMAIN ERROR');
       }
@@ -1832,7 +1832,7 @@
   });
 
   this['○'] = pervasive({
-    monadic: numeric(function(x) {
+    monad: numeric(function(x) {
       return Math.PI * x;
     })
   });
@@ -1888,6 +1888,31 @@
     }
   };
 
+  this['⍴'] = require('./vocabulary/rho')['⍴'];
+
+  this['set_⎕'] = console.info;
+
+  (function() {
+    var k, v, _results;
+
+    _results = [];
+    for (k in _this) {
+      v = _this[k];
+      if (typeof v === 'function') {
+        _results.push(v.aplName = k);
+      }
+    }
+    return _results;
+  })();
+
+}).call(this);
+}, "vocabulary/rho": function(exports, require, module) {(function() {
+  var APLArray, assert, prod, _ref;
+
+  APLArray = require('../array').APLArray;
+
+  _ref = require('../helpers'), assert = _ref.assert, prod = _ref.prod;
+
   this['⍴'] = function(omega, alpha) {
     var a, d, n, shape, _i, _len;
 
@@ -1916,21 +1941,6 @@
       return new APLArray(omega.shape);
     }
   };
-
-  this['set_⎕'] = console.info;
-
-  (function() {
-    var k, v, _results;
-
-    _results = [];
-    for (k in _this) {
-      v = _this[k];
-      if (typeof v === 'function') {
-        _results.push(v.aplName = k);
-      }
-    }
-    return _results;
-  })();
 
 }).call(this);
 }});
