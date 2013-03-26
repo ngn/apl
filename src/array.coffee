@@ -76,7 +76,7 @@
     try
       @each (x) ->
         r.push x
-        if r.length >= limit then throw 'breek'
+        if r.length >= limit then throw 'break'
         return
     catch e
       if e isnt 'break' then throw e
