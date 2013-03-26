@@ -63,7 +63,6 @@
       var actual, code, e, expectation, expected, expectedErrorMessage, m;
 
       code = _arg.code, expectation = _arg.expectation;
-      console.info('Running doctest ' + JSON.stringify(code));
       nTests++;
       if (m = expectation.match(/^returns ([^]*)$/)) {
         expected = null;

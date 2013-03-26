@@ -34,7 +34,6 @@ runDoctests = (ret) ->
   lastTestTimestamp = 0
   forEachDoctest(
     ({code, expectation}) ->
-      console.info 'Running doctest ' + JSON.stringify code
       nTests++
       if m = expectation.match /^returns ([^]*)$/
         expected = null
