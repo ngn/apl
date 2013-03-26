@@ -313,8 +313,10 @@ toJavaScript = (node) ->
             parseInt x, 16
           else
             parseFloat x
-      if a.length is 1 or a[1] is 0 then '' + a[0]
-      else "new _['⎕complex'](#{a[0]}, #{a[1]})"
+      if a.length is 1 or a[1] is 0
+        "_['⎕aplify'](#{a[0]})"
+      else
+        "new _['⎕complex'](#{a[0]}, #{a[1]})"
 
     # We translate square-bracket indexing (`A[B]`) to indexing using the
     # squish quad function (`B⌷A`).  The arguments are reversed in the process,
@@ -334,7 +336,9 @@ toJavaScript = (node) ->
 
     when 'vector'
       n = node.length - 1
-      "[#{(for child in node[1...] then toJavaScript child).join ', '}]"
+      "_['⎕aplify']([#{
+        (for child in node[1...] then toJavaScript child).join ', '
+      }])"
 
     when 'monadic'
       "#{toJavaScript node[1]}(#{toJavaScript node[2]})"

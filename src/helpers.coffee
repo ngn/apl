@@ -9,23 +9,11 @@
   for k, v of extraProperties then r[k] = v
   r
 
-
+@extend = extend = (x, extraProperties) ->
+  for k, v of extraProperties then x[k] = v
+  x
 
 # Helpers for the APL data model
-@isSimple = isSimple = (x) -> not (x instanceof Array)
-
-@shapeOf = shapeOf = (a) ->
-  a.shape or
-    if a.length? and not (typeof a is 'string' and a.length is 1)
-      [a.length]
-    else
-      []
-
-@withShape = withShape = (shape, a) ->
-  assert (not shape?) or a.length is prod shape
-  if shape? and shape.length isnt 1 then a.shape = shape
-  a
-
 @prototypeOf = prototypeOf = (x) ->
   if typeof x is 'number' then 0
   else if typeof x is 'string' then ' '
@@ -66,11 +54,17 @@
   for x, i in xs then r = r * a[i] + x
   r
 
-# `repeat(s, n)` catenates `n` instances of a string `s`.
-@repeat = repeat = (s, n) -> r = ''; (for [0...n] then r += s); r
+# `repeat(a, n)` catenates `n` instances of a string or array `a`.
+@repeat = repeat = (a, n) ->
+  assert typeof a is 'string' or a instanceof Array
+  assert typeof n is 'number' and n is Math.floor(n) and n >= 0
+  if not n then return a[...0]
+  m = n * a.length
+  while a.length * 2 < m then a = a.concat a
+  a.concat a[... m - a.length]
 
-@assert = assert = (flag, s = 'Assertion failed') ->
-  if not flag then throw Error s
+@assert = assert = (flag, s = '') ->
+  if not flag then throw extend Error(s), name: 'AssertionError'
 
 @die = (message, opts = {}, args...) ->
   assert typeof message is 'string'
