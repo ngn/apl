@@ -1561,7 +1561,7 @@
 
 }).call(this);
 }, "vocabulary": function(exports, require, module) {(function() {
-  var APLArray, Complex, assert, match, multiplicitySymbol, numeric, pervasive, prod, repeat, _ref,
+  var APLArray, Complex, assert, match, multiplicitySymbol, numeric, pervasive, prod, repeat, _base, _ref, _ref1,
     _this = this;
 
   _ref = require('./helpers'), assert = _ref.assert, prod = _ref.prod, repeat = _ref.repeat;
@@ -1881,6 +1881,23 @@
 
   this['⊖'] = require('./vocabulary/rotate')['⊖'];
 
+  this['⍨'] = function(f) {
+    assert(typeof f === 'function');
+    return function(omega, alpha, axis) {
+      if (alpha) {
+        return f(alpha, omega, axis);
+      } else {
+        return f(omega, void 0, axis);
+      }
+    };
+  };
+
+  ((_ref1 = (_base = this['⍨']).aplMetaInfo) != null ? _ref1 : _base.aplMetaInfo = {}).isPostfixAdverb = true;
+
+  this['get_⍬'] = function() {
+    return APLArray.zilde;
+  };
+
   this['set_⎕'] = console.info;
 
   (function() {
@@ -1895,6 +1912,111 @@
     }
     return _results;
   })();
+
+}).call(this);
+}, "vocabulary/indexing": function(exports, require, module) {(function() {
+  var APLArray, assert, prod, _ref;
+
+  APLArray = require('../array').APLArray;
+
+  _ref = require('../helpers'), assert = _ref.assert, prod = _ref.prod;
+
+  this['⌷'] = function(omega, alpha, axes) {
+    var a, a1, axis, d, i, r, rec, sr, x, y, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _len6, _m, _n, _o, _p, _q, _ref1, _ref2, _results, _results1;
+
+    if (typeof omega === 'function') {
+      return function(y, x) {
+        return omega(y, x, alpha);
+      };
+    }
+    assert(alpha);
+    if (a.shape.length > 1) {
+      throw Error('RANK ERROR');
+    }
+    a = alpha.realize();
+    if (a.length > omega.shape.length) {
+      throw Error('LENGTH ERROR: The number of indices must not exceed the rank of the indexable.');
+    }
+    axes = axes === null ? (function() {
+      _results = [];
+      for (var _i = 0, _ref1 = a.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--){ _results.push(_i); }
+      return _results;
+    }).apply(this) : array(axes);
+    assert(shapeOf(axes).length <= 1, 'Axes must be a scalar or a vector, not a higher-dimensional array.');
+    assert(a.length === axes.length, 'The number of indices must be equal to the number of axes specified.');
+    a1 = (function() {
+      var _j, _len, _results1;
+
+      _results1 = [];
+      for (_j = 0, _len = sb.length; _j < _len; _j++) {
+        x = sb[_j];
+        _results1.push(null);
+      }
+      return _results1;
+    })();
+    for (i = _j = 0, _len = axes.length; _j < _len; i = ++_j) {
+      axis = axes[i];
+      assert(typeof axis === 'number' && axis === Math.floor(axis), 'Axes must be integers');
+      assert((0 <= axis && axis < sb.length), 'Invalid axis');
+      assert(!contains(axes.slice(0, i), axis), 'Duplicate axis');
+      a1[axis] = array(a[i]);
+    }
+    a = a1;
+    for (i = _k = 0, _len1 = a.length; _k < _len1; i = ++_k) {
+      x = a[i];
+      if (x === null) {
+        a[i] = (function() {
+          _results1 = [];
+          for (var _l = 0, _ref2 = sb[i]; 0 <= _ref2 ? _l < _ref2 : _l > _ref2; 0 <= _ref2 ? _l++ : _l--){ _results1.push(_l); }
+          return _results1;
+        }).apply(this);
+      }
+    }
+    for (d = _m = 0, _len2 = a.length; _m < _len2; d = ++_m) {
+      x = a[d];
+      for (_n = 0, _len3 = x.length; _n < _len3; _n++) {
+        y = x[_n];
+        if (!(typeof y === 'number' && y === Math.floor(y))) {
+          die('Indices must be integers');
+        }
+      }
+    }
+    for (d = _o = 0, _len4 = a.length; _o < _len4; d = ++_o) {
+      x = a[d];
+      for (_p = 0, _len5 = x.length; _p < _len5; _p++) {
+        y = x[_p];
+        if (!((0 <= y && y < sb[d]))) {
+          die('Index out of bounds');
+        }
+      }
+    }
+    sr = [];
+    for (_q = 0, _len6 = a.length; _q < _len6; _q++) {
+      x = a[_q];
+      sr = sr.concat(shapeOf(x));
+    }
+    r = [];
+    rec = function(d, i, n) {
+      var _len7, _r, _ref3;
+
+      if (d >= a.length) {
+        r.push(b[i]);
+      } else {
+        _ref3 = a[d];
+        for (_r = 0, _len7 = _ref3.length; _r < _len7; _r++) {
+          x = _ref3[_r];
+          rec(d + 1, i + (x * n / sb[d]), n / sb[d]);
+        }
+      }
+      return 0;
+    };
+    rec(0, 0, b.length);
+    if (sr.length === 0) {
+      return r[0];
+    } else {
+      return withShape(sr, r);
+    }
+  };
 
 }).call(this);
 }, "vocabulary/iota": function(exports, require, module) {(function() {
@@ -2020,6 +2142,200 @@
       axis = APLArray.zero;
     }
     return rotate(omega, alpha, axis);
+  };
+
+}).call(this);
+}, "vocabulary/squad": function(exports, require, module) {(function() {
+  var APLArray, assert, prod, _ref,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  APLArray = require('../array').APLArray;
+
+  _ref = require('../helpers'), assert = _ref.assert, prod = _ref.prod;
+
+  this['⌷'] = function(omega, alpha, axes) {
+    var axis, d, i, indices, permutedIndices, r, rec, sr, x, y, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _o, _p, _ref1, _ref2, _results, _results1;
+
+    if (typeof omega === 'function') {
+      return function(y, x) {
+        return omega(y, x, alpha);
+      };
+    }
+    assert(alpha);
+    if (alpha.shape.length > 1) {
+      throw Error('RANK ERROR');
+    }
+    indices = alpha.realize();
+    if (indices.length > omega.shape.length) {
+      throw Error('LENGTH ERROR: The number of indices must not exceed the rank of the indexable.');
+    }
+    axes = axes ? axes.realize() : (function() {
+      _results = [];
+      for (var _i = 0, _ref1 = indices.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--){ _results.push(_i); }
+      return _results;
+    }).apply(this);
+    if (indices.length !== axes.length) {
+      throw Error('The number of indices must be equal to the number of axes specified.');
+    }
+    permutedIndices = Array(indices.length);
+    for (i = _j = 0, _len = axes.length; _j < _len; i = ++_j) {
+      axis = axes[i];
+      assert(typeof axis === 'number' && axis === Math.floor(axis), 'Axes must be integers');
+      assert((0 <= axis && axis < omega.shape.length), 'Invalid axis');
+      assert((__indexOf.call(axes.slice(0, i), axis) < 0), 'Duplicate axis');
+      permutedIndices[axis] = indices[i];
+    }
+    indices = permutedIndices;
+    for (axis = _k = 0, _len1 = indices.length; _k < _len1; axis = ++_k) {
+      x = indices[axis];
+      if (x === null) {
+        indices[axis] = (function() {
+          _results1 = [];
+          for (var _l = 0, _ref2 = omega.shape[axis]; 0 <= _ref2 ? _l < _ref2 : _l > _ref2; 0 <= _ref2 ? _l++ : _l--){ _results1.push(_l); }
+          return _results1;
+        }).apply(this);
+      } else if (x instanceof APLArray) {
+        indices[axis] = x = x.realize();
+        for (_m = 0, _len2 = x.length; _m < _len2; _m++) {
+          y = x[_m];
+          if (!(typeof y === 'number' && y === Math.floor(y))) {
+            throw Error('DOMAIN ERROR');
+          }
+        }
+      }
+    }
+    for (d = _n = 0, _len3 = a.length; _n < _len3; d = ++_n) {
+      x = a[d];
+      for (_o = 0, _len4 = x.length; _o < _len4; _o++) {
+        y = x[_o];
+        if (!((0 <= y && y < sb[d]))) {
+          die('Index out of bounds');
+        }
+      }
+    }
+    sr = [];
+    for (_p = 0, _len5 = a.length; _p < _len5; _p++) {
+      x = a[_p];
+      sr = sr.concat(shapeOf(x));
+    }
+    r = [];
+    rec = function(d, i, n) {
+      var _len6, _q, _ref3;
+
+      if (d >= a.length) {
+        r.push(b[i]);
+      } else {
+        _ref3 = a[d];
+        for (_q = 0, _len6 = _ref3.length; _q < _len6; _q++) {
+          x = _ref3[_q];
+          rec(d + 1, i + (x * n / sb[d]), n / sb[d]);
+        }
+      }
+      return 0;
+    };
+    rec(0, 0, b.length);
+    if (sr.length === 0) {
+      return r[0];
+    } else {
+      return withShape(sr, r);
+    }
+  };
+
+}).call(this);
+}, "vocabulary/squish": function(exports, require, module) {(function() {
+  var APLArray, assert, prod, _ref,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  APLArray = require('../array').APLArray;
+
+  _ref = require('../helpers'), assert = _ref.assert, prod = _ref.prod;
+
+  this['⌷'] = function(omega, alpha, axes) {
+    var axis, d, i, indices, permutedIndices, r, rec, sr, x, y, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _o, _p, _ref1, _ref2, _results, _results1;
+
+    if (typeof omega === 'function') {
+      return function(y, x) {
+        return omega(y, x, alpha);
+      };
+    }
+    assert(alpha);
+    if (alpha.shape.length > 1) {
+      throw Error('RANK ERROR');
+    }
+    indices = alpha.realize();
+    if (indices.length > omega.shape.length) {
+      throw Error('LENGTH ERROR: The number of indices must not exceed the rank of the indexable.');
+    }
+    axes = axes ? axes.realize() : (function() {
+      _results = [];
+      for (var _i = 0, _ref1 = indices.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--){ _results.push(_i); }
+      return _results;
+    }).apply(this);
+    if (indices.length !== axes.length) {
+      throw Error('The number of indices must be equal to the number of axes specified.');
+    }
+    permutedIndices = Array(indices.length);
+    for (i = _j = 0, _len = axes.length; _j < _len; i = ++_j) {
+      axis = axes[i];
+      assert(typeof axis === 'number' && axis === Math.floor(axis), 'Axes must be integers');
+      assert((0 <= axis && axis < omega.shape.length), 'Invalid axis');
+      assert((__indexOf.call(axes.slice(0, i), axis) < 0), 'Duplicate axis');
+      permutedIndices[axis] = indices[i];
+    }
+    indices = permutedIndices;
+    for (axis = _k = 0, _len1 = indices.length; _k < _len1; axis = ++_k) {
+      x = indices[axis];
+      if (x === null) {
+        indices[axis] = (function() {
+          _results1 = [];
+          for (var _l = 0, _ref2 = omega.shape[axis]; 0 <= _ref2 ? _l < _ref2 : _l > _ref2; 0 <= _ref2 ? _l++ : _l--){ _results1.push(_l); }
+          return _results1;
+        }).apply(this);
+      } else if (x instanceof APLArray) {
+        indices[axis] = x = x.realize();
+        for (_m = 0, _len2 = x.length; _m < _len2; _m++) {
+          y = x[_m];
+          if (!(typeof y === 'number' && y === Math.floor(y))) {
+            throw Error('DOMAIN ERROR');
+          }
+        }
+      }
+    }
+    for (d = _n = 0, _len3 = a.length; _n < _len3; d = ++_n) {
+      x = a[d];
+      for (_o = 0, _len4 = x.length; _o < _len4; _o++) {
+        y = x[_o];
+        if (!((0 <= y && y < sb[d]))) {
+          die('Index out of bounds');
+        }
+      }
+    }
+    sr = [];
+    for (_p = 0, _len5 = a.length; _p < _len5; _p++) {
+      x = a[_p];
+      sr = sr.concat(shapeOf(x));
+    }
+    r = [];
+    rec = function(d, i, n) {
+      var _len6, _q, _ref3;
+
+      if (d >= a.length) {
+        r.push(b[i]);
+      } else {
+        _ref3 = a[d];
+        for (_q = 0, _len6 = _ref3.length; _q < _len6; _q++) {
+          x = _ref3[_q];
+          rec(d + 1, i + (x * n / sb[d]), n / sb[d]);
+        }
+      }
+      return 0;
+    };
+    rec(0, 0, b.length);
+    if (sr.length === 0) {
+      return r[0];
+    } else {
+      return withShape(sr, r);
+    }
   };
 
 }).call(this);

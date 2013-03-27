@@ -323,7 +323,7 @@ toJavaScript = (node) ->
     # so `B` gets evaluated before `A` as one would expect from APL's
     # right-to-left order of execution.
     #
-    #     ⍴ x[⍋x←6?40]    ⍝ returns ,6
+    #!    ⍴ x[⍋x←6?40]    ⍝ returns ,6
     when 'index'
       "_['⍨'](_['⌷'])(
         [#{(for c in node[2...] when c then toJavaScript c).join ', '}],
