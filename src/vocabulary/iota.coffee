@@ -1,20 +1,30 @@
 {APLArray} = require '../array'
 {assert, repeat, prod} = require '../helpers'
+{match} = require './vhelpers'
 
 @['⍳'] = (omega, alpha) ->
   if alpha
     # Index of (`⍳`)
     #
-    #!    2 5 9 14 20 ⍳ 9                           ⍝ returns 1 ⍴ 2
-    #!    2 5 9 14 20 ⍳ 6                           ⍝ returns 1 ⍴ 5
-    #!    "GORSUCH" ⍳ "S"                           ⍝ returns 1 ⍴ 3
-    #!    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "CARP"     ⍝ returns 2 0 17 15
-    #!    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "PORK PIE"
-    #!    ... ⍝ returns 15 14 17 10 26 15 8 4
-    #!    "MON" "TUES" "WED" ⍳ "MON" "THURS"        ⍝ returns 0 3
-    #!    1 3 2 0 3 ⍳ ⍳ 5                           ⍝ returns 3 0 2 1 5
-    #!    "CAT" "DOG" "MOUSE" ⍳ "DOG" "BIRD"        ⍝ returns 1 3
-    throw Error 'Not implemented'
+    #     2 5 9 14 20 ⍳ 9                           ⍝ returns 2
+    #     2 5 9 14 20 ⍳ 6                           ⍝ returns 5
+    #     "GORSUCH" ⍳ "S"                           ⍝ returns 3
+    #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "CARP"     ⍝ returns 2 0 17 15
+    #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⍳ "PORK PIE"
+    #     ... ⍝ returns 15 14 17 10 26 15 8 4
+    #     "MON" "TUES" "WED" ⍳ "MON" "THURS"        ⍝ returns 0 3
+    #     1 3 2 0 3 ⍳ ⍳ 5                           ⍝ returns 3 0 2 1 5
+    #     "CAT" "DOG" "MOUSE" ⍳ "DOG" "BIRD"        ⍝ returns 1 3
+    omega.map (x) ->
+      try
+        r = alpha.shape
+        alpha.each (y, indices) ->
+          if match x, y
+            r = indices
+            throw 'break'
+      catch e
+        if e isnt 'break' then throw e
+      if r.length is 1 then r[0] else new APLArray r
   else
     # Index generate (`⍳`)
     #
