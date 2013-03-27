@@ -55,7 +55,7 @@
       }
       try {
         actual = exec(code);
-        if (!match(actual, expected)) {
+        if (!match(actual, expected).unbox()) {
           return {
             success: false,
             reason: "Expected " + (JSON.stringify(expected)) + " but got " + (JSON.stringify(actual))

@@ -34,7 +34,7 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
       }
     try
       actual = exec code
-      if not match actual, expected
+      if not match(actual, expected).unbox()
         return {
           success: false
           reason: "Expected #{JSON.stringify expected} but got #{JSON.stringify actual}"
