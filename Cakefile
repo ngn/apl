@@ -90,16 +90,16 @@ task 'stats', 'Show some lines-of-code nonsense', ->
   console.info 'Lines of code, not counting empty lines and comments:'
   total = 0
   stats =
-    for file in fs.readdirSync 'src' when file.match /^\w+\.coffee$/
+    glob.sync('src/**/*.coffee').map (file) ->
       loc = 0
-      for line in fs.readFileSync("src/#{file}").toString().split '\n'
+      for line in fs.readFileSync(file, 'utf8').split '\n'
         if /^ *[^ #]/.test line
           loc++
       total += loc
       {file, loc}
   stats.sort (x, y) -> y.loc - x.loc
-  for x in stats then console.info('  ' +
-    (x.file + '                    ')[...20] +
-    (s = '    ' + x.loc)[s.length - 4...]
+  for x in stats then console.info(
+    (s = '        ' + x.loc)[s.length - 8...] +
+    ' ' + x.file
   )
   console.info "TOTAL: #{total}"
