@@ -148,6 +148,7 @@ match = (x, y) ->
 @['⍳'] = require('./vocabulary/iota')['⍳']
 @['⌽'] = require('./vocabulary/rotate')['⌽']
 @['⊖'] = require('./vocabulary/rotate')['⊖']
+@['⍉'] = require('./vocabulary/transpose')['⍉']
 
 # [Commute](http://www.jsoftware.com/papers/opfns1.htm#3) (`⍨`)
 #
