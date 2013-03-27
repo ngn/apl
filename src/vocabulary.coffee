@@ -46,12 +46,12 @@
 @['≥'] = pervasive dyad: numeric (y, x) -> +(x >= y)
 
 @['⌊'] = pervasive
-  monad: numeric Math.ceil
-  dyad: numeric Math.max
-
-@['⌈'] = pervasive
   monad: numeric Math.floor
   dyad: numeric Math.min
+
+@['⌈'] = pervasive
+  monad: numeric Math.ceil
+  dyad: numeric Math.max
 
 @['?'] = pervasive
   monad: numeric (x) ->

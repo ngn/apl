@@ -21,8 +21,13 @@
       p += index * @stride[axis]
     @data[p]
 
+  empty: ->
+    for d in @shape when not d then return true
+    false
+
   each: (f) ->
     assert typeof f is 'function'
+    if @empty() then return
     p = @offset
     indices = for axis in @shape then 0
     loop
@@ -42,6 +47,7 @@
     assert @shape.length is a.shape.length
     for axis in [0...@shape.length]
       assert @shape[axis] is a.shape[axis]
+    if @empty() then return
     p = @offset
     q = a.offset
     indices = for axis in @shape then 0

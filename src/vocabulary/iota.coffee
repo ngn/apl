@@ -34,9 +34,9 @@
     a = omega.toArray()
     for d in a when typeof d isnt 'number' or d isnt Math.floor(d) or d < 0
       throw Error 'DOMAIN ERROR'
-    indices = repeat [0], a.length
     data = []
     if prod a
+      indices = repeat [0], a.length
       loop
         data.push indices...
         axis = a.length - 1
@@ -44,4 +44,4 @@
           indices[axis--] = 0
         if axis < 0 then break
         indices[axis]++
-    new APLArray data, a.concat [a.length]
+    new APLArray data, a.concat omega.shape

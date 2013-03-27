@@ -20,7 +20,7 @@ multiplicitySymbol = (z) ->
         tx = multiplicitySymbol x
         ty = multiplicitySymbol y
         switch tx + ty
-          when '..' then (x?[F.aplName]?(y)) ? (y?['right_' + F.aplName]?(x)) ? (dyad x, y)
+          when '..' then (y?[F.aplName]?(x)) ? (x?['right_' + F.aplName]?(y)) ? (dyad x, y)
           when '.1' then y.map (yi) -> pervadeDyadic x, yi
           when '.*' then y.map (yi) -> pervadeDyadic x, yi
           when '1.' then x.map (xi) -> pervadeDyadic xi, y
