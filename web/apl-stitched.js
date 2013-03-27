@@ -204,7 +204,7 @@
         this.each(function(x) {
           r.push(x);
           if (r.length >= limit) {
-            throw 'breek';
+            throw 'break';
           }
         });
       } catch (_error) {
@@ -1970,11 +1970,11 @@
     }
   };
 
-  this['⊖'] = function(omega, alpha, axes) {
-    if (axes == null) {
-      axes = APLArray.zero;
+  this['⊖'] = function(omega, alpha, axis) {
+    if (axis == null) {
+      axis = APLArray.zero;
     }
-    return rotate(omega, alpha, axes);
+    return rotate(omega, alpha, axis);
   };
 
 }).call(this);

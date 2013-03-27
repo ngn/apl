@@ -5,10 +5,14 @@ html
     title APL Browser Test
     style: @font-face { font-family: apl; src: url(../../fonts/apl385.ttf) format(truetype); }
     style
-      body { font-family: apl, monospace; }
+      body {
+        font-family: apl, monospace;
+        white-space: pre;
+      }
   body
     input#run(type="button", value="Run")
     script(src="testcases.js")
     script(src="../../web/jquery-1.9.1.min.js")
     script(src="../../web/apl-stitched.js")
+    script(src="../doctest.js")
     script(src="index.js")

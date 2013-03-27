@@ -66,7 +66,7 @@ C = (re, im) -> if im then new Complex re, im else re
   # Multiply / Sign of (`×`)
   #
   #     1j¯2 × ¯2j3   ⍝ returns 4j7
-  #     × 1j¯2        ⍝ fails
+  #     × 1j¯2        ⍝ throws
   '×': (x) ->
     if x?
       if typeof x is 'number' then C x * @re, x * @im
