@@ -81,8 +81,8 @@
     r = []
     try
       @each (x) ->
-        r.push x
         if r.length >= limit then throw 'break'
+        r.push x
         return
     catch e
       if e isnt 'break' then throw e
