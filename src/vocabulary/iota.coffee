@@ -31,7 +31,7 @@
     #     ...             1 2 0  1 2 1  1 2 2  1 2 3)
     #     ⍴⍳ 2 3 4    ⍝ returns 2 3 4 3
     if omega.shape.length > 1 then throw Error 'RANK ERROR'
-    a = omega.realize()
+    a = omega.toArray()
     for d in a when typeof d isnt 'number' or d isnt Math.floor(d) or d < 0
       throw Error 'DOMAIN ERROR'
     indices = repeat [0], a.length

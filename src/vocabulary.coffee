@@ -139,10 +139,10 @@ match = (x, y) ->
 
 @[','] = (omega, alpha) ->
   if alpha
-    shape = alpha.realize()
+    shape = alpha.toArray()
     throw Error 'Not implemented'
   else
-    new APLArray omega.realize()
+    new APLArray omega.toArray()
 
 @['⍴'] = require('./vocabulary/rho')['⍴']
 @['⍳'] = require('./vocabulary/iota')['⍳']

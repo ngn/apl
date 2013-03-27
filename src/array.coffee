@@ -71,7 +71,7 @@
     @each2 a, (x, y) -> data.push f x, y
     new APLArray data, @shape
 
-  realize: (limit = Infinity) ->
+  toArray: (limit = Infinity) ->
     r = []
     try
       @each (x) ->
