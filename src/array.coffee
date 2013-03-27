@@ -31,7 +31,7 @@
     p = @offset
     indices = for axis in @shape then 0
     loop
-      f @data[p]
+      f @data[p], indices
       axis = @shape.length - 1
       while axis >= 0 and indices[axis] + 1 is @shape[axis]
         p -= indices[axis] * @stride[axis]
@@ -52,7 +52,7 @@
     q = a.offset
     indices = for axis in @shape then 0
     loop
-      f @data[p], a.data[q]
+      f @data[p], a.data[q], indices
       axis = @shape.length - 1
       while axis >= 0 and indices[axis] + 1 is @shape[axis]
         p -= indices[axis] * @stride[axis]
@@ -67,14 +67,14 @@
   map: (f) ->
     assert typeof f is 'function'
     data = []
-    @each (x) -> data.push f x
+    @each (x, indices) -> data.push f x, indices
     new APLArray data, @shape
 
   map2: (a, f) ->
     assert a instanceof APLArray
     assert typeof f is 'function'
     data = []
-    @each2 a, (x, y) -> data.push f x, y
+    @each2 a, (x, y, indices) -> data.push f x, y, indices
     new APLArray data, @shape
 
   toArray: (limit = Infinity) ->
