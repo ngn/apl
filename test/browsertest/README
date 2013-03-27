@@ -1,0 +1,5 @@
+First you should run
+
+    cake browsertests
+
+and then open test/browsertest/index.html in your browser.
