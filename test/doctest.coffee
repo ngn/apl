@@ -22,7 +22,10 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
 
 # This function should work both in nodejs and in a browser.
 # It is invoked from browsertest/index.coffee
-@runTestCase = runTestCase = ({code, expectation, exec, match}) ->
+@runTestCase = runTestCase = ({code, expectation, aplModulePrefix}) ->
+  aplModulePrefix ?= './'
+  {exec} = require aplModulePrefix + 'compiler'
+  {match} = require aplModulePrefix + 'vocabulary/vhelpers'
   if m = expectation.match /^returns\b\s*([^]*)$/
     try
       expected = exec m[1]
@@ -70,15 +73,13 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
   {success: true}
 
 runDoctests = (continuation) ->
-  {exec} = require '../lib/compiler'
-  {match} = require '../lib/vocabulary/vhelpers'
   nTests = nFailed = 0
   t0 = Date.now()
   lastTestTimestamp = 0
   forEachDoctest(
     ({code, expectation}) ->
       nTests++
-      outcome = runTestCase {code, expectation, exec, match}
+      outcome = runTestCase {code, expectation, aplModulePrefix: '../lib/'}
       if not outcome.success
         nFailed++
         console.info "Test failed: #{JSON.stringify code}"

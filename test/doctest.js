@@ -39,9 +39,14 @@
   };
 
   this.runTestCase = runTestCase = function(_arg) {
-    var actual, code, e, exec, expectation, expected, expectedErrorMessage, m, match;
+    var actual, aplModulePrefix, code, e, exec, expectation, expected, expectedErrorMessage, m, match;
 
-    code = _arg.code, expectation = _arg.expectation, exec = _arg.exec, match = _arg.match;
+    code = _arg.code, expectation = _arg.expectation, aplModulePrefix = _arg.aplModulePrefix;
+    if (aplModulePrefix == null) {
+      aplModulePrefix = './';
+    }
+    exec = require(aplModulePrefix + 'compiler').exec;
+    match = require(aplModulePrefix + 'vocabulary/vhelpers').match;
     if (m = expectation.match(/^returns\b\s*([^]*)$/)) {
       try {
         expected = exec(m[1]);
@@ -98,10 +103,8 @@
   };
 
   runDoctests = function(continuation) {
-    var exec, lastTestTimestamp, match, nFailed, nTests, t0;
+    var lastTestTimestamp, nFailed, nTests, t0;
 
-    exec = require('../lib/compiler').exec;
-    match = require('../lib/vocabulary/vhelpers').match;
     nTests = nFailed = 0;
     t0 = Date.now();
     lastTestTimestamp = 0;
@@ -113,8 +116,7 @@
       outcome = runTestCase({
         code: code,
         expectation: expectation,
-        exec: exec,
-        match: match
+        aplModulePrefix: '../lib/'
       });
       if (!outcome.success) {
         nFailed++;
