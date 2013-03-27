@@ -44,6 +44,15 @@ task 'test', 'Run doctests', ->
   ake [
     basicBuildActions
     coffee 'test/doctest.coffee'
+    ->
+      console.info 'Running doctests...'
+      exec 'node', ['doctest.js'], cwd: 'test'
+  ]
+
+task 'browsertest', 'Generate what\'s needed to run a browser test', ->
+  ake [
+    basicBuildActions
+    coffee 'test/doctest.coffee'
     coffee 'test/browsertest/generate.coffee'
     coffee 'test/browsertest/index.coffee'
     jade   'test/browsertest/index.jade'
@@ -53,8 +62,7 @@ task 'test', 'Run doctests', ->
       ({callback}) -> require('./test/browsertest/generate').main callback
     )
     ->
-      console.info 'Running doctests...'
-      exec 'node', ['doctest.js'], cwd: 'test'
+      console.info 'OK---now you can open ./test/browsertest/index.html with your browser'
   ]
 
 task 'docs', 'Generate literate documentation with docco', ->
