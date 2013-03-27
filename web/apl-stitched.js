@@ -1875,6 +1875,8 @@
 
   this['⍴'] = require('./vocabulary/rho')['⍴'];
 
+  this['⍳'] = require('./vocabulary/iota')['⍳'];
+
   this['⌽'] = require('./vocabulary/rotate')['⌽'];
 
   this['⊖'] = require('./vocabulary/rotate')['⊖'];
@@ -1893,6 +1895,49 @@
     }
     return _results;
   })();
+
+}).call(this);
+}, "vocabulary/iota": function(exports, require, module) {(function() {
+  var APLArray, assert, prod, repeat, _ref;
+
+  APLArray = require('../array').APLArray;
+
+  _ref = require('../helpers'), assert = _ref.assert, repeat = _ref.repeat, prod = _ref.prod;
+
+  this['⍳'] = function(omega, alpha) {
+    var a, axis, d, data, indices, _i, _len;
+
+    if (alpha) {
+      throw Error('Not implemented');
+    } else {
+      if (omega.shape.length > 1) {
+        throw Error('RANK ERROR');
+      }
+      a = omega.realize();
+      for (_i = 0, _len = a.length; _i < _len; _i++) {
+        d = a[_i];
+        if (typeof d !== 'number' || d !== Math.floor(d) || d < 0) {
+          throw Error('DOMAIN ERROR');
+        }
+      }
+      indices = repeat([0], a.length);
+      data = [];
+      if (prod(a)) {
+        while (true) {
+          data.push.apply(data, indices);
+          axis = a.length - 1;
+          while (axis >= 0 && indices[axis] + 1 === a[axis]) {
+            indices[axis--] = 0;
+          }
+          if (axis < 0) {
+            break;
+          }
+          indices[axis]++;
+        }
+      }
+      return new APLArray(data, a.concat([a.length]));
+    }
+  };
 
 }).call(this);
 }, "vocabulary/rho": function(exports, require, module) {(function() {

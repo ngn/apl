@@ -145,6 +145,7 @@ match = (x, y) ->
     new APLArray omega.realize()
 
 @['⍴'] = require('./vocabulary/rho')['⍴']
+@['⍳'] = require('./vocabulary/iota')['⍳']
 @['⌽'] = require('./vocabulary/rotate')['⌽']
 @['⊖'] = require('./vocabulary/rotate')['⊖']
 
