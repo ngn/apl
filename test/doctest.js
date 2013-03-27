@@ -55,7 +55,7 @@
       }
       try {
         actual = exec(code);
-        if (!match(actual, expected).unbox()) {
+        if (!match(actual, expected)) {
           return {
             success: false,
             reason: "Expected " + (JSON.stringify(expected)) + " but got " + (JSON.stringify(actual))
@@ -101,7 +101,7 @@
     var exec, lastTestTimestamp, match, nFailed, nTests, t0;
 
     exec = require('../lib/compiler').exec;
-    match = require('../lib/vocabulary')['≡'];
+    match = require('../lib/vocabulary/vhelpers').match;
     nTests = nFailed = 0;
     t0 = Date.now();
     lastTestTimestamp = 0;

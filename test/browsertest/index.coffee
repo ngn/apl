@@ -1,6 +1,6 @@
 jQuery ($) ->
   {exec} = require './compiler'
-  match = require('./vocabulary')['≡']
+  {match} = require './vocabulary/vhelpers'
 
   $('#run').focus().click ->
 

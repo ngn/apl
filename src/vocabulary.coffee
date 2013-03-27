@@ -1,7 +1,7 @@
 {assert, prod, repeat} = require './helpers'
 {APLArray} = require './array'
 {Complex} = require './complex'
-{pervasive, numeric} = require './vocabulary/vhelpers'
+{pervasive, numeric, match} = require './vocabulary/vhelpers'
 
 @['⎕aplify'] = (x) ->
   assert x?
@@ -60,20 +60,6 @@
 
 @['○'] = pervasive
   monad: numeric (x) -> Math.PI * x
-
-match = (x, y) ->
-  if x instanceof APLArray
-    if not (y instanceof APLArray) then false
-    else
-      if x.shape.length isnt y.shape.length then return false
-      for axis in [0 ... x.shape.length]
-        if x.shape[axis] isnt y.shape[axis] then return false
-      r = true
-      x.each2 y, (xi, yi) -> if not match xi, yi then r = false
-      r
-  else
-    if y instanceof APLArray then false
-    else (x['≡']?(y)) ? (y['≡']?(x)) ? (x is y)
 
 @['≡'] = (omega, alpha) ->
   if alpha

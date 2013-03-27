@@ -34,7 +34,7 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
       }
     try
       actual = exec code
-      if not match(actual, expected).unbox()
+      if not match actual, expected
         return {
           success: false
           reason: "Expected #{JSON.stringify expected} but got #{JSON.stringify actual}"
@@ -71,7 +71,7 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
 
 runDoctests = (continuation) ->
   {exec} = require '../lib/compiler'
-  match = require('../lib/vocabulary')['≡']
+  {match} = require '../lib/vocabulary/vhelpers'
   nTests = nFailed = 0
   t0 = Date.now()
   lastTestTimestamp = 0
