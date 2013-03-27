@@ -15,4 +15,6 @@ exports.createGlobalContext = ->
 # A `compile()` method is exposed so it can be called by
 # [coffee-subscript](https://github.com/ngn/coffee-subscript#readme) and
 # others.
-exports.compile = require('./compiler').compile
+compile = require("./compiler").compile
+exports.compile = (code) -> "(function(){#{compile code, embedded: true}})()" 
+exports.fn = compile: (code) -> "function(){#{compile code, embedded: true}}"
