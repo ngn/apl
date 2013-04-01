@@ -1,18 +1,46 @@
 {APLArray} = require '../array'
-{assert, prod} = require '../helpers'
+{assert, prod, repeat} = require '../helpers'
 
-#
 @['⌽'] = rotate = (omega, alpha, axis) ->
   assert typeof axis is 'undefined' or axis instanceof APLArray
   if alpha
     # Rotate (`⌽`)
     #
-    #!    1 ⌽ 1 2 3 4 5 6                   ⍝ returns 2 3 4 5 6 1
-    #!    3 ⌽ 'ABCDEFGH'                    ⍝ returns 'DEFGHABC'
-    #!    3 ⌽ 2 5 ⍴  1 2 3 4 5  6 7 8 9 0   ⍝ returns 2 5 ⍴ 4 5 1 2 3 9 0 6 7 8
-    #!    ¯2 ⌽ "ABCDEFGH"                   ⍝ returns 'GHABCDEF'
-    #!    1 ⌽ 3 3 ⍴ ⍳ 9                     ⍝ returns 3 3 ⍴ 1 2 0 4 5 3 7 8 6
-    throw Error 'Not implemented'
+    #     1 ⌽ 1 2 3 4 5 6                   ⍝ returns 2 3 4 5 6 1
+    #     3 ⌽ 'ABCDEFGH'                    ⍝ returns 'DEFGHABC'
+    #     3 ⌽ 2 5 ⍴  1 2 3 4 5  6 7 8 9 0   ⍝ returns 2 5 ⍴ 4 5 1 2 3 9 0 6 7 8
+    #     ¯2 ⌽ "ABCDEFGH"                   ⍝ returns 'GHABCDEF'
+    #     1 ⌽ 3 3 ⍴ ⍳ 9                     ⍝ returns 3 3 ⍴ 1 2 0 4 5 3 7 8 6
+    #     0 ⌽ 1 2 3 4                       ⍝ returns 1 2 3 4
+    #     0 ⌽ 1234                          ⍝ returns 1234
+    #     5 ⌽ ⍬                             ⍝ returns ⍬
+    axis = if not axis then omega.shape.length - 1 else axis.unbox()
+    if typeof axis isnt 'number' or axis isnt Math.floor axis
+      throw Error 'DOMAIN ERROR'
+    if omega.shape.length and not (0 <= axis < omega.shape.length)
+      throw Error 'INDEX ERROR'
+    step = alpha.unbox()
+    if typeof step isnt 'number' or step isnt Math.floor step
+      throw Error 'DOMAIN ERROR'
+    if not step
+      return omega
+    n = omega.shape[axis]
+    step = (n + (step % n)) % n # force % to handle negatives properly
+    if omega.empty() or step is 0 then return omega
+    data = []
+    {shape, stride} = omega
+    p = omega.offset
+    indices = repeat [0], shape.length
+    loop
+      data.push omega.data[p + ((indices[axis] + step) % shape[axis] - indices[axis]) * stride[axis]]
+      a = shape.length - 1
+      while a >= 0 and indices[a] + 1 is shape[a]
+        p -= indices[a] * stride[a]
+        indices[a--] = 0
+      if a < 0 then break
+      indices[a]++
+      p += stride[a]
+    new APLArray data, shape
   else
     # Reverse (`⌽`)
     #
@@ -46,6 +74,6 @@
 #
 # 1st axis rotate (`⊖`)
 #
-#!    1 ⊖ 3 3 ⍴ ⍳ 9   ⍝ returns 3 3 ⍴ 3 4 5 6 7 8 0 1 2
+#    1 ⊖ 3 3 ⍴ ⍳ 9   ⍝ returns 3 3 ⍴ 3 4 5 6 7 8 0 1 2
 @['⊖'] = (omega, alpha, axis = APLArray.zero) ->
   rotate omega, alpha, axis
