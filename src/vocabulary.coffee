@@ -37,6 +37,8 @@
 @['×'] = require('./vocabulary/arithmetic')['×']
 @['÷'] = require('./vocabulary/arithmetic')['÷']
 @['⋆'] = require('./vocabulary/arithmetic')['⋆']
+@['⍟'] = require('./vocabulary/arithmetic')['⍟']
+@['∣'] = require('./vocabulary/arithmetic')['∣']
 
 @['='] = pervasive dyad: (y, x) -> +(x is y)
 @['≠'] = pervasive dyad: (y, x) -> +(x isnt y)

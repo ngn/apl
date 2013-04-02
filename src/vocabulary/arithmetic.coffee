@@ -64,3 +64,19 @@
 @['⋆'] = pervasive
   monad: numeric Math.exp
   dyad:  numeric (y, x) -> Math.pow x, y
+
+@['⍟'] = pervasive
+  monad: numeric Math.log
+  dyad:  numeric (y, x) -> Math.log(y) / Math.log(x)
+
+@['∣'] = pervasive
+
+  # Absolute value (`∣`)
+  #
+  #     ∣ ¯8 0 8 ¯3.5   ⍝ returns 8 0 8 3.5
+  monad: numeric Math.abs
+
+  # Residue (`∣`)
+  #
+  #     3 ∣ 5       ⍝ returns 2
+  dyad:  numeric (y, x) -> y % x
