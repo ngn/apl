@@ -82,6 +82,8 @@
 @['⊖'] = require('./vocabulary/rotate')['⊖']
 @['⍉'] = require('./vocabulary/transpose')['⍉']
 
+@['∈'] = require('./vocabulary/epsilon')['∈']
+
 # [Commute](http://www.jsoftware.com/papers/opfns1.htm#3) (`⍨`)
 #
 # Definition: `x f⍨ y  <->  y f x`
