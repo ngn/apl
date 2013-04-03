@@ -39,25 +39,19 @@
 @['⋆'] = require('./vocabulary/arithmetic')['⋆']
 @['⍟'] = require('./vocabulary/arithmetic')['⍟']
 @['∣'] = require('./vocabulary/arithmetic')['∣']
-
-@['='] = pervasive dyad: (y, x) -> +(x is y)
-@['≠'] = pervasive dyad: (y, x) -> +(x isnt y)
-@['<'] = pervasive dyad: numeric (y, x) -> +(x < y)
-@['>'] = pervasive dyad: numeric (y, x) -> +(x > y)
-@['≤'] = pervasive dyad: numeric (y, x) -> +(x <= y)
-@['≥'] = pervasive dyad: numeric (y, x) -> +(x >= y)
-
 @['⌊'] = require('./vocabulary/floorceil')['⌊']
 @['⌈'] = require('./vocabulary/floorceil')['⌈']
 @['?'] = require('./vocabulary/question')['?']
 @['!'] = require('./vocabulary/exclamation')['!']
 @['○'] = require('./vocabulary/circle')['○']
-
-@['≡'] = (omega, alpha) ->
-  if alpha
-    APLArray.bool[+match omega, alpha]
-  else
-    throw Error 'Not implemented'
+@['='] = require('./vocabulary/comparisons')['=']
+@['≠'] = require('./vocabulary/comparisons')['≠']
+@['<'] = require('./vocabulary/comparisons')['<']
+@['>'] = require('./vocabulary/comparisons')['>']
+@['≤'] = require('./vocabulary/comparisons')['≤']
+@['≥'] = require('./vocabulary/comparisons')['≥']
+@['≡'] = require('./vocabulary/comparisons')['≡']
+@['≢'] = require('./vocabulary/comparisons')['≢']
 
 @[','] = (omega, alpha) ->
   if alpha
