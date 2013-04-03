@@ -60,8 +60,7 @@
     if x isnt Math.floor(x) or x <= 0 then throw Error 'DOMAIN ERROR'
     Math.floor Math.random() * x
 
-@['○'] = pervasive
-  monad: numeric (x) -> Math.PI * x
+@['○'] = require('./vocabulary/circle')['○']
 
 @['≡'] = (omega, alpha) ->
   if alpha
