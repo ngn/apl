@@ -57,3 +57,8 @@ multiplicitySymbol = (z) ->
   else
     if y instanceof APLArray then false
     else (x['≡']?(y)) ? (y['≡']?(x)) ? (x is y)
+
+@bool = (x) ->
+  if x not in [0, 1]
+    throw Error 'DOMAIN ERROR'
+  x

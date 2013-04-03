@@ -52,6 +52,11 @@
 @['≥'] = require('./vocabulary/comparisons')['≥']
 @['≡'] = require('./vocabulary/comparisons')['≡']
 @['≢'] = require('./vocabulary/comparisons')['≢']
+@['∼'] = require('./vocabulary/logic')['∼']
+@['∨'] = require('./vocabulary/logic')['∨']
+@['∧'] = require('./vocabulary/logic')['∧']
+@['⍱'] = require('./vocabulary/logic')['⍱']
+@['⍲'] = require('./vocabulary/logic')['⍲']
 
 @[','] = (omega, alpha) ->
   if alpha
