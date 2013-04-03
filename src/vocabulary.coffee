@@ -32,31 +32,43 @@
   if r not in [0, 1] then throw Error 'DOMAIN ERROR: cannot convert to boolean: ' + r
   r
 
-@['+'] = require('./vocabulary/arithmetic')['+']
-@['−'] = require('./vocabulary/arithmetic')['−']
-@['×'] = require('./vocabulary/arithmetic')['×']
-@['÷'] = require('./vocabulary/arithmetic')['÷']
-@['⋆'] = require('./vocabulary/arithmetic')['⋆']
-@['⍟'] = require('./vocabulary/arithmetic')['⍟']
-@['∣'] = require('./vocabulary/arithmetic')['∣']
-@['⌊'] = require('./vocabulary/floorceil')['⌊']
-@['⌈'] = require('./vocabulary/floorceil')['⌈']
-@['?'] = require('./vocabulary/question')['?']
-@['!'] = require('./vocabulary/exclamation')['!']
-@['○'] = require('./vocabulary/circle')['○']
-@['='] = require('./vocabulary/comparisons')['=']
-@['≠'] = require('./vocabulary/comparisons')['≠']
-@['<'] = require('./vocabulary/comparisons')['<']
-@['>'] = require('./vocabulary/comparisons')['>']
-@['≤'] = require('./vocabulary/comparisons')['≤']
-@['≥'] = require('./vocabulary/comparisons')['≥']
-@['≡'] = require('./vocabulary/comparisons')['≡']
-@['≢'] = require('./vocabulary/comparisons')['≢']
-@['∼'] = require('./vocabulary/logic')['∼']
-@['∨'] = require('./vocabulary/logic')['∨']
-@['∧'] = require('./vocabulary/logic')['∧']
-@['⍱'] = require('./vocabulary/logic')['⍱']
-@['⍲'] = require('./vocabulary/logic')['⍲']
+lazy = (obj, name, fromModule) ->
+  obj[name] = (args...) ->
+    obj[name] = f = require(fromModule)[name]
+    f.aplName = name
+    f args...
+
+lazy @, '+', './vocabulary/arithmetic'
+lazy @, '−', './vocabulary/arithmetic'
+lazy @, '×', './vocabulary/arithmetic'
+lazy @, '÷', './vocabulary/arithmetic'
+lazy @, '⋆', './vocabulary/arithmetic'
+lazy @, '⍟', './vocabulary/arithmetic'
+lazy @, '∣', './vocabulary/arithmetic'
+lazy @, '⌊', './vocabulary/floorceil'
+lazy @, '⌈', './vocabulary/floorceil'
+lazy @, '?', './vocabulary/question'
+lazy @, '!', './vocabulary/exclamation'
+lazy @, '○', './vocabulary/circle'
+lazy @, '=', './vocabulary/comparisons'
+lazy @, '≠', './vocabulary/comparisons'
+lazy @, '<', './vocabulary/comparisons'
+lazy @, '>', './vocabulary/comparisons'
+lazy @, '≤', './vocabulary/comparisons'
+lazy @, '≥', './vocabulary/comparisons'
+lazy @, '≡', './vocabulary/comparisons'
+lazy @, '≢', './vocabulary/comparisons'
+lazy @, '∼', './vocabulary/logic'
+lazy @, '∨', './vocabulary/logic'
+lazy @, '∧', './vocabulary/logic'
+lazy @, '⍱', './vocabulary/logic'
+lazy @, '⍲', './vocabulary/logic'
+lazy @, '⍴', './vocabulary/rho'
+lazy @, '⍳', './vocabulary/iota'
+lazy @, '⌽', './vocabulary/rotate'
+lazy @, '⊖', './vocabulary/rotate'
+lazy @, '⍉', './vocabulary/transpose'
+lazy @, '∈', './vocabulary/epsilon'
 
 @[','] = (omega, alpha) ->
   if alpha
@@ -64,14 +76,6 @@
     throw Error 'Not implemented'
   else
     new APLArray omega.toArray()
-
-@['⍴'] = require('./vocabulary/rho')['⍴']
-@['⍳'] = require('./vocabulary/iota')['⍳']
-@['⌽'] = require('./vocabulary/rotate')['⌽']
-@['⊖'] = require('./vocabulary/rotate')['⊖']
-@['⍉'] = require('./vocabulary/transpose')['⍉']
-
-@['∈'] = require('./vocabulary/epsilon')['∈']
 
 # [Commute](http://www.jsoftware.com/papers/opfns1.htm#3) (`⍨`)
 #
