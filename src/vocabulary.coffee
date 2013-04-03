@@ -69,6 +69,8 @@ lazy @, '⌽', './vocabulary/rotate'
 lazy @, '⊖', './vocabulary/rotate'
 lazy @, '⍉', './vocabulary/transpose'
 lazy @, '∈', './vocabulary/epsilon'
+lazy @, 'get_⍬', './vocabulary/zilde'
+lazy @, 'set_⍬', './vocabulary/zilde'
 
 @[','] = (omega, alpha) ->
   if alpha
@@ -90,7 +92,6 @@ lazy @, '∈', './vocabulary/epsilon'
     if alpha then f alpha, omega, axis else f omega, undefined, axis
 (@['⍨'].aplMetaInfo ?= {}).isPostfixAdverb = true
 
-@['get_⍬'] = -> APLArray.zilde
 @['set_⎕'] = console.info
 
 do =>
