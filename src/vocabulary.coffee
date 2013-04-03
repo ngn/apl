@@ -47,19 +47,10 @@
 @['≤'] = pervasive dyad: numeric (y, x) -> +(x <= y)
 @['≥'] = pervasive dyad: numeric (y, x) -> +(x >= y)
 
-@['⌊'] = pervasive
-  monad: numeric Math.floor
-  dyad: numeric Math.min
-
-@['⌈'] = pervasive
-  monad: numeric Math.ceil
-  dyad: numeric Math.max
-
-@['?'] = pervasive
-  monad: numeric (x) ->
-    if x isnt Math.floor(x) or x <= 0 then throw Error 'DOMAIN ERROR'
-    Math.floor Math.random() * x
-
+@['⌊'] = require('./vocabulary/floorceil')['⌊']
+@['⌈'] = require('./vocabulary/floorceil')['⌈']
+@['?'] = require('./vocabulary/question')['?']
+@['!'] = require('./vocabulary/exclamation')['!']
 @['○'] = require('./vocabulary/circle')['○']
 
 @['≡'] = (omega, alpha) ->
