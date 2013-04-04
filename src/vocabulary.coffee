@@ -32,47 +32,32 @@
   if r not in [0, 1] then throw Error 'DOMAIN ERROR: cannot convert to boolean: ' + r
   r
 
-lazy = (obj, name, fromModule) ->
+
+lazyRequires =
+  './vocabulary/arithmetic':  '+−×÷⋆⍟∣'
+  './vocabulary/floorceil':   '⌊⌈'
+  './vocabulary/question':    '?'
+  './vocabulary/exclamation': '!'
+  './vocabulary/circle':      '○'
+  './vocabulary/comparisons': '=≠<>≤≥≡≢'
+  './vocabulary/logic':       '∼∨∧⍱⍲'
+  './vocabulary/rho':         '⍴'
+  './vocabulary/iota':        '⍳'
+  './vocabulary/rotate':      '⌽⊖'
+  './vocabulary/transpose':   '⍉'
+  './vocabulary/epsilon':     '∈'
+  './vocabulary/zilde':       ['get_⍬', 'set_⍬']
+  './vocabulary/comma':       ',⍪'
+
+createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
     obj[name] = f = require(fromModule)[name]
     f.aplName = name
     f args...
 
-lazy @, '+', './vocabulary/arithmetic'
-lazy @, '−', './vocabulary/arithmetic'
-lazy @, '×', './vocabulary/arithmetic'
-lazy @, '÷', './vocabulary/arithmetic'
-lazy @, '⋆', './vocabulary/arithmetic'
-lazy @, '⍟', './vocabulary/arithmetic'
-lazy @, '∣', './vocabulary/arithmetic'
-lazy @, '⌊', './vocabulary/floorceil'
-lazy @, '⌈', './vocabulary/floorceil'
-lazy @, '?', './vocabulary/question'
-lazy @, '!', './vocabulary/exclamation'
-lazy @, '○', './vocabulary/circle'
-lazy @, '=', './vocabulary/comparisons'
-lazy @, '≠', './vocabulary/comparisons'
-lazy @, '<', './vocabulary/comparisons'
-lazy @, '>', './vocabulary/comparisons'
-lazy @, '≤', './vocabulary/comparisons'
-lazy @, '≥', './vocabulary/comparisons'
-lazy @, '≡', './vocabulary/comparisons'
-lazy @, '≢', './vocabulary/comparisons'
-lazy @, '∼', './vocabulary/logic'
-lazy @, '∨', './vocabulary/logic'
-lazy @, '∧', './vocabulary/logic'
-lazy @, '⍱', './vocabulary/logic'
-lazy @, '⍲', './vocabulary/logic'
-lazy @, '⍴', './vocabulary/rho'
-lazy @, '⍳', './vocabulary/iota'
-lazy @, '⌽', './vocabulary/rotate'
-lazy @, '⊖', './vocabulary/rotate'
-lazy @, '⍉', './vocabulary/transpose'
-lazy @, '∈', './vocabulary/epsilon'
-lazy @, 'get_⍬', './vocabulary/zilde'
-lazy @, 'set_⍬', './vocabulary/zilde'
-lazy @, ',', './vocabulary/comma'
-lazy @, '⍪', './vocabulary/comma'
+for fromModule, names of lazyRequires
+  for name in names
+    createLazyRequire @, name, fromModule
 
 # [Commute](http://www.jsoftware.com/papers/opfns1.htm#3) (`⍨`)
 #
