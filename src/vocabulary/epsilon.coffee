@@ -22,8 +22,8 @@ enlist = (x, r) ->
     #
     #     ∈ 17                        ⍝ returns ,17
     #     ⍴ ∈ (1 2 3) "ABC" (4 5 6)   ⍝ returns ,9
-    #!    ∈ 2 2⍴(1 + 2 2⍴⍳4) "DEF" (1 + 2 3⍴⍳6) (7 8 9)
-    #!    ... ⍝ returns 1 2 3 4,'DEF',1 2 3 4 5 6 7 8 9
+    #     ∈ 2 2⍴(1 + 2 2⍴⍳4) "DEF" (1 + 2 3⍴⍳6) (7 8 9)
+    #     ... ⍝ returns 1 2 3 4,'DEF',1 2 3 4 5 6 7 8 9
     data = []
     enlist omega, data
     new APLArray data
