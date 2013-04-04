@@ -71,13 +71,8 @@ lazy @, '⍉', './vocabulary/transpose'
 lazy @, '∈', './vocabulary/epsilon'
 lazy @, 'get_⍬', './vocabulary/zilde'
 lazy @, 'set_⍬', './vocabulary/zilde'
-
-@[','] = (omega, alpha) ->
-  if alpha
-    shape = alpha.toArray()
-    throw Error 'Not implemented'
-  else
-    new APLArray omega.toArray()
+lazy @, ',', './vocabulary/comma'
+lazy @, '⍪', './vocabulary/comma'
 
 # [Commute](http://www.jsoftware.com/papers/opfns1.htm#3) (`⍨`)
 #
