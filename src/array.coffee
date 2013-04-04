@@ -103,6 +103,9 @@
       throw Error 'LENGTH ERROR'
     @data[@offset]
 
+  getPrototype: -> # todo
+    if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' '
+
 
 extend APLArray,
   zero:   new APLArray [0], []
