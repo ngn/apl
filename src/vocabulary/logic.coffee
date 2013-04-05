@@ -1,6 +1,6 @@
 {APLArray} = require '../array'
 {numeric, pervasive, bool, match} = require './vhelpers'
-{assert} = require '../helpers'
+{assert, isInt} = require '../helpers'
 
 negate = pervasive monad: (x) -> +not bool x
 
@@ -52,7 +52,8 @@ negate = pervasive monad: (x) -> +not bool x
   #     12345∨12345        ⍝ returns 12345
   #     0∨123              ⍝ returns 123
   dyad: numeric (y, x) ->
-    assert x is Math.floor(x) and y is Math.floor(y), '∨ is defined only for integers'
+    if not (isInt(x, 0) and isInt(y, 0))
+      throw Error 'DOMAIN ERROR: ∨ is implemented only for non-negative integers' # todo
     if x is 0 and y is 0 then return 0
     if x < y then [x, y] = [y, x]
     while y then [x, y] = [y, x % y] # Euclid's algorithm

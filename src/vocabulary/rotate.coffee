@@ -1,5 +1,5 @@
 {APLArray} = require '../array'
-{assert, prod, repeat} = require '../helpers'
+{assert, prod, repeat, isInt} = require '../helpers'
 
 @['⌽'] = rotate = (omega, alpha, axis) ->
   assert typeof axis is 'undefined' or axis instanceof APLArray
@@ -15,12 +15,12 @@
     #     0 ⌽ 1234                          ⍝ returns 1234
     #     5 ⌽ ⍬                             ⍝ returns ⍬
     axis = if not axis then omega.shape.length - 1 else axis.unbox()
-    if typeof axis isnt 'number' or axis isnt Math.floor axis
+    if not isInt axis
       throw Error 'DOMAIN ERROR'
     if omega.shape.length and not (0 <= axis < omega.shape.length)
       throw Error 'INDEX ERROR'
     step = alpha.unbox()
-    if typeof step isnt 'number' or step isnt Math.floor step
+    if not isInt step
       throw Error 'DOMAIN ERROR'
     if not step
       return omega
@@ -52,10 +52,8 @@
     if axis
       if not axis.isSingleton() then throw Error 'LENGTH ERROR'
       axis = axis.unbox()
-      if typeof axis isnt 'number' or axis isnt Math.floor axis
-        throw Error 'DOMAIN ERROR'
-      if not (0 <= axis < omega.shape.length)
-        throw Error 'INDEX ERROR'
+      if not isInt axis then throw Error 'DOMAIN ERROR'
+      if not (0 <= axis < omega.shape.length) then throw Error 'INDEX ERROR'
     else
       axis = [omega.shape.length - 1]
     if omega.shape.length is 0 then return omega

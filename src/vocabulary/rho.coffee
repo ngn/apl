@@ -1,7 +1,6 @@
 {APLArray} = require '../array'
-{assert, prod} = require '../helpers'
+{assert, prod, isInt} = require '../helpers'
 
-#
 @['⍴'] = (omega, alpha) ->
   if alpha
     # Reshape (`⍴`)
@@ -12,8 +11,7 @@
     #     ⍴ 3 3 ⍴ ⍳ 4    ⍝ returns 3 3
     if alpha.shape.length > 1 then throw Error 'RANK ERROR'
     shape = alpha.toArray()
-    for d in shape when typeof d isnt 'number' or d isnt Math.floor(d) or d < 0
-      throw Error 'DOMAIN ERROR'
+    for d in shape when not isInt d, 0 then throw Error 'DOMAIN ERROR'
     n = prod shape
     a = omega.toArray n
     assert a.length <= n

@@ -1,5 +1,5 @@
 {APLArray} = require '../array'
-{assert, prod, repeat} = require '../helpers'
+{assert, prod, repeat, isInt} = require '../helpers'
 
 @[','] = (omega, alpha, axis) ->
   if alpha
@@ -62,21 +62,21 @@ catenate = (omega, alpha, axis) ->
     return new APLArray [alpha.unbox(), omega.unbox()]
   else if alpha.shape.length is 0
     s = omega.shape[...]
-    if axis is Math.floor axis then s[axis] = 1
+    if isInt axis then s[axis] = 1
     alpha = new APLArray [alpha.unbox()], s, repeat([0], omega.shape.length)
   else if omega.shape.length is 0
     s = alpha.shape[...]
-    if axis is Math.floor axis then s[axis] = 1
+    if isInt axis then s[axis] = 1
     omega = new APLArray [omega.unbox()], s, repeat([0], alpha.shape.length)
   else if alpha.shape.length + 1 is omega.shape.length
-    if axis isnt Math.floor axis then throw Error 'RANK ERROR'
+    if not isInt axis then throw Error 'RANK ERROR'
     shape = alpha.shape[...]
     shape.splice axis, 0, 1
     stride = alpha.stride[...]
     stride.splice axis, 0, 0
     alpha = new APLArray alpha.data, shape, stride, alpha.offset
   else if alpha.shape.length is omega.shape.length + 1
-    if axis isnt Math.floor axis then throw Error 'RANK ERROR'
+    if not isInt axis then throw Error 'RANK ERROR'
     shape = omega.shape[...]
     shape.splice axis, 0, 1
     stride = omega.stride[...]
@@ -91,7 +91,7 @@ catenate = (omega, alpha, axis) ->
       throw Error 'LENGTH ERROR'
 
   shape = alpha.shape[...]
-  if axis is Math.floor axis
+  if isInt axis
     shape[axis] += omega.shape[axis]
   else
     shape.splice Math.ceil(axis), 0, 2
@@ -101,7 +101,7 @@ catenate = (omega, alpha, axis) ->
   for i in [shape.length - 2 .. 0] by -1
     stride[i] = stride[i + 1] * shape[i + 1]
 
-  if axis is Math.floor axis
+  if isInt axis
     rStride = stride
   else
     rStride = stride[...]
@@ -123,7 +123,7 @@ catenate = (omega, alpha, axis) ->
     pIndices[a]++
 
   r = # pointer in data (the result)
-    if axis is Math.floor axis
+    if isInt axis
       stride[axis] * alpha.shape[axis]
     else
       stride[Math.ceil axis]

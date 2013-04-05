@@ -1,4 +1,5 @@
 {pervasive, numeric} = require './vhelpers'
+{isInt} = require '../helpers'
 
 @['!'] = pervasive
 
@@ -8,7 +9,7 @@
   #     !21   ⍝ returns 51090942171709440000
   #     !0    ⍝ returns 1
   monad: numeric (x) ->
-    if 0 <= x < 25 and x is Math.floor x
+    if isInt x, 0, 25
       r = 1; i = 2; (while i <= x then r *= i++); r
     else if x < -150
       0
@@ -25,7 +26,7 @@
   #     (2 3 ⍴ 1 + ⍳ 6) ! 2 3 ⍴ 3 6 9 12 15 18
   #     ... ⍝ returns 2 3⍴ 3 15 84 495 3003 18564
   dyad: numeric (n, k) ->
-    if 0 <= k < 100 and 0 <= n < 100 and n is Math.floor(n) and k is Math.floor(k)
+    if isInt(k, 0, 100) and isInt(n, 0, 100)
       if n < k then return 0
       if 2 * k > n then k = n - k # do less work
       u = v = 1

@@ -1,5 +1,5 @@
 {APLArray} = require '../array'
-{assert, repeat, prod} = require '../helpers'
+{assert, repeat, prod, isInt} = require '../helpers'
 {match} = require './vhelpers'
 
 @['⍳'] = (omega, alpha) ->
@@ -42,8 +42,7 @@
     #     ⍴⍳ 2 3 4    ⍝ returns 2 3 4 3
     if omega.shape.length > 1 then throw Error 'RANK ERROR'
     a = omega.toArray()
-    for d in a when typeof d isnt 'number' or d isnt Math.floor(d) or d < 0
-      throw Error 'DOMAIN ERROR'
+    for d in a when not isInt d, 0 then throw Error 'DOMAIN ERROR'
     data = []
     if prod a
       indices = repeat [0], a.length

@@ -57,7 +57,7 @@
 # `repeat(a, n)` catenates `n` instances of a string or array `a`.
 @repeat = repeat = (a, n) ->
   assert typeof a is 'string' or a instanceof Array
-  assert typeof n is 'number' and n is Math.floor(n) and n >= 0
+  assert isInt n, 0
   if not n then return a[...0]
   m = n * a.length
   while a.length * 2 < m then a = a.concat a
@@ -85,3 +85,5 @@
     assert k in ['aplCode', 'line', 'col', 'file', 'name']
     e[k] = v
   throw e
+
+@isInt = isInt = (x, start = -Infinity, end = Infinity) -> x is ~~x and start <= x < end
