@@ -146,7 +146,7 @@ repl = (ctx) ->
   rl = readline.createInterface process.stdin, process.stdout
   rl.setPrompt 'APL> '
 
-  {format} = require('./formatter')
+  {format} = require('./vocabulary/format')
   rl.on 'line', (line) ->
     try
       if not line.match /^[\ \t\f\r\n]*$/

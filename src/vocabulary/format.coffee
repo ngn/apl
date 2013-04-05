@@ -1,13 +1,38 @@
-# `formatter.coffee` provides a utility to visualize APL data structures in a
-# character grid such as the TTY or an HTML table.
+{APLArray} = require '../array'
+{prod, repeat} = require '../helpers'
 
-{APLArray} = require './array'
-{prod, repeat} = require './helpers'
+@['⍕'] = (omega, alpha) ->
+  if alpha
 
-# Format an APL object as a vector of strings
+    # Format by example or specification (`⍕`)
+    throw Error 'Not implemented'
+
+  else
+
+    # Format (`⍕`)
+    #
+    #     ⍕123                ⍝ returns 1 3⍴'123'
+    #     ⍕123 456            ⍝ returns 1 7⍴'123 456'
+    #     ⍕123 'a'            ⍝ returns 1 5⍴'123 a'
+    #     ⍕12 'ab'            ⍝ returns 1 7⍴'12  ab '
+    #     ⍕1 2⍴'a'            ⍝ returns 1 2⍴'a'
+    #     ⍕2 2⍴'a'            ⍝ returns 2 2⍴'a'
+    #     ⍕2 2⍴5              ⍝ returns 2 3⍴('5 5',
+    #     ...                                '5 5')
+    #     ⍕2 2⍴0 0 0 'a'      ⍝ returns 2 3⍴('0 0',
+    #     ...                                '0 a')
+    #     ⍕2 2⍴0 0 0 'ab'     ⍝ returns 2 6⍴('0  0  ',
+    #     ...                                '0  ab ')
+    #     ⍕2 2⍴0 0 0 123      ⍝ returns 2 5⍴('0   0',
+    #     ...                                '0 123')
+    t = format omega
+    new APLArray t.join(''), [t.length, t[0].length]
+
+# Format an APL object as an array of strings
 @format = format = (a) ->
   if typeof a is 'undefined' then ['undefined']
   else if a is null then ['null']
+  else if typeof a is 'string' then [a]
   else if typeof a is 'number' then [('' + a).replace /-|Infinity/g, '¯']
   else if typeof a is 'function' then ['function']
   else if not (a instanceof APLArray) then ['' + a]
@@ -38,7 +63,7 @@
           c.width = Math.max c.width, box[0].length
           c.type = Math.max c.type,
             if typeof x is 'string' and x.length is 1 then 0
-            else if not x.length? then 1
+            else if not (x instanceof APLArray) then 1
             else 2
           box
 
