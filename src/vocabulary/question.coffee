@@ -3,7 +3,7 @@
 
 # Roll (`?`)
 #
-#!    n←6 ◇ r←?n ◇ (0≤r)∧(r<n)   ⍝ returns 1
+#     n←6 ◇ r←?n ◇ (0≤r)∧(r<n)   ⍝ returns 1
 #     ?0                         ⍝ returns 0
 #     ?1                         ⍝ returns 0
 #     ⍕?(,2) 3 4 5
