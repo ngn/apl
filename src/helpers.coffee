@@ -13,29 +13,6 @@
   for k, v of extraProperties then x[k] = v
   x
 
-# Helpers for the APL data model
-@prototypeOf = prototypeOf = (x) ->
-  if typeof x is 'number' then 0
-  else if typeof x is 'string' then ' '
-  else if x.aplPrototype? then x.aplPrototype
-  else if isSimple(x) or not x.length then 0
-  else if isSimple x[0] then prototypeOf x[0]
-  else
-    p = prototypeOf x[0]
-    withShape shapeOf(x[0]), (for [0...x[0].length] then p)
-
-@withPrototype = withPrototype = (p, x) ->
-  if (x instanceof Array) and (not x.length) and (p isnt 0)
-    x.aplPrototype = p
-  x
-
-@withPrototypeCopiedFrom = (y, x) ->
-  if x instanceof Array and not x.length
-    withPrototype prototypeOf(y), x
-  x
-
-
-
 # Sum and product;  I wish JavaScript had a _reduce_ operator :)
 @sum = (xs) -> r = 0; (for x in xs then r += x); r
 @prod = prod = (xs) -> r = 1; (for x in xs then r *= x); r
