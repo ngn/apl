@@ -1,7 +1,6 @@
-{assert, prod, repeat} = require './helpers'
+{assert} = require './helpers'
 {APLArray} = require './array'
 {Complex} = require './complex'
-{pervasive, numeric, match} = require './vocabulary/vhelpers'
 
 @['⎕aplify'] = (x) ->
   assert x?
@@ -55,6 +54,7 @@ lazyRequires =
   './vocabulary/format':      '⍕'
   './vocabulary/forkhook':    ['⎕fork', '⎕hook']
   './vocabulary/each':        '¨'
+  './vocabulary/commute':     '⍨'
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
@@ -67,20 +67,7 @@ for fromModule, names of lazyRequires
   for name in names
     createLazyRequire @, name, fromModule
 
-# [Commute](http://www.jsoftware.com/papers/opfns1.htm#3) (`⍨`)
-#
-# Definition: `x f⍨ y  <->  y f x`
-#
-#     17 −⍨ 23    ⍝ returns 6
-#     7 ⍴⍨ 2 3    ⍝ returns 2 3⍴7
-#     −⍨ 123      ⍝ returns ¯123
-@['⍨'] = (f) ->
-  assert typeof f is 'function'
-  (omega, alpha, axis) ->
-    if alpha then f alpha, omega, axis else f omega, undefined, axis
-
-for name in '⍨¨'
-  (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
+for name in '⍨¨' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
 
 do =>
   for k, v of @ when typeof v is 'function'
