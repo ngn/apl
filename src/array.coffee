@@ -1,4 +1,4 @@
-{assert, extend, prod} = require './helpers'
+{assert, extend, prod, isInt} = require './helpers'
 
 # This is an experimental data structure intended to replace the current
 # representation of APL arrays.
@@ -14,6 +14,16 @@
         @stride[@shape.length - 1] = 1
         for axis in [@shape.length - 2 .. 0] by -1
           @stride[axis] = @stride[axis + 1] * @shape[axis + 1]
+    assert @data instanceof Array or typeof @data is 'string'
+    assert @shape instanceof Array
+    assert @stride instanceof Array
+    assert @data.length is 0 or isInt @offset, 0, @data.length
+    assert @shape.length is @stride.length
+    for x in @shape then assert isInt x, 0
+    if @data.length
+      for x, i in @stride then assert isInt x, -@data.length, @data.length + 1
+    else
+      assert prod(@shape) is 0
 
   get: (indices) ->
     p = @offset
