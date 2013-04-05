@@ -326,9 +326,9 @@ toJavaScript = (node) ->
     #!    ⍴ x[⍋x←6?40]    ⍝ returns ,6
     when 'index'
       "_['⍨'](_['⌷'])(
-        [#{(for c in node[2...] when c then toJavaScript c).join ', '}],
+        _['⎕aplify']([#{(for c in node[2...] when c then toJavaScript c).join ', '}]),
         #{toJavaScript node[1]},
-        [#{(for c, i in node[2...] when c isnt null then i)}]
+        _['⎕aplify']([#{(for c, i in node[2...] when c isnt null then i)}])
       )"
 
     when 'expr'

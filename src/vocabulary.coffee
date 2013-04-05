@@ -50,6 +50,7 @@ lazyRequires =
   './vocabulary/comma':       ',⍪'
   './vocabulary/grade':       '⍋⍒'
   './vocabulary/take':        '↑'
+  './vocabulary/squish':      '⌷'
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
