@@ -54,11 +54,13 @@ lazyRequires =
   './vocabulary/quad':        ['get_⎕', 'set_⎕']
   './vocabulary/format':      '⍕'
   './vocabulary/forkhook':    ['⎕fork', '⎕hook']
+  './vocabulary/each':        '¨'
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
     obj[name] = f = require(fromModule)[name]
     f.aplName = name
+    f.aplMetaInfo = arguments.callee.aplMetaInfo
     f args...
 
 for fromModule, names of lazyRequires
@@ -76,7 +78,9 @@ for fromModule, names of lazyRequires
   assert typeof f is 'function'
   (omega, alpha, axis) ->
     if alpha then f alpha, omega, axis else f omega, undefined, axis
-(@['⍨'].aplMetaInfo ?= {}).isPostfixAdverb = true
+
+for name in '⍨¨'
+  (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
 
 do =>
   for k, v of @ when typeof v is 'function'
