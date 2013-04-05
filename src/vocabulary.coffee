@@ -51,6 +51,7 @@ lazyRequires =
   './vocabulary/grade':       '⍋⍒'
   './vocabulary/take':        '↑'
   './vocabulary/squish':      '⌷'
+  './vocabulary/quad':        ['get_⎕', 'set_⎕']
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
@@ -74,8 +75,6 @@ for fromModule, names of lazyRequires
   (omega, alpha, axis) ->
     if alpha then f alpha, omega, axis else f omega, undefined, axis
 (@['⍨'].aplMetaInfo ?= {}).isPostfixAdverb = true
-
-@['set_⎕'] = console.info
 
 do =>
   for k, v of @ when typeof v is 'function'

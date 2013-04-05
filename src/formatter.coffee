@@ -1,19 +1,20 @@
 # `formatter.coffee` provides a utility to visualize APL data structures in a
 # character grid such as the TTY or an HTML table.
 
-{isSimple, shapeOf, prod, repeat} = require './helpers'
+{APLArray} = require './array'
+{prod, repeat} = require './helpers'
 
 # Format an APL object as a vector of strings
 @format = format = (a) ->
   if typeof a is 'undefined' then ['undefined']
   else if a is null then ['null']
-  else if typeof a is 'string' then [a]
   else if typeof a is 'number' then [('' + a).replace /-|Infinity/g, '¯']
   else if typeof a is 'function' then ['function']
-  else if isSimple a then ['' + a]
+  else if not (a instanceof APLArray) then ['' + a]
   else if a.length is 0 then ['']
   else
-    sa = shapeOf a
+    sa = a.shape
+    a = a.toArray()
     if not sa.length then return format a[0]
     nRows = prod sa[...sa.length - 1]
     nCols = sa[sa.length - 1]
