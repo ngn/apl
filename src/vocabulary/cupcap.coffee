@@ -13,9 +13,7 @@
     #     ...     ⍝ returns 'lentils' 'bulghur' (3 4 5) 'rice'
     a = alpha.toArray()
     data = a[...]
-    omega.each (x) ->
-      for y in a when match x, y then return
-      data.push x
+    omega.each (x) -> if not contains a, x then data.push x
     new APLArray data
 
   else
@@ -27,7 +25,25 @@
     #     ∪ 17                   ⍝ returns ,17
     #     ∪ ⍬                    ⍝ returns ⍬
     data = []
-    omega.each (x) ->
-      for y in data when match x, y then return
-      data.push x
+    omega.each (x) -> if not contains data, x then data.push x
     new APLArray data
+
+@['∩'] = (omega, alpha) ->
+  if alpha
+
+    # Intersection (`∩`)
+    #
+    #     'ABRA'∩'CAR'      ⍝ returns 'ARA'
+    #     1 'PLUS' 2 ∩ ⍳5   ⍝ returns 1 2
+    data = []
+    b = omega.toArray()
+    for x in alpha.toArray() when contains b, x then data.push x
+    new APLArray data
+
+  else
+    throw Error 'Not implemented'
+
+contains = (a, x) ->
+  assert a instanceof Array
+  for y in a when match x, y then return true
+  false
