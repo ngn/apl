@@ -25,6 +25,7 @@ lazyRequires =
   'forkhook':    ['⎕fork', '⎕hook']
   'each':        '¨'
   'commute':     '⍨'
+  'cup':         '∪'
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
