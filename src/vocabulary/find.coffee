@@ -35,6 +35,16 @@
     #     ...                  0 1 0 0 0
     #     ...                  0 0 0 0 0
     #     ...                  0 0 0 0 0)
+    #
+    #     1⍷⍳5                  ⍝ returns 0 1 0 0 0
+    #     1 2⍷⍳5                ⍝ returns 0 1 0 0 0
+    #     ⍬⍷⍳5                  ⍝ returns 1 1 1 1 1
+    #     ⍬⍷⍬                   ⍝ returns ⍬
+    #     1⍷⍬                   ⍝ returns ⍬
+    #     1 2 3⍷⍬               ⍝ returns ⍬
+    #     (2 3 0⍴0)⍷(3 4 5⍴0)   ⍝ returns 3 4 5⍴1
+    #     (2 3 4⍴0)⍷(3 4 0⍴0)   ⍝ returns 3 4 0⍴0
+    #     (2 3 0⍴0)⍷(3 4 0⍴0)   ⍝ returns 3 4 0⍴0
     if alpha.shape.length > omega.shape.length
       return new APLArray [0], omega.shape, repeat [0], omega.shape.length
     if alpha.shape.length < omega.shape.length
@@ -44,6 +54,8 @@
         repeat([0], omega.shape.length - alpha.shape.length).concat(alpha.stride)
         alpha.offset
       )
+    if prod(alpha.shape) is 0
+      return new APLArray [1], omega.shape, repeat [0], omega.shape.length
     findShape = []
     for i in [0...omega.shape.length]
       d = omega.shape[i] - alpha.shape[i] + 1
