@@ -1,5 +1,6 @@
 {APLArray} = require '../array'
 {match} = require './vhelpers'
+{assert} = require '../helpers'
 
 @['∪'] = (omega, alpha) ->
   if alpha

@@ -8,12 +8,7 @@
 
   constructor: (@data, @shape, @stride, @offset = 0) ->
     @shape ?= [@data.length]
-    if not @stride
-      @stride = Array @shape.length
-      if @shape.length
-        @stride[@shape.length - 1] = 1
-        for axis in [@shape.length - 2 .. 0] by -1
-          @stride[axis] = @stride[axis + 1] * @shape[axis + 1]
+    @stride ?= strideForShape @shape
     assert @data instanceof Array or typeof @data is 'string'
     assert @shape instanceof Array
     assert @stride instanceof Array
@@ -115,6 +110,17 @@
 
   getPrototype: -> # todo
     if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' '
+
+
+@strideForShape = strideForShape = (shape) ->
+  assert shape instanceof Array
+  if shape.length is 0 then return []
+  r = Array shape.length
+  r[r.length - 1] = 1
+  for i in [r.length - 2 .. 0] by -1
+    assert isInt shape[i], 0
+    r[i] = r[i + 1] * shape[i + 1]
+  r
 
 
 extend APLArray,

@@ -26,6 +26,7 @@ lazyRequires =
   'each':        '¨'
   'commute':     '⍨'
   'cupcap':      '∪∩'
+  'find':        '⍷'
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
