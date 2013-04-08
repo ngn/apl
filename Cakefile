@@ -9,7 +9,7 @@ if not fs.existsSync 'node_modules'
 
 glob = require 'glob'
 {spawn} = require 'child_process'
-{coffee, docco, cat, jade, sass, action} = ake = require 'ake'
+{coffee, cat, jade, sass, action} = ake = require 'ake'
 stitch = require 'stitch'
 
 exec = (cmd, args, opts, cont) ->
@@ -63,11 +63,6 @@ task 'browsertest', 'Generate what\'s needed to run a browser test', ->
     )
     ->
       console.info 'OK---now you can open ./test/browsertest/index.html with your browser'
-  ]
-
-task 'docs', 'Generate literate documentation with docco', ->
-  ake [
-    docco  'src/**/*.coffee', 'docs'
   ]
 
 task 'web', 'Build everything for the web demo', ->

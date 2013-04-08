@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "coffee-script": "",
-    "docco": "",
     "jade": "",
     "glob": "",
     "ake": "",
