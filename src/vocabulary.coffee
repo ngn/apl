@@ -28,6 +28,7 @@ lazyRequires =
   'cupcap':      '∪∩'
   'find':        '⍷'
   'enclose':     '⊂'
+  'disclose':    '⊃'
   'execute':     '⍎'
 
 createLazyRequire = (obj, name, fromModule) ->
