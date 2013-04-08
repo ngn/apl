@@ -1,5 +1,5 @@
 {exec} = require './compiler'
-{format} = require './formatter'
+{format} = require './vocabulary/format'
 
 $.fn.toggleVisibility = ->
   @css 'visibility', if @css('visibility') is 'hidden' then '' else 'hidden'

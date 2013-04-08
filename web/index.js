@@ -3,10 +3,11 @@
 
   exec = require('./compiler').exec;
 
-  format = require('./formatter').format;
+  format = require('./vocabulary/format').format;
 
   jQuery(function($) {
     var a, code, execute, hSymbolDefs, hashParams, i, k, mapping, name, nameValue, rMapping, symbolDef, symbolDefs, tipsyOpts, v, value, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+
     hashParams = {};
     if (location.hash) {
       _ref = location.hash.substring(1).split(',');
@@ -26,11 +27,13 @@
       return false;
     });
     execute = function() {
-      var result;
+      var err, result;
+
       try {
         result = exec($('#code').val());
         $('#result').removeClass('error').text(format(result).join('\n'));
-      } catch (err) {
+      } catch (_error) {
+        err = _error;
         if (typeof console !== "undefined" && console !== null) {
           if (typeof console.error === "function") {
             console.error(err);
@@ -108,6 +111,7 @@
     };
     $('.ui-keyboard').on('mouseover', '.ui-keyboard-button', function(event) {
       var $b;
+
       $b = $(event.target).closest('.ui-keyboard-button');
       if (!$b.data('tipsyInitialised')) {
         $b.data('tipsyInitialised', true).tipsy(tipsyOpts).tipsy('show');
@@ -121,6 +125,7 @@
     }
     $('#examples').on('click', 'a', function() {
       var _ref5;
+
       _ref5 = window.examples[parseInt($(this).attr('href').replace(/#example(\d+)$/, '$1'))], name = _ref5[0], code = _ref5[1];
       $('#code').val(code).focus();
       return false;

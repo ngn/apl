@@ -3,7 +3,7 @@
 
   exec = require('./compiler').exec;
 
-  format = require('./formatter').format;
+  format = require('./vocabulary/format').format;
 
   $.fn.toggleVisibility = function() {
     return this.css('visibility', this.css('visibility') === 'hidden' ? '' : 'hidden');
@@ -11,6 +11,7 @@
 
   extractTextFromDOM = function(e) {
     var c, r, _ref;
+
     if ((_ref = e.nodeType) === 3 || _ref === 4) {
       return e.nodeValue;
     } else if (e.nodeType === 1) {
@@ -30,11 +31,13 @@
 
   jQuery(function($) {
     var actions, alt, c, code, hashParams, layouts, name, nameValue, shift, updateLayout, value, _i, _j, _len, _len1, _ref, _ref1, _results;
+
     setInterval((function() {
       return $('#cursor').toggleVisibility();
     }), 500);
     $('#editor').on('mousedown touchstart mousemove touchmove', function(e) {
       var $bestE, bestDX, bestDY, bestXSide, te, x, y, _ref, _ref1, _ref2;
+
       e.preventDefault();
       te = (_ref = (_ref1 = e.originalEvent) != null ? (_ref2 = _ref1.touches) != null ? _ref2[0] : void 0 : void 0) != null ? _ref : e;
       x = te.pageX;
@@ -44,6 +47,7 @@
       $bestE = null;
       $('#editor span').each(function() {
         var $e, dx, dy, p, x1, y1;
+
         $e = $(this);
         p = $e.position();
         x1 = p.left + $e.width() / 2;
@@ -68,6 +72,7 @@
     });
     $('.key').bind('mousedown touchstart', function(event) {
       var $k;
+
       event.preventDefault();
       $k = $(this);
       $k.addClass('down');
@@ -84,6 +89,7 @@
     });
     $('.key').bind('mouseup touchend', function(event) {
       var $k, iid;
+
       event.preventDefault();
       $k = $(this);
       $k.removeClass('down');
@@ -101,6 +107,7 @@
     alt = shift = 0;
     updateLayout = function() {
       var layout;
+
       layout = layouts[2 * alt + shift];
       $('.keyboard .key:not(.special)').each(function(i) {
         return $(this).text(layout[i]);
@@ -118,12 +125,14 @@
         return $('#cursor').prev().remove();
       },
       exec: function() {
-        var code, result;
+        var code, err, result;
+
         try {
           code = extractTextFromDOM(document.getElementById('editor')).replace(/\xa0/g, ' ');
           result = exec(code);
           $('#result').removeClass('error').text(format(result).join('\n'));
-        } catch (err) {
+        } catch (_error) {
+          err = _error;
           if (typeof console !== "undefined" && console !== null) {
             if (typeof console.error === "function") {
               console.error(err);

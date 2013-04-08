@@ -1,5 +1,5 @@
 {exec} = require './compiler'
-{format} = require './formatter'
+{format} = require './vocabulary/format'
 
 jQuery ($) ->
 
