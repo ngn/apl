@@ -1,4 +1,4 @@
-{assert} = require '../helpers'
+{assert, isInt} = require '../helpers'
 {APLArray} = require '../array'
 
 multiplicitySymbol = (z) ->
@@ -62,3 +62,23 @@ multiplicitySymbol = (z) ->
   if x not in [0, 1]
     throw Error 'DOMAIN ERROR'
   x
+
+@getAxisList = (axes, rank) ->
+  assert isInt rank, 0
+  if typeof axes is 'undefined' then return []
+  assert axes instanceof APLArray
+  if axes.shape.length isnt 1 or axes.shape[0] isnt 1
+    throw Error 'SYNTAX ERROR' # [sic]
+  a = axes.unbox()
+  if a instanceof APLArray
+    a = a.toArray()
+    for x, i in a
+      if not isInt x, 0, rank
+        throw Error 'DOMAIN ERROR'
+      if x in a[...i]
+        throw Error 'Non-unique axes'
+    a
+  else if isInt a, 0, rank
+    [a]
+  else
+    throw Error 'DOMAIN ERROR'
