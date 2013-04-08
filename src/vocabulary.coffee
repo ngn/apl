@@ -30,6 +30,7 @@ lazyRequires =
   'enclose':     '⊂'
   'disclose':    '⊃'
   'execute':     '⍎'
+  'poweroperator': '⍣'
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
@@ -43,6 +44,7 @@ for fromModule, names of lazyRequires
     createLazyRequire @, name, './vocabulary/' + fromModule
 
 for name in '⍨¨' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
+for name in '⍣' then (@[name].aplMetaInfo ?= {}).isConjunction = true
 
 @['⎕aplify'] = (x) ->
   assert x?
@@ -61,10 +63,7 @@ for name in '⍨¨' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
 
 @['⎕bool'] = (x) ->
   assert x instanceof APLArray
-  if not x.isSingleton() then throw Error 'LENGTH ERROR'
-  r = x.unbox()
-  if r not in [0, 1] then throw Error 'DOMAIN ERROR: cannot convert to boolean: ' + r
-  r
+  x.toBool()
 
 do =>
   for k, v of @ when typeof v is 'function'

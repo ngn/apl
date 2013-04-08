@@ -99,6 +99,9 @@
       throw Error 'DOMAIN ERROR'
     r
 
+  toBool: ->
+    @toInt 0, 2
+
   isSingleton: ->
     for n in @shape when n isnt 1 then return false
     true
