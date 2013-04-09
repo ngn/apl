@@ -31,6 +31,7 @@ lazyRequires =
   'disclose':    '⊃'
   'execute':     '⍎'
   'poweroperator': '⍣'
+  'outerproduct': ['∘.']
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
@@ -43,6 +44,7 @@ for fromModule, names of lazyRequires
   for name in names
     createLazyRequire @, name, './vocabulary/' + fromModule
 
+for name in ['∘.'] then (@[name].aplMetaInfo ?= {}).isPrefixAdverb = true
 for name in '⍨¨' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
 for name in '⍣' then (@[name].aplMetaInfo ?= {}).isConjunction = true
 

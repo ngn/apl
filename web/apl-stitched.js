@@ -1488,7 +1488,7 @@
 
 }).call(this);
 }, "vocabulary": function(exports, require, module) {(function() {
-  var APLArray, Complex, assert, createLazyRequire, fromModule, lazyRequires, name, names, _base, _base1, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3,
+  var APLArray, Complex, assert, createLazyRequire, fromModule, lazyRequires, name, names, _base, _base1, _base2, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4, _ref5,
     __slice = [].slice,
     _this = this;
 
@@ -1526,7 +1526,8 @@
     'enclose': '⊂',
     'disclose': '⊃',
     'execute': '⍎',
-    'poweroperator': '⍣'
+    'poweroperator': '⍣',
+    'outerproduct': ['∘.']
   };
 
   createLazyRequire = function(obj, name, fromModule) {
@@ -1549,16 +1550,22 @@
     }
   }
 
-  _ref = '⍨¨';
+  _ref = ['∘.'];
   for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
     name = _ref[_j];
-    ((_ref1 = (_base = this[name]).aplMetaInfo) != null ? _ref1 : _base.aplMetaInfo = {}).isPostfixAdverb = true;
+    ((_ref1 = (_base = this[name]).aplMetaInfo) != null ? _ref1 : _base.aplMetaInfo = {}).isPrefixAdverb = true;
   }
 
-  _ref2 = '⍣';
+  _ref2 = '⍨¨';
   for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
     name = _ref2[_k];
-    ((_ref3 = (_base1 = this[name]).aplMetaInfo) != null ? _ref3 : _base1.aplMetaInfo = {}).isConjunction = true;
+    ((_ref3 = (_base1 = this[name]).aplMetaInfo) != null ? _ref3 : _base1.aplMetaInfo = {}).isPostfixAdverb = true;
+  }
+
+  _ref4 = '⍣';
+  for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
+    name = _ref4[_l];
+    ((_ref5 = (_base2 = this[name]).aplMetaInfo) != null ? _ref5 : _base2.aplMetaInfo = {}).isConjunction = true;
   }
 
   this['⎕aplify'] = function(x) {
@@ -1575,11 +1582,11 @@
       return APLArray.scalar(x);
     } else if (x instanceof Array) {
       return new APLArray((function() {
-        var _l, _len3, _results;
+        var _len4, _m, _results;
 
         _results = [];
-        for (_l = 0, _len3 = x.length; _l < _len3; _l++) {
-          y = x[_l];
+        for (_m = 0, _len4 = x.length; _m < _len4; _m++) {
+          y = x[_m];
           if (y instanceof APLArray && y.shape.length === 0) {
             _results.push(y.unbox());
           } else {
@@ -2891,6 +2898,46 @@
   });
 
 }).call(this);
+}, "vocabulary/outerproduct": function(exports, require, module) {(function() {
+  var APLArray, assert;
+
+  APLArray = require('../array').APLArray;
+
+  assert = require('../helpers').assert;
+
+  this['∘.'] = function(f) {
+    assert(typeof f === 'function');
+    return function(omega, alpha) {
+      var a, b, data, x, y, z, _i, _j, _len, _len1;
+
+      if (!alpha) {
+        throw Error('Adverb ∘. (Outer product) can be applied to dyadic verbs only');
+      }
+      a = alpha.toArray();
+      b = omega.toArray();
+      data = [];
+      for (_i = 0, _len = a.length; _i < _len; _i++) {
+        x = a[_i];
+        for (_j = 0, _len1 = b.length; _j < _len1; _j++) {
+          y = b[_j];
+          if (!(x instanceof APLArray)) {
+            x = APLArray.scalar(x);
+          }
+          if (!(y instanceof APLArray)) {
+            y = APLArray.scalar(y);
+          }
+          z = f(y, x);
+          if (z.shape.length === 0) {
+            z = z.unbox();
+          }
+          data.push(z);
+        }
+      }
+      return new APLArray(data, alpha.shape.concat(omega.shape));
+    };
+  };
+
+}).call(this);
 }, "vocabulary/poweroperator": function(exports, require, module) {(function() {
   var assert, isInt, _ref;
 
@@ -3254,6 +3301,9 @@
     if (alpha) {
       if (alpha.shape.length > 1) {
         throw Error('RANK ERROR');
+      }
+      if (omega.shape.length === 0) {
+        omega = new APLArray([omega.unbox()]);
       }
       a = alpha.toArray();
       if (a.length > omega.shape.length) {

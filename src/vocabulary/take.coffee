@@ -11,6 +11,7 @@
     #     3 ↑ 22 2 19 12           ⍝ returns 22 2 19
     #     ¯1 ↑ 22 2 19 12          ⍝ returns ,12
     #     ⍴ 1 ↑ (2 2 ⍴ ⍳ 4) (⍳ 10) ⍝ returns ,1
+    #     2 ↑ 1                    ⍝ returns 1 0
     #     5 ↑ 40 92 11             ⍝ returns 40 92 11 0 0
     #     ¯5 ↑ 40 92 11            ⍝ returns 0 0 40 92 11
     #     3 3 ↑ 1 1 ⍴ 0            ⍝ returns 3 3 ⍴ 0 0 0 0 0 0 0 0 0
@@ -22,6 +23,8 @@
     #     1 2 ↑ 1 + 4 3 ⍴ ⍳ 12     ⍝ returns 1 2 ⍴ 1 2
     if alpha.shape.length > 1
       throw Error 'RANK ERROR'
+    if omega.shape.length is 0
+      omega = new APLArray [omega.unbox()]
     a = alpha.toArray()
     if a.length > omega.shape.length
       throw Error 'RANK ERROR'
