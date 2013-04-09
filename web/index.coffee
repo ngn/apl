@@ -24,7 +24,7 @@ jQuery ($) ->
       result = exec $('#code').val()
       $('#result').removeClass('error').text format(result).join '\n'
     catch err
-      console?.error?(err)
+      console?.error?(err.stack)
       $('#result').addClass('error').text err.message
     return
 

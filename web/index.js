@@ -36,7 +36,7 @@
         err = _error;
         if (typeof console !== "undefined" && console !== null) {
           if (typeof console.error === "function") {
-            console.error(err);
+            console.error(err.stack);
           }
         }
         $('#result').addClass('error').text(err.message);
