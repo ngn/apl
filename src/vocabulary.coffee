@@ -3,35 +3,35 @@
 {Complex} = require './complex'
 
 lazyRequires =
-  'arithmetic':  '+−×÷⋆⍟∣'
-  'floorceil':   '⌊⌈'
-  'question':    '?'
-  'exclamation': '!'
-  'circle':      '○'
-  'comparisons': '=≠<>≤≥≡≢'
-  'logic':       '∼∨∧⍱⍲'
-  'rho':         '⍴'
-  'iota':        '⍳'
-  'rotate':      '⌽⊖'
-  'transpose':   '⍉'
-  'epsilon':     '∈'
-  'zilde':       ['get_⍬', 'set_⍬']
-  'comma':       ',⍪'
-  'grade':       '⍋⍒'
-  'take':        '↑'
-  'squish':      '⌷'
-  'quad':        ['get_⎕', 'set_⎕', 'get_⍞', 'set_⍞']
-  'format':      '⍕'
-  'forkhook':    ['⎕fork', '⎕hook']
-  'each':        '¨'
-  'commute':     '⍨'
-  'cupcap':      '∪∩'
-  'find':        '⍷'
-  'enclose':     '⊂'
-  'disclose':    '⊃'
-  'execute':     '⍎'
-  'poweroperator': '⍣'
-  'outerproduct': ['∘.']
+  arithmetic:    '+−×÷⋆⍟∣'
+  floorceil:     '⌊⌈'
+  question:      '?'
+  exclamation:   '!'
+  circle:        '○'
+  comparisons:   '=≠<>≤≥≡≢'
+  logic:         '∼∨∧⍱⍲'
+  rho:           '⍴'
+  iota:          '⍳'
+  rotate:        '⌽⊖'
+  transpose:     '⍉'
+  epsilon:       '∈'
+  zilde:         ['get_⍬', 'set_⍬']
+  comma:         ',⍪'
+  grade:         '⍋⍒'
+  take:          '↑'
+  squish:        '⌷'
+  quad:          ['get_⎕', 'set_⎕', 'get_⍞', 'set_⍞']
+  format:        '⍕'
+  forkhook:      ['⎕fork', '⎕hook']
+  each:          '¨'
+  commute:       '⍨'
+  cupcap:        '∪∩'
+  find:          '⍷'
+  enclose:       '⊂'
+  disclose:      '⊃'
+  execute:       '⍎'
+  poweroperator: '⍣'
+  outerproduct:  ['∘.']
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
