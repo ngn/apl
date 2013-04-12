@@ -1527,7 +1527,8 @@
     disclose: '⊃',
     execute: '⍎',
     poweroperator: '⍣',
-    outerproduct: ['∘.']
+    outerproduct: ['∘.'],
+    slash: '/⌿'
   };
 
   createLazyRequire = function(obj, name, fromModule) {
@@ -1556,7 +1557,7 @@
     ((_ref1 = (_base = this[name]).aplMetaInfo) != null ? _ref1 : _base.aplMetaInfo = {}).isPrefixAdverb = true;
   }
 
-  _ref2 = '⍨¨';
+  _ref2 = '⍨¨/⌿';
   for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
     name = _ref2[_k];
     ((_ref3 = (_base1 = this[name]).aplMetaInfo) != null ? _ref3 : _base1.aplMetaInfo = {}).isPostfixAdverb = true;
@@ -3187,6 +3188,118 @@
       axis = APLArray.zero;
     }
     return rotate(omega, alpha, axis);
+  };
+
+}).call(this);
+}, "vocabulary/slash": function(exports, require, module) {(function() {
+  var APLArray, assert, compressOrReplicate, reduce, repeat, _ref;
+
+  APLArray = require('../array').APLArray;
+
+  _ref = require('../helpers'), assert = _ref.assert, repeat = _ref.repeat;
+
+  this['/'] = function(omega, alpha, axis) {
+    if (typeof omega === 'function') {
+      return reduce(omega, alpha, axis);
+    } else {
+      return compressOrReplicate(omega, alpha, axis);
+    }
+  };
+
+  this['⌿'] = function(omega, alpha, axis) {
+    if (axis == null) {
+      axis = APLArray.zero;
+    }
+    if (typeof omega === 'function') {
+      return reduce(omega, alpha, axis);
+    } else {
+      return compressOrReplicate(omega, alpha, axis);
+    }
+  };
+
+  reduce = function(f, g, axis) {
+    assert(typeof f === 'function');
+    assert(typeof g === 'undefined');
+    return function(omega, alpha) {
+      var a, data, i, indices, isBackwards, isMonadic, isNWise, n, p, rShape, shape, x, y, _i, _j, _ref1;
+
+      if (omega.shape.length === 0) {
+        omega = new APLArray([omega.unbox()]);
+      }
+      axis = axis != null ? axis.toInt() : omega.shape.length - 1;
+      if (!((0 <= axis && axis < omega.shape.length))) {
+        throw Error('RANK ERROR');
+      }
+      if (alpha) {
+        isNWise = true;
+        n = alpha.toInt();
+        if (n < 0) {
+          isBackwards = true;
+          n = -n;
+        }
+      } else {
+        n = omega.shape[axis];
+        isMonadic = true;
+      }
+      shape = omega.shape.slice(0);
+      shape[axis] = omega.shape[axis] - n + 1;
+      rShape = shape;
+      if (isNWise) {
+        if (shape[axis] === 0) {
+          return new APLArray([], rShape);
+        }
+        if (shape[axis] < 0) {
+          throw Error('LENGTH ERROR');
+        }
+      } else {
+        rShape = rShape.slice(0);
+        rShape.splice(axis, 1);
+      }
+      if (omega.empty()) {
+        throw Error('DOMAIN ERROR');
+      }
+      data = [];
+      indices = repeat([0], shape.length);
+      p = omega.offset;
+      while (true) {
+        if (isBackwards) {
+          x = omega.data[p];
+          x = x instanceof APLArray ? x : APLArray.scalar(x);
+          for (i = _i = 1; _i < n; i = _i += 1) {
+            y = omega.data[p + i * omega.stride[axis]];
+            y = y instanceof APLArray ? y : APLArray.scalar(y);
+            x = f(x, y);
+          }
+        } else {
+          x = omega.data[p + (n - 1) * omega.stride[axis]];
+          x = x instanceof APLArray ? x : APLArray.scalar(x);
+          for (i = _j = _ref1 = n - 2; _j >= 0; i = _j += -1) {
+            y = omega.data[p + i * omega.stride[axis]];
+            y = y instanceof APLArray ? y : APLArray.scalar(y);
+            x = f(x, y);
+          }
+        }
+        if (x.shape.length === 0) {
+          x = x.unbox();
+        }
+        data.push(x);
+        a = indices.length - 1;
+        while (a >= 0 && indices[a] + 1 === shape[a]) {
+          p -= indices[a] * omega.stride[a];
+          indices[a--] = 0;
+        }
+        if (a < 0) {
+          break;
+        }
+        p += omega.stride[a];
+        indices[a]++;
+      }
+      return new APLArray(data, rShape);
+    };
+  };
+
+  compressOrReplicate = function(omega, alpha, axis) {
+    return APLArray.zero;
   };
 
 }).call(this);

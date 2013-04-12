@@ -32,6 +32,7 @@ lazyRequires =
   execute:       '⍎'
   poweroperator: '⍣'
   outerproduct:  ['∘.']
+  slash:         '/⌿'
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
@@ -45,7 +46,7 @@ for fromModule, names of lazyRequires
     createLazyRequire @, name, './vocabulary/' + fromModule
 
 for name in ['∘.'] then (@[name].aplMetaInfo ?= {}).isPrefixAdverb = true
-for name in '⍨¨' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
+for name in '⍨¨/⌿' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
 for name in '⍣' then (@[name].aplMetaInfo ?= {}).isConjunction = true
 
 @['⎕aplify'] = (x) ->
