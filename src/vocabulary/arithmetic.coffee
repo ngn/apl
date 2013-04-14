@@ -69,7 +69,7 @@
   monad: numeric Math.log
   dyad:  numeric (y, x) -> Math.log(y) / Math.log(x)
 
-@['∣'] = pervasive
+@['∣'] = @['|'] = pervasive
 
   # Absolute value (`∣`)
   #
