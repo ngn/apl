@@ -33,7 +33,7 @@
 #     12 +/ 1 + ⍳10   ⍝ throws
 #     2 -/ 3 4 9 7    ⍝ returns ¯1 ¯5 2
 #     ¯2 -/ 3 4 9 7   ⍝ returns 1 5 ¯2
-reduce = (f, g, axis) ->
+reduce = @reduce = (f, g, axis) ->
   assert typeof f is 'function'
   assert typeof g is 'undefined'
   (omega, alpha) ->

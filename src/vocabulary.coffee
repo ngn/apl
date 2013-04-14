@@ -31,6 +31,7 @@ lazyRequires =
   disclose:      '⊃'
   execute:       '⍎'
   poweroperator: '⍣'
+  innerproduct:  '.'
   outerproduct:  ['∘.']
   slash:         '/⌿'
 
@@ -47,7 +48,7 @@ for fromModule, names of lazyRequires
 
 for name in ['∘.'] then (@[name].aplMetaInfo ?= {}).isPrefixAdverb = true
 for name in '⍨¨/⌿' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
-for name in '⍣' then (@[name].aplMetaInfo ?= {}).isConjunction = true
+for name in '.⍣' then (@[name].aplMetaInfo ?= {}).isConjunction = true
 
 @['⎕aplify'] = (x) ->
   assert x?

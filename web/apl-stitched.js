@@ -1527,6 +1527,7 @@
     disclose: '⊃',
     execute: '⍎',
     poweroperator: '⍣',
+    innerproduct: '.',
     outerproduct: ['∘.'],
     slash: '/⌿'
   };
@@ -1563,7 +1564,7 @@
     ((_ref3 = (_base1 = this[name]).aplMetaInfo) != null ? _ref3 : _base1.aplMetaInfo = {}).isPostfixAdverb = true;
   }
 
-  _ref4 = '⍣';
+  _ref4 = '.⍣';
   for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
     name = _ref4[_l];
     ((_ref5 = (_base2 = this[name]).aplMetaInfo) != null ? _ref5 : _base2.aplMetaInfo = {}).isConjunction = true;
@@ -2738,6 +2739,24 @@
   };
 
 }).call(this);
+}, "vocabulary/innerproduct": function(exports, require, module) {(function() {
+  var reduce;
+
+  reduce = require('./slash').reduce;
+
+  this['.'] = function(g, f) {
+    var F;
+
+    F = reduce(f);
+    return function(omega, alpha) {
+      if (alpha.shape.length > 1 || omega.shape.length > 1) {
+        throw Error('Inner product (.) is implemented only for arrays of rank no more than 1.');
+      }
+      return F(g(omega, alpha));
+    };
+  };
+
+}).call(this);
 }, "vocabulary/iota": function(exports, require, module) {(function() {
   var APLArray, assert, isInt, match, prod, repeat, _ref;
 
@@ -3221,7 +3240,7 @@
     }
   };
 
-  reduce = function(f, g, axis) {
+  reduce = this.reduce = function(f, g, axis) {
     assert(typeof f === 'function');
     assert(typeof g === 'undefined');
     return function(omega, alpha) {
