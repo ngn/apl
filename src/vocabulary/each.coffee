@@ -14,7 +14,7 @@
 #     2 ↑¨ 'MONDAY' 'TUESDAY'              ⍝ returns 'MO' 'TU'
 #     2 3 ⍴¨ 1 2                           ⍝ returns (1 1) (2 2 2)
 #     4 5 ⍴¨ "THE" "CAT"                   ⍝ returns 'THET' 'CATCA'
-#     {1+⍵⋆2}¨ 2 3 ⍴ ⍳ 6                   ⍝ returns 2 3 ⍴ 1 2 5 10 17 26
+#     {1+⍵*2}¨ 2 3 ⍴ ⍳ 6                   ⍝ returns 2 3 ⍴ 1 2 5 10 17 26
 @['¨'] = (f, g) ->
   assert typeof f is 'function'
   assert typeof g is 'undefined'

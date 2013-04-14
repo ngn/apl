@@ -61,7 +61,7 @@
   #     27 ÷ 9      ⍝ returns 3
   dyad:  numeric (y, x) -> x / y
 
-@['⋆'] = pervasive
+@['*'] = pervasive
   monad: numeric Math.exp
   dyad:  numeric (y, x) -> Math.pow x, y
 

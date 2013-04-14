@@ -1499,7 +1499,7 @@
   Complex = require('./complex').Complex;
 
   lazyRequires = {
-    arithmetic: '+-×÷⋆⍟∣|',
+    arithmetic: '+-×÷*⍟∣|',
     floorceil: '⌊⌈',
     question: '?',
     exclamation: '!',
@@ -1668,7 +1668,7 @@
     })
   });
 
-  this['⋆'] = pervasive({
+  this['*'] = pervasive({
     monad: numeric(Math.exp),
     dyad: numeric(function(y, x) {
       return Math.pow(x, y);

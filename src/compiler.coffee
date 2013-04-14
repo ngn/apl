@@ -238,7 +238,7 @@ toJavaScript = (node) ->
     #
     #     radius ← 3
     #     ... get_circumference ← {2 × ○ radius}
-    #     ... get_surface ← {○ radius ⋆ 2}
+    #     ... get_surface ← {○ radius * 2}
     #     ...
     #     ... before ← 0.01× ⌊ 100× radius circumference surface
     #     ... radius ← radius + 1

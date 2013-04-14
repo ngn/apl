@@ -29,8 +29,8 @@
 #
 #     # Quadratic equation
 #     a←1 ◇ b←¯22 ◇ c←85
-#     ... √ ← {⍵⋆.5}
-#     ... ((-b)(+,-)√(b⋆2)-4×a×c) ÷ 2×a
+#     ... √ ← {⍵*.5}
+#     ... ((-b)(+,-)√(b*2)-4×a×c) ÷ 2×a
 #     ... ⍝ returns 17 5
 #
 #     # Trains (longer forks)

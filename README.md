@@ -92,7 +92,7 @@ Tacit programming
     avg ← +/ ÷ ⍴   ⍝ arithmetic mean
     x (f g h) y    ⍝ dyadic fork: (x f y) g (x h y)
     7 (+,-) 4      ⍝ sum and difference, returns 11 3
-    ((-b)(+,-)D⋆÷2) ÷ 2×a   ⍝ solutions to a quadratic equation
+    ((-b)(+,-)D*÷2) ÷ 2×a   ⍝ solutions to a quadratic equation
 
 
 # Some unorthodox additions
@@ -110,7 +110,7 @@ Computed variables are syntactically indistinguishable from other variables
 
     r←3                    ⍝ radius
     get_c←{○ r×2}          ⍝ circumference
-    get_S←{○ r⋆2}          ⍝ surface
+    get_S←{○ r*2}          ⍝ surface
     ⌊ r c S                ⍝ gives 3 18 28  ("⌊" is the floor function)
     r←5
     ⌊ r c S                ⍝ gives 5 31 78
