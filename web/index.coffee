@@ -36,7 +36,7 @@ jQuery ($) ->
   # Symbols table {{{1
   symbolDefs = [
     ['+', 'Conjugate, Add']
-    ['−', 'Negate, Subtract']
+    ['-', 'Negate, Subtract']
     ['×', 'Sign of, Multiply']
     ['÷', 'Reciprocal, Divide']
     ['⌈', 'Ceiling, Greater of']
@@ -107,7 +107,7 @@ jQuery ($) ->
   mapping = {}
   rMapping = {} # reverse mapping
   a = '''
-    `< «   `= ×   `> »   `_ ≡   `- −   `, ⍪   `; ◇   `: ÷   `! ⍣   `/ ⌿   `( ⍱
+    `< «   `= ×   `> »   `_ ≡   `- -   `, ⍪   `; ◇   `: ÷   `! ⍣   `/ ⌿   `( ⍱
     `) ⍲   `[ ←   `\\ ⍀  `0 ∧   `1 ¨   `2 ¯   `4 ≤   `6 ≥   `8 ≠   `9 ∨   `a ⍺
     `A ⊖   `b ⊥   `B ⍎   `c ∩   `C ⍝   `d ⌊   `e ∊   `E ⍷   `g ∇   `G ⍒   `h ∆
     `H ⍋   `i ⍳   `I ⌷   `j ∘   `l ⎕   `L ⍞   `m ∣   `n ⊤   `N ⍕   `o ○   `O ⍬
@@ -154,7 +154,7 @@ jQuery ($) ->
         '{alt} {space} {exec!!}'
       ]
       alt: [
-        '¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ − ×'
+        '¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ - ×'
         '░ ⍵ ∊ ⍴ ~ ↑ ↓ ⍳ ○ ⋆ ← ░'
         '⍺ ⌈ ⌊ ░ ∇ ∆ ∘ ░ ⎕ {enter}'
         '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ░ {bksp}'

@@ -22,18 +22,18 @@
   #     (2 3⍴⍳6) + 3 2⍴⍳6               ⍝ throws 'LENGTH ERROR'
   dyad:  numeric (y, x) -> x + y
 
-@['−'] = pervasive
+@['-'] = pervasive
 
-  # Negate (`−`)
+  # Negate (`-`)
   #
-  #     −4         ⍝ returns ¯4
-  #     − 1 2 3    ⍝ returns ¯1 ¯2 ¯3
+  #     -4         ⍝ returns ¯4
+  #     - 1 2 3    ⍝ returns ¯1 ¯2 ¯3
   monad: numeric (x) -> -x
 
-  # Subtract (`−`)
+  # Subtract (`-`)
   #
-  #     1 − 3      ⍝ returns ¯2
-  #     5 − ¯3     ⍝ returns 8
+  #     1 - 3      ⍝ returns ¯2
+  #     5 - ¯3     ⍝ returns 8
   dyad:  numeric (y, x) -> x - y
 
 @['×'] = pervasive

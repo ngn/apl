@@ -92,7 +92,7 @@ Tacit programming
     avg ← +/ ÷ ⍴   ⍝ arithmetic mean
     x (f g h) y    ⍝ dyadic fork: (x f y) g (x h y)
     7 (+,-) 4      ⍝ sum and difference, returns 11 3
-    ((−b)(+,−)D⋆÷2) ÷ 2×a   ⍝ solutions to a quadratic equation
+    ((-b)(+,-)D⋆÷2) ÷ 2×a   ⍝ solutions to a quadratic equation
 
 
 # Some unorthodox additions

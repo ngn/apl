@@ -3,7 +3,7 @@
 {Complex} = require './complex'
 
 lazyRequires =
-  arithmetic:    '+−×÷⋆⍟∣|'
+  arithmetic:    '+-×÷⋆⍟∣|'
   floorceil:     '⌊⌈'
   question:      '?'
   exclamation:   '!'

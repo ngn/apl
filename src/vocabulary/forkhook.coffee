@@ -30,12 +30,12 @@
 #     # Quadratic equation
 #     a←1 ◇ b←¯22 ◇ c←85
 #     ... √ ← {⍵⋆.5}
-#     ... ((−b)(+,−)√(b⋆2)−4×a×c) ÷ 2×a
+#     ... ((-b)(+,-)√(b⋆2)-4×a×c) ÷ 2×a
 #     ... ⍝ returns 17 5
 #
 #     # Trains (longer forks)
-#     (+,−,×,÷) 2     ⍝ returns 2 ¯2 1 .5
-#     1 (+,−,×,÷) 2   ⍝ returns 3 ¯1 2 .5
+#     (+,-,×,÷) 2     ⍝ returns 2 ¯2 1 .5
+#     1 (+,-,×,÷) 2   ⍝ returns 3 ¯1 2 .5
 @['⎕fork'] = (verbs) ->
   assert verbs.length % 2 is 1
   assert verbs.length >= 3

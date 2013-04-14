@@ -10,7 +10,7 @@
 
   # Circular and hyperbolic functions (`○`)
   #
-  #     1e¯10>∣.5−1○○÷6 ⍝ returns 1 # sin(pi/6) = .5
+  #     1e¯10>∣.5-1○○÷6 ⍝ returns 1 # sin(pi/6) = .5
   dyad: numeric (x, i) ->
     switch i
       when 0 then Math.sqrt(1 - x * x)

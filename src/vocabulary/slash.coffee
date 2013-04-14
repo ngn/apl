@@ -31,8 +31,8 @@
 #     10 +/ 1 + ⍳10   ⍝ returns ,55
 #     11 +/ 1 + ⍳10   ⍝ returns ⍬
 #     12 +/ 1 + ⍳10   ⍝ throws
-#     2 −/ 3 4 9 7    ⍝ returns ¯1 ¯5 2
-#     ¯2 −/ 3 4 9 7   ⍝ returns 1 5 ¯2
+#     2 -/ 3 4 9 7    ⍝ returns ¯1 ¯5 2
+#     ¯2 -/ 3 4 9 7   ⍝ returns 1 5 ¯2
 reduce = (f, g, axis) ->
   assert typeof f is 'function'
   assert typeof g is 'undefined'

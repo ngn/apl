@@ -1069,7 +1069,7 @@
       return this['+'].apply(this, args);
     };
 
-    Complex.prototype['−'] = function(x) {
+    Complex.prototype['-'] = function(x) {
       if (x != null) {
         if (typeof x === 'number') {
           return C(this.re - x, this.im);
@@ -1083,8 +1083,8 @@
       }
     };
 
-    Complex.prototype['right_−'] = function(x) {
-      return (x instanceof Complex ? x : new Complex(x, 0))['−'](this);
+    Complex.prototype['right_-'] = function(x) {
+      return (x instanceof Complex ? x : new Complex(x, 0))['-'](this);
     };
 
     Complex.prototype['×'] = function(x) {
@@ -1499,7 +1499,7 @@
   Complex = require('./complex').Complex;
 
   lazyRequires = {
-    arithmetic: '+−×÷⋆⍟∣|',
+    arithmetic: '+-×÷⋆⍟∣|',
     floorceil: '⌊⌈',
     question: '?',
     exclamation: '!',
@@ -1640,7 +1640,7 @@
     })
   });
 
-  this['−'] = pervasive({
+  this['-'] = pervasive({
     monad: numeric(function(x) {
       return -x;
     }),

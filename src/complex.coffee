@@ -48,10 +48,10 @@ C = (re, im) -> if im then new Complex re, im else re
 
   'right_+': (args...) -> @['+'] args...
 
-  # Subtract / Negate (`−`)
+  # Subtract / Negate (`-`)
   #
-  #     5j2 − 3j8   ⍝ returns 2j¯6
-  '−': (x) ->
+  #     5j2 - 3j8   ⍝ returns 2j¯6
+  '-': (x) ->
     if x?
       if typeof x is 'number' then C @re - x, @im
       else if x instanceof Complex then C @re - x.re, @im - x.im
@@ -59,9 +59,9 @@ C = (re, im) -> if im then new Complex re, im else re
     else
       C -@re, -@im
 
-  #     5 − 3j8   ⍝ returns 2j¯8
-  'right_−': (x) ->
-    (if x instanceof Complex then x else new Complex x, 0)['−'] @
+  #     5 - 3j8   ⍝ returns 2j¯8
+  'right_-': (x) ->
+    (if x instanceof Complex then x else new Complex x, 0)['-'] @
 
   # Multiply / Sign of (`×`)
   #
