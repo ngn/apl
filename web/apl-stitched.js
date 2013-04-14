@@ -3192,11 +3192,11 @@
 
 }).call(this);
 }, "vocabulary/slash": function(exports, require, module) {(function() {
-  var APLArray, assert, compressOrReplicate, reduce, repeat, _ref;
+  var APLArray, assert, compressOrReplicate, isInt, reduce, repeat, _ref;
 
   APLArray = require('../array').APLArray;
 
-  _ref = require('../helpers'), assert = _ref.assert, repeat = _ref.repeat;
+  _ref = require('../helpers'), assert = _ref.assert, repeat = _ref.repeat, isInt = _ref.isInt;
 
   this['/'] = function(omega, alpha, axis) {
     if (typeof omega === 'function') {
@@ -3299,7 +3299,74 @@
   };
 
   compressOrReplicate = function(omega, alpha, axis) {
-    return APLArray.zero;
+    var a, b, data, filler, i, indices, n, p, shape, x, _i, _j, _len, _ref1, _ref2;
+
+    if (omega.shape.length === 0) {
+      omega = new APLArray([omega.unbox()]);
+    }
+    axis = axis ? axis.toInt(0, omega.shape.length) : omega.shape.length - 1;
+    if (alpha.shape.length > 1) {
+      throw Error('RANK ERROR');
+    }
+    a = alpha.toArray();
+    n = omega.shape[axis];
+    if (a.length === 1) {
+      a = repeat(a, n);
+    }
+    if (n !== 1 && n !== a.length) {
+      throw Error('LENGTH ERROR');
+    }
+    shape = omega.shape.slice(0);
+    shape[axis] = 0;
+    b = [];
+    for (i = _i = 0, _len = a.length; _i < _len; i = ++_i) {
+      x = a[i];
+      if (!isInt(x)) {
+        throw Error('DOMAIN ERROR');
+      }
+      shape[axis] += Math.abs(x);
+      for (_j = 0, _ref1 = Math.abs(x); 0 <= _ref1 ? _j < _ref1 : _j > _ref1; 0 <= _ref1 ? _j++ : _j--) {
+        b.push(x > 0 ? i : null);
+      }
+    }
+    if (n === 1) {
+      b = (function() {
+        var _k, _len1, _results;
+
+        _results = [];
+        for (_k = 0, _len1 = b.length; _k < _len1; _k++) {
+          x = b[_k];
+          _results.push(x != null ? 0 : x);
+        }
+        return _results;
+      })();
+    }
+    data = [];
+    if (shape[axis] !== 0 && !omega.empty()) {
+      filler = omega.getPrototype();
+      p = omega.offset;
+      indices = repeat([0], shape.length);
+      while (true) {
+        x = b[indices[axis]] != null ? (assert((0 <= (_ref2 = b[indices[axis]]) && _ref2 < n), 'a2'), omega.data[p + b[indices[axis]] * omega.stride[axis]]) : filler;
+        assert(x != null, 'a1');
+        data.push(x);
+        i = shape.length - 1;
+        while (i >= 0 && indices[i] + 1 === shape[i]) {
+          if (i !== axis) {
+            p -= omega.stride[i] * indices[i];
+          }
+          indices[i--] = 0;
+        }
+        if (i < 0) {
+          break;
+        }
+        if (i !== axis) {
+          p += omega.stride[i];
+        }
+        indices[i]++;
+      }
+    }
+    return new APLArray(data, shape);
   };
 
 }).call(this);
