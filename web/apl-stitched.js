@@ -1510,7 +1510,7 @@
     iota: '⍳',
     rotate: '⌽⊖',
     transpose: '⍉',
-    epsilon: '∈',
+    epsilon: '∊',
     zilde: ['get_⍬', 'set_⍬'],
     comma: ',⍪',
     grade: '⍋⍒',
@@ -2289,7 +2289,7 @@
     }
   };
 
-  this['∈'] = function(omega, alpha) {
+  this['∊'] = function(omega, alpha) {
     var a, data;
 
     if (alpha) {

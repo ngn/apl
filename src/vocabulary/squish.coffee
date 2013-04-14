@@ -34,7 +34,7 @@
 #     'ipodlover'[1 2 5 8 3 7 6 0 4]        ⍝ returns 'poordevil'
 #     ('axlrose'[4 3 0 2 5 6 1])[0 1 2 3]   ⍝ returns 'oral'
 #
-#!    " X"[(3 3⍴⍳9) ∈ 1 3 6 7 8]  ⍝ returns 3 3⍴,/ (' X '
+#!    " X"[(3 3⍴⍳9) ∊ 1 3 6 7 8]  ⍝ returns 3 3⍴,/ (' X '
 #!    ...                                           'X  '
 #!    ...                                           'XXX')
 

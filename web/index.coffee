@@ -57,7 +57,7 @@ jQuery ($) ->
     ['≠', 'Not equal']
     ['≡', 'Depth, Match']
     ['≢', 'Not match']
-    ['∈', 'Enlist, Membership']
+    ['∊', 'Enlist, Membership']
     ['⍷', 'Find']
     ['∪', 'Unique, Union']
     ['∩', 'Intersection']
@@ -109,7 +109,7 @@ jQuery ($) ->
   a = '''
     `< «   `= ×   `> »   `_ ≡   `- −   `, ⍪   `; ◇   `: ÷   `! ⍣   `/ ⌿   `( ⍱
     `) ⍲   `[ ←   `\\ ⍀  `0 ∧   `1 ¨   `2 ¯   `4 ≤   `6 ≥   `8 ≠   `9 ∨   `a ⍺
-    `A ⊖   `b ⊥   `B ⍎   `c ∩   `C ⍝   `d ⌊   `e ∈   `E ⍷   `g ∇   `G ⍒   `h ∆
+    `A ⊖   `b ⊥   `B ⍎   `c ∩   `C ⍝   `d ⌊   `e ∊   `E ⍷   `g ∇   `G ⍒   `h ∆
     `H ⍋   `i ⍳   `I ⌷   `j ∘   `l ⎕   `L ⍞   `m ∣   `n ⊤   `N ⍕   `o ○   `O ⍬
     `p ⋆   `P ⍟   `r ⍴   `s ⌈   `t ∼   `T ⍉   `u ↓   `v ∪   `w ⍵   `W ⌽   `x ⊃
     `y ↑   `z ⊂
@@ -155,7 +155,7 @@ jQuery ($) ->
       ]
       alt: [
         '¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ − ×'
-        '░ ⍵ ∈ ⍴ ∼ ↑ ↓ ⍳ ○ ⋆ ← ░'
+        '░ ⍵ ∊ ⍴ ∼ ↑ ↓ ⍳ ○ ⋆ ← ░'
         '⍺ ⌈ ⌊ ░ ∇ ∆ ∘ ░ ⎕ {enter}'
         '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ░ {bksp}'
         '{alt} {space} {exec!!}'

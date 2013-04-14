@@ -14,7 +14,7 @@ lazyRequires =
   iota:          '⍳'
   rotate:        '⌽⊖'
   transpose:     '⍉'
-  epsilon:       '∈'
+  epsilon:       '∊'
   zilde:         ['get_⍬', 'set_⍬']
   comma:         ',⍪'
   grade:         '⍋⍒'
