@@ -33,15 +33,17 @@
         assert r instanceof APLArray
         if r.shape.length is 0 then r.unbox() else r
     else if alpha.isSingleton()
+      y = if alpha.data[0] instanceof APLArray then alpha.unbox() else alpha
       omega.map (x) ->
         if not (x instanceof APLArray) then x = new APLArray [x], []
-        r = f x, alpha
+        r = f x, y
         assert r instanceof APLArray
         if r.shape.length is 0 then r.unbox() else r
     else if omega.isSingleton()
-      alpha.map (x) ->
-        if not (x instanceof APLArray) then x = new APLArray [x], []
-        r = f omega, x
+      x = if omega.data[0] instanceof APLArray then omega.unbox() else omega
+      alpha.map (y) ->
+        if not (y instanceof APLArray) then y = new APLArray [y], []
+        r = f x, y
         assert r instanceof APLArray
         if r.shape.length is 0 then r.unbox() else r
     else

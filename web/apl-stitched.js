@@ -2085,6 +2085,8 @@
     assert(typeof f === 'function');
     assert(typeof g === 'undefined');
     return function(omega, alpha) {
+      var x, y;
+
       if (!alpha) {
         return omega.map(function(x) {
           var r;
@@ -2119,13 +2121,14 @@
           }
         });
       } else if (alpha.isSingleton()) {
+        y = alpha.data[0] instanceof APLArray ? alpha.unbox() : alpha;
         return omega.map(function(x) {
           var r;
 
           if (!(x instanceof APLArray)) {
             x = new APLArray([x], []);
           }
-          r = f(x, alpha);
+          r = f(x, y);
           assert(r instanceof APLArray);
           if (r.shape.length === 0) {
             return r.unbox();
@@ -2134,13 +2137,14 @@
           }
         });
       } else if (omega.isSingleton()) {
-        return alpha.map(function(x) {
+        x = omega.data[0] instanceof APLArray ? omega.unbox() : omega;
+        return alpha.map(function(y) {
           var r;
 
-          if (!(x instanceof APLArray)) {
-            x = new APLArray([x], []);
+          if (!(y instanceof APLArray)) {
+            y = new APLArray([y], []);
           }
-          r = f(omega, x);
+          r = f(x, y);
           assert(r instanceof APLArray);
           if (r.shape.length === 0) {
             return r.unbox();
