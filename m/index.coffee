@@ -86,7 +86,7 @@ jQuery ($) ->
   layouts = [
     '1234567890qwertyuiopasdfghjklzxcvbnm'
     '!@#$%^&*()QWERTYUIOPASDFGHJKLZXCVBNM'
-    '¨¯<≤=≥>≠∨∧←⍵∊⍴∼↑↓⍳○⋆⍺⌈⌊⍪∇∆∘◇⎕⊂⊃∩∪⊥⊤∣'
+    '¨¯<≤=≥>≠∨∧←⍵∊⍴~↑↓⍳○⋆⍺⌈⌊⍪∇∆∘◇⎕⊂⊃∩∪⊥⊤∣'
     '⍣[]{}«»;⍱⍲,⌽⍷\\⍉\'"⌷⍬⍟⊖+−×⍒⍋/÷⍞⌿⍀⍝.⍎⍕:'
   ]
   alt = shift = 0

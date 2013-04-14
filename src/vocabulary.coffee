@@ -9,7 +9,7 @@ lazyRequires =
   exclamation:   '!'
   circle:        '○'
   comparisons:   '=≠<>≤≥≡≢'
-  logic:         '∼∨∧⍱⍲'
+  logic:         '~∨∧⍱⍲'
   rho:           '⍴'
   iota:          '⍳'
   rotate:        '⌽⊖'

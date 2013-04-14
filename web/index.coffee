@@ -61,7 +61,7 @@ jQuery ($) ->
     ['⍷', 'Find']
     ['∪', 'Unique, Union']
     ['∩', 'Intersection']
-    ['∼', 'Not, Without']
+    ['~', 'Not, Without']
     ['∨', 'Or (Greatest Common Divisor)']
     ['∧', 'And (Least Common Multiple)']
     ['⍱', 'Nor']
@@ -111,7 +111,7 @@ jQuery ($) ->
     `) ⍲   `[ ←   `\\ ⍀  `0 ∧   `1 ¨   `2 ¯   `4 ≤   `6 ≥   `8 ≠   `9 ∨   `a ⍺
     `A ⊖   `b ⊥   `B ⍎   `c ∩   `C ⍝   `d ⌊   `e ∊   `E ⍷   `g ∇   `G ⍒   `h ∆
     `H ⍋   `i ⍳   `I ⌷   `j ∘   `l ⎕   `L ⍞   `m ∣   `n ⊤   `N ⍕   `o ○   `O ⍬
-    `p ⋆   `P ⍟   `r ⍴   `s ⌈   `t ∼   `T ⍉   `u ↓   `v ∪   `w ⍵   `W ⌽   `x ⊃
+    `p ⋆   `P ⍟   `r ⍴   `s ⌈   `t ~   `T ⍉   `u ↓   `v ∪   `w ⍵   `W ⌽   `x ⊃
     `y ↑   `z ⊂
   '''.replace(/(^\s+|\s+$)/g, '').split /\s+/
   for i in [0 ... a.length / 2]
@@ -155,7 +155,7 @@ jQuery ($) ->
       ]
       alt: [
         '¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ − ×'
-        '░ ⍵ ∊ ⍴ ∼ ↑ ↓ ⍳ ○ ⋆ ← ░'
+        '░ ⍵ ∊ ⍴ ~ ↑ ↓ ⍳ ○ ⋆ ← ░'
         '⍺ ⌈ ⌊ ░ ∇ ∆ ∘ ░ ⎕ {enter}'
         '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ░ {bksp}'
         '{alt} {space} {exec!!}'

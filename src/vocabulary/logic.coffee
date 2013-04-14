@@ -4,18 +4,18 @@
 
 negate = pervasive monad: (x) -> +not bool x
 
-@['∼'] = (omega, alpha) ->
+@['~'] = (omega, alpha) ->
   if alpha
 
-    # Without (`∼`)
+    # Without (`~`)
     #
-    #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"∼"AEIOU" ⍝ returns 'BCDFGHJKLMNPQRSTVWXYZ'
-    #     1 2 3 4 5 6 ∼ 2 4 6                  ⍝ returns 1 3 5
-    #     "THIS IS TEXT" ∼ " "                 ⍝ returns 'THISISTEXT'
-    #     "THIS" "AND" "THAT" ∼ "T"            ⍝ returns 'THIS' 'AND' 'THAT'
-    #     "THIS" "AND" "THAT" ∼ "AND"          ⍝ returns 'THIS' 'AND' 'THAT'
-    #!    "THIS" "AND" "THAT" ∼ ⊂"AND"         ⍝ returns 'THIS' 'THAT'
-    #     "THIS" "AND" "THAT" ∼ "TH" "AND"     ⍝ returns 'THIS' 'THAT'
+    #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"~"AEIOU" ⍝ returns 'BCDFGHJKLMNPQRSTVWXYZ'
+    #     1 2 3 4 5 6 ~ 2 4 6                  ⍝ returns 1 3 5
+    #     "THIS IS TEXT" ~ " "                 ⍝ returns 'THISISTEXT'
+    #     "THIS" "AND" "THAT" ~ "T"            ⍝ returns 'THIS' 'AND' 'THAT'
+    #     "THIS" "AND" "THAT" ~ "AND"          ⍝ returns 'THIS' 'AND' 'THAT'
+    #!    "THIS" "AND" "THAT" ~ ⊂"AND"         ⍝ returns 'THIS' 'THAT'
+    #     "THIS" "AND" "THAT" ~ "TH" "AND"     ⍝ returns 'THIS' 'THAT'
     #
     #     11 12 13 14 15 16 ~ 2 3⍴1 2 3 14 5 6
     if alpha.shape.length > 1
@@ -31,10 +31,10 @@ negate = pervasive monad: (x) -> +not bool x
 
   else
 
-    # Not (`∼`)
+    # Not (`~`)
     #
-    #     ∼0 1 ⍝ returns 1 0
-    #     ∼2   ⍝ throws
+    #     ~0 1 ⍝ returns 1 0
+    #     ~2   ⍝ throws
     negate omega
 
 

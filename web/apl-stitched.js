@@ -1505,7 +1505,7 @@
     exclamation: '!',
     circle: '○',
     comparisons: '=≠<>≤≥≡≢',
-    logic: '∼∨∧⍱⍲',
+    logic: '~∨∧⍱⍲',
     rho: '⍴',
     iota: '⍳',
     rotate: '⌽⊖',
@@ -2820,7 +2820,7 @@
     }
   });
 
-  this['∼'] = function(omega, alpha) {
+  this['~'] = function(omega, alpha) {
     var data;
 
     if (alpha) {
