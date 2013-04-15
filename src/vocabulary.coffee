@@ -35,6 +35,7 @@ lazyRequires =
   innerproduct:  '.'
   outerproduct:  ['∘.']
   slash:         '/⌿'
+  tack:          '⊣⊢'
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->

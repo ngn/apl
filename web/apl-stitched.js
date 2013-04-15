@@ -1530,7 +1530,8 @@
     poweroperator: '⍣',
     innerproduct: '.',
     outerproduct: ['∘.'],
-    slash: '/⌿'
+    slash: '/⌿',
+    tack: '⊣⊢'
   };
 
   createLazyRequire = function(obj, name, fromModule) {
@@ -3533,6 +3534,23 @@
       u[a]++;
     }
     return new APLArray(data, (_ref6 = []).concat.apply(_ref6, subscriptShapes));
+  };
+
+}).call(this);
+}, "vocabulary/tack": function(exports, require, module) {(function() {
+  var APLArray;
+
+  APLArray = require('../array').APLArray;
+
+  this['⊣'] = function(omega, alpha) {
+    if (alpha == null) {
+      alpha = APLArray.zilde;
+    }
+    return alpha;
+  };
+
+  this['⊢'] = function(omega) {
+    return omega;
   };
 
 }).call(this);
