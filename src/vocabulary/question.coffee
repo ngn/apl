@@ -11,10 +11,10 @@ roll = pervasive monad: numeric (x) -> Math.floor Math.random() * x
 
 # Deal (`?`)
 #
-#!    n←100 ◇ (+/n?n)=(+/⍳n)
-#!    ... ⍝ returns 1 # a permutation (an "n?n" dealing) contains all 0...n
-#!    n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A<n
-#!    ... ⍝ returns 1 # any number x in a dealing is 0 <= x < n
+#     n←100 ◇ (+/n?n)=(+/⍳n)
+#     ... ⍝ returns 1 # a permutation (an "n?n" dealing) contains all 0...n
+#     n←100 ◇ A←(n÷2)?n ◇ ∧/(0≤A),A<n
+#     ... ⍝ returns 1 # any number x in a dealing is 0 <= x < n
 #     0 ? 100  ⍝ returns ⍬
 #     0 ? 0    ⍝ returns ⍬
 #     1 ? 1    ⍝ returns ,0

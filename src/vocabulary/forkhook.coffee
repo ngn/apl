@@ -25,7 +25,7 @@
 # Fork: `(fgh)⍵ ←→ (f⍵)g(h⍵)` ; `⍺(fgh)⍵ ←→ (⍺f⍵)g(⍺h⍵)`
 #
 #     # Arithmetic mean
-#!    avg ← +/ ÷ ⍴   ◇ avg 4 5 10 7   ⍝ returns ,6.5
+#     avg ← +/ ÷ ⍴   ◇ avg 4 5 10 7   ⍝ returns ,6.5
 #
 #     # Quadratic equation
 #     a←1 ◇ b←¯22 ◇ c←85

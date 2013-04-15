@@ -32,7 +32,7 @@
     #     3≡,3                      ⍝ returns 0
     #     4 7.1 8 ≡ 4 7.2 8         ⍝ returns 0
     #     (3 4⍴⍳12) ≡ 3 4⍴⍳12       ⍝ returns 1
-    #!    (3 4⍴⍳12) ≡ ⊂3 4⍴⍳12      ⍝ returns 0
+    #     (3 4⍴⍳12) ≡ ⊂3 4⍴⍳12      ⍝ returns 0
     #     ("ABC" "DEF") ≡ "ABCDEF"  ⍝ returns 0
     #!    (⍳0)≡""                   ⍝ returns 0
     #     (2 0⍴0)≡(0 2⍴0)           ⍝ returns 0

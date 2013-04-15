@@ -1,6 +1,6 @@
 # Execute (`⍎`)
 #
-#!    ⍎ '+/ 2 2 ⍴ 1 2 3 4'  ⍝ returns 3 7
+#     ⍎ '+/ 2 2 ⍴ 1 2 3 4'  ⍝ returns 3 7
 #     ⍴ ⍎ '123 456'         ⍝ returns ,2
 #     ⍎ '{⍵*2} ⍳5'          ⍝ returns 0 1 4 9 16
 #     ⍎ 'undefinedVariable' ⍝ throws
