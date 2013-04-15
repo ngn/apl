@@ -34,7 +34,7 @@ negate = pervasive monad: (x) -> +not bool x
     # Not (`~`)
     #
     #     ~0 1 ⍝ returns 1 0
-    #     ~2   ⍝ throws
+    #     ~2   ⍝ throws 'DOMAIN ERROR'
     negate omega
 
 
@@ -91,7 +91,7 @@ negate = pervasive monad: (x) -> +not bool x
 #     0⍱1 ⍝ returns 0
 #     1⍱0 ⍝ returns 0
 #     1⍱1 ⍝ returns 0
-#     0⍱2 ⍝ throws
+#     0⍱2 ⍝ throws 'DOMAIN ERROR'
 @['⍱'] = pervasive dyad: numeric (y, x) -> +!(bool(x) | bool(y))
 
 # Nand (`⍲`)
@@ -100,5 +100,5 @@ negate = pervasive monad: (x) -> +not bool x
 #     0⍲1 ⍝ returns 1
 #     1⍲0 ⍝ returns 1
 #     1⍲1 ⍝ returns 0
-#     0⍲2 ⍝ throws
+#     0⍲2 ⍝ throws 'DOMAIN ERROR'
 @['⍲'] = pervasive dyad: numeric (y, x) -> +!(bool(x) & bool(y))

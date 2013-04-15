@@ -30,7 +30,7 @@
 #     5 +/ 1 + ⍳10    ⍝ returns 15 20 25 30 35 40
 #     10 +/ 1 + ⍳10   ⍝ returns ,55
 #     11 +/ 1 + ⍳10   ⍝ returns ⍬
-#     12 +/ 1 + ⍳10   ⍝ throws
+#     12 +/ 1 + ⍳10   ⍝ throws 'LENGTH ERROR'
 #     2 -/ 3 4 9 7    ⍝ returns ¯1 ¯5 2
 #     ¯2 -/ 3 4 9 7   ⍝ returns 1 5 ¯2
 reduce = @reduce = (f, g, axis) ->

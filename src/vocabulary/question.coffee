@@ -18,7 +18,7 @@ roll = pervasive monad: numeric (x) -> Math.floor Math.random() * x
 #     0 ? 100  ⍝ returns ⍬
 #     0 ? 0    ⍝ returns ⍬
 #     1 ? 1    ⍝ returns ,0
-#     5 ? 3    ⍝ throws
+#     5 ? 3    ⍝ throws 'DOMAIN ERROR'
 deal = (omega, alpha) ->
   y = omega.unbox()
   x = alpha.unbox()
