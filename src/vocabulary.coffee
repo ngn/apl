@@ -19,6 +19,7 @@ lazyRequires =
   comma:         ',⍪'
   grade:         '⍋⍒'
   take:          '↑'
+  drop:          '↓'
   squish:        '⌷'
   quad:          ['get_⎕', 'set_⎕', 'get_⍞', 'set_⍞']
   format:        '⍕'
