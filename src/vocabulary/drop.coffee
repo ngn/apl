@@ -1,5 +1,6 @@
 {APLArray} = require '../array'
 {isInt, repeat, prod} = require '../helpers'
+{DomainError, RankError} = require '../errors'
 
 # Drop (`↓`)
 #
@@ -13,16 +14,16 @@
 #     ¯1 ¯1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"  ⍝ returns 1 2 4 ⍴ 'ABCDEFGH'
 @['↓'] = (omega, alpha, axis) ->
   if alpha.shape.length > 1
-    throw Error 'RANK ERROR'
+    throw RankError()
   a = alpha.toArray()
   for x in a
     if not isInt x
-      throw Error 'DOMAIN ERROR'
+      throw DomainError()
   if omega.shape.length is 0
     omega = new APLArray omega.data, repeat([1], a.length), omega.stride, omega.offset
   else
     if a.length > omega.shape.length
-      throw Error 'RANK ERROR'
+      throw RankError()
 
   shape = omega.shape[...]
   offset = omega.offset

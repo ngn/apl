@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{RankError, DomainError} = require '../errors'
 {repeat} = require '../helpers'
 
 # Grade up/down (`⍋`)
@@ -56,15 +57,15 @@ grade = (omega, alpha, direction) ->
   h = {} # maps a character to its index in the collation
   if alpha
     if not alpha.shape.length
-      throw Error 'RANK ERROR'
+      throw RankError()
     h = {}
     alpha.each (x, indices) ->
       if typeof x isnt 'string'
-        throw Error 'DOMAIN ERROR'
+        throw DomainError()
       h[x] = indices[indices.length - 1]
 
   if not omega.shape.length
-    throw Error 'RANK ERROR'
+    throw RankError()
 
   new APLArray [0...omega.shape[0]]
     .sort (i, j) ->

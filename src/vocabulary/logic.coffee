@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{RankError, DomainError} = require '../errors'
 {numeric, pervasive, bool, match} = require './vhelpers'
 {assert, isInt} = require '../helpers'
 
@@ -19,7 +20,7 @@ negate = pervasive monad: (x) -> +not bool x
     #
     #     11 12 13 14 15 16 ~ 2 3⍴1 2 3 14 5 6
     if alpha.shape.length > 1
-      throw Error 'RANK ERROR'
+      throw RankError()
     data = []
     alpha.each (x) ->
       try
@@ -53,7 +54,7 @@ negate = pervasive monad: (x) -> +not bool x
   #     0∨123              ⍝ returns 123
   dyad: numeric (y, x) ->
     if not (isInt(x, 0) and isInt(y, 0))
-      throw Error 'DOMAIN ERROR: ∨ is implemented only for non-negative integers' # todo
+      throw DomainError '∨ is implemented only for non-negative integers' # todo
     if x is 0 and y is 0 then return 0
     if x < y then [x, y] = [y, x]
     while y then [x, y] = [y, x % y] # Euclid's algorithm

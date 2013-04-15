@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{RankError} = require '../errors'
 {assert, prod, isInt} = require '../helpers'
 
 @['⍴'] = (omega, alpha) ->
@@ -9,9 +10,9 @@
     #     ⍴ ⍴ 1 2 3 ⍴ 0  ⍝ returns ,3
     #     3 3 ⍴ ⍳ 4      ⍝ returns 3 3 ⍴ 0 1 2 3 0 1 2 3 0
     #     ⍴ 3 3 ⍴ ⍳ 4    ⍝ returns 3 3
-    if alpha.shape.length > 1 then throw Error 'RANK ERROR'
+    if alpha.shape.length > 1 then throw RankError()
     shape = alpha.toArray()
-    for d in shape when not isInt d, 0 then throw Error 'DOMAIN ERROR'
+    for d in shape when not isInt d, 0 then throw DomainError()
     n = prod shape
     a = omega.toArray n
     assert a.length <= n

@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{DomainError, RankError, LengthError} = require '../errors'
 {assert, prod, repeat, isInt} = require '../helpers'
 
 @[','] = (omega, alpha, axis) ->
@@ -53,8 +54,8 @@ catenate = (omega, alpha, axis) ->
   nAxes = Math.max alpha.shape.length, omega.shape.length
   if axis
     axis = axis.unbox()
-    if typeof axis isnt 'number' then throw Error 'DOMAIN ERROR'
-    if not (-1 < axis < nAxes) then throw Error 'RANK ERROR'
+    if typeof axis isnt 'number' then throw DomainError()
+    if not (-1 < axis < nAxes) then throw RankError()
   else
     axis = nAxes - 1
 
@@ -69,26 +70,26 @@ catenate = (omega, alpha, axis) ->
     if isInt axis then s[axis] = 1
     omega = new APLArray [omega.unbox()], s, repeat([0], alpha.shape.length)
   else if alpha.shape.length + 1 is omega.shape.length
-    if not isInt axis then throw Error 'RANK ERROR'
+    if not isInt axis then throw RankError()
     shape = alpha.shape[...]
     shape.splice axis, 0, 1
     stride = alpha.stride[...]
     stride.splice axis, 0, 0
     alpha = new APLArray alpha.data, shape, stride, alpha.offset
   else if alpha.shape.length is omega.shape.length + 1
-    if not isInt axis then throw Error 'RANK ERROR'
+    if not isInt axis then throw RankError()
     shape = omega.shape[...]
     shape.splice axis, 0, 1
     stride = omega.stride[...]
     stride.splice axis, 0, 0
     omega = new APLArray omega.data, shape, stride, omega.offset
   else if alpha.shape.length isnt omega.shape.length
-    throw Error 'RANK ERROR'
+    throw RankError()
 
   assert alpha.shape.length is omega.shape.length
   for i in [0...alpha.shape.length]
     if i isnt axis and alpha.shape[i] isnt omega.shape[i]
-      throw Error 'LENGTH ERROR'
+      throw LengthError()
 
   shape = alpha.shape[...]
   if isInt axis

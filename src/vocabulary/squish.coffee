@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{DomainError, IndexError, RankError, LengthError} = require '../errors'
 {assert, prod, repeat, isInt} = require '../helpers'
 
 # Index (`⌷`)
@@ -46,26 +47,26 @@
   assert omega instanceof APLArray
   assert (not axes?) or axes instanceof APLArray
 
-  if alpha.shape.length > 1 then throw Error 'RANK ERROR'
+  if alpha.shape.length > 1 then throw RankError()
   alphaItems = alpha.toArray()
-  if alphaItems.length > omega.shape.length then throw Error 'LENGTH ERROR'
+  if alphaItems.length > omega.shape.length then throw LengthError()
 
   axes = if axes then axes.toArray() else [0...alphaItems.length]
-  if alphaItems.length isnt axes.length then throw Error 'LENGTH ERROR'
+  if alphaItems.length isnt axes.length then throw LengthError()
 
   subscripts = Array omega.shape.length
   subscriptShapes = Array omega.shape.length
   for axis, i in axes
-    if not isInt axis then throw Error 'DOMAIN ERROR'
-    if not (0 <= axis < omega.shape.length) then throw Error 'RANK ERROR'
-    if typeof subscripts[axis] isnt 'undefined' then throw Error 'RANK ERROR: Duplicate axis'
+    if not isInt axis then throw DomainError()
+    if not (0 <= axis < omega.shape.length) then throw RankError()
+    if typeof subscripts[axis] isnt 'undefined' then throw RankError 'Duplicate axis'
     d = alphaItems[i]
     subscripts[axis] = if d instanceof APLArray then d.toArray() else [d]
     assert subscripts[axis].length
     subscriptShapes[axis] = if d instanceof APLArray then d.shape else []
     for x in subscripts[axis]
-      if not isInt x then throw Error 'DOMAIN ERROR'
-      if not (0 <= x < omega.shape[axis]) then throw Error 'INDEX ERROR'
+      if not isInt x then throw DomainError()
+      if not (0 <= x < omega.shape[axis]) then throw IndexError()
 
   for i in [0...subscripts.length] when typeof subscripts[i] is 'undefined'
     subscripts[i] = [0...omega.shape[i]]

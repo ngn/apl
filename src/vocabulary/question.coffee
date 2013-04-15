@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{DomainError} = require '../errors'
 {numeric, pervasive} = require './vhelpers'
 
 # Roll (`?`)
@@ -22,7 +23,7 @@ roll = pervasive monad: numeric (x) -> Math.floor Math.random() * x
 deal = (omega, alpha) ->
   y = omega.unbox()
   x = alpha.unbox()
-  if x > y then throw Error 'DOMAIN ERROR'
+  if x > y then throw DomainError()
   available = [0...y]
   new APLArray(for [0...x] then available.splice(Math.floor(available.length * Math.random()), 1)[0])
 

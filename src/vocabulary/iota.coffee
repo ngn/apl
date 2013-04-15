@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{DomainError, RankError} = require '../errors'
 {assert, repeat, prod, isInt} = require '../helpers'
 {match} = require './vhelpers'
 
@@ -40,9 +41,9 @@
     #     ...             1 1 0  1 1 1  1 1 2  1 1 3
     #     ...             1 2 0  1 2 1  1 2 2  1 2 3)
     #     ⍴⍳ 2 3 4    ⍝ returns 2 3 4 3
-    if omega.shape.length > 1 then throw Error 'RANK ERROR'
+    if omega.shape.length > 1 then throw RankError()
     a = omega.toArray()
-    for d in a when not isInt d, 0 then throw Error 'DOMAIN ERROR'
+    for d in a when not isInt d, 0 then throw DomainError()
     data = []
     if prod a
       indices = repeat [0], a.length

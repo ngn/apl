@@ -1,4 +1,5 @@
 {assert, extend, prod, isInt} = require './helpers'
+{LengthError} = require './errors'
 
 # This is an experimental data structure intended to replace the current
 # representation of APL arrays.
@@ -96,7 +97,7 @@
   toInt: (start = -Infinity, end = Infinity) ->
     r = @unbox()
     if typeof r isnt 'number' or r isnt ~~r or not (start <= r < end)
-      throw Error 'DOMAIN ERROR'
+      throw DomainError()
     r
 
   toBool: ->
@@ -108,7 +109,7 @@
 
   unbox: ->
     if prod(@shape) isnt 1
-      throw Error 'LENGTH ERROR'
+      throw LengthError()
     @data[@offset]
 
   getPrototype: -> # todo

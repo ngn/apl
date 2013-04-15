@@ -57,8 +57,7 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
       }
     catch e
       if expectedErrorMessage and
-          e.name[...expectedErrorMessage.length] isnt expectedErrorMessage and
-          e.message[...expectedErrorMessage.length] isnt expectedErrorMessage
+          e.name[...expectedErrorMessage.length] isnt expectedErrorMessage
         return {
           success: false
           error: e

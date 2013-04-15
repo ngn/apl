@@ -1,4 +1,5 @@
 {assert, isInt} = require '../helpers'
+{DomainError, LengthError, RankError, SyntaxError} = require '../errors'
 {APLArray} = require '../array'
 
 multiplicitySymbol = (z) ->
@@ -29,8 +30,8 @@ multiplicitySymbol = (z) ->
           when '*1' then yi = y.unbox(); x.map (xi) -> pervadeDyadic xi, yi
           when '11' then yi = y.unbox(); x.map (xi) -> pervadeDyadic xi, yi # todo: use the larger shape
           when '**'
-            if x.shape.length isnt y.shape.length then throw Error 'RANK ERROR'
-            for axis in [0...x.shape.length] when x.shape[axis] isnt y.shape[axis] then throw Error 'LENGTH ERROR'
+            if x.shape.length isnt y.shape.length then throw RankError()
+            for axis in [0...x.shape.length] when x.shape[axis] isnt y.shape[axis] then throw LengthError()
             x.map2 y, pervadeDyadic
     else
       -> throw Error 'Not implemented'
@@ -41,7 +42,7 @@ multiplicitySymbol = (z) ->
 
 @numeric = (f) -> (x, y, axis) ->
   if typeof x isnt 'number' or (y? and typeof y isnt 'number')
-    throw Error 'DOMAIN ERROR'
+    throw DomainError()
   f x, y, axis
 
 @match = match = (x, y) ->
@@ -60,7 +61,7 @@ multiplicitySymbol = (z) ->
 
 @bool = (x) ->
   if x not in [0, 1]
-    throw Error 'DOMAIN ERROR'
+    throw DomainError()
   x
 
 @getAxisList = (axes, rank) ->
@@ -68,17 +69,17 @@ multiplicitySymbol = (z) ->
   if typeof axes is 'undefined' then return []
   assert axes instanceof APLArray
   if axes.shape.length isnt 1 or axes.shape[0] isnt 1
-    throw Error 'SYNTAX ERROR' # [sic]
+    throw SyntaxError() # [sic]
   a = axes.unbox()
   if a instanceof APLArray
     a = a.toArray()
     for x, i in a
       if not isInt x, 0, rank
-        throw Error 'DOMAIN ERROR'
+        throw DomainError()
       if x in a[...i]
         throw Error 'Non-unique axes'
     a
   else if isInt a, 0, rank
     [a]
   else
-    throw Error 'DOMAIN ERROR'
+    throw DomainError()

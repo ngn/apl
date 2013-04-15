@@ -77,9 +77,11 @@
 
 }).call(this);
 }, "array": function(exports, require, module) {(function() {
-  var APLArray, assert, extend, isInt, prod, strideForShape, _ref;
+  var APLArray, LengthError, assert, extend, isInt, prod, strideForShape, _ref;
 
   _ref = require('./helpers'), assert = _ref.assert, extend = _ref.extend, prod = _ref.prod, isInt = _ref.isInt;
+
+  LengthError = require('./errors').LengthError;
 
   this.APLArray = APLArray = (function() {
     function APLArray(data, shape, stride, offset) {
@@ -273,7 +275,7 @@
       }
       r = this.unbox();
       if (typeof r !== 'number' || r !== ~~r || !((start <= r && r < end))) {
-        throw Error('DOMAIN ERROR');
+        throw DomainError();
       }
       return r;
     };
@@ -297,7 +299,7 @@
 
     APLArray.prototype.unbox = function() {
       if (prod(this.shape) !== 1) {
-        throw Error('LENGTH ERROR');
+        throw LengthError();
       }
       return this.data[this.offset];
     };
@@ -1771,11 +1773,13 @@
 
 }).call(this);
 }, "vocabulary/comma": function(exports, require, module) {(function() {
-  var APLArray, assert, catenate, isInt, prod, repeat, _ref;
+  var APLArray, DomainError, LengthError, RankError, assert, catenate, isInt, prod, repeat, _ref, _ref1;
 
   APLArray = require('../array').APLArray;
 
-  _ref = require('../helpers'), assert = _ref.assert, prod = _ref.prod, repeat = _ref.repeat, isInt = _ref.isInt;
+  _ref = require('../errors'), DomainError = _ref.DomainError, RankError = _ref.RankError, LengthError = _ref.LengthError;
+
+  _ref1 = require('../helpers'), assert = _ref1.assert, prod = _ref1.prod, repeat = _ref1.repeat, isInt = _ref1.isInt;
 
   this[','] = function(omega, alpha, axis) {
     var data;
@@ -1803,7 +1807,7 @@
   };
 
   catenate = function(omega, alpha, axis) {
-    var a, data, i, nAxes, p, pIndices, q, r, rStride, s, shape, stride, _i, _j, _ref1, _ref2;
+    var a, data, i, nAxes, p, pIndices, q, r, rStride, s, shape, stride, _i, _j, _ref2, _ref3;
 
     assert(alpha);
     assert(typeof axis === 'undefined' || axis instanceof APLArray);
@@ -1811,10 +1815,10 @@
     if (axis) {
       axis = axis.unbox();
       if (typeof axis !== 'number') {
-        throw Error('DOMAIN ERROR');
+        throw DomainError();
       }
       if (!((-1 < axis && axis < nAxes))) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
     } else {
       axis = nAxes - 1;
@@ -1835,7 +1839,7 @@
       omega = new APLArray([omega.unbox()], s, repeat([0], alpha.shape.length));
     } else if (alpha.shape.length + 1 === omega.shape.length) {
       if (!isInt(axis)) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
       shape = alpha.shape.slice(0);
       shape.splice(axis, 0, 1);
@@ -1844,7 +1848,7 @@
       alpha = new APLArray(alpha.data, shape, stride, alpha.offset);
     } else if (alpha.shape.length === omega.shape.length + 1) {
       if (!isInt(axis)) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
       shape = omega.shape.slice(0);
       shape.splice(axis, 0, 1);
@@ -1852,12 +1856,12 @@
       stride.splice(axis, 0, 0);
       omega = new APLArray(omega.data, shape, stride, omega.offset);
     } else if (alpha.shape.length !== omega.shape.length) {
-      throw Error('RANK ERROR');
+      throw RankError();
     }
     assert(alpha.shape.length === omega.shape.length);
-    for (i = _i = 0, _ref1 = alpha.shape.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
+    for (i = _i = 0, _ref2 = alpha.shape.length; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; i = 0 <= _ref2 ? ++_i : --_i) {
       if (i !== axis && alpha.shape[i] !== omega.shape[i]) {
-        throw Error('LENGTH ERROR');
+        throw LengthError();
       }
     }
     shape = alpha.shape.slice(0);
@@ -1869,7 +1873,7 @@
     data = Array(prod(shape));
     stride = Array(shape.length);
     stride[shape.length - 1] = 1;
-    for (i = _j = _ref2 = shape.length - 2; _j >= 0; i = _j += -1) {
+    for (i = _j = _ref3 = shape.length - 2; _j >= 0; i = _j += -1) {
       stride[i] = stride[i + 1] * shape[i + 1];
     }
     if (isInt(axis)) {
@@ -2103,30 +2107,32 @@
 
 }).call(this);
 }, "vocabulary/drop": function(exports, require, module) {(function() {
-  var APLArray, isInt, prod, repeat, _ref;
+  var APLArray, DomainError, RankError, isInt, prod, repeat, _ref, _ref1;
 
   APLArray = require('../array').APLArray;
 
   _ref = require('../helpers'), isInt = _ref.isInt, repeat = _ref.repeat, prod = _ref.prod;
 
+  _ref1 = require('../errors'), DomainError = _ref1.DomainError, RankError = _ref1.RankError;
+
   this['↓'] = function(omega, alpha, axis) {
     var a, i, offset, shape, x, _i, _j, _len, _len1;
 
     if (alpha.shape.length > 1) {
-      throw Error('RANK ERROR');
+      throw RankError();
     }
     a = alpha.toArray();
     for (_i = 0, _len = a.length; _i < _len; _i++) {
       x = a[_i];
       if (!isInt(x)) {
-        throw Error('DOMAIN ERROR');
+        throw DomainError();
       }
     }
     if (omega.shape.length === 0) {
       omega = new APLArray(omega.data, repeat([1], a.length), omega.stride, omega.offset);
     } else {
       if (a.length > omega.shape.length) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
     }
     shape = omega.shape.slice(0);
@@ -2147,9 +2153,11 @@
 
 }).call(this);
 }, "vocabulary/each": function(exports, require, module) {(function() {
-  var APLArray, arrayEquals, assert;
+  var APLArray, LengthError, arrayEquals, assert;
 
   APLArray = require('../array').APLArray;
+
+  LengthError = require('../errors').LengthError;
 
   assert = require('../helpers').assert;
 
@@ -2225,7 +2233,7 @@
           }
         });
       } else {
-        throw Error('LENGTH ERROR');
+        throw LengthError();
       }
     };
   };
@@ -2451,6 +2459,10 @@
 
 }).call(this);
 }, "vocabulary/execute": function(exports, require, module) {(function() {
+  var DomainError;
+
+  DomainError = require('../errors').DomainError;
+
   this['⍎'] = function(omega, alpha) {
     var s;
 
@@ -2460,7 +2472,7 @@
       s = '';
       omega.each(function(c) {
         if (typeof c !== 'string') {
-          throw Error('DOMAIN ERROR');
+          throw DomainError();
         }
         return s += c;
       });
@@ -2729,9 +2741,11 @@
 
 }).call(this);
 }, "vocabulary/grade": function(exports, require, module) {(function() {
-  var APLArray, grade, repeat;
+  var APLArray, DomainError, RankError, grade, repeat, _ref;
 
   APLArray = require('../array').APLArray;
+
+  _ref = require('../errors'), RankError = _ref.RankError, DomainError = _ref.DomainError;
 
   repeat = require('../helpers').repeat;
 
@@ -2744,27 +2758,27 @@
   };
 
   grade = function(omega, alpha, direction) {
-    var h, _i, _ref, _results;
+    var h, _i, _ref1, _results;
 
     h = {};
     if (alpha) {
       if (!alpha.shape.length) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
       h = {};
       alpha.each(function(x, indices) {
         if (typeof x !== 'string') {
-          throw Error('DOMAIN ERROR');
+          throw DomainError();
         }
         return h[x] = indices[indices.length - 1];
       });
     }
     if (!omega.shape.length) {
-      throw Error('RANK ERROR');
+      throw RankError();
     }
     return new APLArray((function() {
       _results = [];
-      for (var _i = 0, _ref = omega.shape[0]; 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
+      for (var _i = 0, _ref1 = omega.shape[0]; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--){ _results.push(_i); }
       return _results;
     }).apply(this).sort(function(i, j) {
       var a, indices, p, tx, ty, x, y;
@@ -2829,11 +2843,13 @@
 
 }).call(this);
 }, "vocabulary/iota": function(exports, require, module) {(function() {
-  var APLArray, assert, isInt, match, prod, repeat, _ref;
+  var APLArray, DomainError, RankError, assert, isInt, match, prod, repeat, _ref, _ref1;
 
   APLArray = require('../array').APLArray;
 
-  _ref = require('../helpers'), assert = _ref.assert, repeat = _ref.repeat, prod = _ref.prod, isInt = _ref.isInt;
+  _ref = require('../errors'), DomainError = _ref.DomainError, RankError = _ref.RankError;
+
+  _ref1 = require('../helpers'), assert = _ref1.assert, repeat = _ref1.repeat, prod = _ref1.prod, isInt = _ref1.isInt;
 
   match = require('./vhelpers').match;
 
@@ -2866,13 +2882,13 @@
       });
     } else {
       if (omega.shape.length > 1) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
       a = omega.toArray();
       for (_i = 0, _len = a.length; _i < _len; _i++) {
         d = a[_i];
         if (!isInt(d, 0)) {
-          throw Error('DOMAIN ERROR');
+          throw DomainError();
         }
       }
       data = [];
@@ -2896,13 +2912,15 @@
 
 }).call(this);
 }, "vocabulary/logic": function(exports, require, module) {(function() {
-  var APLArray, assert, bool, isInt, match, negate, numeric, pervasive, _ref, _ref1;
+  var APLArray, DomainError, RankError, assert, bool, isInt, match, negate, numeric, pervasive, _ref, _ref1, _ref2;
 
   APLArray = require('../array').APLArray;
 
-  _ref = require('./vhelpers'), numeric = _ref.numeric, pervasive = _ref.pervasive, bool = _ref.bool, match = _ref.match;
+  _ref = require('../errors'), RankError = _ref.RankError, DomainError = _ref.DomainError;
 
-  _ref1 = require('../helpers'), assert = _ref1.assert, isInt = _ref1.isInt;
+  _ref1 = require('./vhelpers'), numeric = _ref1.numeric, pervasive = _ref1.pervasive, bool = _ref1.bool, match = _ref1.match;
+
+  _ref2 = require('../helpers'), assert = _ref2.assert, isInt = _ref2.isInt;
 
   negate = pervasive({
     monad: function(x) {
@@ -2915,7 +2933,7 @@
 
     if (alpha) {
       if (alpha.shape.length > 1) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
       data = [];
       alpha.each(function(x) {
@@ -2943,19 +2961,19 @@
 
   this['∨'] = pervasive({
     dyad: numeric(function(y, x) {
-      var _ref2, _ref3;
+      var _ref3, _ref4;
 
       if (!(isInt(x, 0) && isInt(y, 0))) {
-        throw Error('DOMAIN ERROR: ∨ is implemented only for non-negative integers');
+        throw DomainError('∨ is implemented only for non-negative integers');
       }
       if (x === 0 && y === 0) {
         return 0;
       }
       if (x < y) {
-        _ref2 = [y, x], x = _ref2[0], y = _ref2[1];
+        _ref3 = [y, x], x = _ref3[0], y = _ref3[1];
       }
       while (y) {
-        _ref3 = [y, x % y], x = _ref3[0], y = _ref3[1];
+        _ref4 = [y, x % y], x = _ref4[0], y = _ref4[1];
       }
       return x;
     })
@@ -2963,7 +2981,7 @@
 
   this['∧'] = pervasive({
     dyad: numeric(function(y, x) {
-      var p, _ref2, _ref3;
+      var p, _ref3, _ref4;
 
       assert(x === Math.floor(x) && y === Math.floor(y), '∧ is defined only for integers');
       if (x === 0 || y === 0) {
@@ -2971,10 +2989,10 @@
       }
       p = x * y;
       if (x < y) {
-        _ref2 = [y, x], x = _ref2[0], y = _ref2[1];
+        _ref3 = [y, x], x = _ref3[0], y = _ref3[1];
       }
       while (y) {
-        _ref3 = [y, x % y], x = _ref3[0], y = _ref3[1];
+        _ref4 = [y, x % y], x = _ref4[0], y = _ref4[1];
       }
       return p / x;
     })
@@ -3121,9 +3139,11 @@
 
 }).call(this);
 }, "vocabulary/question": function(exports, require, module) {(function() {
-  var APLArray, deal, numeric, pervasive, roll, _ref;
+  var APLArray, DomainError, deal, numeric, pervasive, roll, _ref;
 
   APLArray = require('../array').APLArray;
+
+  DomainError = require('../errors').DomainError;
 
   _ref = require('./vhelpers'), numeric = _ref.numeric, pervasive = _ref.pervasive;
 
@@ -3139,7 +3159,7 @@
     y = omega.unbox();
     x = alpha.unbox();
     if (x > y) {
-      throw Error('DOMAIN ERROR');
+      throw DomainError();
     }
     available = (function() {
       _results = [];
@@ -3167,9 +3187,11 @@
 
 }).call(this);
 }, "vocabulary/rho": function(exports, require, module) {(function() {
-  var APLArray, assert, isInt, prod, _ref;
+  var APLArray, RankError, assert, isInt, prod, _ref;
 
   APLArray = require('../array').APLArray;
+
+  RankError = require('../errors').RankError;
 
   _ref = require('../helpers'), assert = _ref.assert, prod = _ref.prod, isInt = _ref.isInt;
 
@@ -3178,13 +3200,13 @@
 
     if (alpha) {
       if (alpha.shape.length > 1) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
       shape = alpha.toArray();
       for (_i = 0, _len = shape.length; _i < _len; _i++) {
         d = shape[_i];
         if (!isInt(d, 0)) {
-          throw Error('DOMAIN ERROR');
+          throw DomainError();
         }
       }
       n = prod(shape);
@@ -3204,11 +3226,13 @@
 
 }).call(this);
 }, "vocabulary/rotate": function(exports, require, module) {(function() {
-  var APLArray, assert, isInt, prod, repeat, rotate, _ref;
+  var APLArray, DomainError, IndexError, LengthError, assert, isInt, prod, repeat, rotate, _ref, _ref1;
 
   APLArray = require('../array').APLArray;
 
-  _ref = require('../helpers'), assert = _ref.assert, prod = _ref.prod, repeat = _ref.repeat, isInt = _ref.isInt;
+  _ref = require('../errors'), DomainError = _ref.DomainError, LengthError = _ref.LengthError, IndexError = _ref.IndexError;
+
+  _ref1 = require('../helpers'), assert = _ref1.assert, prod = _ref1.prod, repeat = _ref1.repeat, isInt = _ref1.isInt;
 
   this['⌽'] = rotate = function(omega, alpha, axis) {
     var a, data, indices, n, offset, p, shape, step, stride;
@@ -3217,14 +3241,14 @@
     if (alpha) {
       axis = !axis ? omega.shape.length - 1 : axis.unbox();
       if (!isInt(axis)) {
-        throw Error('DOMAIN ERROR');
+        throw DomainError();
       }
       if (omega.shape.length && !((0 <= axis && axis < omega.shape.length))) {
-        throw Error('INDEX ERROR');
+        throw IndexError();
       }
       step = alpha.unbox();
       if (!isInt(step)) {
-        throw Error('DOMAIN ERROR');
+        throw DomainError();
       }
       if (!step) {
         return omega;
@@ -3255,14 +3279,14 @@
     } else {
       if (axis) {
         if (!axis.isSingleton()) {
-          throw Error('LENGTH ERROR');
+          throw LengthError();
         }
         axis = axis.unbox();
         if (!isInt(axis)) {
-          throw Error('DOMAIN ERROR');
+          throw DomainError();
         }
         if (!((0 <= axis && axis < omega.shape.length))) {
-          throw Error('INDEX ERROR');
+          throw IndexError();
         }
       } else {
         axis = [omega.shape.length - 1];
@@ -3286,11 +3310,13 @@
 
 }).call(this);
 }, "vocabulary/slash": function(exports, require, module) {(function() {
-  var APLArray, assert, compressOrReplicate, isInt, reduce, repeat, _ref;
+  var APLArray, LengthError, RankError, assert, compressOrReplicate, isInt, reduce, repeat, _ref, _ref1;
 
   APLArray = require('../array').APLArray;
 
-  _ref = require('../helpers'), assert = _ref.assert, repeat = _ref.repeat, isInt = _ref.isInt;
+  _ref = require('../errors'), RankError = _ref.RankError, LengthError = _ref.LengthError;
+
+  _ref1 = require('../helpers'), assert = _ref1.assert, repeat = _ref1.repeat, isInt = _ref1.isInt;
 
   this['/'] = function(omega, alpha, axis) {
     if (typeof omega === 'function') {
@@ -3315,14 +3341,14 @@
     assert(typeof f === 'function');
     assert(typeof g === 'undefined');
     return function(omega, alpha) {
-      var a, data, i, indices, isBackwards, isMonadic, isNWise, n, p, rShape, shape, x, y, _i, _j, _ref1;
+      var a, data, i, indices, isBackwards, isMonadic, isNWise, n, p, rShape, shape, x, y, _i, _j, _ref2;
 
       if (omega.shape.length === 0) {
         omega = new APLArray([omega.unbox()]);
       }
       axis = axis != null ? axis.toInt() : omega.shape.length - 1;
       if (!((0 <= axis && axis < omega.shape.length))) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
       if (alpha) {
         isNWise = true;
@@ -3343,14 +3369,14 @@
           return new APLArray([], rShape);
         }
         if (shape[axis] < 0) {
-          throw Error('LENGTH ERROR');
+          throw LengthError();
         }
       } else {
         rShape = rShape.slice(0);
         rShape.splice(axis, 1);
       }
       if (omega.empty()) {
-        throw Error('DOMAIN ERROR');
+        throw DomainError();
       }
       data = [];
       indices = repeat([0], shape.length);
@@ -3367,7 +3393,7 @@
         } else {
           x = omega.data[p + (n - 1) * omega.stride[axis]];
           x = x instanceof APLArray ? x : APLArray.scalar(x);
-          for (i = _j = _ref1 = n - 2; _j >= 0; i = _j += -1) {
+          for (i = _j = _ref2 = n - 2; _j >= 0; i = _j += -1) {
             y = omega.data[p + i * omega.stride[axis]];
             y = y instanceof APLArray ? y : APLArray.scalar(y);
             x = f(x, y);
@@ -3393,14 +3419,14 @@
   };
 
   compressOrReplicate = function(omega, alpha, axis) {
-    var a, b, data, filler, i, indices, n, p, shape, x, _i, _j, _len, _ref1, _ref2;
+    var a, b, data, filler, i, indices, n, p, shape, x, _i, _j, _len, _ref2, _ref3;
 
     if (omega.shape.length === 0) {
       omega = new APLArray([omega.unbox()]);
     }
     axis = axis ? axis.toInt(0, omega.shape.length) : omega.shape.length - 1;
     if (alpha.shape.length > 1) {
-      throw Error('RANK ERROR');
+      throw RankError();
     }
     a = alpha.toArray();
     n = omega.shape[axis];
@@ -3408,7 +3434,7 @@
       a = repeat(a, n);
     }
     if (n !== 1 && n !== a.length) {
-      throw Error('LENGTH ERROR');
+      throw LengthError();
     }
     shape = omega.shape.slice(0);
     shape[axis] = 0;
@@ -3416,10 +3442,10 @@
     for (i = _i = 0, _len = a.length; _i < _len; i = ++_i) {
       x = a[i];
       if (!isInt(x)) {
-        throw Error('DOMAIN ERROR');
+        throw DomainError();
       }
       shape[axis] += Math.abs(x);
-      for (_j = 0, _ref1 = Math.abs(x); 0 <= _ref1 ? _j < _ref1 : _j > _ref1; 0 <= _ref1 ? _j++ : _j--) {
+      for (_j = 0, _ref2 = Math.abs(x); 0 <= _ref2 ? _j < _ref2 : _j > _ref2; 0 <= _ref2 ? _j++ : _j--) {
         b.push(x > 0 ? i : null);
       }
     }
@@ -3441,7 +3467,7 @@
       p = omega.offset;
       indices = repeat([0], shape.length);
       while (true) {
-        x = b[indices[axis]] != null ? (assert((0 <= (_ref2 = b[indices[axis]]) && _ref2 < n), 'a2'), omega.data[p + b[indices[axis]] * omega.stride[axis]]) : filler;
+        x = b[indices[axis]] != null ? (assert((0 <= (_ref3 = b[indices[axis]]) && _ref3 < n), 'a2'), omega.data[p + b[indices[axis]] * omega.stride[axis]]) : filler;
         assert(x != null, 'a1');
         data.push(x);
         i = shape.length - 1;
@@ -3465,14 +3491,16 @@
 
 }).call(this);
 }, "vocabulary/squish": function(exports, require, module) {(function() {
-  var APLArray, assert, isInt, prod, repeat, squish, _ref;
+  var APLArray, DomainError, IndexError, LengthError, RankError, assert, isInt, prod, repeat, squish, _ref, _ref1;
 
   APLArray = require('../array').APLArray;
 
-  _ref = require('../helpers'), assert = _ref.assert, prod = _ref.prod, repeat = _ref.repeat, isInt = _ref.isInt;
+  _ref = require('../errors'), DomainError = _ref.DomainError, IndexError = _ref.IndexError, RankError = _ref.RankError, LengthError = _ref.LengthError;
+
+  _ref1 = require('../helpers'), assert = _ref1.assert, prod = _ref1.prod, repeat = _ref1.repeat, isInt = _ref1.isInt;
 
   this['⌷'] = squish = function(omega, alpha, axes) {
-    var a, alphaItems, axis, d, data, i, p, subscriptShapes, subscripts, u, x, _i, _j, _k, _l, _len, _len1, _m, _n, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _results, _results1;
+    var a, alphaItems, axis, d, data, i, p, subscriptShapes, subscripts, u, x, _i, _j, _k, _l, _len, _len1, _m, _n, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _results, _results1;
 
     if (typeof omega === 'function') {
       return function(x, y) {
@@ -3486,55 +3514,55 @@
     assert(omega instanceof APLArray);
     assert((axes == null) || axes instanceof APLArray);
     if (alpha.shape.length > 1) {
-      throw Error('RANK ERROR');
+      throw RankError();
     }
     alphaItems = alpha.toArray();
     if (alphaItems.length > omega.shape.length) {
-      throw Error('LENGTH ERROR');
+      throw LengthError();
     }
     axes = axes ? axes.toArray() : (function() {
       _results = [];
-      for (var _i = 0, _ref1 = alphaItems.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--){ _results.push(_i); }
+      for (var _i = 0, _ref2 = alphaItems.length; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; 0 <= _ref2 ? _i++ : _i--){ _results.push(_i); }
       return _results;
     }).apply(this);
     if (alphaItems.length !== axes.length) {
-      throw Error('LENGTH ERROR');
+      throw LengthError();
     }
     subscripts = Array(omega.shape.length);
     subscriptShapes = Array(omega.shape.length);
     for (i = _j = 0, _len = axes.length; _j < _len; i = ++_j) {
       axis = axes[i];
       if (!isInt(axis)) {
-        throw Error('DOMAIN ERROR');
+        throw DomainError();
       }
       if (!((0 <= axis && axis < omega.shape.length))) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
       if (typeof subscripts[axis] !== 'undefined') {
-        throw Error('RANK ERROR: Duplicate axis');
+        throw RankError('Duplicate axis');
       }
       d = alphaItems[i];
       subscripts[axis] = d instanceof APLArray ? d.toArray() : [d];
       assert(subscripts[axis].length);
       subscriptShapes[axis] = d instanceof APLArray ? d.shape : [];
-      _ref2 = subscripts[axis];
-      for (_k = 0, _len1 = _ref2.length; _k < _len1; _k++) {
-        x = _ref2[_k];
+      _ref3 = subscripts[axis];
+      for (_k = 0, _len1 = _ref3.length; _k < _len1; _k++) {
+        x = _ref3[_k];
         if (!isInt(x)) {
-          throw Error('DOMAIN ERROR');
+          throw DomainError();
         }
         if (!((0 <= x && x < omega.shape[axis]))) {
-          throw Error('INDEX ERROR');
+          throw IndexError();
         }
       }
     }
-    for (i = _l = 0, _ref3 = subscripts.length; 0 <= _ref3 ? _l < _ref3 : _l > _ref3; i = 0 <= _ref3 ? ++_l : --_l) {
+    for (i = _l = 0, _ref4 = subscripts.length; 0 <= _ref4 ? _l < _ref4 : _l > _ref4; i = 0 <= _ref4 ? ++_l : --_l) {
       if (!(typeof subscripts[i] === 'undefined')) {
         continue;
       }
       subscripts[i] = (function() {
         _results1 = [];
-        for (var _m = 0, _ref4 = omega.shape[i]; 0 <= _ref4 ? _m < _ref4 : _m > _ref4; 0 <= _ref4 ? _m++ : _m--){ _results1.push(_m); }
+        for (var _m = 0, _ref5 = omega.shape[i]; 0 <= _ref5 ? _m < _ref5 : _m > _ref5; 0 <= _ref5 ? _m++ : _m--){ _results1.push(_m); }
         return _results1;
       }).apply(this);
       subscriptShapes[i] = [omega.shape[i]];
@@ -3542,7 +3570,7 @@
     data = [];
     u = repeat([0], subscripts.length);
     p = omega.offset;
-    for (a = _n = 0, _ref5 = subscripts.length; 0 <= _ref5 ? _n < _ref5 : _n > _ref5; a = 0 <= _ref5 ? ++_n : --_n) {
+    for (a = _n = 0, _ref6 = subscripts.length; 0 <= _ref6 ? _n < _ref6 : _n > _ref6; a = 0 <= _ref6 ? ++_n : --_n) {
       p += subscripts[a][0] * omega.stride[a];
     }
     while (true) {
@@ -3558,7 +3586,7 @@
       p += (subscripts[a][u[a] + 1] - subscripts[a][u[a]]) * omega.stride[a];
       u[a]++;
     }
-    return new APLArray(data, (_ref6 = []).concat.apply(_ref6, subscriptShapes));
+    return new APLArray(data, (_ref7 = []).concat.apply(_ref7, subscriptShapes));
   };
 
 }).call(this);
@@ -3580,30 +3608,32 @@
 
 }).call(this);
 }, "vocabulary/take": function(exports, require, module) {(function() {
-  var APLArray, prod, repeat, _ref;
+  var APLArray, DomainError, RankError, prod, repeat, _ref, _ref1;
 
   APLArray = require('../array').APLArray;
 
-  _ref = require('../helpers'), prod = _ref.prod, repeat = _ref.repeat;
+  _ref = require('../errors'), DomainError = _ref.DomainError, RankError = _ref.RankError;
+
+  _ref1 = require('../helpers'), prod = _ref1.prod, repeat = _ref1.repeat;
 
   this['↑'] = function(omega, alpha) {
-    var a, axis, copyIndices, copyShape, data, i, mustCopy, offset, p, q, shape, stride, x, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref1;
+    var a, axis, copyIndices, copyShape, data, i, mustCopy, offset, p, q, shape, stride, x, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref2;
 
     if (alpha) {
       if (alpha.shape.length > 1) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
       if (omega.shape.length === 0) {
         omega = new APLArray([omega.unbox()]);
       }
       a = alpha.toArray();
       if (a.length > omega.shape.length) {
-        throw Error('RANK ERROR');
+        throw RankError();
       }
       for (_i = 0, _len = a.length; _i < _len; _i++) {
         x = a[_i];
         if (typeof x !== 'number' || x !== Math.floor(x)) {
-          throw Error('DOMAIN ERROR');
+          throw DomainError();
         }
       }
       mustCopy = false;
@@ -3618,7 +3648,7 @@
       if (mustCopy) {
         stride = Array(shape.length);
         stride[stride.length - 1] = 1;
-        for (i = _k = _ref1 = stride.length - 2; _k >= 0; i = _k += -1) {
+        for (i = _k = _ref2 = stride.length - 2; _k >= 0; i = _k += -1) {
           stride[i] = stride[i + 1] * shape[i + 1];
         }
         data = repeat([omega.getPrototype()], prod(shape));
@@ -3688,10 +3718,12 @@
 
 }).call(this);
 }, "vocabulary/vhelpers": function(exports, require, module) {(function() {
-  var APLArray, assert, isInt, match, multiplicitySymbol, _ref,
+  var APLArray, DomainError, LengthError, RankError, SyntaxError, assert, isInt, match, multiplicitySymbol, _ref, _ref1,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   _ref = require('../helpers'), assert = _ref.assert, isInt = _ref.isInt;
+
+  _ref1 = require('../errors'), DomainError = _ref1.DomainError, LengthError = _ref1.LengthError, RankError = _ref1.RankError, SyntaxError = _ref1.SyntaxError;
 
   APLArray = require('../array').APLArray;
 
@@ -3712,24 +3744,24 @@
 
     monad = _arg.monad, dyad = _arg.dyad;
     pervadeMonadic = monad ? function(x) {
-      var _name, _ref1;
+      var _name, _ref2;
 
       if (x instanceof APLArray) {
         return x.map(pervadeMonadic);
       } else {
-        return (_ref1 = typeof x[_name = F.aplName] === "function" ? x[_name]() : void 0) != null ? _ref1 : monad(x);
+        return (_ref2 = typeof x[_name = F.aplName] === "function" ? x[_name]() : void 0) != null ? _ref2 : monad(x);
       }
     } : function() {
       throw Error('Not implemented');
     };
     pervadeDyadic = dyad ? function(x, y) {
-      var axis, tx, ty, xi, yi, _i, _name, _name1, _ref1, _ref2, _ref3;
+      var axis, tx, ty, xi, yi, _i, _name, _name1, _ref2, _ref3, _ref4;
 
       tx = multiplicitySymbol(x);
       ty = multiplicitySymbol(y);
       switch (tx + ty) {
         case '..':
-          return (_ref1 = (_ref2 = y != null ? typeof y[_name = F.aplName] === "function" ? y[_name](x) : void 0 : void 0) != null ? _ref2 : x != null ? typeof x[_name1 = 'right_' + F.aplName] === "function" ? x[_name1](y) : void 0 : void 0) != null ? _ref1 : dyad(x, y);
+          return (_ref2 = (_ref3 = y != null ? typeof y[_name = F.aplName] === "function" ? y[_name](x) : void 0 : void 0) != null ? _ref3 : x != null ? typeof x[_name1 = 'right_' + F.aplName] === "function" ? x[_name1](y) : void 0 : void 0) != null ? _ref2 : dyad(x, y);
         case '.1':
           return y.map(function(yi) {
             return pervadeDyadic(x, yi);
@@ -3763,11 +3795,11 @@
           });
         case '**':
           if (x.shape.length !== y.shape.length) {
-            throw Error('RANK ERROR');
+            throw RankError();
           }
-          for (axis = _i = 0, _ref3 = x.shape.length; 0 <= _ref3 ? _i < _ref3 : _i > _ref3; axis = 0 <= _ref3 ? ++_i : --_i) {
+          for (axis = _i = 0, _ref4 = x.shape.length; 0 <= _ref4 ? _i < _ref4 : _i > _ref4; axis = 0 <= _ref4 ? ++_i : --_i) {
             if (x.shape[axis] !== y.shape[axis]) {
-              throw Error('LENGTH ERROR');
+              throw LengthError();
             }
           }
           return x.map2(y, pervadeDyadic);
@@ -3785,14 +3817,14 @@
   this.numeric = function(f) {
     return function(x, y, axis) {
       if (typeof x !== 'number' || ((y != null) && typeof y !== 'number')) {
-        throw Error('DOMAIN ERROR');
+        throw DomainError();
       }
       return f(x, y, axis);
     };
   };
 
   this.match = match = function(x, y) {
-    var axis, r, _i, _ref1, _ref2, _ref3;
+    var axis, r, _i, _ref2, _ref3, _ref4;
 
     if (x instanceof APLArray) {
       if (!(y instanceof APLArray)) {
@@ -3801,7 +3833,7 @@
         if (x.shape.length !== y.shape.length) {
           return false;
         }
-        for (axis = _i = 0, _ref1 = x.shape.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; axis = 0 <= _ref1 ? ++_i : --_i) {
+        for (axis = _i = 0, _ref2 = x.shape.length; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; axis = 0 <= _ref2 ? ++_i : --_i) {
           if (x.shape[axis] !== y.shape[axis]) {
             return false;
           }
@@ -3818,14 +3850,14 @@
       if (y instanceof APLArray) {
         return false;
       } else {
-        return (_ref2 = (_ref3 = typeof x['≡'] === "function" ? x['≡'](y) : void 0) != null ? _ref3 : typeof y['≡'] === "function" ? y['≡'](x) : void 0) != null ? _ref2 : x === y;
+        return (_ref3 = (_ref4 = typeof x['≡'] === "function" ? x['≡'](y) : void 0) != null ? _ref4 : typeof y['≡'] === "function" ? y['≡'](x) : void 0) != null ? _ref3 : x === y;
       }
     }
   };
 
   this.bool = function(x) {
     if (x !== 0 && x !== 1) {
-      throw Error('DOMAIN ERROR');
+      throw DomainError();
     }
     return x;
   };
@@ -3839,7 +3871,7 @@
     }
     assert(axes instanceof APLArray);
     if (axes.shape.length !== 1 || axes.shape[0] !== 1) {
-      throw Error('SYNTAX ERROR');
+      throw SyntaxError();
     }
     a = axes.unbox();
     if (a instanceof APLArray) {
@@ -3847,7 +3879,7 @@
       for (i = _i = 0, _len = a.length; _i < _len; i = ++_i) {
         x = a[i];
         if (!isInt(x, 0, rank)) {
-          throw Error('DOMAIN ERROR');
+          throw DomainError();
         }
         if (__indexOf.call(a.slice(0, i), x) >= 0) {
           throw Error('Non-unique axes');
@@ -3857,7 +3889,7 @@
     } else if (isInt(a, 0, rank)) {
       return [a];
     } else {
-      throw Error('DOMAIN ERROR');
+      throw DomainError();
     }
   };
 

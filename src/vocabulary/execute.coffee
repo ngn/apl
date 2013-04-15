@@ -1,3 +1,5 @@
+{DomainError} = require '../errors'
+
 # Execute (`⍎`)
 #
 #     ⍎ '+/ 2 2 ⍴ 1 2 3 4'  ⍝ returns 3 7
@@ -13,6 +15,6 @@
     s = ''
     omega.each (c) ->
       if typeof c isnt 'string'
-        throw Error 'DOMAIN ERROR'
+        throw DomainError()
       s += c
     require('../compiler').exec s

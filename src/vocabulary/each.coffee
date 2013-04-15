@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{LengthError} = require '../errors'
 {assert} = require '../helpers'
 
 # Each (`¨`)
@@ -47,7 +48,7 @@
         assert r instanceof APLArray
         if r.shape.length is 0 then r.unbox() else r
     else
-      throw Error 'LENGTH ERROR'
+      throw LengthError()
 
 arrayEquals = (a, b) ->
   assert a instanceof Array

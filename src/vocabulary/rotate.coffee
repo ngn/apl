@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{DomainError, LengthError, IndexError} = require '../errors'
 {assert, prod, repeat, isInt} = require '../helpers'
 
 @['⌽'] = rotate = (omega, alpha, axis) ->
@@ -16,12 +17,12 @@
     #     5 ⌽ ⍬                             ⍝ returns ⍬
     axis = if not axis then omega.shape.length - 1 else axis.unbox()
     if not isInt axis
-      throw Error 'DOMAIN ERROR'
+      throw DomainError()
     if omega.shape.length and not (0 <= axis < omega.shape.length)
-      throw Error 'INDEX ERROR'
+      throw IndexError()
     step = alpha.unbox()
     if not isInt step
-      throw Error 'DOMAIN ERROR'
+      throw DomainError()
     if not step
       return omega
     n = omega.shape[axis]
@@ -50,10 +51,10 @@
     #     ⌽    2 5 ⍴ 1 2 3 4 5 6 7 8 9 0   ⍝ returns 2 5 ⍴ 5 4 3 2 1 0 9 8 7 6
     #     ⌽[0] 2 5 ⍴ 1 2 3 4 5 6 7 8 9 0   ⍝ returns 2 5 ⍴ 6 7 8 9 0 1 2 3 4 5
     if axis
-      if not axis.isSingleton() then throw Error 'LENGTH ERROR'
+      if not axis.isSingleton() then throw LengthError()
       axis = axis.unbox()
-      if not isInt axis then throw Error 'DOMAIN ERROR'
-      if not (0 <= axis < omega.shape.length) then throw Error 'INDEX ERROR'
+      if not isInt axis then throw DomainError()
+      if not (0 <= axis < omega.shape.length) then throw IndexError()
     else
       axis = [omega.shape.length - 1]
     if omega.shape.length is 0 then return omega

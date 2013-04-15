@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{DomainError, RankError} = require '../errors'
 {prod, repeat} = require '../helpers'
 
 @['↑'] = (omega, alpha) ->
@@ -22,14 +23,14 @@
     #     ¯1 3 ↑ 1 + 4 3 ⍴ ⍳ 12    ⍝ returns 1 3 ⍴ 10 11 12
     #     1 2 ↑ 1 + 4 3 ⍴ ⍳ 12     ⍝ returns 1 2 ⍴ 1 2
     if alpha.shape.length > 1
-      throw Error 'RANK ERROR'
+      throw RankError()
     if omega.shape.length is 0
       omega = new APLArray [omega.unbox()]
     a = alpha.toArray()
     if a.length > omega.shape.length
-      throw Error 'RANK ERROR'
+      throw RankError()
     for x in a when typeof x isnt 'number' or x isnt Math.floor x
-      throw Error 'DOMAIN ERROR'
+      throw DomainError()
 
     mustCopy = false
     shape = []

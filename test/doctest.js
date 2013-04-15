@@ -83,7 +83,7 @@
         };
       } catch (_error) {
         e = _error;
-        if (expectedErrorMessage && e.name.slice(0, expectedErrorMessage.length) !== expectedErrorMessage && e.message.slice(0, expectedErrorMessage.length) !== expectedErrorMessage) {
+        if (expectedErrorMessage && e.name.slice(0, expectedErrorMessage.length) !== expectedErrorMessage) {
           return {
             success: false,
             error: e,

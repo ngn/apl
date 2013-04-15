@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{RankError, LengthError} = require '../errors'
 {assert, repeat, isInt} = require '../helpers'
 
 
@@ -39,7 +40,7 @@ reduce = @reduce = (f, g, axis) ->
   (omega, alpha) ->
     if omega.shape.length is 0 then omega = new APLArray [omega.unbox()]
     axis = if axis? then axis.toInt() else omega.shape.length - 1
-    if not (0 <= axis < omega.shape.length) then throw Error 'RANK ERROR'
+    if not (0 <= axis < omega.shape.length) then throw RankError()
 
     if alpha
       isNWise = true
@@ -56,12 +57,12 @@ reduce = @reduce = (f, g, axis) ->
     rShape = shape
     if isNWise
       if shape[axis] is 0 then return new APLArray [], rShape
-      if shape[axis] < 0 then throw Error 'LENGTH ERROR'
+      if shape[axis] < 0 then throw LengthError()
     else
       rShape = rShape[...]
       rShape.splice axis, 1
 
-    if omega.empty() then throw Error 'DOMAIN ERROR'
+    if omega.empty() then throw DomainError()
 
     data = []
     indices = repeat [0], shape.length
@@ -120,17 +121,17 @@ reduce = @reduce = (f, g, axis) ->
 compressOrReplicate = (omega, alpha, axis) ->
   if omega.shape.length is 0 then omega = new APLArray [omega.unbox()]
   axis = if axis then axis.toInt 0, omega.shape.length else omega.shape.length - 1
-  if alpha.shape.length > 1 then throw Error 'RANK ERROR'
+  if alpha.shape.length > 1 then throw RankError()
   a = alpha.toArray()
   n = omega.shape[axis]
   if a.length is 1 then a = repeat a, n
-  if n not in [1, a.length] then throw Error 'LENGTH ERROR'
+  if n not in [1, a.length] then throw LengthError()
 
   shape = omega.shape[...]
   shape[axis] = 0
   b = []
   for x, i in a
-    if not isInt x then throw Error 'DOMAIN ERROR'
+    if not isInt x then throw DomainError()
     shape[axis] += Math.abs x
     for [0...Math.abs(x)] then b.push(if x > 0 then i else null)
   if n is 1
