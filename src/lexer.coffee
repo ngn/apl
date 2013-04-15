@@ -1,4 +1,4 @@
-{die} = require './helpers'
+{SyntaxError} = require './errors'
 
 # The lexer transforms APL source into a stream of tokens.
 #
@@ -51,8 +51,7 @@ tokenDefs = [
         type = t or m[0]
         break
       if not type
-        die 'Unrecognised token',
-          name: 'APLLexicalError'
+        throw SyntaxError 'Unrecognised token',
           file: opts.file
           line: line
           col: col

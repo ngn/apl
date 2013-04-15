@@ -3,7 +3,7 @@
 #
 # More importantly, `complex.coffee` demonstrates how one can implement
 # custom APL objects.
-{die, assert} = require './helpers'
+{assert} = require './helpers'
 
 C = (re, im) -> if im then new Complex re, im else re
 

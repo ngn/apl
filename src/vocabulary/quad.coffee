@@ -18,7 +18,7 @@
   if typeof window?.prompt is 'function'
     prompt('') or ''
   else
-    die 'Reading from ⍞ is not implemented.'
+    throw Error 'Reading from ⍞ is not implemented.'
 
 @['set_⍞'] = (x) ->
   s = format(x).join '\n'

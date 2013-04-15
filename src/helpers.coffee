@@ -43,24 +43,4 @@
 @assert = assert = (flag, s = '') ->
   if not flag then throw extend Error(s), name: 'AssertionError'
 
-@die = (message, opts = {}, args...) ->
-  assert typeof message is 'string'
-  assert typeof opts is 'object'
-  assert not args.length
-  if opts.aplCode? and opts.line? and opts.col?
-    assert typeof opts.aplCode is 'string'
-    assert typeof opts.line is 'number'
-    assert typeof opts.col is 'number'
-    assert typeof opts.file in ['string', 'undefined']
-    message += """
-      \n#{opts.file or '-'}:##{opts.line}:#{opts.col}
-      #{opts.aplCode.split('\n')[opts.line - 1]}
-      #{repeat('_', opts.col - 1)}^
-    """
-  e = Error message
-  for k, v of opts
-    assert k in ['aplCode', 'line', 'col', 'file', 'name']
-    e[k] = v
-  throw e
-
 @isInt = isInt = (x, start = -Infinity, end = Infinity) -> x is ~~x and start <= x < end

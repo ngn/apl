@@ -531,13 +531,15 @@
 
 }).call(this);
 }, "compiler": function(exports, require, module) {(function() {
-  var all, assert, compile, compilerError, die, inherit, nodes, parser, resolveExprs, toJavaScript, vocabulary, _ref;
+  var SyntaxError, all, assert, compile, compilerError, inherit, nodes, parser, resolveExprs, toJavaScript, vocabulary, _ref;
 
   parser = require('./parser');
 
   vocabulary = require('./vocabulary');
 
-  _ref = require('./helpers'), inherit = _ref.inherit, die = _ref.die, assert = _ref.assert, all = _ref.all;
+  _ref = require('./helpers'), inherit = _ref.inherit, assert = _ref.assert, all = _ref.all;
+
+  SyntaxError = require('./errors').SyntaxError;
 
   resolveExprs = function(ast, opts) {
     var k, m, node, queue, scopeCounter, scopeNode, v, varInfo, vars, visit, _i, _j, _len, _len1, _ref1, _ref2;
@@ -781,7 +783,7 @@
             [].splice.apply(node, [0, 9e9].concat(_ref23 = a[0])), _ref23;
             return h[0];
           default:
-            return die("Unrecognised node type, '" + node[0] + "'");
+            return assert(false, "Unrecognised node type, '" + node[0] + "'");
         }
       };
       _ref2 = scopeNode.slice(1);
@@ -901,7 +903,7 @@
           return _results;
         })()) + "])      )";
       case 'expr':
-        return die('No "expr" nodes are expected at this stage.');
+        return assert(false, 'No "expr" nodes are expected at this stage.');
       case 'vector':
         n = node.length - 1;
         return "_['⎕aplify']([" + (((function() {
@@ -942,13 +944,12 @@
       case 'embedded':
         return "_['⎕aplify'](" + (node[1].replace(/(^«|»$)/g, '')) + ")";
       default:
-        return die("Unrecognised node type, '" + node[0] + "'");
+        return assert(false, "Unrecognised node type, '" + node[0] + "'");
     }
   };
 
   compilerError = function(node, opts, message) {
-    return die(message, {
-      name: 'APLCompilerError',
+    throw SyntaxError(message, {
       file: opts.file,
       line: node.startLine,
       col: node.startCol,
@@ -992,10 +993,10 @@
 
 }).call(this);
 }, "complex": function(exports, require, module) {(function() {
-  var C, Complex, assert, die, _ref,
+  var C, Complex, assert,
     __slice = [].slice;
 
-  _ref = require('./helpers'), die = _ref.die, assert = _ref.assert;
+  assert = require('./helpers').assert;
 
   C = function(re, im) {
     if (im) {
@@ -1135,9 +1136,61 @@
   })();
 
 }).call(this);
-}, "errors": function(exports, require, module) {}, "helpers": function(exports, require, module) {(function() {
-  var assert, extend, isInt, prod, repeat,
-    __slice = [].slice;
+}, "errors": function(exports, require, module) {(function() {
+  var APLError, assert, repeat, _ref;
+
+  _ref = require('./helpers'), assert = _ref.assert, repeat = _ref.repeat;
+
+  APLError = function(name, message, opts) {
+    var e, k, v, _ref1;
+
+    if (message == null) {
+      message = '';
+    }
+    assert(typeof name === 'string');
+    assert(typeof message === 'string');
+    if (opts != null) {
+      assert(typeof opts === 'object');
+      if ((opts.aplCode != null) && (opts.line != null) && (opts.col != null)) {
+        assert(typeof opts.aplCode === 'string');
+        assert(typeof opts.line === 'number');
+        assert(typeof opts.col === 'number');
+        assert((_ref1 = typeof opts.file) === 'string' || _ref1 === 'undefined');
+        message += "\n" + (opts.file || '-') + ":#" + opts.line + ":" + opts.col + "\n" + (opts.aplCode.split('\n')[opts.line - 1]) + "\n" + (repeat('_', opts.col - 1)) + "^";
+      }
+    }
+    e = Error(message);
+    e.name = name;
+    for (k in opts) {
+      v = opts[k];
+      e[k] = v;
+    }
+    return e;
+  };
+
+  this.SyntaxError = function(message, opts) {
+    return APLError('SYNTAX ERROR', message, opts);
+  };
+
+  this.DomainError = function(message, opts) {
+    return APLError('DOMAIN ERROR', message, opts);
+  };
+
+  this.LengthError = function(message, opts) {
+    return APLError('LENGTH ERROR', message, opts);
+  };
+
+  this.RankError = function(message, opts) {
+    return APLError('RANK ERROR', message, opts);
+  };
+
+  this.IndexError = function(message, opts) {
+    return APLError('INDEX ERROR', message, opts);
+  };
+
+}).call(this);
+}, "helpers": function(exports, require, module) {(function() {
+  var assert, extend, isInt, prod, repeat;
 
   this.inherit = function(x, extraProperties) {
     var f, k, r, v;
@@ -1248,32 +1301,6 @@
     }
   };
 
-  this.die = function() {
-    var args, e, k, message, opts, v, _ref;
-
-    message = arguments[0], opts = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
-    if (opts == null) {
-      opts = {};
-    }
-    assert(typeof message === 'string');
-    assert(typeof opts === 'object');
-    assert(!args.length);
-    if ((opts.aplCode != null) && (opts.line != null) && (opts.col != null)) {
-      assert(typeof opts.aplCode === 'string');
-      assert(typeof opts.line === 'number');
-      assert(typeof opts.col === 'number');
-      assert((_ref = typeof opts.file) === 'string' || _ref === 'undefined');
-      message += "\n" + (opts.file || '-') + ":#" + opts.line + ":" + opts.col + "\n" + (opts.aplCode.split('\n')[opts.line - 1]) + "\n" + (repeat('_', opts.col - 1)) + "^";
-    }
-    e = Error(message);
-    for (k in opts) {
-      v = opts[k];
-      assert(k === 'aplCode' || k === 'line' || k === 'col' || k === 'file' || k === 'name');
-      e[k] = v;
-    }
-    throw e;
-  };
-
   this.isInt = isInt = function(x, start, end) {
     if (start == null) {
       start = -Infinity;
@@ -1286,9 +1313,9 @@
 
 }).call(this);
 }, "lexer": function(exports, require, module) {(function() {
-  var die, tokenDefs;
+  var SyntaxError, tokenDefs;
 
-  die = require('./helpers').die;
+  SyntaxError = require('./errors').SyntaxError;
 
   tokenDefs = [['-', /^(?:[ \t]+|[⍝\#].*)+/], ['newline', /^[\n\r]+/], ['separator', /^[◇⋄]/], ['number', /^¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯)(?:j¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯))?/i], ['string', /^(?:'(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*")+/], ['', /^[\(\)\[\]\{\}:;←]/], ['embedded', /^«[^»]*»/], ['symbol', /^(?:∘\.|⎕?[a-z_][0-9a-z_]*|[^¯'":«»])/i]];
 
@@ -1327,8 +1354,7 @@
             break;
           }
           if (!type) {
-            die('Unrecognised token', {
-              name: 'APLLexicalError',
+            throw SyntaxError('Unrecognised token', {
               file: opts.file,
               line: line,
               col: col,
@@ -1363,12 +1389,12 @@
 
 }).call(this);
 }, "parser": function(exports, require, module) {(function() {
-  var die, lexer,
+  var SyntaxError, lexer,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   lexer = require('./lexer');
 
-  die = require('./helpers').die;
+  SyntaxError = require('./errors').SyntaxError;
 
   this.parse = function(aplCode, opts) {
     var consume, demand, parseBody, parseExpr, parseIndexable, parseIndices, parseItem, parserError, result, token, tokenStream;
@@ -1392,8 +1418,7 @@
       token = tokenStream.next();
     };
     parserError = function(message) {
-      return die(message, {
-        name: 'APLParserError',
+      throw SyntaxError(message, {
         file: opts.file,
         line: token.startLine,
         col: token.startCol,
@@ -3078,7 +3103,7 @@
     if (typeof (typeof window !== "undefined" && window !== null ? window.prompt : void 0) === 'function') {
       return prompt('') || '';
     } else {
-      return die('Reading from ⍞ is not implemented.');
+      throw Error('Reading from ⍞ is not implemented.');
     }
   };
 

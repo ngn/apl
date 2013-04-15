@@ -1,5 +1,5 @@
 lexer = require './lexer'
-{die} = require './helpers'
+{SyntaxError} = require './errors'
 
 # The parser builds an AST from a stream of tokens.
 #
@@ -43,8 +43,7 @@ lexer = require './lexer'
     return
 
   parserError = (message) ->
-    die message,
-      name: 'APLParserError'
+    throw SyntaxError message,
       file: opts.file
       line: token.startLine
       col: token.startCol
@@ -96,6 +95,6 @@ lexer = require './lexer'
     else parserError "Encountered unexpected token of type '#{token.type}'"
 
   result = parseBody()
-  #     'hello'} ⍝ throws
+  #     'hello'} ⍝ throws 'SYNTAX ERROR'
   demand 'eof'
   result

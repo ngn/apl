@@ -2,7 +2,8 @@
 
 parser = require './parser'
 vocabulary = require './vocabulary'
-{inherit, die, assert, all} = require './helpers'
+{inherit, assert, all} = require './helpers'
+{SyntaxError} = require './errors'
 
 # # Stage 1: Resolve expr nodes
 
@@ -181,7 +182,7 @@ resolveExprs = (ast, opts = {}) ->
           h[0]
 
         else
-          die "Unrecognised node type, '#{node[0]}'"
+          assert false, "Unrecognised node type, '#{node[0]}'"
 
     for node in scopeNode[1...]
       visit node
@@ -332,7 +333,7 @@ toJavaScript = (node) ->
       )"
 
     when 'expr'
-      die 'No "expr" nodes are expected at this stage.'
+      assert false, 'No "expr" nodes are expected at this stage.'
 
     when 'vector'
       n = node.length - 1
@@ -369,12 +370,11 @@ toJavaScript = (node) ->
       "_['⎕aplify'](#{node[1].replace /(^«|»$)/g, ''})"
 
     else
-      die "Unrecognised node type, '#{node[0]}'"
+      assert false, "Unrecognised node type, '#{node[0]}'"
 
 # Used to report the AST node where the error happened
 compilerError = (node, opts, message) ->
-  die message,
-    name: 'APLCompilerError'
+  throw SyntaxError message,
     file: opts.file
     line: node.startLine
     col: node.startCol
