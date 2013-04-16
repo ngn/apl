@@ -1515,15 +1515,8 @@
 
 }).call(this);
 }, "vocabulary": function(exports, require, module) {(function() {
-  var APLArray, Complex, assert, createLazyRequire, fromModule, lazyRequires, name, names, _base, _base1, _base2, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4, _ref5,
-    __slice = [].slice,
-    _this = this;
-
-  assert = require('./helpers').assert;
-
-  APLArray = require('./array').APLArray;
-
-  Complex = require('./complex').Complex;
+  var createLazyRequire, fromModule, k, lazyRequires, name, names, v, _base, _base1, _base2, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4, _ref5,
+    __slice = [].slice;
 
   lazyRequires = {
     arithmetic: '+-×÷*⍟∣|',
@@ -1560,7 +1553,8 @@
     slash: '/⌿',
     tack: '⊣⊢',
     encode: '⊤',
-    decode: '⊥'
+    decode: '⊥',
+    special: ['⎕aplify', '⎕complex', '⎕bool', 'get_⎕IO', 'set_⎕IO']
   };
 
   createLazyRequire = function(obj, name, fromModule) {
@@ -1601,61 +1595,12 @@
     ((_ref5 = (_base2 = this[name]).aplMetaInfo) != null ? _ref5 : _base2.aplMetaInfo = {}).isConjunction = true;
   }
 
-  this['⎕aplify'] = function(x) {
-    var y;
-
-    assert(x != null);
-    if (typeof x === 'string') {
-      if (x.length === 1) {
-        return APLArray.scalar(x);
-      } else {
-        return new APLArray(x);
-      }
-    } else if (typeof x === 'number') {
-      return APLArray.scalar(x);
-    } else if (x instanceof Array) {
-      return new APLArray((function() {
-        var _len4, _m, _results;
-
-        _results = [];
-        for (_m = 0, _len4 = x.length; _m < _len4; _m++) {
-          y = x[_m];
-          if (y instanceof APLArray && y.shape.length === 0) {
-            _results.push(y.unbox());
-          } else {
-            _results.push(y);
-          }
-        }
-        return _results;
-      })());
-    } else if (x instanceof APLArray) {
-      return x;
-    } else {
-      throw Error('Cannot aplify object ' + x);
+  for (k in this) {
+    v = this[k];
+    if (typeof v === 'function') {
+      v.aplName = k;
     }
-  };
-
-  this['⎕complex'] = function(re, im) {
-    return APLArray.scalar(new Complex(re, im));
-  };
-
-  this['⎕bool'] = function(x) {
-    assert(x instanceof APLArray);
-    return x.toBool();
-  };
-
-  (function() {
-    var k, v, _results;
-
-    _results = [];
-    for (k in _this) {
-      v = _this[k];
-      if (typeof v === 'function') {
-        _results.push(v.aplName = k);
-      }
-    }
-    return _results;
-  })();
+  }
 
 }).call(this);
 }, "vocabulary/arithmetic": function(exports, require, module) {(function() {
@@ -3598,6 +3543,73 @@
       }
     }
     return new APLArray(data, shape);
+  };
+
+}).call(this);
+}, "vocabulary/special": function(exports, require, module) {(function() {
+  var APLArray, Complex, assert, match;
+
+  APLArray = require('../array').APLArray;
+
+  assert = require('../helpers').assert;
+
+  Complex = require('../complex').Complex;
+
+  match = require('./vhelpers').match;
+
+  this['⎕aplify'] = function(x) {
+    var y;
+
+    assert(x != null);
+    if (typeof x === 'string') {
+      if (x.length === 1) {
+        return APLArray.scalar(x);
+      } else {
+        return new APLArray(x);
+      }
+    } else if (typeof x === 'number') {
+      return APLArray.scalar(x);
+    } else if (x instanceof Array) {
+      return new APLArray((function() {
+        var _i, _len, _results;
+
+        _results = [];
+        for (_i = 0, _len = x.length; _i < _len; _i++) {
+          y = x[_i];
+          if (y instanceof APLArray && y.shape.length === 0) {
+            _results.push(y.unbox());
+          } else {
+            _results.push(y);
+          }
+        }
+        return _results;
+      })());
+    } else if (x instanceof APLArray) {
+      return x;
+    } else {
+      throw Error('Cannot aplify object ' + x);
+    }
+  };
+
+  this['⎕complex'] = function(re, im) {
+    return APLArray.scalar(new Complex(re, im));
+  };
+
+  this['⎕bool'] = function(x) {
+    assert(x instanceof APLArray);
+    return x.toBool();
+  };
+
+  this['get_⎕IO'] = function() {
+    return APLArray.zero;
+  };
+
+  this['set_⎕IO'] = function(x) {
+    if (match(x, APLArray.zero)) {
+      return x;
+    } else {
+      throw Error('The index origin (⎕IO) is fixed at 0');
+    }
   };
 
 }).call(this);

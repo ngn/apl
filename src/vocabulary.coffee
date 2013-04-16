@@ -1,7 +1,3 @@
-{assert} = require './helpers'
-{APLArray} = require './array'
-{Complex} = require './complex'
-
 lazyRequires =
   arithmetic:    '+-×÷*⍟∣|'
   floorceil:     '⌊⌈'
@@ -38,6 +34,7 @@ lazyRequires =
   tack:          '⊣⊢'
   encode:        '⊤'
   decode:        '⊥'
+  special:       ['⎕aplify', '⎕complex', '⎕bool', 'get_⎕IO', 'set_⎕IO']
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
@@ -54,25 +51,4 @@ for name in ['∘.'] then (@[name].aplMetaInfo ?= {}).isPrefixAdverb = true
 for name in '⍨¨/⌿' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
 for name in '.⍣' then (@[name].aplMetaInfo ?= {}).isConjunction = true
 
-@['⎕aplify'] = (x) ->
-  assert x?
-  if typeof x is 'string' then (if x.length is 1 then APLArray.scalar x else new APLArray x)
-  else if typeof x is 'number' then APLArray.scalar x
-  else if x instanceof Array
-    new APLArray(
-      for y in x
-        if y instanceof APLArray and y.shape.length is 0 then y.unbox() else y
-    )
-  else if x instanceof APLArray then x
-  else throw Error 'Cannot aplify object ' + x
-
-@['⎕complex'] = (re, im) ->
-  APLArray.scalar new Complex re, im
-
-@['⎕bool'] = (x) ->
-  assert x instanceof APLArray
-  x.toBool()
-
-do =>
-  for k, v of @ when typeof v is 'function'
-    v.aplName = k
+for k, v of @ when typeof v is 'function' then v.aplName = k
