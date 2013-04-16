@@ -1551,6 +1551,7 @@
     innerproduct: '.',
     outerproduct: ['∘.'],
     slash: '/⌿',
+    backslash: '\\⍀',
     tack: '⊣⊢',
     encode: '⊤',
     decode: '⊥',
@@ -1583,7 +1584,7 @@
     ((_ref1 = (_base = this[name]).aplMetaInfo) != null ? _ref1 : _base.aplMetaInfo = {}).isPrefixAdverb = true;
   }
 
-  _ref2 = '⍨¨/⌿';
+  _ref2 = '⍨¨/⌿\\⍀';
   for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
     name = _ref2[_k];
     ((_ref3 = (_base1 = this[name]).aplMetaInfo) != null ? _ref3 : _base1.aplMetaInfo = {}).isPostfixAdverb = true;
@@ -1664,6 +1665,70 @@
       return y % x;
     })
   });
+
+}).call(this);
+}, "vocabulary/backslash": function(exports, require, module) {(function() {
+  var APLArray, assert, expand, scan;
+
+  APLArray = require('../array').APLArray;
+
+  assert = require('../helpers').assert;
+
+  this['\\'] = function(omega, alpha, axis) {
+    if (typeof omega === 'function') {
+      return scan(omega, void 0, axis);
+    } else {
+      return expand(omega, alpha, axis);
+    }
+  };
+
+  this['⍀'] = function(omega, alpha, axis) {
+    if (axis == null) {
+      axis = APLArray.zero;
+    }
+    if (typeof omega === 'function') {
+      return scan(omega, void 0, axis);
+    } else {
+      return expand(omega, alpha, axis);
+    }
+  };
+
+  scan = function(f, g, axis) {
+    assert(typeof g === 'undefined');
+    return function(omega, alpha) {
+      assert(alpha == null);
+      if (omega.shape.length === 0) {
+        return omega;
+      }
+      axis = axis ? axis.toInt(0, omega.shape.length) : omega.shape.length - 1;
+      return omega.map(function(x, indices) {
+        var a, index, j, p, y, _i, _j, _len, _ref;
+
+        p = omega.offset;
+        for (a = _i = 0, _len = indices.length; _i < _len; a = ++_i) {
+          index = indices[a];
+          p += index * omega.stride[a];
+        }
+        if (!(x instanceof APLArray)) {
+          x = APLArray.scalar(x);
+        }
+        for (j = _j = 0, _ref = indices[axis]; _j < _ref; j = _j += 1) {
+          p -= omega.stride[axis];
+          y = omega.data[p];
+          if (!(y instanceof APLArray)) {
+            y = APLArray.scalar(y);
+          }
+          x = f(x, y);
+        }
+        if (x.shape.length === 0) {
+          x = x.unbox();
+        }
+        return x;
+      });
+    };
+  };
+
+  expand = function() {};
 
 }).call(this);
 }, "vocabulary/circle": function(exports, require, module) {(function() {
