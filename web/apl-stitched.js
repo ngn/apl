@@ -1559,7 +1559,8 @@
     outerproduct: ['∘.'],
     slash: '/⌿',
     tack: '⊣⊢',
-    encode: '⊤'
+    encode: '⊤',
+    decode: '⊥'
   };
 
   createLazyRequire = function(obj, name, fromModule) {
@@ -2079,6 +2080,76 @@
       }
     }
     return false;
+  };
+
+}).call(this);
+}, "vocabulary/decode": function(exports, require, module) {(function() {
+  var APLArray, assert;
+
+  APLArray = require('../array').APLArray;
+
+  assert = require('../helpers').assert;
+
+  this['⊥'] = function(omega, alpha) {
+    var a, b, data, firstDimB, i, j, k, lastDimA, x, y, z, _i, _j, _k, _ref, _ref1, _ref2;
+
+    assert(alpha);
+    if (alpha.shape.length === 0) {
+      alpha = new APLArray([alpha.unbox()]);
+    }
+    if (omega.shape.length === 0) {
+      omega = new APLArray([omega.unbox()]);
+    }
+    lastDimA = alpha.shape[alpha.shape.length - 1];
+    firstDimB = omega.shape[0];
+    if (lastDimA !== 1 && firstDimB !== 1 && lastDimA !== firstDimB) {
+      throw LengthError();
+    }
+    a = alpha.toArray();
+    b = omega.toArray();
+    data = [];
+    for (i = _i = 0, _ref = a.length / lastDimA; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      for (j = _j = 0, _ref1 = b.length / firstDimB; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
+        x = a.slice(i * lastDimA, (i + 1) * lastDimA);
+        y = (function() {
+          var _k, _results;
+
+          _results = [];
+          for (k = _k = 0; 0 <= firstDimB ? _k < firstDimB : _k > firstDimB; k = 0 <= firstDimB ? ++_k : --_k) {
+            _results.push(b[j + k * (b.length / firstDimB)]);
+          }
+          return _results;
+        })();
+        if (x.length === 1) {
+          x = (function() {
+            var _k, _ref2, _results;
+
+            _results = [];
+            for (_k = 0, _ref2 = y.length; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; 0 <= _ref2 ? _k++ : _k--) {
+              _results.push(x[0]);
+            }
+            return _results;
+          })();
+        }
+        if (y.length === 1) {
+          y = (function() {
+            var _k, _ref2, _results;
+
+            _results = [];
+            for (_k = 0, _ref2 = x.length; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; 0 <= _ref2 ? _k++ : _k--) {
+              _results.push(y[0]);
+            }
+            return _results;
+          })();
+        }
+        z = y[0];
+        for (k = _k = 1, _ref2 = y.length; 1 <= _ref2 ? _k < _ref2 : _k > _ref2; k = 1 <= _ref2 ? ++_k : --_k) {
+          z = z * x[k] + y[k];
+        }
+        data.push(z);
+      }
+    }
+    return new APLArray(data, alpha.shape.slice(0, -1).concat(omega.shape.slice(1)));
   };
 
 }).call(this);
