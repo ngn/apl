@@ -1,6 +1,6 @@
 {APLArray} = require '../array'
 {DomainError, RankError} = require '../errors'
-{assert, repeat, prod, isInt} = require '../helpers'
+{repeat, prod, isInt} = require '../helpers'
 {match} = require './vhelpers'
 
 @['⍳'] = (omega, alpha) ->
@@ -33,25 +33,28 @@
     #     ⍴ ⍳ 5       ⍝ returns 1 ⍴ 5
     #     ⍳ 0         ⍝ returns ⍬
     #     ⍴ ⍳ 0       ⍝ returns ,0
-    #     ⍳ 2 3 4     ⍝ returns (2 3 4 3 ⍴
-    #     ...             0 0 0  0 0 1  0 0 2  0 0 3
-    #     ...             0 1 0  0 1 1  0 1 2  0 1 3
-    #     ...             0 2 0  0 2 1  0 2 2  0 2 3
-    #     ...             1 0 0  1 0 1  1 0 2  1 0 3
-    #     ...             1 1 0  1 1 1  1 1 2  1 1 3
-    #     ...             1 2 0  1 2 1  1 2 2  1 2 3)
-    #     ⍴⍳ 2 3 4    ⍝ returns 2 3 4 3
+    #     ⍳ 2 3 4     ⍝ returns (2 3 4 ⍴
+    #     ...             (0 0 0) (0 0 1) (0 0 2) (0 0 3)
+    #     ...             (0 1 0) (0 1 1) (0 1 2) (0 1 3)
+    #     ...             (0 2 0) (0 2 1) (0 2 2) (0 2 3)
+    #     ...             (1 0 0) (1 0 1) (1 0 2) (1 0 3)
+    #     ...             (1 1 0) (1 1 1) (1 1 2) (1 1 3)
+    #     ...             (1 2 0) (1 2 1) (1 2 2) (1 2 3))
+    #     ⍴⍳ 2 3 4    ⍝ returns 2 3 4
     if omega.shape.length > 1 then throw RankError()
     a = omega.toArray()
     for d in a when not isInt d, 0 then throw DomainError()
     data = []
     if prod a
-      indices = repeat [0], a.length
-      loop
-        data.push indices...
-        axis = a.length - 1
-        while axis >= 0 and indices[axis] + 1 is a[axis]
-          indices[axis--] = 0
-        if axis < 0 then break
-        indices[axis]++
-    new APLArray data, a.concat omega.shape
+      if a.length is 1
+        data = [0...a[0]]
+      else
+        indices = repeat [0], a.length
+        loop
+          data.push new APLArray indices[...]
+          axis = a.length - 1
+          while axis >= 0 and indices[axis] + 1 is a[axis]
+            indices[axis--] = 0
+          if axis < 0 then break
+          indices[axis]++
+    new APLArray data, a

@@ -2899,18 +2899,18 @@
 
 }).call(this);
 }, "vocabulary/iota": function(exports, require, module) {(function() {
-  var APLArray, DomainError, RankError, assert, isInt, match, prod, repeat, _ref, _ref1;
+  var APLArray, DomainError, RankError, isInt, match, prod, repeat, _ref, _ref1;
 
   APLArray = require('../array').APLArray;
 
   _ref = require('../errors'), DomainError = _ref.DomainError, RankError = _ref.RankError;
 
-  _ref1 = require('../helpers'), assert = _ref1.assert, repeat = _ref1.repeat, prod = _ref1.prod, isInt = _ref1.isInt;
+  _ref1 = require('../helpers'), repeat = _ref1.repeat, prod = _ref1.prod, isInt = _ref1.isInt;
 
   match = require('./vhelpers').match;
 
   this['⍳'] = function(omega, alpha) {
-    var a, axis, d, data, indices, _i, _len;
+    var a, axis, d, data, indices, _i, _j, _len, _ref2, _results;
 
     if (alpha) {
       return omega.map(function(x) {
@@ -2949,20 +2949,28 @@
       }
       data = [];
       if (prod(a)) {
-        indices = repeat([0], a.length);
-        while (true) {
-          data.push.apply(data, indices);
-          axis = a.length - 1;
-          while (axis >= 0 && indices[axis] + 1 === a[axis]) {
-            indices[axis--] = 0;
+        if (a.length === 1) {
+          data = (function() {
+            _results = [];
+            for (var _j = 0, _ref2 = a[0]; 0 <= _ref2 ? _j < _ref2 : _j > _ref2; 0 <= _ref2 ? _j++ : _j--){ _results.push(_j); }
+            return _results;
+          }).apply(this);
+        } else {
+          indices = repeat([0], a.length);
+          while (true) {
+            data.push(new APLArray(indices.slice(0)));
+            axis = a.length - 1;
+            while (axis >= 0 && indices[axis] + 1 === a[axis]) {
+              indices[axis--] = 0;
+            }
+            if (axis < 0) {
+              break;
+            }
+            indices[axis]++;
           }
-          if (axis < 0) {
-            break;
-          }
-          indices[axis]++;
         }
       }
-      return new APLArray(data, a.concat(omega.shape));
+      return new APLArray(data, a);
     }
   };
 
