@@ -1558,7 +1558,8 @@
     innerproduct: '.',
     outerproduct: ['∘.'],
     slash: '/⌿',
-    tack: '⊣⊢'
+    tack: '⊣⊢',
+    encode: '⊤'
   };
 
   createLazyRequire = function(obj, name, fromModule) {
@@ -2349,6 +2350,45 @@
       }
       return new APLArray(data, shape);
     }
+  };
+
+}).call(this);
+}, "vocabulary/encode": function(exports, require, module) {(function() {
+  var APLArray, assert, prod, _ref;
+
+  APLArray = require('../array').APLArray;
+
+  _ref = require('../helpers'), prod = _ref.prod, assert = _ref.assert;
+
+  this['⊤'] = function(omega, alpha) {
+    var a, b, data, i, isNeg, j, k, m, n, shape, x, y, _i, _j, _k, _len, _ref1;
+
+    assert(alpha);
+    a = alpha.toArray();
+    b = omega.toArray();
+    shape = alpha.shape.concat(omega.shape);
+    data = Array(prod(shape));
+    n = alpha.shape.length ? alpha.shape[0] : 1;
+    m = a.length / n;
+    for (i = _i = 0; 0 <= m ? _i < m : _i > m; i = 0 <= m ? ++_i : --_i) {
+      for (j = _j = 0, _len = b.length; _j < _len; j = ++_j) {
+        y = b[j];
+        if (isNeg = y < 0) {
+          y = -y;
+        }
+        for (k = _k = _ref1 = n - 1; _k >= 0; k = _k += -1) {
+          x = a[k * m + i];
+          if (x === 0) {
+            data[(k * m + i) * b.length + j] = y;
+            y = 0;
+          } else {
+            data[(k * m + i) * b.length + j] = y % x;
+            y = Math.round((y - (y % x)) / x);
+          }
+        }
+      }
+    }
+    return new APLArray(data, shape);
   };
 
 }).call(this);
