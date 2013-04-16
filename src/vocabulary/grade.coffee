@@ -5,18 +5,18 @@
 # Grade up/down (`⍋`)
 #
 #     ⍋13 8 122 4                          ⍝ returns 3 1 0 2
-#     a←13 8 122 4  ◇  a[⍋a]               ⍝ returns 4 8 13 122
+#     a←13 8 122 4  ⋄  a[⍋a]               ⍝ returns 4 8 13 122
 #     ⍋"ZAMBIA"                            ⍝ returns 1 5 3 4 2 0
-#     s←"ZAMBIA"  ◇  s[⍋s]                 ⍝ returns 'AABIMZ'
-#     t←3 3⍴"BOBALFZAK"  ◇  ⍋t             ⍝ returns 1 0 2
-#     t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  ⍋t       ⍝ returns 2 1 0
+#     s←"ZAMBIA"  ⋄  s[⍋s]                 ⍝ returns 'AABIMZ'
+#     t←3 3⍴"BOBALFZAK"  ⋄  ⍋t             ⍝ returns 1 0 2
+#     t←3 3⍴4 5 6 1 1 3 1 1 2  ⋄  ⍋t       ⍝ returns 2 1 0
 #
-#     t←3 3⍴4 5 6 1 1 3 1 1 2  ◇  t[⍋t;]
+#     t←3 3⍴4 5 6 1 1 3 1 1 2  ⋄  t[⍋t;]
 #     ...    ⍝ returns (3 3 ⍴   1 1 2
 #     ...                       1 1 3
 #     ...                       4 5 6)
 #
-#     a←3 2 3⍴2 3 4 0 1 0 1 1 3 4 5 6 1 1 2 10 11 12  ◇  a[⍋a;;]
+#     a←3 2 3⍴2 3 4 0 1 0 1 1 3 4 5 6 1 1 2 10 11 12  ⋄  a[⍋a;;]
 #     ... ⍝ returns (3 2 3 ⍴
 #     ...      1  1  2
 #     ...     10 11 12
@@ -27,12 +27,12 @@
 #     ...      2  3  4
 #     ...      0  1  0)
 #
-#     a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ◇  a[⍋a;;]
+#     a←3 2 5⍴"joe  doe  bob  jonesbob  zwart"  ⋄  a[⍋a;;]
 #     ... ⍝ returns 3 2 5 ⍴ 'bob  jonesbob  zwartjoe  doe  '
 #
 #     "ZYXWVUTSRQPONMLKJIHGFEDCBA"⍋"ZAMBIA"   ⍝ returns 0 2 4 3 1 5
 #
-#     ⎕A←"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ◇ (⌽⎕A)⍋3 3⍴"BOBALFZAK"
+#     ⎕A←"ABCDEFGHIJKLMNOPQRSTUVWXYZ" ⋄ (⌽⎕A)⍋3 3⍴"BOBALFZAK"
 #     ... ⍝ returns 2 0 1
 #
 #     data←6 4⍴"ABLEaBLEACREABELaBELACES"

@@ -55,11 +55,11 @@
         '∘.', 'Outer product', {
           keys: '`j.'
         }
-      ], ['/', 'Reduce'], ['⌿', '1st axis reduce'], ['\\', 'Scan'], ['⍀', '1st axis scan'], ['⍣', 'Power operator'], ['¯', 'Negative number sign'], ['⍝', 'Comment'], ['←', 'Assignment'], ['⍬', 'Zilde'], ['◇', 'Statement separator'], ['⍺', 'Left formal parameter'], ['⍵', 'Right formal parameter']
+      ], ['/', 'Reduce'], ['⌿', '1st axis reduce'], ['\\', 'Scan'], ['⍀', '1st axis scan'], ['⍣', 'Power operator'], ['¯', 'Negative number sign'], ['⍝', 'Comment'], ['←', 'Assignment'], ['⍬', 'Zilde'], ['⋄', 'Statement separator'], ['⍺', 'Left formal parameter'], ['⍵', 'Right formal parameter']
     ];
     mapping = {};
     rMapping = {};
-    a = '`< «   `= ×   `> »   `_ ≡   `- -   `, ⍪   `; ◇   `: ÷   `! ⍣   `/ ⌿   `( ⍱\n`) ⍲   `[ ←   `\\ ⍀  `0 ∧   `1 ¨   `2 ¯   `4 ≤   `6 ≥   `8 ≠   `9 ∨   `a ⍺\n`A ⊖   `b ⊥   `B ⍎   `c ∩   `C ⍝   `d ⌊   `e ∊   `E ⍷   `g ∇   `G ⍒   `h ∆\n`H ⍋   `i ⍳   `I ⌷   `j ∘   `l ⎕   `L ⍞   `m ∣   `n ⊤   `N ⍕   `o ○   `O ⍬\n`p *   `P ⍟   `r ⍴   `s ⌈   `t ~   `T ⍉   `u ↓   `v ∪   `w ⍵   `W ⌽   `x ⊃\n`y ↑   `z ⊂'.replace(/(^\s+|\s+$)/g, '').split(/\s+/);
+    a = '`< «   `= ×   `> »   `_ ≡   `- -   `, ⍪   `; ⋄   `: ÷   `! ⍣   `/ ⌿   `( ⍱\n`) ⍲   `[ ←   `\\ ⍀  `0 ∧   `1 ¨   `2 ¯   `4 ≤   `6 ≥   `8 ≠   `9 ∨   `a ⍺\n`A ⊖   `b ⊥   `B ⍎   `c ∩   `C ⍝   `d ⌊   `e ∊   `E ⍷   `g ∇   `G ⍒   `h ∆\n`H ⍋   `i ⍳   `I ⌷   `j ∘   `l ⎕   `L ⍞   `m ∣   `n ⊤   `N ⍕   `o ○   `O ⍬\n`p *   `P ⍟   `r ⍴   `s ⌈   `t ~   `T ⍉   `u ↓   `v ∪   `w ⍵   `W ⌽   `x ⊃\n`y ↑   `z ⊂'.replace(/(^\s+|\s+$)/g, '').split(/\s+/);
     for (i = _j = 0, _ref2 = a.length / 2; 0 <= _ref2 ? _j < _ref2 : _j > _ref2; i = 0 <= _ref2 ? ++_j : --_j) {
       k = a[2 * i];
       v = a[2 * i + 1];

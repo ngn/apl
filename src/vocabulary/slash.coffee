@@ -98,8 +98,8 @@ reduce = @reduce = (f, g, axis) ->
 #
 #     0 1 0 1 / 'ABCD'                                ⍝ returns 'BD'
 #     1 1 1 1 0 / 12 14 16 18 20                      ⍝ returns 12 14 16 18
-#     MARKS←45 60 33 50 66 19 ◇ (MARKS≥50)/MARKS      ⍝ returns 60 50 66
-#!    MARKS←45 60 33 50 66 19 ◇ (MARKS=50)/⍳↑⍴MARKS   ⍝ returns ,3
+#     MARKS←45 60 33 50 66 19 ⋄ (MARKS≥50)/MARKS      ⍝ returns 60 50 66
+#!    MARKS←45 60 33 50 66 19 ⋄ (MARKS=50)/⍳↑⍴MARKS   ⍝ returns ,3
 #     1/"FREDERIC"                                    ⍝ returns 'FREDERIC'
 #     0/"FREDERIC"                                    ⍝ returns ⍬
 #     0 1 0  / 1+2 3⍴⍳6                               ⍝ returns 2 1 ⍴ 2 5

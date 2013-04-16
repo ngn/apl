@@ -8,7 +8,7 @@
 #
 #     1 ⌷ 3 5 8                ⍝ returns 5
 #     (3 5 8)[1]               ⍝ returns 5
-#     ⌷←{⍺+¨⍵}  ◇  (3 5 8)[1]  ⍝ returns 4 6 9
+#     ⌷←{⍺+¨⍵}  ⋄  (3 5 8)[1]  ⍝ returns 4 6 9
 #     (2 2 0) (1 2) ⌷ 3 3⍴⍳9   ⍝ returns 3 2 ⍴ 7 8 7 8 1 2
 #     ¯1 ⌷ 3 5 8               ⍝ throws 'INDEX ERROR'
 #     2 ⌷ 111 222 333 444      ⍝ returns 333

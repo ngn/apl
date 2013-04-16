@@ -261,8 +261,8 @@ toJavaScript = (node) ->
     # Lambda expressions
     #
     #     {1 + 1} 1                      ⍝ returns 2
-    #     {⍵=0:1 ◇ 2×∇⍵-1} 5             ⍝ returns 32 # two to the power of
-    #     {⍵<2 : 1 ◇ (∇⍵-1)+(∇⍵-2) } 8   ⍝ returns 34 # Fibonacci sequence
+    #     {⍵=0:1 ⋄ 2×∇⍵-1} 5             ⍝ returns 32 # two to the power of
+    #     {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8   ⍝ returns 34 # Fibonacci sequence
     when 'lambda'
       """
         function (_w, _a) {

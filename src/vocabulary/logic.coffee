@@ -71,8 +71,8 @@ negate = pervasive monad: (x) -> +not bool x
   #     0∧0                                   ⍝ returns 0
   #     0 0 1 1 ∧ 0 1 0 1                     ⍝ returns 0 0 0 1
   #     0 0 0 1 1 ∧ 1 1 1 1 0                 ⍝ returns 0 0 0 1 0
-  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  1∧t   ⍝ returns 3 3 ⍴ 1 1 1 0 0 0 1 0 1
-  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ◇  ∧/ t  ⍝ returns 1 0 0
+  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ⋄  1∧t   ⍝ returns 3 3 ⍴ 1 1 1 0 0 0 1 0 1
+  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ⋄  ∧/ t  ⍝ returns 1 0 0
   #     12∧18       # 12=2×2×3, 18=2×3×3      ⍝ returns 36
   #     299∧323     # 299=13×23, 323=17×19    ⍝ returns 96577
   #     12345∧12345                           ⍝ returns 12345
