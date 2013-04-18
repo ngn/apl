@@ -22,6 +22,9 @@
     #     2 3 ↑ 1 + 4 3 ⍴ ⍳ 12     ⍝ returns 2 3 ⍴ 1 2 3 4 5 6
     #     ¯1 3 ↑ 1 + 4 3 ⍴ ⍳ 12    ⍝ returns 1 3 ⍴ 10 11 12
     #     1 2 ↑ 1 + 4 3 ⍴ ⍳ 12     ⍝ returns 1 2 ⍴ 1 2
+    #     3 ↑ ⍬                    ⍝ returns 0 0 0
+    #     ¯2 ↑ ⍬                   ⍝ returns 0 0
+    #     0 ↑ ⍬                    ⍝ returns ⍬
     if alpha.shape.length > 1
       throw RankError()
     if omega.shape.length is 0
@@ -55,18 +58,19 @@
             q -= (x + omega.shape[i]) * stride[i]
           else
             p += (x + omega.shape[i]) * omega.stride[i]
-      copyIndices = repeat [0], copyShape.length
-      loop
-        data[q] = omega.data[p]
-        axis = copyShape.length - 1
-        while axis >= 0 and copyIndices[axis] + 1 is copyShape[axis]
-          p -= copyIndices[axis] * omega.stride[axis]
-          q -= copyIndices[axis] * stride[axis]
-          copyIndices[axis--] = 0
-        if axis < 0 then break
-        p += omega.stride[axis]
-        q += stride[axis]
-        copyIndices[axis]++
+      if prod copyShape
+        copyIndices = repeat [0], copyShape.length
+        loop
+          data[q] = omega.data[p]
+          axis = copyShape.length - 1
+          while axis >= 0 and copyIndices[axis] + 1 is copyShape[axis]
+            p -= copyIndices[axis] * omega.stride[axis]
+            q -= copyIndices[axis] * stride[axis]
+            copyIndices[axis--] = 0
+          if axis < 0 then break
+          p += omega.stride[axis]
+          q += stride[axis]
+          copyIndices[axis]++
       new APLArray data, shape, stride
     else
       stride = []

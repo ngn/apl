@@ -3862,21 +3862,23 @@
             }
           }
         }
-        copyIndices = repeat([0], copyShape.length);
-        while (true) {
-          data[q] = omega.data[p];
-          axis = copyShape.length - 1;
-          while (axis >= 0 && copyIndices[axis] + 1 === copyShape[axis]) {
-            p -= copyIndices[axis] * omega.stride[axis];
-            q -= copyIndices[axis] * stride[axis];
-            copyIndices[axis--] = 0;
+        if (prod(copyShape)) {
+          copyIndices = repeat([0], copyShape.length);
+          while (true) {
+            data[q] = omega.data[p];
+            axis = copyShape.length - 1;
+            while (axis >= 0 && copyIndices[axis] + 1 === copyShape[axis]) {
+              p -= copyIndices[axis] * omega.stride[axis];
+              q -= copyIndices[axis] * stride[axis];
+              copyIndices[axis--] = 0;
+            }
+            if (axis < 0) {
+              break;
+            }
+            p += omega.stride[axis];
+            q += stride[axis];
+            copyIndices[axis]++;
           }
-          if (axis < 0) {
-            break;
-          }
-          p += omega.stride[axis];
-          q += stride[axis];
-          copyIndices[axis]++;
         }
         return new APLArray(data, shape, stride);
       } else {
