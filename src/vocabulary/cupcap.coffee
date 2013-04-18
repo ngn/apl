@@ -1,20 +1,32 @@
 {APLArray} = require '../array'
 {match} = require './vhelpers'
 {assert} = require '../helpers'
+{RankError} = require '../errors'
 
 @['∪'] = (omega, alpha) ->
   if alpha
 
     # Union (`∪`)
     #
-    #     1 2 ∪ 2 3   ⍝ returns 1 2 3
+    #     1 2 ∪ 2 3       ⍝ returns 1 2 3
     #     'SHOCK' ∪ 'CHOCOLATE'   ⍝ returns 'SHOCKLATE'
+    #     1 ∪ 1           ⍝ returns ,1
+    #     1 ∪ 2           ⍝ returns 1 2
+    #     1 ∪ 2 1         ⍝ returns 1 2
+    #     1 2 ∪ 2 2 2 2   ⍝ returns 1 2
+    #     1 2 ∪ 2 2⍴3     ⍝ throws 'RANK ERROR'
+    #     (2 2⍴3) ∪ 4 5   ⍝ throws 'RANK ERROR'
+    #     ⍬ ∪ 1           ⍝ returns ,1
+    #     1 2 ∪ ⍬         ⍝ returns 1 2
+    #     ⍬ ∪ ⍬           ⍝ returns ⍬
     #
     #     'lentils' 'bulghur' (3 4 5) ∪ 'lentils' 'rice'
     #     ...     ⍝ returns 'lentils' 'bulghur' (3 4 5) 'rice'
-    a = alpha.toArray()
-    data = a[...]
-    omega.each (x) -> if not contains a, x then data.push x
+    data = []
+    for a in [alpha, omega]
+      if a.shape.length > 1
+        throw RankError()
+      a.each (x) -> if not contains data, x then data.push x
     new APLArray data
 
   else

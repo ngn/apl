@@ -2029,7 +2029,7 @@
 
 }).call(this);
 }, "vocabulary/cupcap": function(exports, require, module) {(function() {
-  var APLArray, assert, contains, match;
+  var APLArray, RankError, assert, contains, match;
 
   APLArray = require('../array').APLArray;
 
@@ -2037,17 +2037,25 @@
 
   assert = require('../helpers').assert;
 
+  RankError = require('../errors').RankError;
+
   this['∪'] = function(omega, alpha) {
-    var a, data;
+    var a, data, _i, _len, _ref;
 
     if (alpha) {
-      a = alpha.toArray();
-      data = a.slice(0);
-      omega.each(function(x) {
-        if (!contains(a, x)) {
-          return data.push(x);
+      data = [];
+      _ref = [alpha, omega];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        a = _ref[_i];
+        if (a.shape.length > 1) {
+          throw RankError();
         }
-      });
+        a.each(function(x) {
+          if (!contains(data, x)) {
+            return data.push(x);
+          }
+        });
+      }
       return new APLArray(data);
     } else {
       data = [];
