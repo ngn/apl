@@ -2978,6 +2978,9 @@
     var a, axis, d, data, indices, _i, _j, _len, _ref2, _results;
 
     if (alpha) {
+      if (alpha.shape.length !== 1) {
+        throw RankError();
+      }
       return omega.map(function(x) {
         var e, r;
 

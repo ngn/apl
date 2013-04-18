@@ -16,6 +16,13 @@
     #     "MON" "TUES" "WED" ⍳ "MON" "THURS"        ⍝ returns 0 3
     #     1 3 2 0 3 ⍳ ⍳ 5                           ⍝ returns 3 0 2 1 5
     #     "CAT" "DOG" "MOUSE" ⍳ "DOG" "BIRD"        ⍝ returns 1 3
+    #     123 ⍳ 123                                 ⍝ throws 'RANK ERROR'
+    #     (2 2⍴123) ⍳ 123                           ⍝ throws 'RANK ERROR'
+    #     123 123 ⍳ 123                             ⍝ returns 0
+    #     ⍬ ⍳ 123 234                               ⍝ returns 0 0
+    #     123 234 ⍳ ⍬                               ⍝ returns ⍬
+    if alpha.shape.length isnt 1
+      throw RankError()
     omega.map (x) ->
       try
         r = alpha.shape
