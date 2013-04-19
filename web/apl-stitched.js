@@ -3327,13 +3327,13 @@
 
 }).call(this);
 }, "vocabulary/rho": function(exports, require, module) {(function() {
-  var APLArray, RankError, assert, isInt, prod, _ref;
+  var APLArray, DomainError, RankError, assert, isInt, prod, repeat, _ref, _ref1;
 
   APLArray = require('../array').APLArray;
 
-  RankError = require('../errors').RankError;
+  _ref = require('../errors'), RankError = _ref.RankError, DomainError = _ref.DomainError;
 
-  _ref = require('../helpers'), assert = _ref.assert, prod = _ref.prod, isInt = _ref.isInt;
+  _ref1 = require('../helpers'), assert = _ref1.assert, prod = _ref1.prod, isInt = _ref1.isInt, repeat = _ref1.repeat;
 
   this['⍴'] = function(omega, alpha) {
     var a, d, n, shape, _i, _len;
@@ -3352,11 +3352,15 @@
       n = prod(shape);
       a = omega.toArray(n);
       assert(a.length <= n);
-      while (2 * a.length < n) {
-        a = a.concat(a);
-      }
-      if (a.length !== n) {
-        a = a.concat(a.slice(0, n - a.length));
+      if (a.length) {
+        while (2 * a.length < n) {
+          a = a.concat(a);
+        }
+        if (a.length !== n) {
+          a = a.concat(a.slice(0, n - a.length));
+        }
+      } else {
+        a = repeat([omega.getPrototype()], n);
       }
       return new APLArray(a, shape);
     } else {
