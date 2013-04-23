@@ -25,28 +25,28 @@
         if not (x instanceof APLArray) then x = new APLArray [x], []
         r = f x
         assert r instanceof APLArray
-        if r.shape.length is 0 then r.unbox() else r
+        if r.shape.length is 0 then r.unwrap() else r
     else if arrayEquals alpha.shape, omega.shape
       omega.map2 alpha, (x, y) ->
         if not (x instanceof APLArray) then x = new APLArray [x], []
         if not (y instanceof APLArray) then y = new APLArray [y], []
         r = f x, y
         assert r instanceof APLArray
-        if r.shape.length is 0 then r.unbox() else r
+        if r.shape.length is 0 then r.unwrap() else r
     else if alpha.isSingleton()
-      y = if alpha.data[0] instanceof APLArray then alpha.unbox() else alpha
+      y = if alpha.data[0] instanceof APLArray then alpha.unwrap() else alpha
       omega.map (x) ->
         if not (x instanceof APLArray) then x = new APLArray [x], []
         r = f x, y
         assert r instanceof APLArray
-        if r.shape.length is 0 then r.unbox() else r
+        if r.shape.length is 0 then r.unwrap() else r
     else if omega.isSingleton()
-      x = if omega.data[0] instanceof APLArray then omega.unbox() else omega
+      x = if omega.data[0] instanceof APLArray then omega.unwrap() else omega
       alpha.map (y) ->
         if not (y instanceof APLArray) then y = new APLArray [y], []
         r = f x, y
         assert r instanceof APLArray
-        if r.shape.length is 0 then r.unbox() else r
+        if r.shape.length is 0 then r.unwrap() else r
     else
       throw LengthError()
 

@@ -53,22 +53,22 @@ catenate = (omega, alpha, axis) ->
 
   nAxes = Math.max alpha.shape.length, omega.shape.length
   if axis
-    axis = axis.unbox()
+    axis = axis.unwrap()
     if typeof axis isnt 'number' then throw DomainError()
     if not (-1 < axis < nAxes) then throw RankError()
   else
     axis = nAxes - 1
 
   if alpha.shape.length is 0 and omega.shape.length is 0
-    return new APLArray [alpha.unbox(), omega.unbox()]
+    return new APLArray [alpha.unwrap(), omega.unwrap()]
   else if alpha.shape.length is 0
     s = omega.shape[...]
     if isInt axis then s[axis] = 1
-    alpha = new APLArray [alpha.unbox()], s, repeat([0], omega.shape.length)
+    alpha = new APLArray [alpha.unwrap()], s, repeat([0], omega.shape.length)
   else if omega.shape.length is 0
     s = alpha.shape[...]
     if isInt axis then s[axis] = 1
-    omega = new APLArray [omega.unbox()], s, repeat([0], alpha.shape.length)
+    omega = new APLArray [omega.unwrap()], s, repeat([0], alpha.shape.length)
   else if alpha.shape.length + 1 is omega.shape.length
     if not isInt axis then throw RankError()
     shape = alpha.shape[...]

@@ -273,7 +273,7 @@
       if (end == null) {
         end = Infinity;
       }
-      r = this.unbox();
+      r = this.unwrap();
       if (typeof r !== 'number' || r !== ~~r || !((start <= r && r < end))) {
         throw DomainError();
       }
@@ -297,7 +297,7 @@
       return true;
     };
 
-    APLArray.prototype.unbox = function() {
+    APLArray.prototype.unwrap = function() {
       if (prod(this.shape) !== 1) {
         throw LengthError();
       }
@@ -1721,7 +1721,7 @@
           x = f(x, y);
         }
         if (x.shape.length === 0) {
-          x = x.unbox();
+          x = x.unwrap();
         }
         return x;
       });
@@ -1825,7 +1825,7 @@
     assert(typeof axis === 'undefined' || axis instanceof APLArray);
     nAxes = Math.max(alpha.shape.length, omega.shape.length);
     if (axis) {
-      axis = axis.unbox();
+      axis = axis.unwrap();
       if (typeof axis !== 'number') {
         throw DomainError();
       }
@@ -1836,19 +1836,19 @@
       axis = nAxes - 1;
     }
     if (alpha.shape.length === 0 && omega.shape.length === 0) {
-      return new APLArray([alpha.unbox(), omega.unbox()]);
+      return new APLArray([alpha.unwrap(), omega.unwrap()]);
     } else if (alpha.shape.length === 0) {
       s = omega.shape.slice(0);
       if (isInt(axis)) {
         s[axis] = 1;
       }
-      alpha = new APLArray([alpha.unbox()], s, repeat([0], omega.shape.length));
+      alpha = new APLArray([alpha.unwrap()], s, repeat([0], omega.shape.length));
     } else if (omega.shape.length === 0) {
       s = alpha.shape.slice(0);
       if (isInt(axis)) {
         s[axis] = 1;
       }
-      omega = new APLArray([omega.unbox()], s, repeat([0], alpha.shape.length));
+      omega = new APLArray([omega.unwrap()], s, repeat([0], alpha.shape.length));
     } else if (alpha.shape.length + 1 === omega.shape.length) {
       if (!isInt(axis)) {
         throw RankError();
@@ -2113,10 +2113,10 @@
 
     assert(alpha);
     if (alpha.shape.length === 0) {
-      alpha = new APLArray([alpha.unbox()]);
+      alpha = new APLArray([alpha.unwrap()]);
     }
     if (omega.shape.length === 0) {
-      omega = new APLArray([omega.unbox()]);
+      omega = new APLArray([omega.unwrap()]);
     }
     lastDimA = alpha.shape[alpha.shape.length - 1];
     firstDimB = omega.shape[0];
@@ -2267,7 +2267,7 @@
           r = f(x);
           assert(r instanceof APLArray);
           if (r.shape.length === 0) {
-            return r.unbox();
+            return r.unwrap();
           } else {
             return r;
           }
@@ -2285,13 +2285,13 @@
           r = f(x, y);
           assert(r instanceof APLArray);
           if (r.shape.length === 0) {
-            return r.unbox();
+            return r.unwrap();
           } else {
             return r;
           }
         });
       } else if (alpha.isSingleton()) {
-        y = alpha.data[0] instanceof APLArray ? alpha.unbox() : alpha;
+        y = alpha.data[0] instanceof APLArray ? alpha.unwrap() : alpha;
         return omega.map(function(x) {
           var r;
 
@@ -2301,13 +2301,13 @@
           r = f(x, y);
           assert(r instanceof APLArray);
           if (r.shape.length === 0) {
-            return r.unbox();
+            return r.unwrap();
           } else {
             return r;
           }
         });
       } else if (omega.isSingleton()) {
-        x = omega.data[0] instanceof APLArray ? omega.unbox() : omega;
+        x = omega.data[0] instanceof APLArray ? omega.unwrap() : omega;
         return alpha.map(function(y) {
           var r;
 
@@ -2317,7 +2317,7 @@
           r = f(x, y);
           assert(r instanceof APLArray);
           if (r.shape.length === 0) {
-            return r.unbox();
+            return r.unwrap();
           } else {
             return r;
           }
@@ -3181,7 +3181,7 @@
           }
           z = f(y, x);
           if (z.shape.length === 0) {
-            z = z.unbox();
+            z = z.unwrap();
           }
           data.push(z);
         }
@@ -3296,8 +3296,8 @@
   deal = function(omega, alpha) {
     var available, x, y, _i, _results;
 
-    y = omega.unbox();
-    x = alpha.unbox();
+    y = omega.unwrap();
+    x = alpha.unwrap();
     if (x > y) {
       throw DomainError();
     }
@@ -3383,14 +3383,14 @@
 
     assert(typeof axis === 'undefined' || axis instanceof APLArray);
     if (alpha) {
-      axis = !axis ? omega.shape.length - 1 : axis.unbox();
+      axis = !axis ? omega.shape.length - 1 : axis.unwrap();
       if (!isInt(axis)) {
         throw DomainError();
       }
       if (omega.shape.length && !((0 <= axis && axis < omega.shape.length))) {
         throw IndexError();
       }
-      step = alpha.unbox();
+      step = alpha.unwrap();
       if (!isInt(step)) {
         throw DomainError();
       }
@@ -3425,7 +3425,7 @@
         if (!axis.isSingleton()) {
           throw LengthError();
         }
-        axis = axis.unbox();
+        axis = axis.unwrap();
         if (!isInt(axis)) {
           throw DomainError();
         }
@@ -3488,7 +3488,7 @@
       var a, data, i, indices, isBackwards, isMonadic, isNWise, n, p, rShape, shape, x, y, _i, _j, _ref2;
 
       if (omega.shape.length === 0) {
-        omega = new APLArray([omega.unbox()]);
+        omega = new APLArray([omega.unwrap()]);
       }
       axis = axis != null ? axis.toInt() : omega.shape.length - 1;
       if (!((0 <= axis && axis < omega.shape.length))) {
@@ -3544,7 +3544,7 @@
           }
         }
         if (x.shape.length === 0) {
-          x = x.unbox();
+          x = x.unwrap();
         }
         data.push(x);
         a = indices.length - 1;
@@ -3566,7 +3566,7 @@
     var a, b, data, filler, i, indices, n, p, shape, x, _i, _j, _len, _ref2, _ref3;
 
     if (omega.shape.length === 0) {
-      omega = new APLArray([omega.unbox()]);
+      omega = new APLArray([omega.unwrap()]);
     }
     axis = axis ? axis.toInt(0, omega.shape.length) : omega.shape.length - 1;
     if (alpha.shape.length > 1) {
@@ -3665,7 +3665,7 @@
         for (_i = 0, _len = x.length; _i < _len; _i++) {
           y = x[_i];
           if (y instanceof APLArray && y.shape.length === 0) {
-            _results.push(y.unbox());
+            _results.push(y.unwrap());
           } else {
             _results.push(y);
           }
@@ -3835,7 +3835,7 @@
         throw RankError();
       }
       if (omega.shape.length === 0) {
-        omega = new APLArray([omega.unbox()]);
+        omega = new APLArray([omega.unwrap()]);
       }
       a = alpha.toArray();
       if (a.length > omega.shape.length) {
@@ -3992,17 +3992,17 @@
             return pervadeDyadic(xi, y);
           });
         case '1*':
-          xi = x.unbox();
+          xi = x.unwrap();
           return y.map(function(yi) {
             return pervadeDyadic(xi, yi);
           });
         case '*1':
-          yi = y.unbox();
+          yi = y.unwrap();
           return x.map(function(xi) {
             return pervadeDyadic(xi, yi);
           });
         case '11':
-          yi = y.unbox();
+          yi = y.unwrap();
           return x.map(function(xi) {
             return pervadeDyadic(xi, yi);
           });
@@ -4086,7 +4086,7 @@
     if (axes.shape.length !== 1 || axes.shape[0] !== 1) {
       throw SyntaxError();
     }
-    a = axes.unbox();
+    a = axes.unwrap();
     if (a instanceof APLArray) {
       a = a.toArray();
       for (i = _i = 0, _len = a.length; _i < _len; i = ++_i) {

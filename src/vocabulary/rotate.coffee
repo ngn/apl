@@ -15,12 +15,12 @@
     #     0 ⌽ 1 2 3 4                       ⍝ returns 1 2 3 4
     #     0 ⌽ 1234                          ⍝ returns 1234
     #     5 ⌽ ⍬                             ⍝ returns ⍬
-    axis = if not axis then omega.shape.length - 1 else axis.unbox()
+    axis = if not axis then omega.shape.length - 1 else axis.unwrap()
     if not isInt axis
       throw DomainError()
     if omega.shape.length and not (0 <= axis < omega.shape.length)
       throw IndexError()
-    step = alpha.unbox()
+    step = alpha.unwrap()
     if not isInt step
       throw DomainError()
     if not step
@@ -52,7 +52,7 @@
     #     ⌽[0] 2 5 ⍴ 1 2 3 4 5 6 7 8 9 0   ⍝ returns 2 5 ⍴ 6 7 8 9 0 1 2 3 4 5
     if axis
       if not axis.isSingleton() then throw LengthError()
-      axis = axis.unbox()
+      axis = axis.unwrap()
       if not isInt axis then throw DomainError()
       if not (0 <= axis < omega.shape.length) then throw IndexError()
     else

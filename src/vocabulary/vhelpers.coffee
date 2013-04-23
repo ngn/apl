@@ -26,9 +26,9 @@ multiplicitySymbol = (z) ->
           when '.*' then y.map (yi) -> pervadeDyadic x, yi
           when '1.' then x.map (xi) -> pervadeDyadic xi, y
           when '*.' then x.map (xi) -> pervadeDyadic xi, y
-          when '1*' then xi = x.unbox(); y.map (yi) -> pervadeDyadic xi, yi
-          when '*1' then yi = y.unbox(); x.map (xi) -> pervadeDyadic xi, yi
-          when '11' then yi = y.unbox(); x.map (xi) -> pervadeDyadic xi, yi # todo: use the larger shape
+          when '1*' then xi = x.unwrap(); y.map (yi) -> pervadeDyadic xi, yi
+          when '*1' then yi = y.unwrap(); x.map (xi) -> pervadeDyadic xi, yi
+          when '11' then yi = y.unwrap(); x.map (xi) -> pervadeDyadic xi, yi # todo: use the larger shape
           when '**'
             if x.shape.length isnt y.shape.length then throw RankError()
             for axis in [0...x.shape.length] when x.shape[axis] isnt y.shape[axis] then throw LengthError()
@@ -70,7 +70,7 @@ multiplicitySymbol = (z) ->
   assert axes instanceof APLArray
   if axes.shape.length isnt 1 or axes.shape[0] isnt 1
     throw SyntaxError() # [sic]
-  a = axes.unbox()
+  a = axes.unwrap()
   if a instanceof APLArray
     a = a.toArray()
     for x, i in a

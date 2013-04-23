@@ -46,7 +46,7 @@ scan = (f, g, axis) ->
         y = omega.data[p]
         if not (y instanceof APLArray) then y = APLArray.scalar y
         x = f x, y
-      if x.shape.length is 0 then x = x.unbox()
+      if x.shape.length is 0 then x = x.unwrap()
       x
 
 # Helper for `\` and `⍀` in their verbal sense

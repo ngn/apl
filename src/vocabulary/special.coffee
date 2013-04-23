@@ -10,7 +10,7 @@
   else if x instanceof Array
     new APLArray(
       for y in x
-        if y instanceof APLArray and y.shape.length is 0 then y.unbox() else y
+        if y instanceof APLArray and y.shape.length is 0 then y.unwrap() else y
     )
   else if x instanceof APLArray then x
   else throw Error 'Cannot aplify object ' + x

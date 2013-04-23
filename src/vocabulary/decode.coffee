@@ -52,8 +52,8 @@
 #     ...          0 1 10 11 100 101 110 111)
 @['⊥'] = (omega, alpha) ->
   assert alpha
-  if alpha.shape.length is 0 then alpha = new APLArray [alpha.unbox()]
-  if omega.shape.length is 0 then omega = new APLArray [omega.unbox()]
+  if alpha.shape.length is 0 then alpha = new APLArray [alpha.unwrap()]
+  if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
   lastDimA = alpha.shape[alpha.shape.length - 1]
   firstDimB = omega.shape[0]
   if lastDimA isnt 1 and firstDimB isnt 1 and lastDimA isnt firstDimB

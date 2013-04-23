@@ -28,7 +28,7 @@
     if alpha.shape.length > 1
       throw RankError()
     if omega.shape.length is 0
-      omega = new APLArray [omega.unbox()]
+      omega = new APLArray [omega.unwrap()]
     a = alpha.toArray()
     if a.length > omega.shape.length
       throw RankError()

@@ -95,7 +95,7 @@
     r
 
   toInt: (start = -Infinity, end = Infinity) ->
-    r = @unbox()
+    r = @unwrap()
     if typeof r isnt 'number' or r isnt ~~r or not (start <= r < end)
       throw DomainError()
     r
@@ -107,7 +107,7 @@
     for n in @shape when n isnt 1 then return false
     true
 
-  unbox: ->
+  unwrap: ->
     if prod(@shape) isnt 1
       throw LengthError()
     @data[@offset]

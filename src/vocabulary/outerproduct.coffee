@@ -45,6 +45,6 @@
       if not (x instanceof APLArray) then x = APLArray.scalar x
       if not (y instanceof APLArray) then y = APLArray.scalar y
       z = f y, x
-      if z.shape.length is 0 then z = z.unbox()
+      if z.shape.length is 0 then z = z.unwrap()
       data.push z
     new APLArray data, alpha.shape.concat(omega.shape)

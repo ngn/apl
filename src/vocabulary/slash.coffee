@@ -38,7 +38,7 @@ reduce = @reduce = (f, g, axis) ->
   assert typeof f is 'function'
   assert typeof g is 'undefined'
   (omega, alpha) ->
-    if omega.shape.length is 0 then omega = new APLArray [omega.unbox()]
+    if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
     axis = if axis? then axis.toInt() else omega.shape.length - 1
     if not (0 <= axis < omega.shape.length) then throw RankError()
 
@@ -82,7 +82,7 @@ reduce = @reduce = (f, g, axis) ->
           y = omega.data[p + i * omega.stride[axis]]
           y = if y instanceof APLArray then y else APLArray.scalar y
           x = f x, y
-      if x.shape.length is 0 then x = x.unbox()
+      if x.shape.length is 0 then x = x.unwrap()
       data.push x
       a = indices.length - 1
       while a >= 0 and indices[a] + 1 is shape[a]
@@ -119,7 +119,7 @@ reduce = @reduce = (f, g, axis) ->
 #     2 ¯1 2 /[1] 3 1⍴"ABC"     ⍝ returns 3 5 ⍴ 'AA AABB BBCC CC'
 #     2 ¯2 2 / 7                ⍝ returns 7 7 0 0 7 7
 compressOrReplicate = (omega, alpha, axis) ->
-  if omega.shape.length is 0 then omega = new APLArray [omega.unbox()]
+  if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
   axis = if axis then axis.toInt 0, omega.shape.length else omega.shape.length - 1
   if alpha.shape.length > 1 then throw RankError()
   a = alpha.toArray()

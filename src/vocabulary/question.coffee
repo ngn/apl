@@ -21,8 +21,8 @@ roll = pervasive monad: numeric (x) -> Math.floor Math.random() * x
 #     1 ? 1    ⍝ returns ,0
 #     5 ? 3    ⍝ throws 'DOMAIN ERROR'
 deal = (omega, alpha) ->
-  y = omega.unbox()
-  x = alpha.unbox()
+  y = omega.unwrap()
+  x = alpha.unwrap()
   if x > y then throw DomainError()
   available = [0...y]
   new APLArray(for [0...x] then available.splice(Math.floor(available.length * Math.random()), 1)[0])
