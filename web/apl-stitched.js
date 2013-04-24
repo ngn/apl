@@ -2954,19 +2954,31 @@
 
 }).call(this);
 }, "vocabulary/innerproduct": function(exports, require, module) {(function() {
-  var reduce;
+  var APLArray, each, enclose, outerProduct, reduce;
 
-  reduce = require('./slash').reduce;
+  APLArray = require('../array').APLArray;
+
+  reduce = require('./slash')['/'];
+
+  enclose = require('./enclose')['⊂'];
+
+  outerProduct = require('./outerproduct')['∘.'];
+
+  each = require('./each')['¨'];
 
   this['.'] = function(g, f) {
-    var F;
+    var F, G;
 
-    F = reduce(f);
+    F = each(reduce(f));
+    G = outerProduct(g);
     return function(omega, alpha) {
-      if (alpha.shape.length > 1 || omega.shape.length > 1) {
-        throw Error('Inner product (.) is implemented only for arrays of rank no more than 1.');
+      if (alpha.shape.length === 0) {
+        alpha = new APLArray([alpha.unwrap()]);
       }
-      return F(g(omega, alpha));
+      if (omega.shape.length === 0) {
+        omega = new APLArray([omega.unwrap()]);
+      }
+      return F(G(enclose(omega, void 0, new APLArray([0])), enclose(alpha, void 0, new APLArray([alpha.shape.length - 1]))));
     };
   };
 
@@ -3481,16 +3493,17 @@
     }
   };
 
-  reduce = this.reduce = function(f, g, axis) {
+  reduce = this.reduce = function(f, g, axis0) {
     assert(typeof f === 'function');
     assert(typeof g === 'undefined');
+    assert((typeof axis0 === 'undefined') || (axis0 instanceof APLArray));
     return function(omega, alpha) {
-      var a, data, i, indices, isBackwards, isMonadic, isNWise, n, p, rShape, shape, x, y, _i, _j, _ref2;
+      var a, axis, data, i, indices, isBackwards, isMonadic, isNWise, n, p, rShape, shape, x, y, _i, _j, _ref2;
 
       if (omega.shape.length === 0) {
         omega = new APLArray([omega.unwrap()]);
       }
-      axis = axis != null ? axis.toInt() : omega.shape.length - 1;
+      axis = axis0 != null ? axis0.toInt() : omega.shape.length - 1;
       if (!((0 <= axis && axis < omega.shape.length))) {
         throw RankError();
       }

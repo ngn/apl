@@ -34,12 +34,13 @@
 #     12 +/ 1 + ⍳10   ⍝ throws 'LENGTH ERROR'
 #     2 -/ 3 4 9 7    ⍝ returns ¯1 ¯5 2
 #     ¯2 -/ 3 4 9 7   ⍝ returns 1 5 ¯2
-reduce = @reduce = (f, g, axis) ->
+reduce = @reduce = (f, g, axis0) ->
   assert typeof f is 'function'
   assert typeof g is 'undefined'
+  assert((typeof axis0 is 'undefined') or (axis0 instanceof APLArray))
   (omega, alpha) ->
     if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
-    axis = if axis? then axis.toInt() else omega.shape.length - 1
+    axis = if axis0? then axis0.toInt() else omega.shape.length - 1
     if not (0 <= axis < omega.shape.length) then throw RankError()
 
     if alpha
