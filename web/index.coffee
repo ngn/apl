@@ -157,7 +157,7 @@ jQuery ($) ->
         '¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ - ×'
         '░ ⍵ ∊ ⍴ ~ ↑ ↓ ⍳ ○ * ← ░'
         '⍺ ⌈ ⌊ ░ ∇ ∆ ∘ ░ ⎕ {enter}'
-        '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ░ {bksp}'
+        '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ÷ {bksp}'
         '{alt} {space} {exec!!}'
       ]
       'alt-shift': [
