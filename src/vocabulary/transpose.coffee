@@ -15,6 +15,8 @@
     #     ...                          1 13   5 17    9 21
     #     ...                          2 14   6 18   10 22
     #     ...                          3 15   7 19   11 23)
+    #     ⍉ ⍬                     ⍝ returns ⍬
+    #     ⍉ ''                    ⍝ returns ''
     new APLArray(
       omega.data
       omega.shape[...].reverse()
