@@ -1,5 +1,5 @@
 {APLArray} = require '../array'
-{RankError, LengthError} = require '../errors'
+{RankError, LengthError, DomainError} = require '../errors'
 {assert, repeat, isInt} = require '../helpers'
 
 

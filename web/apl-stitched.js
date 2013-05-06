@@ -3466,11 +3466,11 @@
 
 }).call(this);
 }, "vocabulary/slash": function(exports, require, module) {(function() {
-  var APLArray, LengthError, RankError, assert, compressOrReplicate, isInt, reduce, repeat, _ref, _ref1;
+  var APLArray, DomainError, LengthError, RankError, assert, compressOrReplicate, isInt, reduce, repeat, _ref, _ref1;
 
   APLArray = require('../array').APLArray;
 
-  _ref = require('../errors'), RankError = _ref.RankError, LengthError = _ref.LengthError;
+  _ref = require('../errors'), RankError = _ref.RankError, LengthError = _ref.LengthError, DomainError = _ref.DomainError;
 
   _ref1 = require('../helpers'), assert = _ref1.assert, repeat = _ref1.repeat, isInt = _ref1.isInt;
 
