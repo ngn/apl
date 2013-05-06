@@ -1894,41 +1894,45 @@
       rStride = stride.slice(0);
       rStride.splice(Math.ceil(axis), 1);
     }
-    r = 0;
-    p = alpha.offset;
-    pIndices = repeat([0], alpha.shape.length);
-    while (true) {
-      data[r] = alpha.data[p];
-      a = pIndices.length - 1;
-      while (a >= 0 && pIndices[a] + 1 === alpha.shape[a]) {
-        p -= pIndices[a] * alpha.stride[a];
-        r -= pIndices[a] * rStride[a];
-        pIndices[a--] = 0;
+    if (!alpha.empty()) {
+      r = 0;
+      p = alpha.offset;
+      pIndices = repeat([0], alpha.shape.length);
+      while (true) {
+        data[r] = alpha.data[p];
+        a = pIndices.length - 1;
+        while (a >= 0 && pIndices[a] + 1 === alpha.shape[a]) {
+          p -= pIndices[a] * alpha.stride[a];
+          r -= pIndices[a] * rStride[a];
+          pIndices[a--] = 0;
+        }
+        if (a < 0) {
+          break;
+        }
+        p += alpha.stride[a];
+        r += rStride[a];
+        pIndices[a]++;
       }
-      if (a < 0) {
-        break;
-      }
-      p += alpha.stride[a];
-      r += rStride[a];
-      pIndices[a]++;
     }
-    r = isInt(axis) ? stride[axis] * alpha.shape[axis] : stride[Math.ceil(axis)];
-    q = omega.offset;
-    pIndices = repeat([0], omega.shape.length);
-    while (true) {
-      data[r] = omega.data[q];
-      a = pIndices.length - 1;
-      while (a >= 0 && pIndices[a] + 1 === omega.shape[a]) {
-        q -= pIndices[a] * omega.stride[a];
-        r -= pIndices[a] * rStride[a];
-        pIndices[a--] = 0;
+    if (!omega.empty()) {
+      r = isInt(axis) ? stride[axis] * alpha.shape[axis] : stride[Math.ceil(axis)];
+      q = omega.offset;
+      pIndices = repeat([0], omega.shape.length);
+      while (true) {
+        data[r] = omega.data[q];
+        a = pIndices.length - 1;
+        while (a >= 0 && pIndices[a] + 1 === omega.shape[a]) {
+          q -= pIndices[a] * omega.stride[a];
+          r -= pIndices[a] * rStride[a];
+          pIndices[a--] = 0;
+        }
+        if (a < 0) {
+          break;
+        }
+        q += omega.stride[a];
+        r += rStride[a];
+        pIndices[a]++;
       }
-      if (a < 0) {
-        break;
-      }
-      q += omega.stride[a];
-      r += rStride[a];
-      pIndices[a]++;
     }
     return new APLArray(data, shape, stride);
   };

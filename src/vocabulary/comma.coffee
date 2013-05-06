@@ -20,6 +20,9 @@
     #     ...                          12 13 14 15 99
     #     ...                          16 17 18 19 99
     #     ...                          20 21 22 23 99)
+    #     ⍬,⍬                  ⍝ returns ⍬
+    #     ⍬,1                  ⍝ returns ,1
+    #     1,⍬                  ⍝ returns ,1
     catenate omega, alpha, axis
 
   else
@@ -108,38 +111,40 @@ catenate = (omega, alpha, axis) ->
     rStride = stride[...]
     rStride.splice Math.ceil(axis), 1
 
-  r = 0 # pointer in data (the result)
-  p = alpha.offset # pointer in alpha.data
-  pIndices = repeat [0], alpha.shape.length
-  loop
-    data[r] = alpha.data[p]
-    a = pIndices.length - 1
-    while a >= 0 and pIndices[a] + 1 is alpha.shape[a]
-      p -= pIndices[a] * alpha.stride[a]
-      r -= pIndices[a] * rStride[a]
-      pIndices[a--] = 0
-    if a < 0 then break
-    p += alpha.stride[a]
-    r += rStride[a]
-    pIndices[a]++
+  if not alpha.empty()
+    r = 0 # pointer in data (the result)
+    p = alpha.offset # pointer in alpha.data
+    pIndices = repeat [0], alpha.shape.length
+    loop
+      data[r] = alpha.data[p]
+      a = pIndices.length - 1
+      while a >= 0 and pIndices[a] + 1 is alpha.shape[a]
+        p -= pIndices[a] * alpha.stride[a]
+        r -= pIndices[a] * rStride[a]
+        pIndices[a--] = 0
+      if a < 0 then break
+      p += alpha.stride[a]
+      r += rStride[a]
+      pIndices[a]++
 
-  r = # pointer in data (the result)
-    if isInt axis
-      stride[axis] * alpha.shape[axis]
-    else
-      stride[Math.ceil axis]
-  q = omega.offset # pointer in omega.data
-  pIndices = repeat [0], omega.shape.length
-  loop
-    data[r] = omega.data[q]
-    a = pIndices.length - 1
-    while a >= 0 and pIndices[a] + 1 is omega.shape[a]
-      q -= pIndices[a] * omega.stride[a]
-      r -= pIndices[a] * rStride[a]
-      pIndices[a--] = 0
-    if a < 0 then break
-    q += omega.stride[a]
-    r += rStride[a]
-    pIndices[a]++
+  if not omega.empty()
+    r = # pointer in data (the result)
+      if isInt axis
+        stride[axis] * alpha.shape[axis]
+      else
+        stride[Math.ceil axis]
+    q = omega.offset # pointer in omega.data
+    pIndices = repeat [0], omega.shape.length
+    loop
+      data[r] = omega.data[q]
+      a = pIndices.length - 1
+      while a >= 0 and pIndices[a] + 1 is omega.shape[a]
+        q -= pIndices[a] * omega.stride[a]
+        r -= pIndices[a] * rStride[a]
+        pIndices[a--] = 0
+      if a < 0 then break
+      q += omega.stride[a]
+      r += rStride[a]
+      pIndices[a]++
 
   new APLArray data, shape, stride
