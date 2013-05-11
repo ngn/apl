@@ -142,29 +142,6 @@ As a library:
     console.info(apl('1 2 3 + 4 5 6'));
     EOF
 
-# Integration with CoffeeScript
-
-The `apl` command is capable of compiling and running `.coffee` files which
-contain a mixture of CoffeeScript and APL (it uses
-[coffee-subscript](https://github.com/ngn/coffee-subscript) to do that).  APL
-fragments should be enclosed in guillemets (`«»`) or indented as the body of a
-squiggly arrow function (`~>`):
-
-    #!/usr/bin/env apl
-
-    a = [4, 3, 8]
-    console.info «⌽a» # prints [8, 3, 4]
-    avg = «+/÷⍴»
-    console.info avg a # prints 5
-
-    counter = 0
-    tick = ~>
-      ⍝ Read/write access to variables from enclosing CoffeeScript scopes
-      counter ← counter + 1
-
-    for [0...10] then tick()
-    console.info counter # prints 10
-
 # Editor support
 
 [Vim keymap and syntax](https://github.com/ngn/vim-apl)
