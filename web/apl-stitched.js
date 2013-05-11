@@ -346,8 +346,7 @@
 }).call(this);
 }, "command": function(exports, require, module) {(function() {
   var compile, exec, fs, isArray, nodes, optimist, printAST, repl, _ref,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-    __slice = [].slice;
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   optimist = require('optimist');
 
@@ -356,7 +355,7 @@
   _ref = require('./compiler'), nodes = _ref.nodes, compile = _ref.compile, exec = _ref.exec;
 
   this.main = function() {
-    var a, aplCode, argv, b, cs, ctx, fakeRequire, filename, isCoffeeScript, jsCode, k, knownOptions, opts, pp;
+    var a, aplCode, argv, b, ctx, filename, jsCode, k, knownOptions, opts;
 
     argv = optimist.usage('Usage: apl [options] path/to/script.apl [args]\n\nIf called without options, `apl` will run your script.').describe({
       c: 'compile to JavaScript and save as .js files',
@@ -430,26 +429,15 @@
       })()).toString('utf8');
     } else {
       opts.file = argv._[0];
-      isCoffeeScript = /\.coffee$/.test(opts.file);
       aplCode = fs.readFileSync(opts.file, 'utf8');
     }
     if (argv.nodes) {
       printAST(nodes(aplCode, opts));
       return;
     }
-    if (isCoffeeScript) {
-      cs = require('coffee-script');
-      pp = require('coffee-subscript');
-      jsCode = cs.compile(pp.preprocess(aplCode, opts));
-    } else {
-      jsCode = compile(aplCode, opts);
-    }
+    jsCode = compile(aplCode, opts);
     if (argv.compile) {
-      if (isCoffeeScript) {
-        jsCode = "\#!/usr/bin/env node\n" + jsCode;
-      } else {
-        jsCode = "\#!/usr/bin/env node\nvar _ = require('apl').createGlobalContext();\n" + jsCode;
-      }
+      jsCode = "\#!/usr/bin/env node\nvar _ = require('apl').createGlobalContext();\n" + jsCode;
       if (argv.stdio || argv.print) {
         return process.stdout.write(jsCode);
       } else {
@@ -457,21 +445,7 @@
         return fs.writeFileSync(filename, jsCode, 'utf8');
       }
     } else {
-      if (isCoffeeScript) {
-        fakeRequire = function() {
-          var args;
-
-          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          if (args.length === 1 && args[0] === 'apl') {
-            return require('./apl');
-          } else {
-            return require.apply(null, args);
-          }
-        };
-        return (new Function("var require = arguments[0];\n" + jsCode))(fakeRequire);
-      } else {
-        return (new Function("var _ = arguments[0];\n" + jsCode))(require('./apl').createGlobalContext());
-      }
+      return (new Function("var _ = arguments[0];\n" + jsCode))(require('./apl').createGlobalContext());
     }
   };
 

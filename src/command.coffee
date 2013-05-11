@@ -84,7 +84,6 @@ fs = require 'fs'
       ).toString 'utf8'
   else
     opts.file = argv._[0]
-    isCoffeeScript = /\.coffee$/.test opts.file
     aplCode = fs.readFileSync opts.file, 'utf8'
 
   # If printing of nodes is requested, do it and stop.
@@ -93,50 +92,28 @@ fs = require 'fs'
     return
 
   # Compile.
-  if isCoffeeScript
-    cs = require 'coffee-script'
-    pp = require 'coffee-subscript'
-    jsCode = cs.compile pp.preprocess aplCode, opts
-  else
-    jsCode = compile aplCode, opts
+  jsCode = compile aplCode, opts
 
   # Print or execute compiler output
   #
   # (it looks a little hairy because we must wrap compiler output differently
   # depending on where it will be executed, but really it's straightforward)
   if argv.compile
-    if isCoffeeScript
-      jsCode = """
-        \#!/usr/bin/env node
-        #{jsCode}
-      """
-    else
-      jsCode = """
-        \#!/usr/bin/env node
-        var _ = require('apl').createGlobalContext();
-        #{jsCode}
-      """
+    jsCode = """
+      \#!/usr/bin/env node
+      var _ = require('apl').createGlobalContext();
+      #{jsCode}
+    """
     if argv.stdio or argv.print
       process.stdout.write jsCode
     else
       filename = argv._[0].replace(/\.(apl|coffee)$/, '.js')
       fs.writeFileSync filename, jsCode, 'utf8'
   else
-    if isCoffeeScript
-      fakeRequire = (args...) ->
-        if args.length is 1 and args[0] is 'apl'
-          require './apl'
-        else
-          require args...
-      (new Function """
-        var require = arguments[0];
-        #{jsCode}
-      """) fakeRequire
-    else
-      (new Function """
-        var _ = arguments[0];
-        #{jsCode}
-      """) require('./apl').createGlobalContext()
+    (new Function """
+      var _ = arguments[0];
+      #{jsCode}
+    """) require('./apl').createGlobalContext()
 
 
 
