@@ -146,11 +146,9 @@ compressOrReplicate = (omega, alpha, axis) ->
     loop
       x =
         if b[indices[axis]]?
-          assert 0 <= b[indices[axis]] < n, 'a2' # todo
           omega.data[p + b[indices[axis]] * omega.stride[axis]]
         else
           filler
-      assert x?, 'a1' # todo
       data.push x
 
       i = shape.length - 1
