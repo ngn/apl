@@ -1,6 +1,6 @@
 {
   "name": "apl",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "A Programming Language",
   "keywords": ["apl", "javascript", "language", "coffeescript"],
   "homepage": "https://github.com/ngn/apl/",
