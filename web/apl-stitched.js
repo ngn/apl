@@ -3554,7 +3554,7 @@
   };
 
   compressOrReplicate = function(omega, alpha, axis) {
-    var a, b, data, filler, i, indices, n, p, shape, x, _i, _j, _len, _ref2, _ref3;
+    var a, b, data, filler, i, indices, n, p, shape, x, _i, _j, _len, _ref2;
 
     if (omega.shape.length === 0) {
       omega = new APLArray([omega.unwrap()]);
@@ -3602,8 +3602,7 @@
       p = omega.offset;
       indices = repeat([0], shape.length);
       while (true) {
-        x = b[indices[axis]] != null ? (assert((0 <= (_ref3 = b[indices[axis]]) && _ref3 < n), 'a2'), omega.data[p + b[indices[axis]] * omega.stride[axis]]) : filler;
-        assert(x != null, 'a1');
+        x = b[indices[axis]] != null ? omega.data[p + b[indices[axis]] * omega.stride[axis]] : filler;
         data.push(x);
         i = shape.length - 1;
         while (i >= 0 && indices[i] + 1 === shape[i]) {
