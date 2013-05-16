@@ -39,7 +39,7 @@
             console.error(err.stack);
           }
         }
-        $('#result').addClass('error').text(err.message);
+        $('#result').addClass('error').text(err);
       }
     };
     $('#go').tipsy({

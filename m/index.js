@@ -138,7 +138,7 @@
               console.error(err);
             }
           }
-          $('#result').addClass('error').text(err.message);
+          $('#result').addClass('error').text(err);
         }
         $('#pageInput').hide();
         $('#pageOutput').show();

@@ -25,7 +25,7 @@ jQuery ($) ->
       $('#result').removeClass('error').text format(result).join '\n'
     catch err
       console?.error?(err.stack)
-      $('#result').addClass('error').text err.message
+      $('#result').addClass('error').text err
     return
 
   $('#go').tipsy(gravity: 'e', opacity: 1, delayIn: 1000)
