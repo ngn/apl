@@ -31,6 +31,8 @@ jQuery ($) ->
   $('#go').tipsy(gravity: 'e', opacity: 1, delayIn: 1000)
     .closest('form').submit -> execute(); false
 
+  if hashParams.run then $('#go').click()
+
 
 
   # Symbols table {{{1
