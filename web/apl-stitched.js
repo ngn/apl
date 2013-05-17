@@ -77,24 +77,24 @@
 
 }).call(this);
 }, "array": function(exports, require, module) {(function() {
-  var APLArray, LengthError, assert, extend, isInt, prod, strideForShape, _ref;
+  var APLArray, DomainError, LengthError, assert, extend, isInt, prod, strideForShape, _ref, _ref1;
 
   _ref = require('./helpers'), assert = _ref.assert, extend = _ref.extend, prod = _ref.prod, isInt = _ref.isInt;
 
-  LengthError = require('./errors').LengthError;
+  _ref1 = require('./errors'), LengthError = _ref1.LengthError, DomainError = _ref1.DomainError;
 
   this.APLArray = APLArray = (function() {
     function APLArray(data, shape, stride, offset) {
-      var i, x, _i, _j, _len, _len1, _ref1, _ref2, _ref3, _ref4;
+      var i, x, _i, _j, _len, _len1, _ref2, _ref3, _ref4, _ref5;
 
       this.data = data;
       this.shape = shape;
       this.stride = stride;
       this.offset = offset != null ? offset : 0;
-      if ((_ref1 = this.shape) == null) {
+      if ((_ref2 = this.shape) == null) {
         this.shape = [this.data.length];
       }
-      if ((_ref2 = this.stride) == null) {
+      if ((_ref3 = this.stride) == null) {
         this.stride = strideForShape(this.shape);
       }
       assert(this.data instanceof Array || typeof this.data === 'string');
@@ -102,15 +102,15 @@
       assert(this.stride instanceof Array);
       assert(this.data.length === 0 || isInt(this.offset, 0, this.data.length));
       assert(this.shape.length === this.stride.length);
-      _ref3 = this.shape;
-      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        x = _ref3[_i];
+      _ref4 = this.shape;
+      for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+        x = _ref4[_i];
         assert(isInt(x, 0));
       }
       if (this.data.length) {
-        _ref4 = this.stride;
-        for (i = _j = 0, _len1 = _ref4.length; _j < _len1; i = ++_j) {
-          x = _ref4[i];
+        _ref5 = this.stride;
+        for (i = _j = 0, _len1 = _ref5.length; _j < _len1; i = ++_j) {
+          x = _ref5[i];
           assert(isInt(x, -this.data.length, this.data.length + 1));
         }
       } else {
@@ -130,11 +130,11 @@
     };
 
     APLArray.prototype.empty = function() {
-      var d, _i, _len, _ref1;
+      var d, _i, _len, _ref2;
 
-      _ref1 = this.shape;
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        d = _ref1[_i];
+      _ref2 = this.shape;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        d = _ref2[_i];
         if (!d) {
           return true;
         }
@@ -151,12 +151,12 @@
       }
       p = this.offset;
       indices = (function() {
-        var _i, _len, _ref1, _results;
+        var _i, _len, _ref2, _results;
 
-        _ref1 = this.shape;
+        _ref2 = this.shape;
         _results = [];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          axis = _ref1[_i];
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          axis = _ref2[_i];
           _results.push(0);
         }
         return _results;
@@ -177,12 +177,12 @@
     };
 
     APLArray.prototype.each2 = function(a, f) {
-      var axis, indices, p, q, _i, _ref1;
+      var axis, indices, p, q, _i, _ref2;
 
       assert(a instanceof APLArray);
       assert(typeof f === 'function');
       assert(this.shape.length === a.shape.length);
-      for (axis = _i = 0, _ref1 = this.shape.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; axis = 0 <= _ref1 ? ++_i : --_i) {
+      for (axis = _i = 0, _ref2 = this.shape.length; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; axis = 0 <= _ref2 ? ++_i : --_i) {
         assert(this.shape[axis] === a.shape[axis]);
       }
       if (this.empty()) {
@@ -191,12 +191,12 @@
       p = this.offset;
       q = a.offset;
       indices = (function() {
-        var _j, _len, _ref2, _results;
+        var _j, _len, _ref3, _results;
 
-        _ref2 = this.shape;
+        _ref3 = this.shape;
         _results = [];
-        for (_j = 0, _len = _ref2.length; _j < _len; _j++) {
-          axis = _ref2[_j];
+        for (_j = 0, _len = _ref3.length; _j < _len; _j++) {
+          axis = _ref3[_j];
           _results.push(0);
         }
         return _results;
@@ -285,11 +285,11 @@
     };
 
     APLArray.prototype.isSingleton = function() {
-      var n, _i, _len, _ref1;
+      var n, _i, _len, _ref2;
 
-      _ref1 = this.shape;
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        n = _ref1[_i];
+      _ref2 = this.shape;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        n = _ref2[_i];
         if (n !== 1) {
           return false;
         }
@@ -317,7 +317,7 @@
   })();
 
   this.strideForShape = strideForShape = function(shape) {
-    var i, r, _i, _ref1;
+    var i, r, _i, _ref2;
 
     assert(shape instanceof Array);
     if (shape.length === 0) {
@@ -325,7 +325,7 @@
     }
     r = Array(shape.length);
     r[r.length - 1] = 1;
-    for (i = _i = _ref1 = r.length - 2; _i >= 0; i = _i += -1) {
+    for (i = _i = _ref2 = r.length - 2; _i >= 0; i = _i += -1) {
       assert(isInt(shape[i], 0));
       r[i] = r[i + 1] * shape[i + 1];
     }

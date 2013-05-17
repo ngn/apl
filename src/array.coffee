@@ -1,5 +1,5 @@
 {assert, extend, prod, isInt} = require './helpers'
-{LengthError} = require './errors'
+{LengthError, DomainError} = require './errors'
 
 # This is an experimental data structure intended to replace the current
 # representation of APL arrays.
