@@ -13,26 +13,30 @@
 #     1 1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"    ⍝ returns 1 2 4 ⍴ 'QRSTUVWX'
 #     ¯1 ¯1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"  ⍝ returns 1 2 4 ⍴ 'ABCDEFGH'
 @['↓'] = (omega, alpha, axis) ->
-  if alpha.shape.length > 1
-    throw RankError()
-  a = alpha.toArray()
-  for x in a
-    if not isInt x
-      throw DomainError()
-  if omega.shape.length is 0
-    omega = new APLArray omega.data, repeat([1], a.length), omega.stride, omega.offset
-  else
-    if a.length > omega.shape.length
+  if alpha
+    if alpha.shape.length > 1
       throw RankError()
+    a = alpha.toArray()
+    for x in a
+      if not isInt x
+        throw DomainError()
+    if omega.shape.length is 0
+      omega = new APLArray omega.data, repeat([1], a.length), omega.stride, omega.offset
+    else
+      if a.length > omega.shape.length
+        throw RankError()
 
-  shape = omega.shape[...]
-  offset = omega.offset
-  for x, i in a
-    shape[i] = Math.max 0, omega.shape[i] - Math.abs x
-    if x > 0
-      offset += x * omega.stride[i]
+    shape = omega.shape[...]
+    offset = omega.offset
+    for x, i in a
+      shape[i] = Math.max 0, omega.shape[i] - Math.abs x
+      if x > 0
+        offset += x * omega.stride[i]
 
-  if prod(shape) is 0
-    new APLArray [], shape
+    if prod(shape) is 0
+      new APLArray [], shape
+    else
+      new APLArray omega.data, shape, omega.stride, offset
+
   else
-    new APLArray omega.data, shape, omega.stride, offset
+    throw Error 'Not implemented'

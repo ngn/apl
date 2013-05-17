@@ -2186,36 +2186,40 @@
   this['↓'] = function(omega, alpha, axis) {
     var a, i, offset, shape, x, _i, _j, _len, _len1;
 
-    if (alpha.shape.length > 1) {
-      throw RankError();
-    }
-    a = alpha.toArray();
-    for (_i = 0, _len = a.length; _i < _len; _i++) {
-      x = a[_i];
-      if (!isInt(x)) {
-        throw DomainError();
-      }
-    }
-    if (omega.shape.length === 0) {
-      omega = new APLArray(omega.data, repeat([1], a.length), omega.stride, omega.offset);
-    } else {
-      if (a.length > omega.shape.length) {
+    if (alpha) {
+      if (alpha.shape.length > 1) {
         throw RankError();
       }
-    }
-    shape = omega.shape.slice(0);
-    offset = omega.offset;
-    for (i = _j = 0, _len1 = a.length; _j < _len1; i = ++_j) {
-      x = a[i];
-      shape[i] = Math.max(0, omega.shape[i] - Math.abs(x));
-      if (x > 0) {
-        offset += x * omega.stride[i];
+      a = alpha.toArray();
+      for (_i = 0, _len = a.length; _i < _len; _i++) {
+        x = a[_i];
+        if (!isInt(x)) {
+          throw DomainError();
+        }
       }
-    }
-    if (prod(shape) === 0) {
-      return new APLArray([], shape);
+      if (omega.shape.length === 0) {
+        omega = new APLArray(omega.data, repeat([1], a.length), omega.stride, omega.offset);
+      } else {
+        if (a.length > omega.shape.length) {
+          throw RankError();
+        }
+      }
+      shape = omega.shape.slice(0);
+      offset = omega.offset;
+      for (i = _j = 0, _len1 = a.length; _j < _len1; i = ++_j) {
+        x = a[i];
+        shape[i] = Math.max(0, omega.shape[i] - Math.abs(x));
+        if (x > 0) {
+          offset += x * omega.stride[i];
+        }
+      }
+      if (prod(shape) === 0) {
+        return new APLArray([], shape);
+      } else {
+        return new APLArray(omega.data, shape, omega.stride, offset);
+      }
     } else {
-      return new APLArray(omega.data, shape, omega.stride, offset);
+      throw Error('Not implemented');
     }
   };
 
