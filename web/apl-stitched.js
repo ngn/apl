@@ -3900,6 +3900,8 @@
         }
         return new APLArray(omega.data, shape, stride, offset);
       }
+    } else {
+      throw Error('Not implemented');
     }
   };
 

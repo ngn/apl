@@ -82,3 +82,6 @@
           stride.push omega.stride[i]
           offset += (omega.shape[i] + x) * omega.stride[i]
       new APLArray omega.data, shape, stride, offset
+
+  else
+    throw Error 'Not implemented'
