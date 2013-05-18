@@ -56,12 +56,24 @@ a:hover
   bottom: 0          !important
   left: 50%          !important
   right: auto        !important
-  margin-left: -12em !important
-  background-color: #999
+  margin-left: -15em !important
+  background-color: #ccc
   border-top-left-radius:  6px
   border-top-right-radius: 6px
-  border: solid #777 1px
+  border: solid #aaa 1px
   border-width: 1px 1px 0 1px
+
+.ui-keyboard-button
+  background-color: #eee
+  font-family: apl
+  font-size: large
+  border-radius: 6px
+  border-style: solid
+  border-width: 2px
+  border-color: #ccc #aaa #aaa #ccc
+
+.ui-state-hover
+  border-color: #cc8 !important
 
 .ui-keyboard-space
   min-width: 16em    !important
@@ -69,17 +81,12 @@ a:hover
 
 .ui-keyboard-shift, .ui-keyboard-alt
   background-color: $orange
-  border-color: $orange
-  border-radius: 4px
 
 .ui-keyboard-shift.ui-state-active, .ui-keyboard-alt.ui-state-active
   background-color: $orangePressed
-  border-color: $orangePressed
-  border-style: inset
+  border-color: #ccc #aaa #aaa #ccc
 
 .ui-keyboard-exec
   background-color: $blue !important
-  border-color: $blue     !important
-  border-radius: 4px      !important
   min-width: 4em          !important
   width: auto             !important
