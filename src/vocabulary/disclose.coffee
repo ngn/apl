@@ -2,12 +2,12 @@
 
 # Disclose (`⊃`)
 #
-#     ⊃(1 2 3)(4 5 6)   ⍝ returns 1 2 3
-#     ⊃(1 2)(3 4 5)     ⍝ returns 1 2
-#     ⊃'AB'             ⍝ returns 'A'
-#     ⊃123              ⍝ returns 123
-#     ⊃⍬                ⍝ returns 0
-#!    ⊃''               ⍝ returns ' '
+# ⊃(1 2 3)(4 5 6)   <=> 1 2 3
+# ⊃(1 2)(3 4 5)     <=> 1 2
+# ⊃'AB'             <=> 'A'
+# ⊃123              <=> 123
+# ⊃⍬                <=> 0
+#!    ⊃''               <=> ' '
 @['⊃'] = (omega, alpha) ->
   if alpha
     throw Error 'Not implemented'

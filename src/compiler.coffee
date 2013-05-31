@@ -213,8 +213,8 @@ toJavaScript = (node) ->
 
     # Assignment
     #
-    #     A←5       ⍝ returns 5
-    #     A×A←2 5   ⍝ returns 4 25
+    # A←5     <=> 5
+    # A×A←2 5 <=> 4 25
     when 'assign'
       if not (node[1] instanceof Array and
               node[1].length is 2 and
@@ -237,16 +237,16 @@ toJavaScript = (node) ->
     #
     # Test get_/set_ convention for niladics:
     #
-    #     radius ← 3
-    #     ... get_circumference ← {2 × ○ radius}
-    #     ... get_surface ← {○ radius * 2}
-    #     ...
-    #     ... before ← 0.01× ⌊ 100× radius circumference surface
-    #     ... radius ← radius + 1
-    #     ... after  ← 0.01× ⌊ 100× radius circumference surface
-    #     ...
-    #     ... before after
-    #     ... ⍝ returns (3 18.84 28.27) (4 25.13 50.26)
+    # radius ← 3
+    # ... get_circumference ← {2×○radius}
+    # ... get_surface ← {○radius*2}
+    # ...
+    # ... before ← 0.01× ⌊ 100× radius circumference surface
+    # ... radius ← radius + 1
+    # ... after  ← 0.01× ⌊ 100× radius circumference surface
+    # ...
+    # ... before after
+    # ... <=> (3 18.84 28.27)(4 25.13 50.26)
     when 'symbol'
       name = node[1]
       vars = node.scopeNode.vars
@@ -260,9 +260,9 @@ toJavaScript = (node) ->
 
     # Lambda expressions
     #
-    #     {1 + 1} 1                      ⍝ returns 2
-    #     {⍵=0:1 ⋄ 2×∇⍵-1} 5             ⍝ returns 32 # two to the power of
-    #     {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8   ⍝ returns 34 # Fibonacci sequence
+    # {1 + 1} 1                    <=> 2
+    # {⍵=0:1 ⋄ 2×∇⍵-1} 5           <=> 32 # two to the power of
+    # {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8 <=> 34 # Fibonacci sequence
     when 'lambda'
       """
         function (_w, _a) {
@@ -272,17 +272,17 @@ toJavaScript = (node) ->
 
     # Strings of length one are scalars, all other strings are vectors.
     #
-    #     ⍴⍴''     ⍝ returns ,1
-    #     ⍴⍴'x'    ⍝ returns ,0
-    #     ⍴⍴'xx'   ⍝ returns ,1
+    # ⍴⍴''   <=> ,1
+    # ⍴⍴'x'  <=> ,0
+    # ⍴⍴'xx' <=> ,1
     #
     # Pairs of quotes inside strings:
     #
-    #     'Let''s parse it!'         ⍝ returns 'Let\'s parse it!'
-    #     "0x22's the code for ""."  ⍝ returns '0x22\'s the code for ".'
-    #     ⍴"\f\t\n\r\u1234\xff"      ⍝ returns ,6
+    # 'Let''s parse it!'        <=> 'Let\'s parse it!'
+    # "0x22's the code for ""." <=> '0x22\'s the code for ".'
+    # ⍴"\f\t\n\r\u1234\xff"     <=> ,6
     #
-    #     "unclosed string           ⍝ throws
+    # "unclosed string !!!
     when 'string'
       s = node[1]
       d = s[0] # the delimiter: '"' or "'"
@@ -291,17 +291,17 @@ toJavaScript = (node) ->
 
     # Numbers
     #
-    #     1234567890  ⍝ returns «1234567890»
-    #     12.34e56    ⍝ returns «12.34e56»
-    #     12.34e+56   ⍝ returns «12.34e+56»
-    #     12.34E56    ⍝ returns «12.34e56»
-    #     ¯12.34e¯56  ⍝ returns «-12.34e-56»
-    #     0Xffff      ⍝ returns «0xffff»
-    #     ¯0xffff     ⍝ returns «-0xffff»
-    #     ¯0xaBcD1234 ⍝ returns «-0xabcd1234»
-    #     ¯           ⍝ returns «Infinity»
-    #     ¯¯          ⍝ returns «-Infinity»
-    #     -¯          ⍝ returns «-Infinity»
+    # 1234567890  <=> «1234567890»
+    # 12.34e56    <=> «12.34e56»
+    # 12.34e+56   <=> «12.34e+56»
+    # 12.34E56    <=> «12.34e56»
+    # ¯12.34e¯56  <=> «-12.34e-56»
+    # 0Xffff      <=> «0xffff»
+    # ¯0xffff     <=> «-0xffff»
+    # ¯0xaBcD1234 <=> «-0xabcd1234»
+    # ¯           <=> «Infinity»
+    # ¯¯          <=> «-Infinity»
+    # -¯          <=> «-Infinity»
     when 'number'
       s = node[1].replace /¯/g, '-'
       a =
@@ -324,7 +324,7 @@ toJavaScript = (node) ->
     # so `B` gets evaluated before `A` as one would expect from APL's
     # right-to-left order of execution.
     #
-    #     ⍴ x[⍋x←6?40]    ⍝ returns ,6
+    # ⍴ x[⍋x←6?40] <=> ,6
     when 'index'
       "_['⍨'](_['⌷'])(
         _['⎕aplify']([#{(for c in node[2...] when c then toJavaScript c).join ', '}]),
@@ -364,8 +364,8 @@ toJavaScript = (node) ->
 
     # Embedded JavaScript
     #
-    #     «1234+5678» ⍝ returns 6912
-    #     «"asdf"» ⍝ returns 'asdf'
+    # «1234+5678» <=> 6912
+    # «"asdf"»    <=> 'asdf'
     when 'embedded'
       "_['⎕aplify'](#{node[1].replace /(^«|»$)/g, ''})"
 
@@ -399,7 +399,6 @@ compilerError = (node, opts, message) ->
       #{jsCode}
     """
   jsCode
-
 
 @exec = (aplCode, opts = {}) ->
   opts.aplCode = aplCode

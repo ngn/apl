@@ -26,7 +26,7 @@
             line += '\n' + m[1];
             i++;
           }
-          if (m = line.match(/^ *# {4,}([^]*)⍝([^]+)$/)) {
+          if (m = line.match(/^ *# ([^]*)((?:<=>|!!!)[^]+)$/)) {
             handler({
               code: trim(m[1]),
               expectation: trim(m[2])
@@ -47,7 +47,7 @@
     }
     exec = require(aplModulePrefix + 'compiler').exec;
     match = require(aplModulePrefix + 'vocabulary/vhelpers').match;
-    if (m = expectation.match(/^returns\b\s*([^]*)$/)) {
+    if (m = expectation.match(/^<=>\s*([^]*)$/)) {
       try {
         expected = exec(m[1]);
       } catch (_error) {
@@ -73,8 +73,8 @@
           error: e
         };
       }
-    } else if (m = expectation.match(/^throws\b\s*([^]*)?$/)) {
-      expectedErrorMessage = m[1] ? eval(m[1]) : '';
+    } else if (m = expectation.match(/^!!!\s*([^]*)?$/)) {
+      expectedErrorMessage = m[1] ? m[1] : '';
       try {
         exec(code);
         return {

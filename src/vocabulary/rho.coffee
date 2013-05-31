@@ -6,14 +6,14 @@
   if alpha
     # Reshape (`⍴`)
     #
-    #     ⍴ 1 2 3 ⍴ 0    ⍝ returns 1 2 3
-    #     ⍴ ⍴ 1 2 3 ⍴ 0  ⍝ returns ,3
-    #     3 3 ⍴ ⍳ 4      ⍝ returns 3 3 ⍴ 0 1 2 3 0 1 2 3 0
-    #     ⍴ 3 3 ⍴ ⍳ 4    ⍝ returns 3 3
-    #     ⍬ ⍴ 123        ⍝ returns 123
-    #     ⍬ ⍴ ⍬          ⍝ returns 0
-    #     2 3 ⍴ ⍬        ⍝ returns 2 3 ⍴ 0
-    #     2 3 ⍴ ⍳ 7      ⍝ returns 2 3 ⍴ 0 1 2 3 4 5
+    # ⍴1 2 3⍴0  <=> 1 2 3
+    # ⍴⍴1 2 3⍴0 <=> ,3
+    # 3 3⍴⍳4    <=> 3 3⍴0 1 2 3 0 1 2 3 0
+    # ⍴3 3⍴⍳4   <=> 3 3
+    # ⍬⍴123     <=> 123
+    # ⍬⍴⍬       <=> 0
+    # 2 3⍴⍬     <=> 2 3⍴0
+    # 2 3⍴⍳7    <=> 2 3⍴0 1 2 3 4 5
     if alpha.shape.length > 1 then throw RankError()
     shape = alpha.toArray()
     for d in shape when not isInt d, 0 then throw DomainError()
@@ -29,12 +29,12 @@
   else
     # Shape of (`⍴`)
     #
-    #     ⍴ 0           ⍝ returns 0 ⍴ 0
-    #     ⍴ 0 0         ⍝ returns 1 ⍴ 2
-    #     ⍴ ⍴ 0         ⍝ returns 1 ⍴ 0
-    #     ⍴ ⍴ ⍴ 0       ⍝ returns 1 ⍴ 1
-    #     ⍴ ⍴ ⍴ 0 0     ⍝ returns 1 ⍴ 1
-    #     ⍴ 'a'         ⍝ returns 0 ⍴ 0
-    #     ⍴ 'ab'        ⍝ returns 1 ⍴ 2
-    #     ⍴ 2 3 4 ⍴ 0   ⍝ returns 2 3 4
+    # ⍴0       <=> 0⍴0
+    # ⍴0 0     <=> 1⍴2
+    # ⍴⍴0      <=> 1⍴0
+    # ⍴⍴⍴0     <=> 1⍴1
+    # ⍴⍴⍴0 0   <=> 1⍴1
+    # ⍴'a'     <=> 0⍴0
+    # ⍴'ab'    <=> 1⍴2
+    # ⍴2 3 4⍴0 <=> 2 3 4
     new APLArray omega.shape

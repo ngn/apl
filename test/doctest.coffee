@@ -1,6 +1,5 @@
 #!/usr/bin/env coffee
 
-
 trim = (s) -> s.replace /(^ +| +$)/g, ''
 
 @forEachDoctest = forEachDoctest = (handler, continuation) ->
@@ -16,7 +15,7 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
         while i < lines.length and (m = lines[i].match(/^ *# *\.\.\.(.*)$/))
           line += '\n' + m[1]
           i++
-        if m = line.match /^ *# {4,}([^]*)⍝([^]+)$/
+        if m = line.match /^ *# ([^]*)((?:<=>|!!!)[^]+)$/
           handler code: trim(m[1]), expectation: trim(m[2])
     continuation?()
 
@@ -26,7 +25,7 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
   aplModulePrefix ?= './'
   {exec} = require aplModulePrefix + 'compiler'
   {match} = require aplModulePrefix + 'vocabulary/vhelpers'
-  if m = expectation.match /^returns\b\s*([^]*)$/
+  if m = expectation.match /^<=>\s*([^]*)$/
     try
       expected = exec m[1]
     catch e
@@ -47,8 +46,8 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
         success: false
         error: e
       }
-  else if m = expectation.match /^throws\b\s*([^]*)?$/
-    expectedErrorMessage = if m[1] then eval m[1] else ''
+  else if m = expectation.match /^!!!\s*([^]*)?$/
+    expectedErrorMessage = if m[1] then m[1] else ''
     try
       exec code
       return {

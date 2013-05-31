@@ -95,6 +95,6 @@ lexer = require './lexer'
     else parserError "Encountered unexpected token of type '#{token.type}'"
 
   result = parseBody()
-  #     'hello'} ⍝ throws 'SYNTAX ERROR'
+  # 'hello'} !!! SYNTAX ERROR
   demand 'eof'
   result

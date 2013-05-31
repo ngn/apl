@@ -7,44 +7,44 @@
 
     # Find (`⍷`)
     #
-    #     "AN"⍷"BANANA"                          ⍝ returns 0 1 0 1 0 0
-    #     "BIRDS" "NEST"⍷"BIRDS" "NEST" "SOUP"   ⍝ returns 1 0 0
-    #     "ME"⍷"HOME AGAIN"                      ⍝ returns 0 0 1 0 0 0 0 0 0 0
+    # "AN"⍷"BANANA"                        <=> 0 1 0 1 0 0
+    # "BIRDS" "NEST"⍷"BIRDS" "NEST" "SOUP" <=> 1 0 0
+    # "ME"⍷"HOME AGAIN"                    <=> 0 0 1 0 0 0 0 0 0 0
     #
-    #     "DAY"⍷7 9⍴("SUNDAY   ",
-    #     ...        "MONDAY   ",
-    #     ...        "TUESDAY  ",
-    #     ...        "WEDNESDAY",
-    #     ...        "THURSDAY ",
-    #     ...        "FRIDAY   ",
-    #     ...        "SATURDAY ")
-    #     ...   ⍝ returns (7 9 ⍴
-    #     ...          0 0 0 1 0 0 0 0 0
-    #     ...          0 0 0 1 0 0 0 0 0
-    #     ...          0 0 0 0 1 0 0 0 0
-    #     ...          0 0 0 0 0 0 1 0 0
-    #     ...          0 0 0 0 0 1 0 0 0
-    #     ...          0 0 0 1 0 0 0 0 0
-    #     ...          0 0 0 0 0 1 0 0 0)
+    # "DAY"⍷7 9⍴("SUNDAY   ",
+    # ...        "MONDAY   ",
+    # ...        "TUESDAY  ",
+    # ...        "WEDNESDAY",
+    # ...        "THURSDAY ",
+    # ...        "FRIDAY   ",
+    # ...        "SATURDAY ")
+    # ... <=> (7 9 ⍴
+    # ...      0 0 0 1 0 0 0 0 0
+    # ...      0 0 0 1 0 0 0 0 0
+    # ...      0 0 0 0 1 0 0 0 0
+    # ...      0 0 0 0 0 0 1 0 0
+    # ...      0 0 0 0 0 1 0 0 0
+    # ...      0 0 0 1 0 0 0 0 0
+    # ...      0 0 0 0 0 1 0 0 0)
     #
-    #     (2 2⍴"ABCD")⍷"ABCD"   ⍝ returns 4 ⍴ 0
-    #     (1 2) (3 4) ⍷ "START" (1 2 3) (1 2) (3 4)   ⍝ returns 0 0 1 0
+    # (2 2⍴"ABCD")⍷"ABCD" <=> 4 ⍴ 0
+    # (1 2) (3 4) ⍷ "START" (1 2 3)(1 2)(3 4) <=> 0 0 1 0
     #
-    #     (2 2⍴7 8 12 13)⍷ 1+ 4 5⍴⍳20
-    #     ... ⍝ returns 4 5 ⍴ (0 0 0 0 0
-    #     ...                  0 1 0 0 0
-    #     ...                  0 0 0 0 0
-    #     ...                  0 0 0 0 0)
+    # (2 2⍴7 8 12 13)⍷ 1+ 4 5⍴⍳20
+    # ... <=> 4 5⍴(0 0 0 0 0
+    # ...          0 1 0 0 0
+    # ...          0 0 0 0 0
+    # ...          0 0 0 0 0)
     #
-    #     1⍷⍳5                  ⍝ returns 0 1 0 0 0
-    #     1 2⍷⍳5                ⍝ returns 0 1 0 0 0
-    #     ⍬⍷⍳5                  ⍝ returns 1 1 1 1 1
-    #     ⍬⍷⍬                   ⍝ returns ⍬
-    #     1⍷⍬                   ⍝ returns ⍬
-    #     1 2 3⍷⍬               ⍝ returns ⍬
-    #     (2 3 0⍴0)⍷(3 4 5⍴0)   ⍝ returns 3 4 5⍴1
-    #     (2 3 4⍴0)⍷(3 4 0⍴0)   ⍝ returns 3 4 0⍴0
-    #     (2 3 0⍴0)⍷(3 4 0⍴0)   ⍝ returns 3 4 0⍴0
+    # 1⍷⍳5                <=> 0 1 0 0 0
+    # 1 2⍷⍳5              <=> 0 1 0 0 0
+    # ⍬⍷⍳5                <=> 1 1 1 1 1
+    # ⍬⍷⍬                 <=> ⍬
+    # 1⍷⍬                 <=> ⍬
+    # 1 2 3⍷⍬             <=> ⍬
+    # (2 3 0⍴0)⍷(3 4 5⍴0) <=> 3 4 5⍴1
+    # (2 3 4⍴0)⍷(3 4 0⍴0) <=> 3 4 0⍴0
+    # (2 3 0⍴0)⍷(3 4 0⍴0) <=> 3 4 0⍴0
     if alpha.shape.length > omega.shape.length
       return new APLArray [0], omega.shape, repeat [0], omega.shape.length
     if alpha.shape.length < omega.shape.length

@@ -8,20 +8,20 @@
 
     # Union (`∪`)
     #
-    #     1 2 ∪ 2 3       ⍝ returns 1 2 3
-    #     'SHOCK' ∪ 'CHOCOLATE'   ⍝ returns 'SHOCKLATE'
-    #     1 ∪ 1           ⍝ returns ,1
-    #     1 ∪ 2           ⍝ returns 1 2
-    #     1 ∪ 2 1         ⍝ returns 1 2
-    #     1 2 ∪ 2 2 2 2   ⍝ returns 1 2
-    #     1 2 ∪ 2 2⍴3     ⍝ throws 'RANK ERROR'
-    #     (2 2⍴3) ∪ 4 5   ⍝ throws 'RANK ERROR'
-    #     ⍬ ∪ 1           ⍝ returns ,1
-    #     1 2 ∪ ⍬         ⍝ returns 1 2
-    #     ⍬ ∪ ⍬           ⍝ returns ⍬
+    # 1 2∪2 3     <=> 1 2 3
+    # 'SHOCK'∪'CHOCOLATE' <=> 'SHOCKLATE'
+    # 1∪1         <=> ,1
+    # 1∪2         <=> 1 2
+    # 1∪2 1       <=> 1 2
+    # 1 2∪2 2 2 2 <=> 1 2
+    # 1 2∪2 2⍴3   !!! RANK ERROR
+    # (2 2⍴3)∪4 5 !!! RANK ERROR
+    # ⍬∪1         <=> ,1
+    # 1 2∪⍬       <=> 1 2
+    # ⍬∪⍬         <=> ⍬
     #
-    #     'lentils' 'bulghur' (3 4 5) ∪ 'lentils' 'rice'
-    #     ...     ⍝ returns 'lentils' 'bulghur' (3 4 5) 'rice'
+    # 'lentils' 'bulghur' (3 4 5) ∪ 'lentils' 'rice'
+    # ... <=> 'lentils' 'bulghur' (3 4 5) 'rice'
     data = []
     for a in [alpha, omega]
       if a.shape.length > 1
@@ -33,10 +33,10 @@
 
     # Unique (`∪`)
     #
-    #     ∪ 3 17 17 17 ¯3 17 0   ⍝ returns 3 17 ¯3 0
-    #     ∪ 3 17                 ⍝ returns 3 17
-    #     ∪ 17                   ⍝ returns ,17
-    #     ∪ ⍬                    ⍝ returns ⍬
+    # ∪3 17 17 17 ¯3 17 0 <=> 3 17 ¯3 0
+    # ∪3 17               <=> 3 17
+    # ∪17                 <=> ,17
+    # ∪⍬                  <=> ⍬
     data = []
     omega.each (x) -> if not contains data, x then data.push x
     new APLArray data
@@ -46,8 +46,8 @@
 
     # Intersection (`∩`)
     #
-    #     'ABRA'∩'CAR'      ⍝ returns 'ARA'
-    #     1 'PLUS' 2 ∩ ⍳5   ⍝ returns 1 2
+    # 'ABRA'∩'CAR'    <=> 'ARA'
+    # 1 'PLUS' 2 ∩ ⍳5 <=> 1 2
     data = []
     b = omega.toArray()
     for x in alpha.toArray() when contains b, x then data.push x

@@ -17,23 +17,23 @@
 
 # Reduce (`/`)
 #
-#     +/ 3                       ⍝ returns 3
-#     +/ 3 5 8                   ⍝ returns 16
-#     +/ 2 4 6                   ⍝ returns 12
-#     ⌈/ 82 66 93 13             ⍝ returns 93
-#     ×/ 2 3 ⍴ 1 2 3 4 5 6       ⍝ returns 6 120
-#     2 ,/ 'AB' 'CD' 'EF' 'HI'   ⍝ returns 'ABCD' 'CDEF' 'EFHI'
-#     3 ,/ 'AB' 'CD' 'EF' 'HI'   ⍝ returns 'ABCDEF' 'CDEFHI'
+# +/3                    <=> 3
+# +/3 5 8                <=> 16
+# +/2 4 6                <=> 12
+# ⌈/82 66 93 13          <=> 93
+# ×/2 3⍴1 2 3 4 5 6      <=> 6 120
+# 2,/'AB' 'CD' 'EF' 'HI' <=> 'ABCD' 'CDEF' 'EFHI'
+# 3,/'AB' 'CD' 'EF' 'HI' <=> 'ABCDEF' 'CDEFHI'
 #
 # N-Wise reduce
 #
-#     2 +/ 1 + ⍳10    ⍝ returns 3 5 7 9 11 13 15 17 19
-#     5 +/ 1 + ⍳10    ⍝ returns 15 20 25 30 35 40
-#     10 +/ 1 + ⍳10   ⍝ returns ,55
-#     11 +/ 1 + ⍳10   ⍝ returns ⍬
-#     12 +/ 1 + ⍳10   ⍝ throws 'LENGTH ERROR'
-#     2 -/ 3 4 9 7    ⍝ returns ¯1 ¯5 2
-#     ¯2 -/ 3 4 9 7   ⍝ returns 1 5 ¯2
+# 2+/1+⍳10    <=> 3 5 7 9 11 13 15 17 19
+# 5+/1+⍳10    <=> 15 20 25 30 35 40
+# 10+/1+⍳10   <=> ,55
+# 11+/1+⍳10   <=> ⍬
+# 12+/1+⍳10   !!! LENGTH ERROR
+# 2-/3 4 9 7  <=> ¯1 ¯5 2
+# ¯2-/3 4 9 7 <=> 1 5 ¯2
 reduce = @reduce = (f, g, axis0) ->
   assert typeof f is 'function'
   assert typeof g is 'undefined'
@@ -97,28 +97,28 @@ reduce = @reduce = (f, g, axis0) ->
 
 # Replicate (`/`)
 #
-#     0 1 0 1 / 'ABCD'                                ⍝ returns 'BD'
-#     1 1 1 1 0 / 12 14 16 18 20                      ⍝ returns 12 14 16 18
-#     MARKS←45 60 33 50 66 19 ⋄ (MARKS≥50)/MARKS      ⍝ returns 60 50 66
-#!    MARKS←45 60 33 50 66 19 ⋄ (MARKS=50)/⍳↑⍴MARKS   ⍝ returns ,3
-#     1/"FREDERIC"                                    ⍝ returns 'FREDERIC'
-#     0/"FREDERIC"                                    ⍝ returns ⍬
-#     0 1 0  / 1+2 3⍴⍳6                               ⍝ returns 2 1 ⍴ 2 5
-#     1 0 /[0] 1+2 3⍴⍳6                               ⍝ returns 1 3 ⍴ 1 2 3
-#     1 0 ⌿    1+2 3⍴⍳6                               ⍝ returns 1 3 ⍴ 1 2 3
-#     3 / 5                                           ⍝ returns 5 5 5
-#     2 ¯2 2 / 1+2 3⍴⍳6
-#     ... ⍝ returns 2 6 ⍴  1 1 0 0 3 3  4 4 0 0 6 6
-#     1 1 ¯2 1 1 / 1 2 (2 2⍴⍳4) 3 4     ⍝ returns 1 2 0 0 3 4
-#     2 3 2 / 'ABC'             ⍝ returns 'AABBBCC'
-#     2 / 'DEF'                 ⍝ returns 'DDEEFF'
-#     5 0 5 / 1 2 3             ⍝ returns 1 1 1 1 1 3 3 3 3 3
-#     2 / 1+2 3⍴⍳6              ⍝ returns 2 6 ⍴  1 1 2 2 3 3  4 4 5 5 6 6
-#     2 ⌿ 1+2 3⍴⍳6              ⍝ returns 4 3 ⍴  1 2 3  1 2 3  4 5 6  4 5 6
-#     2 3 / 3 1⍴"ABC"           ⍝ returns 3 5 ⍴ 'AAAAABBBBBCCCCC'
-#     2 ¯1 2 /[1] 3 1⍴(7 8 9)   ⍝ returns 3 5 ⍴ 7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
-#     2 ¯1 2 /[1] 3 1⍴"ABC"     ⍝ returns 3 5 ⍴ 'AA AABB BBCC CC'
-#     2 ¯2 2 / 7                ⍝ returns 7 7 0 0 7 7
+# 0 1 0 1/'ABCD'                                <=> 'BD'
+# 1 1 1 1 0/12 14 16 18 20                      <=> 12 14 16 18
+# MARKS←45 60 33 50 66 19 ⋄ (MARKS≥50)/MARKS    <=> 60 50 66
+#!MARKS←45 60 33 50 66 19 ⋄ (MARKS=50)/⍳↑⍴MARKS <=> ,3
+# 1/"FREDERIC"                                  <=> 'FREDERIC'
+# 0/"FREDERIC"                                  <=> ⍬
+# 0 1 0  / 1+2 3⍴⍳6                             <=> 2 1⍴2 5
+# 1 0 /[0] 1+2 3⍴⍳6                             <=> 1 3⍴1 2 3
+# 1 0 ⌿    1+2 3⍴⍳6                             <=> 1 3⍴1 2 3
+# 3 / 5                                         <=> 5 5 5
+# 2 ¯2 2 / 1+2 3⍴⍳6
+# ... <=> 2 6 ⍴  1 1 0 0 3 3  4 4 0 0 6 6
+# 1 1 ¯2 1 1 / 1 2 (2 2⍴⍳4) 3 4     <=> 1 2 0 0 3 4
+# 2 3 2 / 'ABC'           <=> 'AABBBCC'
+# 2 / 'DEF'               <=> 'DDEEFF'
+# 5 0 5 / 1 2 3           <=> 1 1 1 1 1 3 3 3 3 3
+# 2 / 1+2 3⍴⍳6            <=> 2 6⍴ 1 1 2 2 3 3  4 4 5 5 6 6
+# 2 ⌿ 1+2 3⍴⍳6            <=> 4 3⍴ 1 2 3  1 2 3  4 5 6  4 5 6
+# 2 3 / 3 1⍴"ABC"         <=> 3 5⍴'AAAAABBBBBCCCCC'
+# 2 ¯1 2 /[1] 3 1⍴(7 8 9) <=> 3 5⍴7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
+# 2 ¯1 2 /[1] 3 1⍴"ABC"   <=> 3 5⍴'AA AABB BBCC CC'
+# 2 ¯2 2 / 7              <=> 7 7 0 0 7 7
 compressOrReplicate = (omega, alpha, axis) ->
   if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
   axis = if axis then axis.toInt 0, omega.shape.length else omega.shape.length - 1

@@ -2,11 +2,11 @@
 
 # Power operator (`⍣`)
 #
-#     ({⍵+1}⍣5) 3     ⍝ returns 8
-#     ({⍵+1}⍣0) 3     ⍝ returns 3
-#     (⍴⍣3) 2 2⍴⍳4    ⍝ returns ,1
-#     'a' (,⍣3) 'b'   ⍝ returns 'aaab'
-#     1(+÷)⍣=1        ⍝ returns 1.618033988749895
+# ({⍵+1}⍣5) 3 <=> 8
+# ({⍵+1}⍣0) 3 <=> 3
+# (⍴⍣3)2 2⍴⍳4 <=> ,1
+# 'a'(,⍣3)'b' <=> 'aaab'
+# 1(+÷)⍣=1    <=> 1.618033988749895
 @['⍣'] = (g, f) ->
   if typeof f is 'number' and typeof g is 'function'
     h = f; f = g; g = h

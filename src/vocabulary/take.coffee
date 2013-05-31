@@ -7,24 +7,24 @@
 
     # Take (`↑`)
     #
-    #     5 ↑ 'ABCDEFGH'           ⍝ returns 'ABCDE'
-    #     ¯3 ↑ 'ABCDEFGH'          ⍝ returns 'FGH'
-    #     3 ↑ 22 2 19 12           ⍝ returns 22 2 19
-    #     ¯1 ↑ 22 2 19 12          ⍝ returns ,12
-    #     ⍴ 1 ↑ (2 2 ⍴ ⍳ 4) (⍳ 10) ⍝ returns ,1
-    #     2 ↑ 1                    ⍝ returns 1 0
-    #     5 ↑ 40 92 11             ⍝ returns 40 92 11 0 0
-    #     ¯5 ↑ 40 92 11            ⍝ returns 0 0 40 92 11
-    #     3 3 ↑ 1 1 ⍴ 0            ⍝ returns 3 3 ⍴ 0 0 0 0 0 0 0 0 0
-    #     5 ↑ "abc"                ⍝ returns 'abc  '
-    #     ¯5 ↑ "abc"               ⍝ returns '  abc'
-    #     3 3 ↑ 1 1 ⍴ "a"          ⍝ returns 3 3 ⍴ 'a        '
-    #     2 3 ↑ 1 + 4 3 ⍴ ⍳ 12     ⍝ returns 2 3 ⍴ 1 2 3 4 5 6
-    #     ¯1 3 ↑ 1 + 4 3 ⍴ ⍳ 12    ⍝ returns 1 3 ⍴ 10 11 12
-    #     1 2 ↑ 1 + 4 3 ⍴ ⍳ 12     ⍝ returns 1 2 ⍴ 1 2
-    #     3 ↑ ⍬                    ⍝ returns 0 0 0
-    #     ¯2 ↑ ⍬                   ⍝ returns 0 0
-    #     0 ↑ ⍬                    ⍝ returns ⍬
+    # 5↑'ABCDEFGH'     <=> 'ABCDE'
+    # ¯3↑'ABCDEFGH'    <=> 'FGH'
+    # 3↑22 2 19 12     <=> 22 2 19
+    # ¯1↑22 2 19 12    <=> ,12
+    # ⍴1↑(2 2⍴⍳4)(⍳10) <=> ,1
+    # 2↑1              <=> 1 0
+    # 5↑40 92 11       <=> 40 92 11 0 0
+    # ¯5↑40 92 11      <=> 0 0 40 92 11
+    # 3 3↑1 1⍴0        <=> 3 3⍴0 0 0 0 0 0 0 0 0
+    # 5↑"abc"          <=> 'abc  '
+    # ¯5↑"abc"         <=> '  abc'
+    # 3 3↑1 1⍴"a"      <=> 3 3⍴'a        '
+    # 2 3↑1+4 3⍴⍳12    <=> 2 3⍴1 2 3 4 5 6
+    # ¯1 3↑1+4 3⍴⍳12   <=> 1 3⍴10 11 12
+    # 1 2↑1+4 3⍴⍳12    <=> 1 2⍴1 2
+    # 3↑⍬              <=> 0 0 0
+    # ¯2↑⍬             <=> 0 0
+    # 0↑⍬              <=> ⍬
     if alpha.shape.length > 1
       throw RankError()
     if omega.shape.length is 0

@@ -10,15 +10,15 @@ each = require('./each')['¨']
 # and × can be substituted with any verbs.
 #
 # For higher dimensions, the general formula is:
-# `A f.g B   <=>   f/¨ (⊂[¯1+⍴⍴A]A) ∘.g ⊂[0]B`
+# `A f.g B   <->   f/¨ (⊂[¯1+⍴⍴A]A) ∘.g ⊂[0]B`
 #
-#     (1 3 5 7) +.= 2 3 6 7   ⍝ returns 2
-#     (1 3 5 7) ∧.= 2 3 6 7   ⍝ returns 0
-#     (1 3 5 7) ∧.= 1 3 5 7   ⍝ returns 1
-#     7 +.= 8 8 7 7 8 7 5     ⍝ returns 3
-#     8 8 7 7 8 7 5 +.= 7     ⍝ returns 3
-#     7 +.= 7                 ⍝ returns 1
-#     (3 2⍴5 ¯3 ¯2 4 ¯1 0) +.× 2 2⍴6 ¯3 5 7  ⍝ returns 3 2⍴15 ¯36 8 34 ¯6 3
+# (1 3 5 7) +.= 2 3 6 7 <=> 2
+# (1 3 5 7) ∧.= 2 3 6 7 <=> 0
+# (1 3 5 7) ∧.= 1 3 5 7 <=> 1
+# 7 +.= 8 8 7 7 8 7 5   <=> 3
+# 8 8 7 7 8 7 5 +.= 7   <=> 3
+# 7 +.= 7               <=> 1
+# (3 2⍴5 ¯3 ¯2 4 ¯1 0) +.× 2 2⍴6 ¯3 5 7  <=> 3 2⍴15 ¯36 8 34 ¯6 3
 @['.'] = (g, f) ->
   F = each reduce f
   G = outerProduct g

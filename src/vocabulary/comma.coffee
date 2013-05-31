@@ -7,30 +7,30 @@
 
     # Catenate (`,`)
     #
-    #     10,66                ⍝ returns 10 66
-    #     '10 ','MAY ','1985'  ⍝ returns '10 MAY 1985'
-    #     (2 3⍴⍳6),2 2⍴⍳4      ⍝ returns 2 5⍴(0 1 2 0 1  3 4 5 2 3)
-    #     (3 2⍴⍳6),2 2⍴⍳4      ⍝ throws 'LENGTH ERROR'
-    #     (2 3⍴⍳6),9           ⍝ returns 2 4⍴(0 1 2 9  3 4 5 9)
-    #     (2 3 4⍴⍳24),99       ⍝ returns 2 3 5⍴(
-    #     ...                           0  1  2  3 99
-    #     ...                           4  5  6  7 99
-    #     ...                           8  9 10 11 99
-    #     ...
-    #     ...                          12 13 14 15 99
-    #     ...                          16 17 18 19 99
-    #     ...                          20 21 22 23 99)
-    #     ⍬,⍬                  ⍝ returns ⍬
-    #     ⍬,1                  ⍝ returns ,1
-    #     1,⍬                  ⍝ returns ,1
+    # 10,66               <=> 10 66
+    # '10 ','MAY ','1985' <=> '10 MAY 1985'
+    # (2 3⍴⍳6),2 2⍴⍳4     <=> 2 5⍴(0 1 2 0 1  3 4 5 2 3)
+    # (3 2⍴⍳6),2 2⍴⍳4     !!! LENGTH ERROR
+    # (2 3⍴⍳6),9          <=> 2 4⍴(0 1 2 9  3 4 5 9)
+    # (2 3 4⍴⍳24),99      <=> 2 3 5⍴(
+    # ...                          0  1  2  3 99
+    # ...                          4  5  6  7 99
+    # ...                          8  9 10 11 99
+    # ...
+    # ...                         12 13 14 15 99
+    # ...                         16 17 18 19 99
+    # ...                         20 21 22 23 99)
+    # ⍬,⍬                 <=> ⍬
+    # ⍬,1                 <=> ,1
+    # 1,⍬                 <=> ,1
     catenate omega, alpha, axis
 
   else
 
     # Ravel (`,`)
     #
-    #     ,2 3 4⍴'abcdefghijklmnopqrstuvwx' ⍝ returns 'abcdefghijklmnopqrstuvwx'
-    #     ,123 ⍝ returns 1⍴123
+    # ,2 3 4⍴'abcdefghijklmnopqrstuvwx' <=> 'abcdefghijklmnopqrstuvwx'
+    # ,123 <=> 1⍴123
     data = []
     omega.each (x) -> data.push x
     new APLArray data
@@ -40,9 +40,9 @@
 
     # 1st axis catenate (`⍪`)
     #
-    #     (2 3⍴⍳6)⍪9        ⍝ returns 3 3⍴(0 1 2
-    #     ...                              3 4 5
-    #     ...                              9 9 9)
+    # (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2
+    # ...                 3 4 5
+    # ...                 9 9 9)
     catenate omega, alpha, axis
 
   else

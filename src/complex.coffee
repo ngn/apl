@@ -18,11 +18,11 @@ C = (re, im) -> if im then new Complex re, im else re
 
   # Compare (`=`)
   #
-  #     2j3 = 2j3   ⍝ returns 1
-  #     2j3 = 3j2   ⍝ returns 0
-  #     0j0         ⍝ returns 0
-  #     123j0       ⍝ returns «123»
-  #     2j¯3 + ¯2j3 ⍝ returns «0»
+  # 2j3=2j3   <=> 1
+  # 2j3=3j2   <=> 0
+  # 0j0       <=> 0
+  # 123j0     <=> «123»
+  # 2j¯3+¯2j3 <=> «0»
   '=': (x) ->
     if x instanceof Complex then +(@re is x.re and @im is x.im)
     else if typeof x is 'number' then +(@re is x and @im is 0)
@@ -36,8 +36,8 @@ C = (re, im) -> if im then new Complex re, im else re
 
   # Add / Conjugate (`+`)
   #
-  #     1j¯2 + ¯2j3   ⍝ returns ¯1j1
-  #     +1j¯2         ⍝ returns 1j2
+  # 1j¯2+¯2j3 <=> ¯1j1
+  # +1j¯2     <=> 1j2
   '+': (x) ->
     if x?
       if typeof x is 'number' then C @re + x, @im
@@ -50,7 +50,7 @@ C = (re, im) -> if im then new Complex re, im else re
 
   # Subtract / Negate (`-`)
   #
-  #     5j2 - 3j8   ⍝ returns 2j¯6
+  # 5j2-3j8 <=> 2j¯6
   '-': (x) ->
     if x?
       if typeof x is 'number' then C @re - x, @im
@@ -59,14 +59,14 @@ C = (re, im) -> if im then new Complex re, im else re
     else
       C -@re, -@im
 
-  #     5 - 3j8   ⍝ returns 2j¯8
+  # 5-3j8 <=> 2j¯8
   'right_-': (x) ->
     (if x instanceof Complex then x else new Complex x, 0)['-'] @
 
   # Multiply / Sign of (`×`)
   #
-  #     1j¯2 × ¯2j3   ⍝ returns 4j7
-  #     × 1j¯2        ⍝ throws
+  # 1j¯2×¯2j3 <=> 4j7
+  # ×1j¯2     !!!
   '×': (x) ->
     if x?
       if typeof x is 'number' then C x * @re, x * @im
@@ -76,12 +76,12 @@ C = (re, im) -> if im then new Complex re, im else re
     else
       throw Error 'Unsupported operation'
 
-  #     2 × 1j¯2      ⍝ returns 2j¯4
+  # 2×1j¯2 <=> 2j¯4
   'right_×': (args...) -> @['×'] args...
 
   # Divide / Reciprocal (`÷`)
   #
-  #     1j¯2 ÷ 4j7    ⍝ returns ¯2j3
+  # 1j¯2÷4j7 <=> ¯2j3
   '÷': (x) ->
     if x?
       if typeof x is 'number' then C @re / x, @im / x

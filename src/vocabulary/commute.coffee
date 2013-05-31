@@ -4,9 +4,9 @@
 #
 # Definition: `x f⍨ y  <->  y f x`
 #
-#     17 -⍨ 23    ⍝ returns 6
-#     7 ⍴⍨ 2 3    ⍝ returns 2 3⍴7
-#     -⍨ 123      ⍝ returns ¯123
+# 17-⍨23 <=> 6
+# 7⍴⍨2 3 <=> 2 3⍴7
+# -⍨123  <=> ¯123
 @['⍨'] = (f) ->
   assert typeof f is 'function'
   (omega, alpha, axis) ->

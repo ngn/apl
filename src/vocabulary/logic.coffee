@@ -10,15 +10,15 @@ negate = pervasive monad: (x) -> +not bool x
 
     # Without (`~`)
     #
-    #     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"~"AEIOU" ⍝ returns 'BCDFGHJKLMNPQRSTVWXYZ'
-    #     1 2 3 4 5 6 ~ 2 4 6                  ⍝ returns 1 3 5
-    #     "THIS IS TEXT" ~ " "                 ⍝ returns 'THISISTEXT'
-    #     "THIS" "AND" "THAT" ~ "T"            ⍝ returns 'THIS' 'AND' 'THAT'
-    #     "THIS" "AND" "THAT" ~ "AND"          ⍝ returns 'THIS' 'AND' 'THAT'
-    #     "THIS" "AND" "THAT" ~ ⊂"AND"         ⍝ returns 'THIS' 'THAT'
-    #     "THIS" "AND" "THAT" ~ "TH" "AND"     ⍝ returns 'THIS' 'THAT'
+    # "ABCDEFGHIJKLMNOPQRSTUVWXYZ"~"AEIOU" <=> 'BCDFGHJKLMNPQRSTVWXYZ'
+    # 1 2 3 4 5 6 ~ 2 4 6                  <=> 1 3 5
+    # "THIS IS TEXT" ~ " "                 <=> 'THISISTEXT'
+    # "THIS" "AND" "THAT" ~ "T"            <=> 'THIS' 'AND' 'THAT'
+    # "THIS" "AND" "THAT" ~ "AND"          <=> 'THIS' 'AND' 'THAT'
+    # "THIS" "AND" "THAT" ~ ⊂"AND"         <=> 'THIS' 'THAT'
+    # "THIS" "AND" "THAT" ~ "TH" "AND"     <=> 'THIS' 'THAT'
     #
-    #     11 12 13 14 15 16 ~ 2 3⍴1 2 3 14 5 6
+    # 11 12 13 14 15 16 ~ 2 3⍴1 2 3 14 5 6 <=> 11 12 13 15 16
     if alpha.shape.length > 1
       throw RankError()
     data = []
@@ -34,8 +34,8 @@ negate = pervasive monad: (x) -> +not bool x
 
     # Not (`~`)
     #
-    #     ~0 1 ⍝ returns 1 0
-    #     ~2   ⍝ throws 'DOMAIN ERROR'
+    # ~0 1 <=> 1 0
+    # ~2   !!! DOMAIN ERROR
     negate omega
 
 
@@ -43,15 +43,15 @@ negate = pervasive monad: (x) -> +not bool x
 
   # Or (LCM) (`∨`)
   #
-  #     1∨1                ⍝ returns 1
-  #     1∨0                ⍝ returns 1
-  #     0∨1                ⍝ returns 1
-  #     0∨0                ⍝ returns 0
-  #     0 0 1 1 ∨ 0 1 0 1  ⍝ returns 0 1 1 1
-  #     12∨18              ⍝ returns 6   # 12=2×2×3, 18=2×3×3
-  #     299∨323            ⍝ returns 1   # 299=13×23, 323=17×19
-  #     12345∨12345        ⍝ returns 12345
-  #     0∨123              ⍝ returns 123
+  # 1∨1               <=> 1
+  # 1∨0               <=> 1
+  # 0∨1               <=> 1
+  # 0∨0               <=> 0
+  # 0 0 1 1 ∨ 0 1 0 1 <=> 0 1 1 1
+  # 12∨18             <=> 6   # 12=2×2×3, 18=2×3×3
+  # 299∨323           <=> 1   # 299=13×23, 323=17×19
+  # 12345∨12345       <=> 12345
+  # 0∨123             <=> 123
   dyad: numeric (y, x) ->
     if not (isInt(x, 0) and isInt(y, 0))
       throw DomainError '∨ is implemented only for non-negative integers' # todo
@@ -65,18 +65,18 @@ negate = pervasive monad: (x) -> +not bool x
 
   # And (GCD) (`∧`)
   #
-  #     1∧1                                   ⍝ returns 1
-  #     1∧0                                   ⍝ returns 0
-  #     0∧1                                   ⍝ returns 0
-  #     0∧0                                   ⍝ returns 0
-  #     0 0 1 1 ∧ 0 1 0 1                     ⍝ returns 0 0 0 1
-  #     0 0 0 1 1 ∧ 1 1 1 1 0                 ⍝ returns 0 0 0 1 0
-  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ⋄  1∧t   ⍝ returns 3 3 ⍴ 1 1 1 0 0 0 1 0 1
-  #     t ← 3 3 ⍴ 1 1 1 0 0 0 1 0 1  ⋄  ∧/ t  ⍝ returns 1 0 0
-  #     12∧18       # 12=2×2×3, 18=2×3×3      ⍝ returns 36
-  #     299∧323     # 299=13×23, 323=17×19    ⍝ returns 96577
-  #     12345∧12345                           ⍝ returns 12345
-  #     0∧123                                 ⍝ returns 0
+  # 1∧1                            <=> 1
+  # 1∧0                            <=> 0
+  # 0∧1                            <=> 0
+  # 0∧0                            <=> 0
+  # 0 0 1 1∧0 1 0 1                <=> 0 0 0 1
+  # 0 0 0 1 1∧1 1 1 1 0            <=> 0 0 0 1 0
+  # t←3 3⍴1 1 1 0 0 0 1 0 1 ⋄ 1∧t  <=> 3 3 ⍴ 1 1 1 0 0 0 1 0 1
+  # t←3 3⍴1 1 1 0 0 0 1 0 1 ⋄ ∧/t  <=> 1 0 0
+  # 12∧18   # 12=2×2×3, 18=2×3×3   <=> 36
+  # 299∧323 # 299=13×23, 323=17×19 <=> 96577
+  # 12345∧12345                    <=> 12345
+  # 0∧123                          <=> 0
   dyad: numeric (y, x) ->
     assert x is Math.floor(x) and y is Math.floor(y), '∧ is defined only for integers'
     if x is 0 or y is 0 then return 0
@@ -88,18 +88,18 @@ negate = pervasive monad: (x) -> +not bool x
 
 # Nor (`⍱`)
 #
-#     0⍱0 ⍝ returns 1
-#     0⍱1 ⍝ returns 0
-#     1⍱0 ⍝ returns 0
-#     1⍱1 ⍝ returns 0
-#     0⍱2 ⍝ throws 'DOMAIN ERROR'
+# 0⍱0 <=> 1
+# 0⍱1 <=> 0
+# 1⍱0 <=> 0
+# 1⍱1 <=> 0
+# 0⍱2 !!! DOMAIN ERROR
 @['⍱'] = pervasive dyad: numeric (y, x) -> +!(bool(x) | bool(y))
 
 # Nand (`⍲`)
 #
-#     0⍲0 ⍝ returns 1
-#     0⍲1 ⍝ returns 1
-#     1⍲0 ⍝ returns 1
-#     1⍲1 ⍝ returns 0
-#     0⍲2 ⍝ throws 'DOMAIN ERROR'
+# 0⍲0 <=> 1
+# 0⍲1 <=> 1
+# 1⍲0 <=> 1
+# 1⍲1 <=> 0
+# 0⍲2 !!! DOMAIN ERROR
 @['⍲'] = pervasive dyad: numeric (y, x) -> +!(bool(x) & bool(y))
