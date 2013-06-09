@@ -158,16 +158,16 @@ jQuery ($) ->
       ]
       alt: [
         '¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ - ×'
-        '░ ⍵ ∊ ⍴ ~ ↑ ↓ ⍳ ○ * ← ░'
-        '⍺ ⌈ ⌊ ░ ∇ ∆ ∘ ░ ⎕ {enter}'
+        '{empty} ⍵ ∊ ⍴ ~ ↑ ↓ ⍳ ○ * ← {empty}'
+        '⍺ ⌈ ⌊ {empty} ∇ ∆ ∘ {empty} ⎕ {enter}'
         '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ ÷ {bksp}'
         '{alt} {space} {exec!!}'
       ]
       'alt-shift': [
-        '⍣ ░ ░ ░ ░ ░ ░ ░ ⍱ ⍲ ≡ ░'
-        '░ ⌽ ⍷ ░ ⍉ ░ ░ ⌷ ⍬ ⍟ ░ ░'
-        '⊖ ⍨ ░ ░ ⍒ ⍋ ░ ░ ⍞ {enter}'
-        '{shift} ░ ░ ⍝ ░ ⍎ ⍕ ░ « » {bksp}'
+        '⍣ {empty} {empty} {empty} {empty} {empty} {empty} {empty} ⍱ ⍲ ≡ {empty}'
+        '{empty} ⌽ ⍷ {empty} ⍉ {empty} {empty} ⌷ ⍬ ⍟ {empty} {empty}'
+        '⊖ ⍨ {empty} {empty} ⍒ ⍋ {empty} {empty} ⍞ {enter}'
+        '{shift} {empty} {empty} ⍝ {empty} ⍎ ⍕ {empty} « » {bksp}'
         '{alt} {space} {exec!!}'
       ]
 
