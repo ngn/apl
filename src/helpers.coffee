@@ -13,23 +13,8 @@
   for k, v of extraProperties then x[k] = v
   x
 
-# Sum and product;  I wish JavaScript had a _reduce_ operator :)
-@sum = (xs) -> r = 0; (for x in xs then r += x); r
-@prod = prod = (xs) -> r = 1; (for x in xs then r *= x); r
+@prod = (xs) -> r = 1; (for x in xs then r *= x); r
 @all = (xs) -> (for x in xs when not x then return false); true
-
-@enc = (x, a) ->
-  r = []
-  for i in [a.length - 1 .. 0] by -1
-    r.push x % a[i]
-    x = Math.floor x / a[i]
-  r.reverse()
-
-@dec = (xs, a) ->
-  assert xs.length is a.length
-  r = 0
-  for x, i in xs then r = r * a[i] + x
-  r
 
 # `repeat(a, n)` catenates `n` instances of a string or array `a`.
 @repeat = repeat = (a, n) ->

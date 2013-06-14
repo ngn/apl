@@ -1166,7 +1166,7 @@
 
 }).call(this);
 }, "helpers": function(exports, require, module) {(function() {
-  var assert, extend, isInt, prod, repeat;
+  var assert, extend, isInt, repeat;
 
   this.inherit = function(x, extraProperties) {
     var f, k, r, v;
@@ -1194,18 +1194,7 @@
     return x;
   };
 
-  this.sum = function(xs) {
-    var r, x, _i, _len;
-
-    r = 0;
-    for (_i = 0, _len = xs.length; _i < _len; _i++) {
-      x = xs[_i];
-      r += x;
-    }
-    return r;
-  };
-
-  this.prod = prod = function(xs) {
+  this.prod = function(xs) {
     var r, x, _i, _len;
 
     r = 1;
@@ -1226,29 +1215,6 @@
       }
     }
     return true;
-  };
-
-  this.enc = function(x, a) {
-    var i, r, _i, _ref;
-
-    r = [];
-    for (i = _i = _ref = a.length - 1; _i >= 0; i = _i += -1) {
-      r.push(x % a[i]);
-      x = Math.floor(x / a[i]);
-    }
-    return r.reverse();
-  };
-
-  this.dec = function(xs, a) {
-    var i, r, x, _i, _len;
-
-    assert(xs.length === a.length);
-    r = 0;
-    for (i = _i = 0, _len = xs.length; _i < _len; i = ++_i) {
-      x = xs[i];
-      r = r * a[i] + x;
-    }
-    return r;
   };
 
   this.repeat = repeat = function(a, n) {
