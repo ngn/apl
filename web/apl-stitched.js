@@ -777,13 +777,13 @@
         if (node.length === 1) {
           return 'return [];\n';
         } else {
-          a = ["var _" + node.scopeDepth + " = {};\n"];
+          a = ["var _" + node.scopeDepth + " = {}"];
           _ref1 = node.slice(1);
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             child = _ref1[_i];
             a.push(toJavaScript(child));
           }
-          a[a.length - 1] = "return " + a[a.length - 1] + ";\n";
+          a[a.length - 1] = "return " + a[a.length - 1] + ";";
           return a.join(';\n');
         }
         break;

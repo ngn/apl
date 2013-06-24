@@ -198,10 +198,10 @@ toJavaScript = (node) ->
       if node.length is 1
         'return [];\n'
       else
-        a = ["var _#{node.scopeDepth} = {};\n"]
+        a = ["var _#{node.scopeDepth} = {}"]
         for child in node[1...] then a.push toJavaScript child
-        a[a.length - 1] = "return #{a[a.length - 1]};\n"
-        a.join(';\n')
+        a[a.length - 1] = "return #{a[a.length - 1]};"
+        a.join ';\n'
 
     when 'guard'
       """
