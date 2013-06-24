@@ -53,8 +53,7 @@ resolveExprs = (ast, opts = {}) ->
   if opts.vars
     for v in opts.vars
       ast.vars[v.name] = {type: 'X', jsCode: v.name}
-  scopeCounter = 0
-  ast.scopeId = scopeCounter++
+  ast.scopeDepth = 0
   queue = [ast] # accumulates "body" nodes which we encounter on our way
   while queue.length
     {vars} = scopeNode = queue.shift()
@@ -64,7 +63,7 @@ resolveExprs = (ast, opts = {}) ->
       switch node[0]
         when 'body'
           node.vars = inherit vars
-          node.scopeId = scopeCounter++
+          node.scopeDepth = scopeNode.scopeDepth + 1
           queue.push node
           null
         when 'guard'
@@ -84,7 +83,7 @@ resolveExprs = (ast, opts = {}) ->
           else
             vars[name] =
               type: h.type
-              jsCode: "_#{scopeNode.scopeId}[#{JSON.stringify name}]"
+              jsCode: "_#{scopeNode.scopeDepth}[#{JSON.stringify name}]"
           h
         when 'symbol'
           name = node[1]
@@ -199,7 +198,7 @@ toJavaScript = (node) ->
       if node.length is 1
         'return [];\n'
       else
-        a = ["var _#{node.scopeId} = {};\n"]
+        a = ["var _#{node.scopeDepth} = {};\n"]
         for child in node[1...] then a.push toJavaScript child
         a[a.length - 1] = "return #{a[a.length - 1]};\n"
         a.join(';\n')

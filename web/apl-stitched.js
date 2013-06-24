@@ -518,7 +518,7 @@
   SyntaxError = require('./errors').SyntaxError;
 
   resolveExprs = function(ast, opts) {
-    var k, m, node, queue, scopeCounter, scopeNode, v, varInfo, vars, visit, _i, _j, _len, _len1, _ref1, _ref2;
+    var k, m, node, queue, scopeNode, v, varInfo, vars, visit, _i, _j, _len, _len1, _ref1, _ref2;
 
     if (opts == null) {
       opts = {};
@@ -573,8 +573,7 @@
         };
       }
     }
-    scopeCounter = 0;
-    ast.scopeId = scopeCounter++;
+    ast.scopeDepth = 0;
     queue = [ast];
     while (queue.length) {
       vars = (scopeNode = queue.shift()).vars;
@@ -585,7 +584,7 @@
         switch (node[0]) {
           case 'body':
             node.vars = inherit(vars);
-            node.scopeId = scopeCounter++;
+            node.scopeDepth = scopeNode.scopeDepth + 1;
             queue.push(node);
             return null;
           case 'guard':
@@ -605,7 +604,7 @@
             } else {
               vars[name] = {
                 type: h.type,
-                jsCode: "_" + scopeNode.scopeId + "[" + (JSON.stringify(name)) + "]"
+                jsCode: "_" + scopeNode.scopeDepth + "[" + (JSON.stringify(name)) + "]"
               };
             }
             return h;
@@ -778,7 +777,7 @@
         if (node.length === 1) {
           return 'return [];\n';
         } else {
-          a = ["var _" + node.scopeId + " = {};\n"];
+          a = ["var _" + node.scopeDepth + " = {};\n"];
           _ref1 = node.slice(1);
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             child = _ref1[_i];
