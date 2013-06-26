@@ -852,7 +852,7 @@
         }
         break;
       case 'index':
-        return "_['⍨'](_['⌷'])(        _._aplify([" + (((function() {
+        return "_._index(        _._aplify([" + (((function() {
           var _j, _len1, _ref4, _results;
 
           _ref4 = node.slice(2);
@@ -1475,7 +1475,7 @@
     grade: '⍋⍒',
     take: '↑',
     drop: '↓',
-    squish: '⌷',
+    squish: ['⌷', '_index'],
     quad: ['get_⎕', 'set_⎕', 'get_⍞', 'set_⍞'],
     format: '⍕',
     forkhook: ['_fork', '_hook'],
@@ -3757,6 +3757,10 @@
       u[a]++;
     }
     return new APLArray(data, (_ref7 = []).concat.apply(_ref7, subscriptShapes));
+  };
+
+  this._index = function(alpha, omega, axes) {
+    return squish(omega, alpha, axes);
   };
 
 }).call(this);

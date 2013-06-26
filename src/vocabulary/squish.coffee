@@ -8,7 +8,6 @@
 #
 # 1⌷3 5 8                <=> 5
 # (3 5 8)[1]             <=> 5
-# ⌷←{⍺+¨⍵} ⋄ (3 5 8)[1]  <=> 4 6 9
 # (2 2 0)(1 2)⌷3 3⍴⍳9    <=> 3 2⍴7 8 7 8 1 2
 # ¯1⌷3 5 8               !!! INDEX ERROR
 # 2⌷111 222 333 444      <=> 333
@@ -87,3 +86,6 @@
     u[a]++
 
   new APLArray data, [].concat subscriptShapes...
+
+@_index = (alpha, omega, axes) ->
+  squish omega, alpha, axes

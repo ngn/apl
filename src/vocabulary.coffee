@@ -16,7 +16,7 @@ lazyRequires =
   grade:         '⍋⍒'
   take:          '↑'
   drop:          '↓'
-  squish:        '⌷'
+  squish:        ['⌷', '_index']
   quad:          ['get_⎕', 'set_⎕', 'get_⍞', 'set_⍞']
   format:        '⍕'
   forkhook:      ['_fork', '_hook']

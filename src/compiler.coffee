@@ -325,7 +325,7 @@ toJavaScript = (node) ->
     #
     # ⍴ x[⍋x←6?40] <=> ,6
     when 'index'
-      "_['⍨'](_['⌷'])(
+      "_._index(
         _._aplify([#{(for c in node[2...] when c then toJavaScript c).join ', '}]),
         #{toJavaScript node[1]},
         _._aplify([#{(for c, i in node[2...] when c isnt null then i)}])
