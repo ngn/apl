@@ -3,7 +3,7 @@
 {Complex} = require '../complex'
 {match} = require './vhelpers'
 
-@['⎕aplify'] = (x) ->
+@_aplify = (x) ->
   assert x?
   if typeof x is 'string' then (if x.length is 1 then APLArray.scalar x else new APLArray x)
   else if typeof x is 'number' then APLArray.scalar x
@@ -15,10 +15,10 @@
   else if x instanceof APLArray then x
   else throw Error 'Cannot aplify object ' + x
 
-@['⎕complex'] = (re, im) ->
+@_complex = (re, im) ->
   APLArray.scalar new Complex re, im
 
-@['⎕bool'] = (x) ->
+@_bool = (x) ->
   assert x instanceof APLArray
   x.toBool()
 

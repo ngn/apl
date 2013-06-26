@@ -19,7 +19,7 @@ lazyRequires =
   squish:        '⌷'
   quad:          ['get_⎕', 'set_⎕', 'get_⍞', 'set_⍞']
   format:        '⍕'
-  forkhook:      ['⎕fork', '⎕hook']
+  forkhook:      ['_fork', '_hook']
   each:          '¨'
   commute:       '⍨'
   cupcap:        '∪∩'
@@ -35,7 +35,7 @@ lazyRequires =
   tack:          '⊣⊢'
   encode:        '⊤'
   decode:        '⊥'
-  special:       ['⎕aplify', '⎕complex', '⎕bool', 'get_⎕IO', 'set_⎕IO']
+  special:       ['_aplify', '_complex', '_bool', 'get_⎕IO', 'set_⎕IO']
 
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->

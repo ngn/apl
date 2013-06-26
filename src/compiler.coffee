@@ -205,7 +205,7 @@ toJavaScript = (node) ->
 
     when 'guard'
       """
-        if (_['⎕bool'](#{toJavaScript node[1]})) {
+        if (_._bool(#{toJavaScript node[1]})) {
           return #{toJavaScript node[2]};
         }
       """
@@ -285,7 +285,7 @@ toJavaScript = (node) ->
     when 'string'
       s = node[1]
       d = s[0] # the delimiter: '"' or "'"
-      "_['⎕aplify'](#{d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d})"
+      "_._aplify(#{d + s[1...-1].replace(///#{d + d}///g, '\\' + d) + d})"
 
 
     # Numbers
@@ -314,9 +314,9 @@ toJavaScript = (node) ->
           else
             parseFloat x
       if a.length is 1 or a[1] is 0
-        "_['⎕aplify'](#{a[0]})"
+        "_._aplify(#{a[0]})"
       else
-        "new _['⎕complex'](#{a[0]}, #{a[1]})"
+        "new _._complex(#{a[0]}, #{a[1]})"
 
     # We translate square-bracket indexing (`A[B]`) to indexing using the
     # squish quad function (`B⌷A`).  The arguments are reversed in the process,
@@ -326,9 +326,9 @@ toJavaScript = (node) ->
     # ⍴ x[⍋x←6?40] <=> ,6
     when 'index'
       "_['⍨'](_['⌷'])(
-        _['⎕aplify']([#{(for c in node[2...] when c then toJavaScript c).join ', '}]),
+        _._aplify([#{(for c in node[2...] when c then toJavaScript c).join ', '}]),
         #{toJavaScript node[1]},
-        _['⎕aplify']([#{(for c, i in node[2...] when c isnt null then i)}])
+        _._aplify([#{(for c, i in node[2...] when c isnt null then i)}])
       )"
 
     when 'expr'
@@ -336,7 +336,7 @@ toJavaScript = (node) ->
 
     when 'vector'
       n = node.length - 1
-      "_['⎕aplify']([#{
+      "_._aplify([#{
         (for child in node[1...] then toJavaScript child).join ', '
       }])"
 
@@ -356,17 +356,17 @@ toJavaScript = (node) ->
       "#{toJavaScript node[2]}(#{toJavaScript node[1]})"
 
     when 'hook'
-      "_['⎕hook'](#{toJavaScript node[2]}, #{toJavaScript node[1]})"
+      "_._hook(#{toJavaScript node[2]}, #{toJavaScript node[1]})"
 
     when 'fork'
-      "_['⎕fork']([#{for c in node[1...] then toJavaScript c}])"
+      "_._fork([#{for c in node[1...] then toJavaScript c}])"
 
     # Embedded JavaScript
     #
     # «1234+5678» <=> 6912
     # «"asdf"»    <=> 'asdf'
     when 'embedded'
-      "_['⎕aplify'](#{node[1].replace /(^«|»$)/g, ''})"
+      "_._aplify(#{node[1].replace /(^«|»$)/g, ''})"
 
     else
       assert false, "Unrecognised node type, '#{node[0]}'"

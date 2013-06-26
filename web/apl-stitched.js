@@ -788,7 +788,7 @@
         }
         break;
       case 'guard':
-        return "if (_['⎕bool'](" + (toJavaScript(node[1])) + ")) {\n  return " + (toJavaScript(node[2])) + ";\n}";
+        return "if (_._bool(" + (toJavaScript(node[1])) + ")) {\n  return " + (toJavaScript(node[2])) + ";\n}";
       case 'assign':
         if (!(node[1] instanceof Array && node[1].length === 2 && node[1][0] === 'symbol')) {
           compilerError(node, opts, 'Compound assignment is not supported.');
@@ -823,7 +823,7 @@
       case 'string':
         s = node[1];
         d = s[0];
-        return "_['⎕aplify'](" + (d + s.slice(1, -1).replace(RegExp("" + (d + d), "g"), '\\' + d) + d) + ")";
+        return "_._aplify(" + (d + s.slice(1, -1).replace(RegExp("" + (d + d), "g"), '\\' + d) + d) + ")";
       case 'number':
         s = node[1].replace(/¯/g, '-');
         a = (function() {
@@ -846,13 +846,13 @@
           return _results;
         })();
         if (a.length === 1 || a[1] === 0) {
-          return "_['⎕aplify'](" + a[0] + ")";
+          return "_._aplify(" + a[0] + ")";
         } else {
-          return "new _['⎕complex'](" + a[0] + ", " + a[1] + ")";
+          return "new _._complex(" + a[0] + ", " + a[1] + ")";
         }
         break;
       case 'index':
-        return "_['⍨'](_['⌷'])(        _['⎕aplify']([" + (((function() {
+        return "_['⍨'](_['⌷'])(        _._aplify([" + (((function() {
           var _j, _len1, _ref4, _results;
 
           _ref4 = node.slice(2);
@@ -864,7 +864,7 @@
             }
           }
           return _results;
-        })()).join(', ')) + "]),        " + (toJavaScript(node[1])) + ",        _['⎕aplify']([" + ((function() {
+        })()).join(', ')) + "]),        " + (toJavaScript(node[1])) + ",        _._aplify([" + ((function() {
           var _j, _len1, _ref4, _results;
 
           _ref4 = node.slice(2);
@@ -881,7 +881,7 @@
         return assert(false, 'No "expr" nodes are expected at this stage.');
       case 'vector':
         n = node.length - 1;
-        return "_['⎕aplify']([" + (((function() {
+        return "_._aplify([" + (((function() {
           var _j, _len1, _ref4, _results;
 
           _ref4 = node.slice(1);
@@ -903,9 +903,9 @@
       case 'postfixAdverb':
         return "" + (toJavaScript(node[2])) + "(" + (toJavaScript(node[1])) + ")";
       case 'hook':
-        return "_['⎕hook'](" + (toJavaScript(node[2])) + ", " + (toJavaScript(node[1])) + ")";
+        return "_._hook(" + (toJavaScript(node[2])) + ", " + (toJavaScript(node[1])) + ")";
       case 'fork':
-        return "_['⎕fork']([" + ((function() {
+        return "_._fork([" + ((function() {
           var _j, _len1, _ref4, _results;
 
           _ref4 = node.slice(1);
@@ -917,7 +917,7 @@
           return _results;
         })()) + "])";
       case 'embedded':
-        return "_['⎕aplify'](" + (node[1].replace(/(^«|»$)/g, '')) + ")";
+        return "_._aplify(" + (node[1].replace(/(^«|»$)/g, '')) + ")";
       default:
         return assert(false, "Unrecognised node type, '" + node[0] + "'");
     }
@@ -1478,7 +1478,7 @@
     squish: '⌷',
     quad: ['get_⎕', 'set_⎕', 'get_⍞', 'set_⍞'],
     format: '⍕',
-    forkhook: ['⎕fork', '⎕hook'],
+    forkhook: ['_fork', '_hook'],
     each: '¨',
     commute: '⍨',
     cupcap: '∪∩',
@@ -1494,7 +1494,7 @@
     tack: '⊣⊢',
     encode: '⊤',
     decode: '⊥',
-    special: ['⎕aplify', '⎕complex', '⎕bool', 'get_⎕IO', 'set_⎕IO']
+    special: ['_aplify', '_complex', '_bool', 'get_⎕IO', 'set_⎕IO']
   };
 
   createLazyRequire = function(obj, name, fromModule) {
@@ -2639,7 +2639,7 @@
 
   assert = require('../helpers').assert;
 
-  this['⎕hook'] = function(g, f) {
+  this._hook = function(g, f) {
     assert(typeof f === 'function');
     assert(typeof g === 'function');
     return function(b, a) {
@@ -2647,7 +2647,7 @@
     };
   };
 
-  this['⎕fork'] = function(verbs) {
+  this._fork = function(verbs) {
     var f, _i, _len;
 
     assert(verbs.length % 2 === 1);
@@ -3604,7 +3604,7 @@
 
   match = require('./vhelpers').match;
 
-  this['⎕aplify'] = function(x) {
+  this._aplify = function(x) {
     var y;
 
     assert(x != null);
@@ -3638,11 +3638,11 @@
     }
   };
 
-  this['⎕complex'] = function(re, im) {
+  this._complex = function(re, im) {
     return APLArray.scalar(new Complex(re, im));
   };
 
-  this['⎕bool'] = function(x) {
+  this._bool = function(x) {
     assert(x instanceof APLArray);
     return x.toBool();
   };
