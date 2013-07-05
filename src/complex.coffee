@@ -81,13 +81,15 @@ C = (re, im) -> if im then new Complex re, im else re
 
   # Divide / Reciprocal (`÷`)
   #
-  # 1j¯2÷4j7 <=> ¯2j3
+  # 4j7÷1j¯2 <=> ¯2j3
+  # 0j2÷0j1  <=> 2
+  # 5÷2j1    <=> 2j¯1
   '÷': (x) ->
     if x?
       if typeof x is 'number' then C @re / x, @im / x
       else if x instanceof Complex
-        d = @re * @re + @im * @im
-        C (@re * x.re + @im * x.im) / d, (@re * x.im - @im * x.re) / d
+        d = x.re * x.re + x.im * x.im
+        C (@re * x.re + @im * x.im) / d, (x.re * @im - x.im * @re) / d
       else throw Error 'Unsupported operation'
     else
       d = @re * @re + @im * @im

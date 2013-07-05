@@ -1091,8 +1091,8 @@
         if (typeof x === 'number') {
           return C(this.re / x, this.im / x);
         } else if (x instanceof Complex) {
-          d = this.re * this.re + this.im * this.im;
-          return C((this.re * x.re + this.im * x.im) / d, (this.re * x.im - this.im * x.re) / d);
+          d = x.re * x.re + x.im * x.im;
+          return C((this.re * x.re + this.im * x.im) / d, (x.re * this.im - x.im * this.re) / d);
         } else {
           throw Error('Unsupported operation');
         }
