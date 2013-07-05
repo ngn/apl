@@ -66,7 +66,7 @@ C = (re, im) -> if im then new Complex re, im else re
   # Multiply / Sign of (`×`)
   #
   # 1j¯2×¯2j3 <=> 4j7
-  # ×1j¯2     !!!
+  # ×3j¯4 <=> .6j¯.8
   '×': (z) ->
     if z?
       if typeof z is 'number' then C z * @re, z * @im
@@ -74,7 +74,8 @@ C = (re, im) -> if im then new Complex re, im else re
         C @re * z.re - @im * z.im, @re * z.im + @im * z.re
       else throw Error 'Unsupported operation'
     else
-      throw Error 'Unsupported operation'
+      d = Math.sqrt @re * @re + @im * @im
+      C @re / d, @im / d
 
   # 2×1j¯2 <=> 2j¯4
   'right_×': (args...) -> @['×'] args...

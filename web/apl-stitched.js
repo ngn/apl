@@ -1005,21 +1005,18 @@
 
     Complex.prototype['right_='] = function() {
       var args;
-
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['='].apply(this, args);
     };
 
     Complex.prototype['≡'] = function() {
       var args;
-
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['='].apply(this, args);
     };
 
     Complex.prototype['right_≡'] = function() {
       var args;
-
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['='].apply(this, args);
     };
@@ -1040,7 +1037,6 @@
 
     Complex.prototype['right_+'] = function() {
       var args;
-
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['+'].apply(this, args);
     };
@@ -1064,6 +1060,7 @@
     };
 
     Complex.prototype['×'] = function(z) {
+      var d;
       if (z != null) {
         if (typeof z === 'number') {
           return C(z * this.re, z * this.im);
@@ -1073,20 +1070,19 @@
           throw Error('Unsupported operation');
         }
       } else {
-        throw Error('Unsupported operation');
+        d = Math.sqrt(this.re * this.re + this.im * this.im);
+        return C(this.re / d, this.im / d);
       }
     };
 
     Complex.prototype['right_×'] = function() {
       var args;
-
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['×'].apply(this, args);
     };
 
     Complex.prototype['÷'] = function(z) {
       var d;
-
       if (z != null) {
         if (typeof z === 'number') {
           return C(this.re / z, this.im / z);
