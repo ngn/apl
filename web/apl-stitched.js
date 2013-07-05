@@ -993,11 +993,11 @@
       return ("" + this.re + "J" + this.im).replace(/-/g, '¯');
     };
 
-    Complex.prototype['='] = function(x) {
-      if (x instanceof Complex) {
-        return +(this.re === x.re && this.im === x.im);
-      } else if (typeof x === 'number') {
-        return +(this.re === x && this.im === 0);
+    Complex.prototype['='] = function(z) {
+      if (z instanceof Complex) {
+        return +(this.re === z.re && this.im === z.im);
+      } else if (typeof z === 'number') {
+        return +(this.re === z && this.im === 0);
       } else {
         return 0;
       }
@@ -1024,12 +1024,12 @@
       return this['='].apply(this, args);
     };
 
-    Complex.prototype['+'] = function(x) {
-      if (x != null) {
-        if (typeof x === 'number') {
-          return C(this.re + x, this.im);
-        } else if (x instanceof Complex) {
-          return C(this.re + x.re, this.im + x.im);
+    Complex.prototype['+'] = function(z) {
+      if (z != null) {
+        if (typeof z === 'number') {
+          return C(this.re + z, this.im);
+        } else if (z instanceof Complex) {
+          return C(this.re + z.re, this.im + z.im);
         } else {
           throw Error('Unsupported operation');
         }
@@ -1045,12 +1045,12 @@
       return this['+'].apply(this, args);
     };
 
-    Complex.prototype['-'] = function(x) {
-      if (x != null) {
-        if (typeof x === 'number') {
-          return C(this.re - x, this.im);
-        } else if (x instanceof Complex) {
-          return C(this.re - x.re, this.im - x.im);
+    Complex.prototype['-'] = function(z) {
+      if (z != null) {
+        if (typeof z === 'number') {
+          return C(this.re - z, this.im);
+        } else if (z instanceof Complex) {
+          return C(this.re - z.re, this.im - z.im);
         } else {
           throw Error('Unsupported operation');
         }
@@ -1059,16 +1059,16 @@
       }
     };
 
-    Complex.prototype['right_-'] = function(x) {
-      return (x instanceof Complex ? x : new Complex(x, 0))['-'](this);
+    Complex.prototype['right_-'] = function(z) {
+      return (z instanceof Complex ? z : new Complex(z, 0))['-'](this);
     };
 
-    Complex.prototype['×'] = function(x) {
-      if (x != null) {
-        if (typeof x === 'number') {
-          return C(x * this.re, x * this.im);
-        } else if (x instanceof Complex) {
-          return C(this.re * x.re - this.im * x.im, this.re * x.im + this.im * x.re);
+    Complex.prototype['×'] = function(z) {
+      if (z != null) {
+        if (typeof z === 'number') {
+          return C(z * this.re, z * this.im);
+        } else if (z instanceof Complex) {
+          return C(this.re * z.re - this.im * z.im, this.re * z.im + this.im * z.re);
         } else {
           throw Error('Unsupported operation');
         }
@@ -1084,15 +1084,15 @@
       return this['×'].apply(this, args);
     };
 
-    Complex.prototype['÷'] = function(x) {
+    Complex.prototype['÷'] = function(z) {
       var d;
 
-      if (x != null) {
-        if (typeof x === 'number') {
-          return C(this.re / x, this.im / x);
-        } else if (x instanceof Complex) {
-          d = x.re * x.re + x.im * x.im;
-          return C((this.re * x.re + this.im * x.im) / d, (x.re * this.im - x.im * this.re) / d);
+      if (z != null) {
+        if (typeof z === 'number') {
+          return C(this.re / z, this.im / z);
+        } else if (z instanceof Complex) {
+          d = z.re * z.re + z.im * z.im;
+          return C((this.re * z.re + this.im * z.im) / d, (z.re * this.im - z.im * this.re) / d);
         } else {
           throw Error('Unsupported operation');
         }
@@ -1102,8 +1102,8 @@
       }
     };
 
-    Complex.prototype['right_÷'] = function(x) {
-      return (x instanceof Complex ? x : new Complex(x, 0))['÷'](this);
+    Complex.prototype['right_÷'] = function(z) {
+      return (z instanceof Complex ? z : new Complex(z, 0))['÷'](this);
     };
 
     return Complex;
