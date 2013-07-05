@@ -98,3 +98,16 @@ C = (re, im) -> if im then new Complex re, im else re
 
   'right_÷': (z) ->
     (if z instanceof Complex then z else new Complex z, 0)['÷'] @
+
+  # Absolute value / Residue (`|`)
+  #
+  # |5j12 <=> 13
+  # 1j2|3j4 !!!
+  '|': (z) ->
+    if z?
+      throw Error 'Unsupported operation'
+    else
+      Math.sqrt @re * @re + @im * @im
+
+  'right_|': (z) ->
+    (if z instanceof Complex then z else new Complex z, 0)['|'] @

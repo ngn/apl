@@ -1102,6 +1102,18 @@
       return (z instanceof Complex ? z : new Complex(z, 0))['÷'](this);
     };
 
+    Complex.prototype['|'] = function(z) {
+      if (z != null) {
+        throw Error('Unsupported operation');
+      } else {
+        return Math.sqrt(this.re * this.re + this.im * this.im);
+      }
+    };
+
+    Complex.prototype['right_|'] = function(z) {
+      return (z instanceof Complex ? z : new Complex(z, 0))['|'](this);
+    };
+
     return Complex;
 
   })();
