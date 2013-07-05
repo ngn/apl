@@ -111,3 +111,40 @@ C = (re, im) -> if im then new Complex re, im else re
 
   'right_|': (z) ->
     (if z instanceof Complex then z else new Complex z, 0)['|'] @
+
+  # Exponential / To the power of (`*`)
+  #
+  # 1j2*3j4 <=> .129009594074467j.03392409290517014
+  # *123j456 <=> ¯2.336586510148344e+53j¯1.1841598134622967e+53
+  '*': (z) ->
+    if z?
+      @['⍟']()['×'](z)['*']() # pow(@, z) = exp(ln(@) × z)
+    else
+      r = Math.exp @re
+      C(
+        r * Math.cos @im
+        r * Math.sin @im
+      )
+
+  'right_*': (z) ->
+    (if z instanceof Complex then z else new Complex z, 0)['*'] @
+
+  # Natural logarithm / Logarithm to the base (`⍟`)
+  #
+  # 1j2⍟3j4 <=> 1.2393828252698689J¯0.5528462880299602
+  # ⍟123j456 <=> 6.157609243895447J1.3073297857599793
+  '⍟': (z) ->
+    if z?
+      if typeof z is 'number'
+        z = new Complex z, 0
+      else if z not instanceof Complex
+        throw Error 'Unsupported operation'
+      z['⍟']()['÷'] @['⍟']() # log(z, base=@) = ln(z) / ln(@)
+    else
+      C(
+        Math.log Math.sqrt @re * @re + @im * @im
+        Math.atan2 @im, @re
+      )
+
+  'right_⍟': (z) ->
+    (if z instanceof Complex then z else new Complex z, 0)['⍟'] @

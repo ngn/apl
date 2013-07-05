@@ -1114,6 +1114,37 @@
       return (z instanceof Complex ? z : new Complex(z, 0))['|'](this);
     };
 
+    Complex.prototype['*'] = function(z) {
+      var r;
+      if (z != null) {
+        return this['⍟']()['×'](z)['*']();
+      } else {
+        r = Math.exp(this.re);
+        return C(r * Math.cos(this.im), r * Math.sin(this.im));
+      }
+    };
+
+    Complex.prototype['right_*'] = function(z) {
+      return (z instanceof Complex ? z : new Complex(z, 0))['*'](this);
+    };
+
+    Complex.prototype['⍟'] = function(z) {
+      if (z != null) {
+        if (typeof z === 'number') {
+          z = new Complex(z, 0);
+        } else if (!(z instanceof Complex)) {
+          throw Error('Unsupported operation');
+        }
+        return z['⍟']()['÷'](this['⍟']());
+      } else {
+        return C(Math.log(Math.sqrt(this.re * this.re + this.im * this.im)), Math.atan2(this.im, this.re));
+      }
+    };
+
+    Complex.prototype['right_⍟'] = function(z) {
+      return (z instanceof Complex ? z : new Complex(z, 0))['⍟'](this);
+    };
+
     return Complex;
 
   })();
