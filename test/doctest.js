@@ -7,12 +7,10 @@
 
   this.forEachDoctest = forEachDoctest = function(handler, continuation) {
     var fs, glob;
-
     fs = require('fs');
     glob = require('glob');
     return glob(__dirname + '/../src/**/*.coffee', function(err, files) {
       var f, i, line, lines, m, _i, _len;
-
       if (err) {
         throw err;
       }
@@ -39,14 +37,13 @@
   };
 
   this.runTestCase = runTestCase = function(_arg) {
-    var actual, aplModulePrefix, code, e, exec, expectation, expected, expectedErrorMessage, m, match;
-
+    var actual, aplModulePrefix, approx, code, e, exec, expectation, expected, expectedErrorMessage, m;
     code = _arg.code, expectation = _arg.expectation, aplModulePrefix = _arg.aplModulePrefix;
     if (aplModulePrefix == null) {
       aplModulePrefix = './';
     }
     exec = require(aplModulePrefix + 'compiler').exec;
-    match = require(aplModulePrefix + 'vocabulary/vhelpers').match;
+    approx = require(aplModulePrefix + 'vocabulary/vhelpers').approx;
     if (m = expectation.match(/^<=>\s*([^]*)$/)) {
       try {
         expected = exec(m[1]);
@@ -60,7 +57,7 @@
       }
       try {
         actual = exec(code);
-        if (!match(actual, expected)) {
+        if (!approx(actual, expected)) {
           return {
             success: false,
             reason: "Expected " + (JSON.stringify(expected)) + " but got " + (JSON.stringify(actual))
@@ -104,13 +101,11 @@
 
   runDoctests = function(continuation) {
     var lastTestTimestamp, nFailed, nTests, t0;
-
     nTests = nFailed = 0;
     t0 = Date.now();
     lastTestTimestamp = 0;
     return forEachDoctest(function(_arg) {
       var code, expectation, outcome;
-
       code = _arg.code, expectation = _arg.expectation;
       nTests++;
       outcome = runTestCase({

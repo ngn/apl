@@ -1,6 +1,7 @@
 {assert, isInt} = require '../helpers'
 {DomainError, LengthError, RankError, SyntaxError} = require '../errors'
 {APLArray} = require '../array'
+{Complex} = require '../complex'
 
 multiplicitySymbol = (z) ->
   if z instanceof APLArray then (if z.isSingleton() then '1' else '*') else '.'
@@ -58,6 +59,32 @@ multiplicitySymbol = (z) ->
   else
     if y instanceof APLArray then false
     else (x['≡']?(y)) ? (y['≡']?(x)) ? (x is y)
+
+eps = 1e-13 # comparison tolerance for approx()
+
+numApprox = (x, y) ->
+  x is y or Math.abs(x - y) < eps
+
+@approx = approx = (x, y) ->
+  if x instanceof APLArray
+    if not (y instanceof APLArray) then false
+    else
+      if x.shape.length isnt y.shape.length then return false
+      for axis in [0 ... x.shape.length]
+        if x.shape[axis] isnt y.shape[axis] then return false
+      r = true
+      x.each2 y, (xi, yi) -> if not approx xi, yi then r = false
+      r
+  else
+    if y instanceof APLArray then false
+    else if not (x? and y?) then false
+    else
+      if typeof x is 'number' then x = new Complex x
+      if typeof y is 'number' then y = new Complex y
+      if x instanceof Complex
+        y instanceof Complex and numApprox(x.re, y.re) and numApprox(x.im, y.im)
+      else
+        (x['≡']?(y)) ? (y['≡']?(x)) ? (x is y)
 
 @bool = (x) ->
   if x not in [0, 1]

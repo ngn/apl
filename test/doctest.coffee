@@ -24,7 +24,7 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
 @runTestCase = runTestCase = ({code, expectation, aplModulePrefix}) ->
   aplModulePrefix ?= './'
   {exec} = require aplModulePrefix + 'compiler'
-  {match} = require aplModulePrefix + 'vocabulary/vhelpers'
+  {approx} = require aplModulePrefix + 'vocabulary/vhelpers'
   if m = expectation.match /^<=>\s*([^]*)$/
     try
       expected = exec m[1]
@@ -36,7 +36,7 @@ trim = (s) -> s.replace /(^ +| +$)/g, ''
       }
     try
       actual = exec code
-      if not match actual, expected
+      if not approx actual, expected
         return {
           success: false
           reason: "Expected #{JSON.stringify expected} but got #{JSON.stringify actual}"

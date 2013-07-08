@@ -85,16 +85,15 @@
 
   this.APLArray = APLArray = (function() {
     function APLArray(data, shape, stride, offset) {
-      var i, x, _i, _j, _len, _len1, _ref2, _ref3, _ref4, _ref5;
-
+      var i, x, _i, _j, _len, _len1, _ref2, _ref3;
       this.data = data;
       this.shape = shape;
       this.stride = stride;
       this.offset = offset != null ? offset : 0;
-      if ((_ref2 = this.shape) == null) {
+      if (this.shape == null) {
         this.shape = [this.data.length];
       }
-      if ((_ref3 = this.stride) == null) {
+      if (this.stride == null) {
         this.stride = strideForShape(this.shape);
       }
       assert(this.data instanceof Array || typeof this.data === 'string');
@@ -102,15 +101,15 @@
       assert(this.stride instanceof Array);
       assert(this.data.length === 0 || isInt(this.offset, 0, this.data.length));
       assert(this.shape.length === this.stride.length);
-      _ref4 = this.shape;
-      for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
-        x = _ref4[_i];
+      _ref2 = this.shape;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        x = _ref2[_i];
         assert(isInt(x, 0));
       }
       if (this.data.length) {
-        _ref5 = this.stride;
-        for (i = _j = 0, _len1 = _ref5.length; _j < _len1; i = ++_j) {
-          x = _ref5[i];
+        _ref3 = this.stride;
+        for (i = _j = 0, _len1 = _ref3.length; _j < _len1; i = ++_j) {
+          x = _ref3[i];
           assert(isInt(x, -this.data.length, this.data.length + 1));
         }
       } else {
@@ -120,7 +119,6 @@
 
     APLArray.prototype.get = function(indices) {
       var axis, index, p, _i, _len;
-
       p = this.offset;
       for (axis = _i = 0, _len = indices.length; _i < _len; axis = ++_i) {
         index = indices[axis];
@@ -131,7 +129,6 @@
 
     APLArray.prototype.empty = function() {
       var d, _i, _len, _ref2;
-
       _ref2 = this.shape;
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         d = _ref2[_i];
@@ -144,7 +141,6 @@
 
     APLArray.prototype.each = function(f) {
       var axis, indices, p;
-
       assert(typeof f === 'function');
       if (this.empty()) {
         return;
@@ -152,7 +148,6 @@
       p = this.offset;
       indices = (function() {
         var _i, _len, _ref2, _results;
-
         _ref2 = this.shape;
         _results = [];
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
@@ -178,7 +173,6 @@
 
     APLArray.prototype.each2 = function(a, f) {
       var axis, indices, p, q, _i, _ref2;
-
       assert(a instanceof APLArray);
       assert(typeof f === 'function');
       assert(this.shape.length === a.shape.length);
@@ -192,7 +186,6 @@
       q = a.offset;
       indices = (function() {
         var _j, _len, _ref3, _results;
-
         _ref3 = this.shape;
         _results = [];
         for (_j = 0, _len = _ref3.length; _j < _len; _j++) {
@@ -220,7 +213,6 @@
 
     APLArray.prototype.map = function(f) {
       var data;
-
       assert(typeof f === 'function');
       data = [];
       this.each(function(x, indices) {
@@ -231,7 +223,6 @@
 
     APLArray.prototype.map2 = function(a, f) {
       var data;
-
       assert(a instanceof APLArray);
       assert(typeof f === 'function');
       data = [];
@@ -243,7 +234,6 @@
 
     APLArray.prototype.toArray = function(limit) {
       var e, r;
-
       if (limit == null) {
         limit = Infinity;
       }
@@ -266,7 +256,6 @@
 
     APLArray.prototype.toInt = function(start, end) {
       var r;
-
       if (start == null) {
         start = -Infinity;
       }
@@ -286,7 +275,6 @@
 
     APLArray.prototype.isSingleton = function() {
       var n, _i, _len, _ref2;
-
       _ref2 = this.shape;
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         n = _ref2[_i];
@@ -318,7 +306,6 @@
 
   this.strideForShape = strideForShape = function(shape) {
     var i, r, _i, _ref2;
-
     assert(shape instanceof Array);
     if (shape.length === 0) {
       return [];
@@ -356,7 +343,6 @@
 
   this.main = function() {
     var a, aplCode, argv, b, ctx, filename, jsCode, k, knownOptions, opts;
-
     argv = optimist.usage('Usage: apl [options] path/to/script.apl [args]\n\nIf called without options, `apl` will run your script.').describe({
       c: 'compile to JavaScript and save as .js files',
       h: 'display this help message',
@@ -397,7 +383,6 @@
     ctx = {
       '⍵': (function() {
         var _i, _len, _ref1, _results;
-
         _ref1 = argv._;
         _results = [];
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -415,7 +400,6 @@
       opts.file = '<stdin>';
       aplCode = Buffer.concat((function() {
         var _results;
-
         _results = [];
         while (true) {
           b = new Buffer(1024);
@@ -451,14 +435,12 @@
 
   repl = function(ctx) {
     var format, readline, rl;
-
     readline = require('readline');
     rl = readline.createInterface(process.stdin, process.stdout);
     rl.setPrompt('APL> ');
     format = require('./vocabulary/format').format;
     rl.on('line', function(line) {
       var e, result;
-
       try {
         if (!line.match(/^[\ \t\f\r\n]*$/)) {
           result = exec(line, {
@@ -481,7 +463,6 @@
 
   printAST = function(x, indent) {
     var y, _i, _len, _ref1;
-
     if (indent == null) {
       indent = '';
     }
@@ -519,7 +500,6 @@
 
   resolveExprs = function(ast, opts) {
     var k, m, node, queue, scopeNode, v, varInfo, vars, visit, _i, _j, _len, _len1, _ref1, _ref2;
-
     if (opts == null) {
       opts = {};
     }
@@ -579,7 +559,6 @@
       vars = (scopeNode = queue.shift()).vars;
       visit = function(node) {
         var a, c, h, i, j, name, t, x, _j, _k, _len1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref2, _ref20, _ref21, _ref22, _ref23, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
-
         node.scopeNode = scopeNode;
         switch (node[0]) {
           case 'body':
@@ -717,7 +696,6 @@
             }
             if (h.length >= 3 && h.length % 2 === 1 && all((function() {
               var _l, _len2, _results;
-
               _results = [];
               for (_l = 0, _len2 = h.length; _l < _len2; _l++) {
                 x = h[_l];
@@ -771,7 +749,6 @@
 
   toJavaScript = function(node) {
     var a, c, child, d, i, n, name, s, v, vars, x, _i, _len, _ref1, _ref2, _ref3;
-
     switch (node[0]) {
       case 'body':
         if (node.length === 1) {
@@ -828,7 +805,6 @@
         s = node[1].replace(/¯/g, '-');
         a = (function() {
           var _j, _len1, _ref4, _results;
-
           _ref4 = s.split(/j/i);
           _results = [];
           for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
@@ -854,7 +830,6 @@
       case 'index':
         return "_._index(        _._aplify([" + (((function() {
           var _j, _len1, _ref4, _results;
-
           _ref4 = node.slice(2);
           _results = [];
           for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
@@ -866,7 +841,6 @@
           return _results;
         })()).join(', ')) + "]),        " + (toJavaScript(node[1])) + ",        _._aplify([" + ((function() {
           var _j, _len1, _ref4, _results;
-
           _ref4 = node.slice(2);
           _results = [];
           for (i = _j = 0, _len1 = _ref4.length; _j < _len1; i = ++_j) {
@@ -883,7 +857,6 @@
         n = node.length - 1;
         return "_._aplify([" + (((function() {
           var _j, _len1, _ref4, _results;
-
           _ref4 = node.slice(1);
           _results = [];
           for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
@@ -907,7 +880,6 @@
       case 'fork':
         return "_._fork([" + ((function() {
           var _j, _len1, _ref4, _results;
-
           _ref4 = node.slice(1);
           _results = [];
           for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
@@ -934,7 +906,6 @@
 
   this.nodes = nodes = function(aplCode, opts) {
     var ast;
-
     if (opts == null) {
       opts = {};
     }
@@ -946,7 +917,6 @@
 
   this.compile = compile = function(aplCode, opts) {
     var jsCode;
-
     if (opts == null) {
       opts = {};
     }
@@ -1157,7 +1127,6 @@
 
   APLError = function(name, message, opts) {
     var e, k, v, _ref1;
-
     if (message == null) {
       message = '';
     }
@@ -1208,7 +1177,6 @@
 
   this.inherit = function(x, extraProperties) {
     var f, k, r, v;
-
     if (extraProperties == null) {
       extraProperties = {};
     }
@@ -1224,7 +1192,6 @@
 
   this.extend = extend = function(x, extraProperties) {
     var k, v;
-
     for (k in extraProperties) {
       v = extraProperties[k];
       x[k] = v;
@@ -1234,7 +1201,6 @@
 
   this.prod = function(xs) {
     var r, x, _i, _len;
-
     r = 1;
     for (_i = 0, _len = xs.length; _i < _len; _i++) {
       x = xs[_i];
@@ -1245,7 +1211,6 @@
 
   this.all = function(xs) {
     var x, _i, _len;
-
     for (_i = 0, _len = xs.length; _i < _len; _i++) {
       x = xs[_i];
       if (!x) {
@@ -1257,7 +1222,6 @@
 
   this.repeat = repeat = function(a, n) {
     var m;
-
     assert(typeof a === 'string' || a instanceof Array);
     assert(isInt(n, 0));
     if (!n) {
@@ -1301,7 +1265,6 @@
 
   this.tokenize = function(aplCode, opts) {
     var col, line, stack;
-
     if (opts == null) {
       opts = {};
     }
@@ -1310,7 +1273,6 @@
     return {
       next: function() {
         var a, m, re, startCol, startLine, t, type, _i, _len, _ref;
-
         while (true) {
           if (!aplCode) {
             return {
@@ -1378,7 +1340,6 @@
 
   this.parse = function(aplCode, opts) {
     var consume, demand, parseBody, parseExpr, parseIndexable, parseIndices, parseItem, parserError, result, token, tokenStream;
-
     if (opts == null) {
       opts = {};
     }
@@ -1386,7 +1347,6 @@
     token = tokenStream.next();
     consume = function(tt) {
       var _ref;
-
       if (_ref = token.type, __indexOf.call(tt.split(' '), _ref) >= 0) {
         return token = tokenStream.next();
       }
@@ -1407,13 +1367,12 @@
     };
     parseBody = function() {
       var body, expr, _ref, _ref1;
-
       body = ['body'];
       while (true) {
         if ((_ref = token.type) === 'eof' || _ref === '}') {
           return body;
         }
-        while (consume('separator newline')) {undefined}
+        while (consume('separator newline')) {}
         if ((_ref1 = token.type) === 'eof' || _ref1 === '}') {
           return body;
         }
@@ -1426,7 +1385,6 @@
     };
     parseExpr = function() {
       var expr, item, _ref;
-
       expr = ['expr'];
       while (true) {
         item = parseItem();
@@ -1441,7 +1399,6 @@
     };
     parseItem = function() {
       var item;
-
       item = parseIndexable();
       if (consume('[')) {
         item = ['index', item].concat(parseIndices());
@@ -1451,7 +1408,6 @@
     };
     parseIndices = function() {
       var indices;
-
       indices = [];
       while (true) {
         if (consume(';')) {
@@ -1470,7 +1426,6 @@
     };
     parseIndexable = function() {
       var b, expr, t;
-
       t = token;
       if (consume('number string symbol embedded')) {
         return [t.type, t.value];
@@ -1493,7 +1448,7 @@
 
 }).call(this);
 }, "vocabulary": function(exports, require, module) {(function() {
-  var createLazyRequire, fromModule, k, lazyRequires, name, names, v, _base, _base1, _base2, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4, _ref5,
+  var createLazyRequire, fromModule, k, lazyRequires, name, names, v, _base, _base1, _base2, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2,
     __slice = [].slice;
 
   lazyRequires = {
@@ -1539,7 +1494,6 @@
   createLazyRequire = function(obj, name, fromModule) {
     return obj[name] = function() {
       var args, f;
-
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       obj[name] = f = require(fromModule)[name];
       f.aplName = name;
@@ -1559,19 +1513,19 @@
   _ref = ['∘.'];
   for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
     name = _ref[_j];
-    ((_ref1 = (_base = this[name]).aplMetaInfo) != null ? _ref1 : _base.aplMetaInfo = {}).isPrefixAdverb = true;
+    ((_base = this[name]).aplMetaInfo != null ? (_base = this[name]).aplMetaInfo : _base.aplMetaInfo = {}).isPrefixAdverb = true;
   }
 
-  _ref2 = '⍨¨/⌿\\⍀';
-  for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-    name = _ref2[_k];
-    ((_ref3 = (_base1 = this[name]).aplMetaInfo) != null ? _ref3 : _base1.aplMetaInfo = {}).isPostfixAdverb = true;
+  _ref1 = '⍨¨/⌿\\⍀';
+  for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+    name = _ref1[_k];
+    ((_base1 = this[name]).aplMetaInfo != null ? (_base1 = this[name]).aplMetaInfo : _base1.aplMetaInfo = {}).isPostfixAdverb = true;
   }
 
-  _ref4 = '.⍣';
-  for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
-    name = _ref4[_l];
-    ((_ref5 = (_base2 = this[name]).aplMetaInfo) != null ? _ref5 : _base2.aplMetaInfo = {}).isConjunction = true;
+  _ref2 = '.⍣';
+  for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+    name = _ref2[_l];
+    ((_base2 = this[name]).aplMetaInfo != null ? (_base2 = this[name]).aplMetaInfo : _base2.aplMetaInfo = {}).isConjunction = true;
   }
 
   for (k in this) {
@@ -1681,7 +1635,6 @@
       axis = axis ? axis.toInt(0, omega.shape.length) : omega.shape.length - 1;
       return omega.map(function(x, indices) {
         var a, index, j, p, y, _i, _j, _len, _ref;
-
         p = omega.offset;
         for (a = _i = 0, _len = indices.length; _i < _len; a = ++_i) {
           index = indices[a];
@@ -1722,7 +1675,6 @@
     }),
     dyad: numeric(function(x, i) {
       var ex;
-
       switch (i) {
         case 0:
           return Math.sqrt(1 - x * x);
@@ -1773,7 +1725,6 @@
 
   this[','] = function(omega, alpha, axis) {
     var data;
-
     if (alpha) {
       return catenate(omega, alpha, axis);
     } else {
@@ -1798,7 +1749,6 @@
 
   catenate = function(omega, alpha, axis) {
     var a, data, i, nAxes, p, pIndices, q, r, rStride, s, shape, stride, _i, _j, _ref2, _ref3;
-
     assert(alpha);
     assert(typeof axis === 'undefined' || axis instanceof APLArray);
     nAxes = Math.max(alpha.shape.length, omega.shape.length);
@@ -1986,7 +1936,6 @@
 
   depthOf = function(x) {
     var r;
-
     if (x instanceof APLArray) {
       if (x.shape.length === 0 && !(x.data[0] instanceof APLArray)) {
         return 0;
@@ -2023,7 +1972,6 @@
 
   this['∪'] = function(omega, alpha) {
     var a, data, _i, _len, _ref;
-
     if (alpha) {
       data = [];
       _ref = [alpha, omega];
@@ -2052,7 +2000,6 @@
 
   this['∩'] = function(omega, alpha) {
     var b, data, x, _i, _len, _ref;
-
     if (alpha) {
       data = [];
       b = omega.toArray();
@@ -2071,7 +2018,6 @@
 
   contains = function(a, x) {
     var y, _i, _len;
-
     assert(a instanceof Array);
     for (_i = 0, _len = a.length; _i < _len; _i++) {
       y = a[_i];
@@ -2092,7 +2038,6 @@
 
   this['⊥'] = function(omega, alpha) {
     var a, b, data, firstDimB, i, j, k, lastDimA, x, y, z, _i, _j, _k, _ref, _ref1, _ref2;
-
     assert(alpha);
     if (alpha.shape.length === 0) {
       alpha = new APLArray([alpha.unwrap()]);
@@ -2113,7 +2058,6 @@
         x = a.slice(i * lastDimA, (i + 1) * lastDimA);
         y = (function() {
           var _k, _results;
-
           _results = [];
           for (k = _k = 0; 0 <= firstDimB ? _k < firstDimB : _k > firstDimB; k = 0 <= firstDimB ? ++_k : --_k) {
             _results.push(b[j + k * (b.length / firstDimB)]);
@@ -2123,7 +2067,6 @@
         if (x.length === 1) {
           x = (function() {
             var _k, _ref2, _results;
-
             _results = [];
             for (_k = 0, _ref2 = y.length; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; 0 <= _ref2 ? _k++ : _k--) {
               _results.push(x[0]);
@@ -2134,7 +2077,6 @@
         if (y.length === 1) {
           y = (function() {
             var _k, _ref2, _results;
-
             _results = [];
             for (_k = 0, _ref2 = x.length; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; 0 <= _ref2 ? _k++ : _k--) {
               _results.push(y[0]);
@@ -2160,7 +2102,6 @@
 
   this['⊃'] = function(omega, alpha) {
     var x;
-
     if (alpha) {
       throw Error('Not implemented');
     } else {
@@ -2189,7 +2130,6 @@
 
   this['↓'] = function(omega, alpha, axis) {
     var a, i, offset, shape, x, _i, _j, _len, _len1;
-
     if (alpha) {
       if (alpha.shape.length > 1) {
         throw RankError();
@@ -2242,11 +2182,9 @@
     assert(typeof g === 'undefined');
     return function(omega, alpha) {
       var x, y;
-
       if (!alpha) {
         return omega.map(function(x) {
           var r;
-
           if (!(x instanceof APLArray)) {
             x = new APLArray([x], []);
           }
@@ -2261,7 +2199,6 @@
       } else if (arrayEquals(alpha.shape, omega.shape)) {
         return omega.map2(alpha, function(x, y) {
           var r;
-
           if (!(x instanceof APLArray)) {
             x = new APLArray([x], []);
           }
@@ -2280,7 +2217,6 @@
         y = alpha.data[0] instanceof APLArray ? alpha.unwrap() : alpha;
         return omega.map(function(x) {
           var r;
-
           if (!(x instanceof APLArray)) {
             x = new APLArray([x], []);
           }
@@ -2296,7 +2232,6 @@
         x = omega.data[0] instanceof APLArray ? omega.unwrap() : omega;
         return alpha.map(function(y) {
           var r;
-
           if (!(y instanceof APLArray)) {
             y = new APLArray([y], []);
           }
@@ -2316,7 +2251,6 @@
 
   arrayEquals = function(a, b) {
     var i, x, _i, _len;
-
     assert(a instanceof Array);
     assert(b instanceof Array);
     if (a.length !== b.length) {
@@ -2344,7 +2278,6 @@
 
   this['⊂'] = function(omega, alpha, axes) {
     var a, axis, data, indices, p, resultAxes, shape, stride, unitShape, unitStride, _i, _ref, _results;
-
     if (alpha) {
       throw Error('Not implemented');
     } else {
@@ -2358,7 +2291,6 @@
       }
       unitShape = (function() {
         var _j, _len, _results1;
-
         _results1 = [];
         for (_j = 0, _len = axes.length; _j < _len; _j++) {
           axis = axes[_j];
@@ -2368,7 +2300,6 @@
       })();
       unitStride = (function() {
         var _j, _len, _results1;
-
         _results1 = [];
         for (_j = 0, _len = axes.length; _j < _len; _j++) {
           axis = axes[_j];
@@ -2378,7 +2309,6 @@
       })();
       resultAxes = (function() {
         var _j, _ref1, _results1;
-
         _results1 = [];
         for (axis = _j = 0, _ref1 = omega.shape.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; axis = 0 <= _ref1 ? ++_j : --_j) {
           if (__indexOf.call(axes, axis) < 0) {
@@ -2389,7 +2319,6 @@
       })();
       shape = (function() {
         var _j, _len, _results1;
-
         _results1 = [];
         for (_j = 0, _len = resultAxes.length; _j < _len; _j++) {
           axis = resultAxes[_j];
@@ -2399,7 +2328,6 @@
       })();
       stride = (function() {
         var _j, _len, _results1;
-
         _results1 = [];
         for (_j = 0, _len = resultAxes.length; _j < _len; _j++) {
           axis = resultAxes[_j];
@@ -2437,7 +2365,6 @@
 
   this['⊤'] = function(omega, alpha) {
     var a, b, data, i, isNeg, j, k, m, n, shape, x, y, _i, _j, _k, _len, _ref1;
-
     assert(alpha);
     a = alpha.toArray();
     b = omega.toArray();
@@ -2486,12 +2413,10 @@
 
   this['∊'] = function(omega, alpha) {
     var a, data;
-
     if (alpha) {
       a = omega.toArray();
       return alpha.map(function(x) {
         var y, _i, _len;
-
         for (_i = 0, _len = a.length; _i < _len; _i++) {
           y = a[_i];
           if (match(x, y)) {
@@ -2518,7 +2443,6 @@
   this['!'] = pervasive({
     monad: numeric(function(x) {
       var i, r;
-
       if (isInt(x, 0, 25)) {
         r = 1;
         i = 2;
@@ -2536,7 +2460,6 @@
     }),
     dyad: numeric(function(n, k) {
       var i, u, v, _i;
-
       if (isInt(k, 0, 100) && isInt(n, 0, 100)) {
         if (n < k) {
           return 0;
@@ -2558,7 +2481,6 @@
 
   Gamma = function(x) {
     var a, i, p, t, _i, _ref1;
-
     p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
     if (x < 0.5) {
       return Math.PI / (Math.sin(Math.PI * x) * Gamma(1 - x));
@@ -2580,7 +2502,6 @@
 
   this['⍎'] = function(omega, alpha) {
     var s;
-
     if (alpha) {
       throw Error('Not implemented');
     } else {
@@ -2607,7 +2528,6 @@
 
   this['⍷'] = function(omega, alpha) {
     var a, d, data, findShape, i, indices, p, q, stride, _i, _ref2;
-
     if (alpha) {
       if (alpha.shape.length > omega.shape.length) {
         return new APLArray([0], omega.shape, repeat([0], omega.shape.length));
@@ -2688,7 +2608,6 @@
 
   this._fork = function(verbs) {
     var f, _i, _len;
-
     assert(verbs.length % 2 === 1);
     assert(verbs.length >= 3);
     for (_i = 0, _len = verbs.length; _i < _len; _i++) {
@@ -2697,7 +2616,6 @@
     }
     return function(b, a) {
       var i, r, _j, _ref;
-
       r = verbs[verbs.length - 1](b, a);
       for (i = _j = _ref = verbs.length - 2; _j > 0; i = _j += -2) {
         r = verbs[i](r, verbs[i - 1](b, a));
@@ -2716,7 +2634,6 @@
 
   this['⍕'] = function(omega, alpha) {
     var t;
-
     if (alpha) {
       throw Error('Not implemented');
     } else {
@@ -2727,7 +2644,6 @@
 
   this.format = format = function(a) {
     var bottom, box, c, cols, d, grid, i, j, k, left, nCols, nRows, r, result, right, rows, sa, step, t, x, _i, _j, _k, _l, _len, _len1, _len2, _m, _n, _o, _p, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
-
     if (typeof a === 'undefined') {
       return ['undefined'];
     } else if (a === null) {
@@ -2752,7 +2668,6 @@
       nCols = sa[sa.length - 1];
       rows = (function() {
         var _i, _results;
-
         _results = [];
         for (_i = 0; 0 <= nRows ? _i < nRows : _i > nRows; 0 <= nRows ? _i++ : _i--) {
           _results.push({
@@ -2764,7 +2679,6 @@
       })();
       cols = (function() {
         var _i, _results;
-
         _results = [];
         for (_i = 0; 0 <= nCols ? _i < nCols : _i > nCols; 0 <= nCols ? _i++ : _i--) {
           _results.push({
@@ -2778,13 +2692,11 @@
       })();
       grid = (function() {
         var _i, _len, _results;
-
         _results = [];
         for (i = _i = 0, _len = rows.length; _i < _len; i = ++_i) {
           r = rows[i];
           _results.push((function() {
             var _j, _len1, _results1;
-
             _results1 = [];
             for (j = _j = 0, _len1 = cols.length; _j < _len1; j = ++_j) {
               c = cols[j];
@@ -2841,7 +2753,6 @@
         for (k = _p = 0, _ref8 = r.height + r.bottomMargin; 0 <= _ref8 ? _p < _ref8 : _p > _ref8; k = 0 <= _ref8 ? ++_p : --_p) {
           result.push(((function() {
             var _q, _results;
-
             _results = [];
             for (j = _q = 0; 0 <= nCols ? _q < nCols : _q > nCols; j = 0 <= nCols ? ++_q : --_q) {
               _results.push(grid[i][j][k]);
@@ -2874,7 +2785,6 @@
 
   grade = function(omega, alpha, direction) {
     var h, _i, _ref1, _results;
-
     h = {};
     if (alpha) {
       if (!alpha.shape.length) {
@@ -2897,7 +2807,6 @@
       return _results;
     }).apply(this).sort(function(i, j) {
       var a, indices, p, tx, ty, x, y;
-
       p = omega.offset;
       indices = repeat([0], omega.shape.length);
       while (true) {
@@ -2954,7 +2863,6 @@
 
   this['.'] = function(g, f) {
     var F, G;
-
     F = each(reduce(f));
     G = outerProduct(g);
     return function(omega, alpha) {
@@ -2982,14 +2890,12 @@
 
   this['⍳'] = function(omega, alpha) {
     var a, axis, d, data, indices, _i, _j, _len, _ref2, _results;
-
     if (alpha) {
       if (alpha.shape.length !== 1) {
         throw RankError();
       }
       return omega.map(function(x) {
         var e, r;
-
         try {
           r = alpha.shape;
           alpha.each(function(y, indices) {
@@ -3068,7 +2974,6 @@
 
   this['~'] = function(omega, alpha) {
     var data;
-
     if (alpha) {
       if (alpha.shape.length > 1) {
         throw RankError();
@@ -3076,7 +2981,6 @@
       data = [];
       alpha.each(function(x) {
         var e;
-
         try {
           omega.each(function(y) {
             if (match(x, y)) {
@@ -3100,7 +3004,6 @@
   this['∨'] = pervasive({
     dyad: numeric(function(y, x) {
       var _ref3, _ref4;
-
       if (!(isInt(x, 0) && isInt(y, 0))) {
         throw DomainError('∨ is implemented only for non-negative integers');
       }
@@ -3120,7 +3023,6 @@
   this['∧'] = pervasive({
     dyad: numeric(function(y, x) {
       var p, _ref3, _ref4;
-
       assert(x === Math.floor(x) && y === Math.floor(y), '∧ is defined only for integers');
       if (x === 0 || y === 0) {
         return 0;
@@ -3160,7 +3062,6 @@
     assert(typeof f === 'function');
     return function(omega, alpha) {
       var a, b, data, x, y, z, _i, _j, _len, _len1;
-
       if (!alpha) {
         throw Error('Adverb ∘. (Outer product) can be applied to dyadic verbs only');
       }
@@ -3196,7 +3097,6 @@
 
   this['⍣'] = function(g, f) {
     var h, n;
-
     if (typeof f === 'number' && typeof g === 'function') {
       h = f;
       f = g;
@@ -3207,7 +3107,6 @@
     if (typeof g === 'function') {
       return function(omega, alpha) {
         var omega1;
-
         while (true) {
           omega1 = f(omega, alpha);
           if (g(omega, omega1).toBool()) {
@@ -3220,7 +3119,6 @@
       n = g.toInt(0);
       return function(omega, alpha) {
         var _i;
-
         for (_i = 0; 0 <= n ? _i < n : _i > n; 0 <= n ? _i++ : _i--) {
           omega = f(omega, alpha);
         }
@@ -3245,7 +3143,6 @@
 
   this['set_⎕'] = function(x) {
     var s;
-
     s = format(x).join('\n') + '\n';
     if (typeof (typeof window !== "undefined" && window !== null ? window.alert : void 0) === 'function') {
       window.alert(s);
@@ -3265,7 +3162,6 @@
 
   this['set_⍞'] = function(x) {
     var s;
-
     s = format(x).join('\n');
     if (typeof (typeof window !== "undefined" && window !== null ? window.alert : void 0) === 'function') {
       window.alert(s);
@@ -3293,7 +3189,6 @@
 
   deal = function(omega, alpha) {
     var available, x, y, _i, _results;
-
     y = omega.unwrap();
     x = alpha.unwrap();
     if (x > y) {
@@ -3306,7 +3201,6 @@
     }).apply(this);
     return new APLArray((function() {
       var _j, _results1;
-
       _results1 = [];
       for (_j = 0; 0 <= x ? _j < x : _j > x; 0 <= x ? _j++ : _j--) {
         _results1.push(available.splice(Math.floor(available.length * Math.random()), 1)[0]);
@@ -3335,7 +3229,6 @@
 
   this['⍴'] = function(omega, alpha) {
     var a, d, n, shape, _i, _len;
-
     if (alpha) {
       if (alpha.shape.length > 1) {
         throw RankError();
@@ -3378,7 +3271,6 @@
 
   this['⌽'] = rotate = function(omega, alpha, axis) {
     var a, data, indices, n, offset, p, shape, step, stride;
-
     assert(typeof axis === 'undefined' || axis instanceof APLArray);
     if (alpha) {
       axis = !axis ? omega.shape.length - 1 : axis.unwrap();
@@ -3485,7 +3377,6 @@
     assert((typeof axis0 === 'undefined') || (axis0 instanceof APLArray));
     return function(omega, alpha) {
       var a, axis, data, i, indices, isBackwards, isMonadic, isNWise, n, p, rShape, shape, x, y, _i, _j, _ref2;
-
       if (omega.shape.length === 0) {
         omega = new APLArray([omega.unwrap()]);
       }
@@ -3563,7 +3454,6 @@
 
   compressOrReplicate = function(omega, alpha, axis) {
     var a, b, data, filler, i, indices, n, p, shape, x, _i, _j, _len, _ref2;
-
     if (omega.shape.length === 0) {
       omega = new APLArray([omega.unwrap()]);
     }
@@ -3595,7 +3485,6 @@
     if (n === 1) {
       b = (function() {
         var _k, _len1, _results;
-
         _results = [];
         for (_k = 0, _len1 = b.length; _k < _len1; _k++) {
           x = b[_k];
@@ -3645,7 +3534,6 @@
 
   this._aplify = function(x) {
     var y;
-
     assert(x != null);
     if (typeof x === 'string') {
       if (x.length === 1) {
@@ -3658,7 +3546,6 @@
     } else if (x instanceof Array) {
       return new APLArray((function() {
         var _i, _len, _results;
-
         _results = [];
         for (_i = 0, _len = x.length; _i < _len; _i++) {
           y = x[_i];
@@ -3710,7 +3597,6 @@
 
   this['⌷'] = squish = function(omega, alpha, axes) {
     var a, alphaItems, axis, d, data, i, p, subscriptShapes, subscripts, u, x, _i, _j, _k, _l, _len, _len1, _m, _n, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _results, _results1;
-
     if (typeof omega === 'function') {
       return function(x, y) {
         return omega(x, y, alpha);
@@ -3831,7 +3717,6 @@
 
   this['↑'] = function(omega, alpha) {
     var a, axis, copyIndices, copyShape, data, i, mustCopy, offset, p, q, shape, stride, x, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref2;
-
     if (alpha) {
       if (alpha.shape.length > 1) {
         throw RankError();
@@ -3935,7 +3820,7 @@
 
 }).call(this);
 }, "vocabulary/vhelpers": function(exports, require, module) {(function() {
-  var APLArray, DomainError, LengthError, RankError, SyntaxError, assert, isInt, match, multiplicitySymbol, _ref, _ref1,
+  var APLArray, Complex, DomainError, LengthError, RankError, SyntaxError, approx, assert, eps, isInt, match, multiplicitySymbol, numApprox, _ref, _ref1,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   _ref = require('../helpers'), assert = _ref.assert, isInt = _ref.isInt;
@@ -3943,6 +3828,8 @@
   _ref1 = require('../errors'), DomainError = _ref1.DomainError, LengthError = _ref1.LengthError, RankError = _ref1.RankError, SyntaxError = _ref1.SyntaxError;
 
   APLArray = require('../array').APLArray;
+
+  Complex = require('../complex').Complex;
 
   multiplicitySymbol = function(z) {
     if (z instanceof APLArray) {
@@ -3958,11 +3845,9 @@
 
   this.pervasive = function(_arg) {
     var F, dyad, monad, pervadeDyadic, pervadeMonadic;
-
     monad = _arg.monad, dyad = _arg.dyad;
     pervadeMonadic = monad ? function(x) {
       var _name, _ref2;
-
       if (x instanceof APLArray) {
         return x.map(pervadeMonadic);
       } else {
@@ -3973,7 +3858,6 @@
     };
     pervadeDyadic = dyad ? function(x, y) {
       var axis, tx, ty, xi, yi, _i, _name, _name1, _ref2, _ref3, _ref4;
-
       tx = multiplicitySymbol(x);
       ty = multiplicitySymbol(y);
       switch (tx + ty) {
@@ -4042,7 +3926,6 @@
 
   this.match = match = function(x, y) {
     var axis, r, _i, _ref2, _ref3, _ref4;
-
     if (x instanceof APLArray) {
       if (!(y instanceof APLArray)) {
         return false;
@@ -4072,6 +3955,55 @@
     }
   };
 
+  eps = 1e-13;
+
+  numApprox = function(x, y) {
+    return x === y || Math.abs(x - y) < eps;
+  };
+
+  this.approx = approx = function(x, y) {
+    var axis, r, _i, _ref2, _ref3, _ref4;
+    if (x instanceof APLArray) {
+      if (!(y instanceof APLArray)) {
+        return false;
+      } else {
+        if (x.shape.length !== y.shape.length) {
+          return false;
+        }
+        for (axis = _i = 0, _ref2 = x.shape.length; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; axis = 0 <= _ref2 ? ++_i : --_i) {
+          if (x.shape[axis] !== y.shape[axis]) {
+            return false;
+          }
+        }
+        r = true;
+        x.each2(y, function(xi, yi) {
+          if (!approx(xi, yi)) {
+            return r = false;
+          }
+        });
+        return r;
+      }
+    } else {
+      if (y instanceof APLArray) {
+        return false;
+      } else if (!((x != null) && (y != null))) {
+        return false;
+      } else {
+        if (typeof x === 'number') {
+          x = new Complex(x);
+        }
+        if (typeof y === 'number') {
+          y = new Complex(y);
+        }
+        if (x instanceof Complex) {
+          return y instanceof Complex && numApprox(x.re, y.re) && numApprox(x.im, y.im);
+        } else {
+          return (_ref3 = (_ref4 = typeof x['≡'] === "function" ? x['≡'](y) : void 0) != null ? _ref4 : typeof y['≡'] === "function" ? y['≡'](x) : void 0) != null ? _ref3 : x === y;
+        }
+      }
+    }
+  };
+
   this.bool = function(x) {
     if (x !== 0 && x !== 1) {
       throw DomainError();
@@ -4081,7 +4013,6 @@
 
   this.getAxisList = function(axes, rank) {
     var a, i, x, _i, _len;
-
     assert(isInt(rank, 0));
     if (typeof axes === 'undefined') {
       return [];
