@@ -1537,9 +1537,11 @@
 
 }).call(this);
 }, "vocabulary/arithmetic": function(exports, require, module) {(function() {
-  var numeric, pervasive, _ref;
+  var Complex, numeric, pervasive, _ref;
 
   _ref = require('./vhelpers'), pervasive = _ref.pervasive, numeric = _ref.numeric;
+
+  Complex = require('../complex').Complex;
 
   this['+'] = pervasive({
     monad: numeric(function(x) {
@@ -1580,14 +1582,28 @@
   this['*'] = pervasive({
     monad: numeric(Math.exp),
     dyad: numeric(function(y, x) {
-      return Math.pow(x, y);
+      if (x < 0) {
+        return (new Complex(x))['*'](y);
+      } else {
+        return Math.pow(x, y);
+      }
     })
   });
 
   this['⍟'] = pervasive({
-    monad: numeric(Math.log),
+    monad: numeric(function(x) {
+      if (x < 0) {
+        return (new Complex(x))['⍟']();
+      } else {
+        return Math.log(x);
+      }
+    }),
     dyad: numeric(function(y, x) {
-      return Math.log(y) / Math.log(x);
+      if (x < 0 || y < 0) {
+        return (new Complex(x))['⍟'](y);
+      } else {
+        return Math.log(y) / Math.log(x);
+      }
     })
   });
 

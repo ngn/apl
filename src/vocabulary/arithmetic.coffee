@@ -1,4 +1,5 @@
 {pervasive, numeric} = require './vhelpers'
+{Complex} = require '../complex'
 
 @['+'] = pervasive
 
@@ -63,11 +64,37 @@
 
 @['*'] = pervasive
   monad: numeric Math.exp
-  dyad:  numeric (y, x) -> Math.pow x, y
+
+  # 2*3 <=> 8
+  # 3*2 <=> 9
+  # ¯2*3 <=> ¯8
+  # ¯3*2 <=> 9
+  # ¯1*.5 <=> 0j1
+  dyad:  numeric (y, x) ->
+    if x < 0
+      (new Complex x)['*'] y
+    else
+      Math.pow x, y
 
 @['⍟'] = pervasive
-  monad: numeric Math.log
-  dyad:  numeric (y, x) -> Math.log(y) / Math.log(x)
+
+  # ⍟123 <=> 4.812184355372417
+  # ⍟0 <=> ¯¯
+  # ⍟¯1 <=> 0j1 × ○1
+  monad: numeric (x) ->
+    if x < 0
+      (new Complex x)['⍟']()
+    else
+      Math.log x
+
+  # 12⍟34 <=> 1.419111870829036
+  # 12⍟¯34 <=> 1.419111870829036j1.26426988871305
+  # ¯12⍟¯34 <=> 1.1612974763994781j¯.2039235425372641
+  dyad: numeric (y, x) ->
+    if x < 0 or y < 0
+      (new Complex x)['⍟'] y
+    else
+      Math.log(y) / Math.log(x)
 
 @['∣'] = @['|'] = pervasive
 
