@@ -938,12 +938,24 @@
 
 }).call(this);
 }, "complex": function(exports, require, module) {(function() {
-  var C, Complex, assert,
+  var Complex, DomainError, assert,
     __slice = [].slice;
 
   assert = require('./helpers').assert;
 
-  C = function(re, im) {
+  DomainError = require('./errors').DomainError;
+
+  this.complexify = function(x) {
+    if (typeof x === 'number') {
+      return new Complex(x, 0);
+    } else if (x instanceof Complex) {
+      return x;
+    } else {
+      throw DomainError();
+    }
+  };
+
+  this.simplify = function(re, im) {
     if (im) {
       return new Complex(re, im);
     } else {
@@ -989,130 +1001,6 @@
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this['='].apply(this, args);
-    };
-
-    Complex.prototype['+'] = function(z) {
-      if (z != null) {
-        if (typeof z === 'number') {
-          return C(this.re + z, this.im);
-        } else if (z instanceof Complex) {
-          return C(this.re + z.re, this.im + z.im);
-        } else {
-          throw Error('Unsupported operation');
-        }
-      } else {
-        return C(this.re, -this.im);
-      }
-    };
-
-    Complex.prototype['right_+'] = function() {
-      var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return this['+'].apply(this, args);
-    };
-
-    Complex.prototype['-'] = function(z) {
-      if (z != null) {
-        if (typeof z === 'number') {
-          return C(this.re - z, this.im);
-        } else if (z instanceof Complex) {
-          return C(this.re - z.re, this.im - z.im);
-        } else {
-          throw Error('Unsupported operation');
-        }
-      } else {
-        return C(-this.re, -this.im);
-      }
-    };
-
-    Complex.prototype['right_-'] = function(z) {
-      return (z instanceof Complex ? z : new Complex(z, 0))['-'](this);
-    };
-
-    Complex.prototype['×'] = function(z) {
-      var d;
-      if (z != null) {
-        if (typeof z === 'number') {
-          return C(z * this.re, z * this.im);
-        } else if (z instanceof Complex) {
-          return C(this.re * z.re - this.im * z.im, this.re * z.im + this.im * z.re);
-        } else {
-          throw Error('Unsupported operation');
-        }
-      } else {
-        d = Math.sqrt(this.re * this.re + this.im * this.im);
-        return C(this.re / d, this.im / d);
-      }
-    };
-
-    Complex.prototype['right_×'] = function() {
-      var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return this['×'].apply(this, args);
-    };
-
-    Complex.prototype['÷'] = function(z) {
-      var d;
-      if (z != null) {
-        if (typeof z === 'number') {
-          return C(this.re / z, this.im / z);
-        } else if (z instanceof Complex) {
-          d = z.re * z.re + z.im * z.im;
-          return C((this.re * z.re + this.im * z.im) / d, (z.re * this.im - z.im * this.re) / d);
-        } else {
-          throw Error('Unsupported operation');
-        }
-      } else {
-        d = this.re * this.re + this.im * this.im;
-        return C(this.re / d, -this.im / d);
-      }
-    };
-
-    Complex.prototype['right_÷'] = function(z) {
-      return (z instanceof Complex ? z : new Complex(z, 0))['÷'](this);
-    };
-
-    Complex.prototype['|'] = function(z) {
-      if (z != null) {
-        throw Error('Unsupported operation');
-      } else {
-        return Math.sqrt(this.re * this.re + this.im * this.im);
-      }
-    };
-
-    Complex.prototype['right_|'] = function(z) {
-      return (z instanceof Complex ? z : new Complex(z, 0))['|'](this);
-    };
-
-    Complex.prototype['*'] = function(z) {
-      var r;
-      if (z != null) {
-        return this['⍟']()['×'](z)['*']();
-      } else {
-        r = Math.exp(this.re);
-        return C(r * Math.cos(this.im), r * Math.sin(this.im));
-      }
-    };
-
-    Complex.prototype['right_*'] = function(z) {
-      return (z instanceof Complex ? z : new Complex(z, 0))['*'](this);
-    };
-
-    Complex.prototype['⍟'] = function(z) {
-      if (z != null) {
-        if (typeof z === 'number') {
-          z = new Complex(z, 0);
-        } else if (!(z instanceof Complex)) {
-          throw Error('Unsupported operation');
-        }
-        return z['⍟']()['÷'](this['⍟']());
-      } else {
-        return C(Math.log(Math.sqrt(this.re * this.re + this.im * this.im)), Math.atan2(this.im, this.re));
-      }
-    };
-
-    Complex.prototype['right_⍟'] = function(z) {
-      return (z instanceof Complex ? z : new Complex(z, 0))['⍟'](this);
     };
 
     return Complex;
@@ -1537,81 +1425,168 @@
 
 }).call(this);
 }, "vocabulary/arithmetic": function(exports, require, module) {(function() {
-  var Complex, numeric, pervasive, _ref;
+  var Complex, DomainError, complexify, div, exp, ln, mult, pervasive, simplify, _ref;
 
-  _ref = require('./vhelpers'), pervasive = _ref.pervasive, numeric = _ref.numeric;
+  pervasive = require('./vhelpers').pervasive;
 
-  Complex = require('../complex').Complex;
+  _ref = require('../complex'), Complex = _ref.Complex, complexify = _ref.complexify, simplify = _ref.simplify;
+
+  DomainError = require('../errors').DomainError;
 
   this['+'] = pervasive({
-    monad: numeric(function(x) {
-      return x;
-    }),
-    dyad: numeric(function(y, x) {
-      return x + y;
-    })
+    monad: function(x) {
+      if (typeof x === 'number') {
+        return x;
+      } else if (x instanceof Complex) {
+        return new Complex(x.re, -x.im);
+      } else {
+        throw DomainError();
+      }
+    },
+    dyad: function(y, x) {
+      if (typeof x === 'number' && typeof y === 'number') {
+        return x + y;
+      } else {
+        x = complexify(x);
+        y = complexify(y);
+        return simplify(x.re + y.re, x.im + y.im);
+      }
+    }
   });
 
   this['-'] = pervasive({
-    monad: numeric(function(x) {
-      return -x;
-    }),
-    dyad: numeric(function(y, x) {
-      return x - y;
-    })
+    monad: function(x) {
+      if (typeof x === 'number') {
+        return -x;
+      } else if (x instanceof Complex) {
+        return new Complex(-x.re, -x.im);
+      } else {
+        throw DomainError();
+      }
+    },
+    dyad: function(y, x) {
+      if (typeof x === 'number' && typeof y === 'number') {
+        return x - y;
+      } else {
+        x = complexify(x);
+        y = complexify(y);
+        return simplify(x.re - y.re, x.im - y.im);
+      }
+    }
   });
 
   this['×'] = pervasive({
-    monad: numeric(function(x) {
-      return (x > 0) - (x < 0);
-    }),
-    dyad: numeric(function(y, x) {
-      return x * y;
-    })
+    monad: function(x) {
+      var d;
+      if (typeof x === 'number') {
+        return (x > 0) - (x < 0);
+      } else if (x instanceof Complex) {
+        d = Math.sqrt(x.re * x.re + x.im * x.im);
+        return simplify(x.re / d, x.im / d);
+      } else {
+        throw DomainError();
+      }
+    },
+    dyad: mult = function(y, x) {
+      var _ref1;
+      if ((typeof x === (_ref1 = typeof y) && _ref1 === 'number')) {
+        return x * y;
+      } else {
+        x = complexify(x);
+        y = complexify(y);
+        return simplify(x.re * y.re - x.im * y.im, x.re * y.im + x.im * y.re);
+      }
+    }
   });
 
   this['÷'] = pervasive({
-    monad: numeric(function(x) {
-      return 1 / x;
-    }),
-    dyad: numeric(function(y, x) {
-      return x / y;
-    })
+    monad: function(x) {
+      var d;
+      if (typeof x === 'number') {
+        return 1 / x;
+      } else if (x instanceof Complex) {
+        d = x.re * x.re + x.im * x.im;
+        return simplify(x.re / d, -x.im / d);
+      } else {
+        throw DomainError();
+      }
+    },
+    dyad: div = function(y, x) {
+      var d, _ref1;
+      if ((typeof x === (_ref1 = typeof y) && _ref1 === 'number')) {
+        return x / y;
+      } else {
+        x = complexify(x);
+        y = complexify(y);
+        d = y.re * y.re + y.im * y.im;
+        return simplify((x.re * y.re + x.im * y.im) / d, (y.re * x.im - y.im * x.re) / d);
+      }
+    }
   });
 
   this['*'] = pervasive({
-    monad: numeric(Math.exp),
-    dyad: numeric(function(y, x) {
-      if (x < 0) {
-        return (new Complex(x))['*'](y);
+    monad: exp = function(x) {
+      var r;
+      if (typeof x === 'number') {
+        return Math.exp(x);
+      } else if (x instanceof Complex) {
+        r = Math.exp(x.re);
+        return simplify(r * Math.cos(x.im), r * Math.sin(x.im));
       } else {
-        return Math.pow(x, y);
+        throw DomainError();
       }
-    })
+    },
+    dyad: function(y, x) {
+      var _ref1;
+      if ((typeof x === (_ref1 = typeof y) && _ref1 === 'number') && x >= 0) {
+        return Math.pow(x, y);
+      } else {
+        x = complexify(x);
+        y = complexify(y);
+        return exp(mult(ln(x), y));
+      }
+    }
   });
 
   this['⍟'] = pervasive({
-    monad: numeric(function(x) {
-      if (x < 0) {
-        return (new Complex(x))['⍟']();
-      } else {
+    monad: ln = function(x) {
+      if (typeof x === 'number' && x > 0) {
         return Math.log(x);
-      }
-    }),
-    dyad: numeric(function(y, x) {
-      if (x < 0 || y < 0) {
-        return (new Complex(x))['⍟'](y);
       } else {
-        return Math.log(y) / Math.log(x);
+        x = complexify(x);
+        return simplify(Math.log(Math.sqrt(x.re * x.re + x.im * x.im)), Math.atan2(x.im, x.re));
       }
-    })
+    },
+    dyad: function(y, x) {
+      var _ref1;
+      if ((typeof x === (_ref1 = typeof y) && _ref1 === 'number') && x > 0 && y > 0) {
+        return Math.log(y) / Math.log(x);
+      } else {
+        x = complexify(x);
+        y = complexify(y);
+        return div(ln(x), ln(y));
+      }
+    }
   });
 
   this['∣'] = this['|'] = pervasive({
-    monad: numeric(Math.abs),
-    dyad: numeric(function(y, x) {
-      return y % x;
-    })
+    monad: function(x) {
+      if (typeof x === 'number') {
+        return Math.abs(x);
+      } else if (x instanceof Complex) {
+        return Math.sqrt(x.re * x.re + x.im * x.im);
+      } else {
+        throw DomainError();
+      }
+    },
+    dyad: function(y, x) {
+      var _ref1;
+      if ((typeof x === (_ref1 = typeof y) && _ref1 === 'number')) {
+        return y % x;
+      } else {
+        throw DomainError();
+      }
+    }
   });
 
 }).call(this);

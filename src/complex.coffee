@@ -4,8 +4,17 @@
 # More importantly, `complex.coffee` demonstrates how one can implement
 # custom APL objects.
 {assert} = require './helpers'
+{DomainError} = require './errors'
 
-C = (re, im) -> if im then new Complex re, im else re
+@complexify = (x) ->
+  if typeof x is 'number'
+    new Complex x, 0
+  else if x instanceof Complex
+    x
+  else
+    throw DomainError()
+
+@simplify = (re, im) -> if im then new Complex re, im else re
 
 @Complex = class Complex
 
@@ -33,118 +42,3 @@ C = (re, im) -> if im then new Complex re, im else re
   # Match (`≡`)
   '≡':       (args...) -> @['='] args...
   'right_≡': (args...) -> @['='] args...
-
-  # Add / Conjugate (`+`)
-  #
-  # 1j¯2+¯2j3 <=> ¯1j1
-  # +1j¯2     <=> 1j2
-  '+': (z) ->
-    if z?
-      if typeof z is 'number' then C @re + z, @im
-      else if z instanceof Complex then C @re + z.re, @im + z.im
-      else throw Error 'Unsupported operation'
-    else
-      C @re, -@im
-
-  'right_+': (args...) -> @['+'] args...
-
-  # Subtract / Negate (`-`)
-  #
-  # 5j2-3j8 <=> 2j¯6
-  '-': (z) ->
-    if z?
-      if typeof z is 'number' then C @re - z, @im
-      else if z instanceof Complex then C @re - z.re, @im - z.im
-      else throw Error 'Unsupported operation'
-    else
-      C -@re, -@im
-
-  # 5-3j8 <=> 2j¯8
-  'right_-': (z) ->
-    (if z instanceof Complex then z else new Complex z, 0)['-'] @
-
-  # Multiply / Sign of (`×`)
-  #
-  # 1j¯2×¯2j3 <=> 4j7
-  # ×3j¯4 <=> .6j¯.8
-  '×': (z) ->
-    if z?
-      if typeof z is 'number' then C z * @re, z * @im
-      else if z instanceof Complex
-        C @re * z.re - @im * z.im, @re * z.im + @im * z.re
-      else throw Error 'Unsupported operation'
-    else
-      d = Math.sqrt @re * @re + @im * @im
-      C @re / d, @im / d
-
-  # 2×1j¯2 <=> 2j¯4
-  'right_×': (args...) -> @['×'] args...
-
-  # Divide / Reciprocal (`÷`)
-  #
-  # 4j7÷1j¯2 <=> ¯2j3
-  # 0j2÷0j1  <=> 2
-  # 5÷2j1    <=> 2j¯1
-  '÷': (z) ->
-    if z?
-      if typeof z is 'number' then C @re / z, @im / z
-      else if z instanceof Complex
-        d = z.re * z.re + z.im * z.im
-        C (@re * z.re + @im * z.im) / d, (z.re * @im - z.im * @re) / d
-      else throw Error 'Unsupported operation'
-    else
-      d = @re * @re + @im * @im
-      C @re / d, -@im / d
-
-  'right_÷': (z) ->
-    (if z instanceof Complex then z else new Complex z, 0)['÷'] @
-
-  # Absolute value / Residue (`|`)
-  #
-  # |5j12 <=> 13
-  # 1j2|3j4 !!!
-  '|': (z) ->
-    if z?
-      throw Error 'Unsupported operation'
-    else
-      Math.sqrt @re * @re + @im * @im
-
-  'right_|': (z) ->
-    (if z instanceof Complex then z else new Complex z, 0)['|'] @
-
-  # Exponential / To the power of (`*`)
-  #
-  # 1j2*3j4 <=> .129009594074467j.03392409290517014
-  # *123j456 <=> ¯2.336586510148344e+53j¯1.1841598134622967e+53
-  '*': (z) ->
-    if z?
-      @['⍟']()['×'](z)['*']() # pow(@, z) = exp(ln(@) × z)
-    else
-      r = Math.exp @re
-      C(
-        r * Math.cos @im
-        r * Math.sin @im
-      )
-
-  'right_*': (z) ->
-    (if z instanceof Complex then z else new Complex z, 0)['*'] @
-
-  # Natural logarithm / Logarithm to the base (`⍟`)
-  #
-  # 1j2⍟3j4 <=> 1.2393828252698689J¯0.5528462880299602
-  # ⍟123j456 <=> 6.157609243895447J1.3073297857599793
-  '⍟': (z) ->
-    if z?
-      if typeof z is 'number'
-        z = new Complex z, 0
-      else if z not instanceof Complex
-        throw Error 'Unsupported operation'
-      z['⍟']()['÷'] @['⍟']() # log(z, base=@) = ln(z) / ln(@)
-    else
-      C(
-        Math.log Math.sqrt @re * @re + @im * @im
-        Math.atan2 @im, @re
-      )
-
-  'right_⍟': (z) ->
-    (if z instanceof Complex then z else new Complex z, 0)['⍟'] @
