@@ -102,8 +102,8 @@
 
   # Reciprocal (`÷`)
   #
-  # ÷2 <=> .5
-  # TODO complex
+  # ÷2   <=> .5
+  # ÷2j3 <=> 0.15384615384615385J¯0.23076923076923078
   monad: (x) ->
     if typeof x is 'number'
       1 / x
@@ -130,8 +130,8 @@
 
 @['*'] = pervasive
 
-  # TODO: real numbers
-  # *123j456 <=> ¯2.336586510148344e+53j¯1.1841598134622967e+53
+  # *2   <=> 7.38905609893065
+  # *2j3 <=> ¯7.315110094901103J1.0427436562359045
   monad: exp = (x) ->
     if typeof x is 'number'
       Math.exp x
