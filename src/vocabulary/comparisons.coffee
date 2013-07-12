@@ -1,5 +1,6 @@
 {APLArray} = require '../array'
 {pervasive, numeric, match} = require './vhelpers'
+{Complex} = require '../complex'
 
 # Equals (`=`)
 #
@@ -15,9 +16,18 @@
 #     3 = 2 3⍴1 2 3 4 5 6   <=> 2 3 ⍴ 0 0 1 0 0 0
 #     3 = (2 3⍴1 2 3 4 5 6) (2 3⍴3 3 3 5 5 5)
 #     ... <=> (2 3 ⍴ 0 0 1 0 0 0) (2 3 ⍴ 1 1 1 0 0 0)
-@['='] = pervasive dyad: (y, x) -> +(x is y)
+#     2j3=2j3               <=> 1
+#     2j3=3j2               <=> 0
+#     0j0                   <=> 0
+#     123j0                 <=> «123»
+#     2j¯3+¯2j3             <=> «0»
+@['='] = pervasive dyad: eq = (y, x) ->
+  if x instanceof Complex and y instanceof Complex
+    +(x.re is y.re and x.im is y.im)
+  else
+    +(x is y)
 
-@['≠'] = pervasive dyad: (y, x) -> +(x isnt y)
+@['≠'] = pervasive dyad: (y, x) -> 1 - eq y, x
 @['<'] = pervasive dyad: numeric (y, x) -> +(x < y)
 @['>'] = pervasive dyad: numeric (y, x) -> +(x > y)
 @['≤'] = pervasive dyad: numeric (y, x) -> +(x <= y)

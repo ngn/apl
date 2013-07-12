@@ -18,27 +18,9 @@
 
 @Complex = class Complex
 
-  constructor: (@re = 0, @im = 0) ->
+  constructor: (@re, @im = 0) ->
     assert typeof @re is 'number'
     assert typeof @im is 'number'
 
   toString: ->
     "#{@re}J#{@im}".replace /-/g, '¯'
-
-  # Compare (`=`)
-  #
-  # 2j3=2j3   <=> 1
-  # 2j3=3j2   <=> 0
-  # 0j0       <=> 0
-  # 123j0     <=> «123»
-  # 2j¯3+¯2j3 <=> «0»
-  '=': (z) ->
-    if z instanceof Complex then +(@re is z.re and @im is z.im)
-    else if typeof z is 'number' then +(@re is z and @im is 0)
-    else 0
-
-  'right_=': (args...) -> @['='] args...
-
-  # Match (`≡`)
-  '≡':       (args...) -> @['='] args...
-  'right_≡': (args...) -> @['='] args...

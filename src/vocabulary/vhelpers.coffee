@@ -58,7 +58,11 @@ multiplicitySymbol = (z) ->
       r
   else
     if y instanceof APLArray then false
-    else (x['≡']?(y)) ? (y['≡']?(x)) ? (x is y)
+    else
+      if x instanceof Complex and y instanceof Complex
+        x.re is y.re and x.im is y.im
+      else
+        x is y
 
 eps = 1e-13 # comparison tolerance for approx()
 

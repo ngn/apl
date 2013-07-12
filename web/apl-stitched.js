@@ -938,8 +938,7 @@
 
 }).call(this);
 }, "complex": function(exports, require, module) {(function() {
-  var Complex, DomainError, assert,
-    __slice = [].slice;
+  var Complex, DomainError, assert;
 
   assert = require('./helpers').assert;
 
@@ -965,7 +964,7 @@
 
   this.Complex = Complex = (function() {
     function Complex(re, im) {
-      this.re = re != null ? re : 0;
+      this.re = re;
       this.im = im != null ? im : 0;
       assert(typeof this.re === 'number');
       assert(typeof this.im === 'number');
@@ -973,34 +972,6 @@
 
     Complex.prototype.toString = function() {
       return ("" + this.re + "J" + this.im).replace(/-/g, '¯');
-    };
-
-    Complex.prototype['='] = function(z) {
-      if (z instanceof Complex) {
-        return +(this.re === z.re && this.im === z.im);
-      } else if (typeof z === 'number') {
-        return +(this.re === z && this.im === 0);
-      } else {
-        return 0;
-      }
-    };
-
-    Complex.prototype['right_='] = function() {
-      var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return this['='].apply(this, args);
-    };
-
-    Complex.prototype['≡'] = function() {
-      var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return this['='].apply(this, args);
-    };
-
-    Complex.prototype['right_≡'] = function() {
-      var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return this['='].apply(this, args);
     };
 
     return Complex;
@@ -1875,21 +1846,27 @@
 
 }).call(this);
 }, "vocabulary/comparisons": function(exports, require, module) {(function() {
-  var APLArray, depthOf, match, numeric, pervasive, _ref;
+  var APLArray, Complex, depthOf, eq, match, numeric, pervasive, _ref;
 
   APLArray = require('../array').APLArray;
 
   _ref = require('./vhelpers'), pervasive = _ref.pervasive, numeric = _ref.numeric, match = _ref.match;
 
+  Complex = require('../complex').Complex;
+
   this['='] = pervasive({
-    dyad: function(y, x) {
-      return +(x === y);
+    dyad: eq = function(y, x) {
+      if (x instanceof Complex && y instanceof Complex) {
+        return +(x.re === y.re && x.im === y.im);
+      } else {
+        return +(x === y);
+      }
     }
   });
 
   this['≠'] = pervasive({
     dyad: function(y, x) {
-      return +(x !== y);
+      return 1 - eq(y, x);
     }
   });
 
@@ -3916,7 +3893,7 @@
   };
 
   this.match = match = function(x, y) {
-    var axis, r, _i, _ref2, _ref3, _ref4;
+    var axis, r, _i, _ref2;
     if (x instanceof APLArray) {
       if (!(y instanceof APLArray)) {
         return false;
@@ -3941,7 +3918,11 @@
       if (y instanceof APLArray) {
         return false;
       } else {
-        return (_ref3 = (_ref4 = typeof x['≡'] === "function" ? x['≡'](y) : void 0) != null ? _ref4 : typeof y['≡'] === "function" ? y['≡'](x) : void 0) != null ? _ref3 : x === y;
+        if (x instanceof Complex && y instanceof Complex) {
+          return x.re === y.re && x.im === y.im;
+        } else {
+          return x === y;
+        }
       }
     }
   };
