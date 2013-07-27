@@ -342,7 +342,7 @@
   _ref = require('./compiler'), nodes = _ref.nodes, compile = _ref.compile, exec = _ref.exec;
 
   this.main = function() {
-    var a, aplCode, argv, b, ctx, filename, jsCode, k, knownOptions, opts;
+    var a, aplCode, argv, b, ctx, filename, inherit, jsCode, k, knownOptions, opts, vocabulary;
     argv = optimist.usage('Usage: apl [options] path/to/script.apl [args]\n\nIf called without options, `apl` will run your script.').describe({
       c: 'compile to JavaScript and save as .js files',
       h: 'display this help message',
@@ -380,7 +380,9 @@
       optimist.showHelp();
       return;
     }
-    ctx = {
+    inherit = require('./helpers').inherit;
+    vocabulary = require('./vocabulary');
+    ctx = inherit(vocabulary, {
       '⍵': (function() {
         var _i, _len, _ref1, _results;
         _ref1 = argv._;
@@ -391,7 +393,7 @@
         }
         return _results;
       })()
-    };
+    });
     if (argv.interactive || !(argv._.length || argv.stdio)) {
       return repl(ctx);
     }
@@ -444,7 +446,8 @@
       try {
         if (!line.match(/^[\ \t\f\r\n]*$/)) {
           result = exec(line, {
-            extraContext: ctx
+            ctx: ctx,
+            exposeTopLevelScope: true
           });
           process.stdout.write(format(result).join('\n') + '\n');
         }
@@ -499,7 +502,7 @@
   SyntaxError = require('./errors').SyntaxError;
 
   resolveExprs = function(ast, opts) {
-    var k, m, node, queue, scopeNode, v, varInfo, vars, visit, _i, _j, _len, _len1, _ref1, _ref2;
+    var k, m, node, queue, scopeNode, v, varInfo, vars, visit, _i, _j, _len, _len1, _ref1, _ref2, _ref3;
     if (opts == null) {
       opts = {};
     }
@@ -517,8 +520,9 @@
         jsCode: 'arguments.callee'
       }
     };
-    for (k in vocabulary) {
-      v = vocabulary[k];
+    _ref1 = opts.ctx;
+    for (k in _ref1) {
+      v = _ref1[k];
       ast.vars[k] = varInfo = {
         type: 'X',
         jsCode: "_[" + (JSON.stringify(k)) + "]"
@@ -544,9 +548,9 @@
       }
     }
     if (opts.vars) {
-      _ref1 = opts.vars;
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        v = _ref1[_i];
+      _ref2 = opts.vars;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        v = _ref2[_i];
         ast.vars[v.name] = {
           type: 'X',
           jsCode: v.name
@@ -554,16 +558,25 @@
       }
     }
     ast.scopeDepth = 0;
+    if (opts.exposeTopLevelScope) {
+      ast.scopeObjectJS = '_';
+      ast.scopeInitJS = '';
+    } else {
+      ast.scopeObjectJS = '_0';
+      ast.scopeInitJS = "var _0 = {}";
+    }
     queue = [ast];
     while (queue.length) {
       vars = (scopeNode = queue.shift()).vars;
       visit = function(node) {
-        var a, c, h, i, j, name, t, x, _j, _k, _len1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref2, _ref20, _ref21, _ref22, _ref23, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+        var a, c, h, i, j, name, t, x, _j, _k, _len1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref20, _ref21, _ref22, _ref23, _ref24, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
         node.scopeNode = scopeNode;
         switch (node[0]) {
           case 'body':
             node.vars = inherit(vars);
             node.scopeDepth = scopeNode.scopeDepth + 1;
+            node.scopeObjectJS = '_' + node.scopeDepth;
+            node.scopeInitJS = "var " + node.scopeObjectJS + " = {}";
             queue.push(node);
             return null;
           case 'guard':
@@ -583,13 +596,13 @@
             } else {
               vars[name] = {
                 type: h.type,
-                jsCode: "_" + scopeNode.scopeDepth + "[" + (JSON.stringify(name)) + "]"
+                jsCode: "" + scopeNode.scopeObjectJS + "[" + (JSON.stringify(name)) + "]"
               };
             }
             return h;
           case 'symbol':
             name = node[1];
-            if (((_ref2 = (v = vars["get_" + name])) != null ? _ref2.type : void 0) === 'F') {
+            if (((_ref3 = (v = vars["get_" + name])) != null ? _ref3.type : void 0) === 'F') {
               v.used = true;
               return {
                 type: 'X'
@@ -615,9 +628,9 @@
               type: 'X'
             };
           case 'index':
-            _ref3 = node.slice(2);
-            for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
-              c = _ref3[_j];
+            _ref4 = node.slice(2);
+            for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
+              c = _ref4[_j];
               if (!(c !== null)) {
                 continue;
               }
@@ -630,22 +643,22 @@
           case 'expr':
             a = node.slice(1);
             h = Array(a.length);
-            for (i = _k = _ref4 = a.length - 1; _ref4 <= 0 ? _k <= 0 : _k >= 0; i = _ref4 <= 0 ? ++_k : --_k) {
+            for (i = _k = _ref5 = a.length - 1; _ref5 <= 0 ? _k <= 0 : _k >= 0; i = _ref5 <= 0 ? ++_k : --_k) {
               h[i] = visit(a[i]);
             }
             i = 0;
             while (i < a.length - 1) {
-              if ((h[i].type === (_ref5 = h[i + 1].type) && _ref5 === 'X')) {
+              if ((h[i].type === (_ref6 = h[i + 1].type) && _ref6 === 'X')) {
                 j = i + 2;
                 while (j < a.length && h[j].type === 'X') {
                   j++;
                 }
-                [].splice.apply(a, [i, j - i].concat(_ref6 = [['vector'].concat(a.slice(i, j))])), _ref6;
-                [].splice.apply(h, [i, j - i].concat(_ref7 = [
+                [].splice.apply(a, [i, j - i].concat(_ref7 = [['vector'].concat(a.slice(i, j))])), _ref7;
+                [].splice.apply(h, [i, j - i].concat(_ref8 = [
                   {
                     type: 'X'
                   }
-                ])), _ref7;
+                ])), _ref8;
               } else {
                 i++;
               }
@@ -653,24 +666,24 @@
             i = a.length - 2;
             while (--i >= 0) {
               if (h[i + 1].isConjunction && (h[i].type === 'F' || h[i + 2].type === 'F')) {
-                [].splice.apply(a, [i, (i + 3) - i].concat(_ref8 = [['conjunction'].concat(a.slice(i, i + 3))])), _ref8;
-                [].splice.apply(h, [i, (i + 3) - i].concat(_ref9 = [
+                [].splice.apply(a, [i, (i + 3) - i].concat(_ref9 = [['conjunction'].concat(a.slice(i, i + 3))])), _ref9;
+                [].splice.apply(h, [i, (i + 3) - i].concat(_ref10 = [
                   {
                     type: 'F'
                   }
-                ])), _ref9;
+                ])), _ref10;
                 i--;
               }
             }
             i = 0;
             while (i < a.length - 1) {
               if (h[i].type === 'F' && h[i + 1].isPostfixAdverb) {
-                [].splice.apply(a, [i, (i + 2) - i].concat(_ref10 = [['postfixAdverb'].concat(a.slice(i, i + 2))])), _ref10;
-                [].splice.apply(h, [i, (i + 2) - i].concat(_ref11 = [
+                [].splice.apply(a, [i, (i + 2) - i].concat(_ref11 = [['postfixAdverb'].concat(a.slice(i, i + 2))])), _ref11;
+                [].splice.apply(h, [i, (i + 2) - i].concat(_ref12 = [
                   {
                     type: 'F'
                   }
-                ])), _ref11;
+                ])), _ref12;
               } else {
                 i++;
               }
@@ -678,15 +691,15 @@
             i = a.length - 1;
             while (--i >= 0) {
               if (h[i].isPrefixAdverb && h[i + 1].type === 'F') {
-                [].splice.apply(a, [i, (i + 2) - i].concat(_ref12 = [['prefixAdverb'].concat(a.slice(i, i + 2))])), _ref12;
-                [].splice.apply(h, [i, (i + 2) - i].concat(_ref13 = [
+                [].splice.apply(a, [i, (i + 2) - i].concat(_ref13 = [['prefixAdverb'].concat(a.slice(i, i + 2))])), _ref13;
+                [].splice.apply(h, [i, (i + 2) - i].concat(_ref14 = [
                   {
                     type: 'F'
                   }
-                ])), _ref13;
+                ])), _ref14;
               }
             }
-            if (h.length === 2 && (h[0].type === (_ref14 = h[1].type) && _ref14 === 'F')) {
+            if (h.length === 2 && (h[0].type === (_ref15 = h[1].type) && _ref15 === 'F')) {
               a = [['hook'].concat(a)];
               h = [
                 {
@@ -717,31 +730,31 @@
             } else {
               while (h.length > 1) {
                 if (h.length === 2 || h[h.length - 3].type === 'F') {
-                  [].splice.apply(a, [(_ref15 = h.length - 2), 9e9].concat(_ref16 = [['monadic'].concat(a.slice(h.length - 2))])), _ref16;
-                  [].splice.apply(h, [(_ref17 = h.length - 2), 9e9].concat(_ref18 = [
+                  [].splice.apply(a, [(_ref16 = h.length - 2), 9e9].concat(_ref17 = [['monadic'].concat(a.slice(h.length - 2))])), _ref17;
+                  [].splice.apply(h, [(_ref18 = h.length - 2), 9e9].concat(_ref19 = [
                     {
                       type: 'X'
                     }
-                  ])), _ref18;
+                  ])), _ref19;
                 } else {
-                  [].splice.apply(a, [(_ref19 = h.length - 3), 9e9].concat(_ref20 = [['dyadic'].concat(a.slice(h.length - 3))])), _ref20;
-                  [].splice.apply(h, [(_ref21 = h.length - 3), 9e9].concat(_ref22 = [
+                  [].splice.apply(a, [(_ref20 = h.length - 3), 9e9].concat(_ref21 = [['dyadic'].concat(a.slice(h.length - 3))])), _ref21;
+                  [].splice.apply(h, [(_ref22 = h.length - 3), 9e9].concat(_ref23 = [
                     {
                       type: 'X'
                     }
-                  ])), _ref22;
+                  ])), _ref23;
                 }
               }
             }
-            [].splice.apply(node, [0, 9e9].concat(_ref23 = a[0])), _ref23;
+            [].splice.apply(node, [0, 9e9].concat(_ref24 = a[0])), _ref24;
             return h[0];
           default:
             return assert(false, "Unrecognised node type, '" + node[0] + "'");
         }
       };
-      _ref2 = scopeNode.slice(1);
-      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-        node = _ref2[_j];
+      _ref3 = scopeNode.slice(1);
+      for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+        node = _ref3[_j];
         visit(node);
       }
     }
@@ -754,7 +767,7 @@
         if (node.length === 1) {
           return 'return [];\n';
         } else {
-          a = ["var _" + node.scopeDepth + " = {}"];
+          a = [node.scopeInitJS];
           _ref1 = node.slice(1);
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             child = _ref1[_i];
@@ -910,18 +923,25 @@
       opts = {};
     }
     opts.aplCode = aplCode;
+    if (opts.ctx == null) {
+      opts.ctx = inherit(vocabulary);
+    }
     ast = parser.parse(aplCode, opts);
     resolveExprs(ast, opts);
     return ast;
   };
 
   this.compile = compile = function(aplCode, opts) {
-    var jsCode;
+    var ast, jsCode;
     if (opts == null) {
       opts = {};
     }
     opts.aplCode = aplCode;
-    jsCode = toJavaScript(nodes(aplCode, opts));
+    ast = nodes(aplCode, opts);
+    if (opts.exposeTopLevelScope) {
+      ast.scopeObjectJS = '_';
+    }
+    jsCode = toJavaScript(ast);
     if (opts.embedded) {
       jsCode = "var _ = require('apl').createGlobalContext(),\n    _a = arguments[0],\n    _w = arguments[1];\n" + jsCode;
     }
@@ -929,11 +949,13 @@
   };
 
   this.exec = function(aplCode, opts) {
+    var jsCode;
     if (opts == null) {
       opts = {};
     }
     opts.aplCode = aplCode;
-    return (new Function("var _ = arguments[0];\n" + (compile(aplCode, opts))))(inherit(vocabulary, opts.extraContext));
+    jsCode = compile(aplCode, opts);
+    return (new Function("var _ = arguments[0];\n" + jsCode))(opts.ctx);
   };
 
 }).call(this);

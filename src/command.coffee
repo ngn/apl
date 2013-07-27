@@ -64,7 +64,9 @@ fs = require 'fs'
     return
 
   # Prepare for compilation/execution, create a context object.
-  ctx =
+  {inherit} = require './helpers'
+  vocabulary = require './vocabulary'
+  ctx = inherit vocabulary,
     '⍵': for a in argv._ then a.split ''
 
   # Start a REPL if requested or if no input is specified.
@@ -127,7 +129,7 @@ repl = (ctx) ->
   rl.on 'line', (line) ->
     try
       if not line.match /^[\ \t\f\r\n]*$/
-        result = exec line, extraContext: ctx
+        result = exec line, ctx: ctx, exposeTopLevelScope: true
         process.stdout.write format(result).join('\n') + '\n'
     catch e
       console.error e

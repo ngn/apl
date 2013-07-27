@@ -40,7 +40,7 @@ resolveExprs = (ast, opts = {}) ->
     '⍺': {type: 'X', jsCode: '_a'}
     '⍵': {type: 'X', jsCode: '_w'}
     '∇': {type: 'F', jsCode: 'arguments.callee'}
-  for k, v of vocabulary
+  for k, v of opts.ctx
     ast.vars[k] = varInfo = {type: 'X', jsCode: "_[#{JSON.stringify k}]"}
     if typeof v is 'function'
       varInfo.type = 'F'
@@ -54,6 +54,12 @@ resolveExprs = (ast, opts = {}) ->
     for v in opts.vars
       ast.vars[v.name] = {type: 'X', jsCode: v.name}
   ast.scopeDepth = 0
+  if opts.exposeTopLevelScope
+    ast.scopeObjectJS = '_'
+    ast.scopeInitJS = ''
+  else
+    ast.scopeObjectJS = '_0'
+    ast.scopeInitJS = "var _0 = {}"
   queue = [ast] # accumulates "body" nodes which we encounter on our way
   while queue.length
     {vars} = scopeNode = queue.shift()
@@ -64,6 +70,8 @@ resolveExprs = (ast, opts = {}) ->
         when 'body'
           node.vars = inherit vars
           node.scopeDepth = scopeNode.scopeDepth + 1
+          node.scopeObjectJS = '_' + node.scopeDepth
+          node.scopeInitJS = "var #{node.scopeObjectJS} = {}"
           queue.push node
           null
         when 'guard'
@@ -83,7 +91,7 @@ resolveExprs = (ast, opts = {}) ->
           else
             vars[name] =
               type: h.type
-              jsCode: "_#{scopeNode.scopeDepth}[#{JSON.stringify name}]"
+              jsCode: "#{scopeNode.scopeObjectJS}[#{JSON.stringify name}]"
           h
         when 'symbol'
           name = node[1]
@@ -198,7 +206,7 @@ toJavaScript = (node) ->
       if node.length is 1
         'return [];\n'
       else
-        a = ["var _#{node.scopeDepth} = {}"]
+        a = [node.scopeInitJS]
         for child in node[1...] then a.push toJavaScript child
         a[a.length - 1] = "return #{a[a.length - 1]};"
         a.join ';\n'
@@ -383,13 +391,17 @@ compilerError = (node, opts, message) ->
 
 @nodes = nodes = (aplCode, opts = {}) ->
   opts.aplCode = aplCode
+  opts.ctx ?= inherit vocabulary
   ast = parser.parse aplCode, opts
   resolveExprs ast, opts
   ast
 
 @compile = compile = (aplCode, opts = {}) ->
   opts.aplCode = aplCode
-  jsCode = toJavaScript nodes aplCode, opts
+  ast = nodes aplCode, opts
+  if opts.exposeTopLevelScope
+    ast.scopeObjectJS = '_'
+  jsCode = toJavaScript ast
   if opts.embedded
     jsCode = """
       var _ = require('apl').createGlobalContext(),
@@ -401,7 +413,8 @@ compilerError = (node, opts, message) ->
 
 @exec = (aplCode, opts = {}) ->
   opts.aplCode = aplCode
+  jsCode = compile aplCode, opts
   (new Function """
     var _ = arguments[0];
-    #{compile aplCode, opts}
-  """) inherit vocabulary, opts.extraContext
+    #{jsCode}
+  """) opts.ctx
