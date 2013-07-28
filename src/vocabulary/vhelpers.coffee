@@ -6,6 +6,14 @@
 multiplicitySymbol = (z) ->
   if z instanceof APLArray then (if z.isSingleton() then '1' else '*') else '.'
 
+# pervasive() is a higher-order function
+#
+# Consider a function that accepts and returns only scalars.  To make it
+# pervasive means to make it work with any-dimensional arrays, too.
+#
+# What pervasive() actually does is to take two versions of a scalar function
+# (a monadic and a dyadic one), make them pervasive, and combine them into a
+# single function that dispatches based on the number of arguments.
 @pervasive = ({monad, dyad}) ->
   pervadeMonadic =
     if monad
@@ -69,6 +77,8 @@ eps = 1e-13 # comparison tolerance for approx()
 numApprox = (x, y) ->
   x is y or Math.abs(x - y) < eps
 
+# approx() is like match(), but it is tolerant to precision errors;
+# used for comparing expected and actual results in doctests
 @approx = approx = (x, y) ->
   if x instanceof APLArray
     if not (y instanceof APLArray) then false

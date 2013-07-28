@@ -1,11 +1,9 @@
-# `complex.coffee` is a rather meagre implementation of complex numbers.  Only
-# basic arithmetic operations are supported.
-#
-# More importantly, `complex.coffee` demonstrates how one can implement
-# custom APL objects.
 {assert} = require './helpers'
 {DomainError} = require './errors'
 
+# complexify(x)
+#   * if x is real, it's converted to a Complex instance with imaginary part 0
+#   * if x is already complex, it's preserved
 @complexify = (x) ->
   if typeof x is 'number'
     new Complex x, 0
@@ -14,6 +12,9 @@
   else
     throw DomainError()
 
+# simplify(re, im)
+#   * if the imaginary part is 0, the real part is returned
+#   * otherwise, a Complex instance is created
 @simplify = (re, im) -> if im then new Complex re, im else re
 
 @Complex = class Complex

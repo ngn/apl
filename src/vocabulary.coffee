@@ -1,3 +1,4 @@
+# lazyRequires maps module names to the list of symbols we want to import from them
 lazyRequires =
   arithmetic:    '+-×÷*⍟∣|'
   floorceil:     '⌊⌈'
@@ -37,6 +38,7 @@ lazyRequires =
   decode:        '⊥'
   special:       ['_aplify', '_complex', '_bool', 'get_⎕IO', 'set_⎕IO']
 
+# With a bit of metaprogramming, the call to require() can be delayed as much as possible
 createLazyRequire = (obj, name, fromModule) ->
   obj[name] = (args...) ->
     obj[name] = f = require(fromModule)[name]
@@ -48,8 +50,9 @@ for fromModule, names of lazyRequires
   for name in names
     createLazyRequire @, name, './vocabulary/' + fromModule
 
-for name in ['∘.'] then (@[name].aplMetaInfo ?= {}).isPrefixAdverb = true
+# Some symbols can act as adverbs or conjunctions.  They need to be marked as such.
+for name in ['∘.']    then (@[name].aplMetaInfo ?= {}).isPrefixAdverb = true
 for name in '⍨¨/⌿\\⍀' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
-for name in '.⍣' then (@[name].aplMetaInfo ?= {}).isConjunction = true
+for name in '.⍣'      then (@[name].aplMetaInfo ?= {}).isConjunction = true
 
 for k, v of @ when typeof v is 'function' then v.aplName = k
