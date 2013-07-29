@@ -11,6 +11,8 @@
 /_/   \_\_|   |_____|  |___________|
 </pre>
 
+[![Build Status](https://travis-ci.org/ngn/apl.png?branch=master)](https://travis-ci.org/ngn/apl)
+
 An APL compiler written in [CoffeeScript](http://jashkenas.github.com/coffee-script/)<br/>
 Runs on [node.js](http://nodejs.org/) or in a browser<br/>
 
