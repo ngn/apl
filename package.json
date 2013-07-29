@@ -1,21 +1,14 @@
 {
   "name": "apl",
-  "version": "0.1.11",
-  "description": "A Programming Language",
-  "keywords": ["apl", "javascript", "language", "coffeescript"],
-  "homepage": "https://github.com/ngn/apl/",
-  "bugs": "https://github.com/ngn/apl/issues?state=open",
-  "author": "Nikolay G. Nikolov",
+  "version": "0.1.12",
   "directories": {
     "lib": "./lib",
     "bin": "./bin"
   },
   "scripts": {
-    "start": "apl",
     "test": "cake test"
   },
   "main": "./lib/apl",
-  "repository": {"type": "git", "url": "https://github.com/ngn/apl.git"},
   "dependencies": {
     "optimist": ""
   },
@@ -26,9 +19,5 @@
     "ake": "",
     "async": "",
     "stitch": "git+https://github.com/ngn/stitch"
-  },
-  "engines": {"node": ""},
-  "licenses": [
-    {"type": "MIT", "url": "https://github.com/ngn/apl/raw/master/LICENSE"}
-  ]
+  }
 }
