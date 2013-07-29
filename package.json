@@ -1,12 +1,12 @@
 {
   "name": "apl",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "directories": {
     "lib": "./lib",
     "bin": "./bin"
   },
   "scripts": {
-    "test": "cake test"
+    "test": "node_modules/.bin/cake test"
   },
   "main": "./lib/apl",
   "dependencies": {
