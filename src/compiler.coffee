@@ -7,34 +7,40 @@ vocabulary = require './vocabulary'
 
 # # Stage 1: Resolve expr nodes
 
-# For each scope (`body` node), determine the type of each pronoun (`symbol`
-# node) used in it.
+# During this phase we determine the type of each pronoun ('symbol' node) from
+# each scope ('body' node).
 #
-# A pronoun can be either of two types:
+# A pronoun can have either of two types:
+#   * Type 'X': data or a niladic function
+#   * Type 'F': a verb, adverb, or conjunction
 #
-#   * Type `X`: data or a niladic function
+# This information is then used to convert each sequence ('expr' node) into
+# a hierarchy of function applications ('monadic' or 'dyadic' nodes).
 #
-#   * Type `F`: a verb, adverb, or conjunction
+# For instance, before this stage, the AST for "1 2 + ÷ 3" is
 #
-# This information is then used to convert each sequence (`expr` node) into
-# a hierarchy of function applications.
+#     ['body',
+#       ['expr',
+#         ['number', '1'],
+#         ['number', '2'],
+#         ['symbol', '+'],
+#         ['symbol', '*'],
+#         ['number', '3']]]
 #
-# For instance, after this stage, the APL program `(1 + 2) × 3 4` will be
-# represented as:
+# and after resolveExprs() it becomes
 #
 #     ['body',
 #       ['dyadic',
-#         ['dyadic',
+#         ['vector',
 #           ['number', '1'],
-#           ['symbol', '+'],
 #           ['number', '2']],
 #         ['symbol', '+'],
-#         ['vector',
-#           ['number', '3'],
-#           ['number', '4']]]]
+#         ['monadic',
+#           ['number', '*'],
+#           ['number', '3']]]]
 #
-# You can see a textual representation of this tree in your shell, if you
-# type `apl -n filename.apl`
+# To see a textual representation of this tree in your shell, type
+#   apl -n filename.apl
 resolveExprs = (ast, opts = {}) ->
   ast.vars =
     '⍺': {type: 'X', jsCode: '_a'}

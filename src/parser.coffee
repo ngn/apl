@@ -4,9 +4,8 @@ lexer = require './lexer'
 # The parser builds an AST from a stream of tokens.
 #
 # A node in the AST is a JavaScript array whose first item is a string
-# indicating the type of node.  The rest of the items are either the children
-# or they represent the content of a node.  For instance `(1 + 2) × 3 4` will
-# produce the tree:
+# indicating the type of node.  The rest of the items represent the content of
+# a node.  For instance, "(1 + 2) × 3 4" will produce the tree:
 #
 #     ['body',
 #       ['expr',
@@ -18,10 +17,13 @@ lexer = require './lexer'
 #         ['number', '3'],
 #         ['number', '4']]]
 #
-# Note, that at right after parsing stage we don't yet know which symbols
+# Note, that right after parsing stage we don't yet know which symbols
 # represent verbs and which represent nouns.  This will be resolved later in
-# the `compiler`.
-
+# the compiler.
+#
+# This parser is a hand-crafted recursive descent parser.  Various parseX()
+# functions roughly correspond to the set of non-terminals in an imaginary
+# grammar.
 @parse = (aplCode, opts = {}) ->
   tokenStream = lexer.tokenize aplCode
 
@@ -49,8 +51,6 @@ lexer = require './lexer'
       col: token.startCol
       aplCode: aplCode
 
-  # The parser is a recursive descent parser.  Various `parseXXX()` functions
-  # roughly correspond to the set of non-terminals in an imaginary grammar.
   parseBody = ->
     body = ['body']
     loop
