@@ -17,7 +17,7 @@ vocabulary = require './vocabulary'
 # This information is then used to convert each sequence ('expr' node) into
 # a hierarchy of function applications ('monadic' or 'dyadic' nodes).
 #
-# For instance, before this stage, the AST for "1 2 + ÷ 3" is
+# For instance, before this stage, the AST for "1 2 + * 3" is
 #
 #     ['body',
 #       ['expr',
