@@ -9,10 +9,15 @@ fi
 
 rm -rf /tmp/apl
 cd /tmp
-git clone git@github.com:ngn/apl.git
+if grep ~/.ssh/config -e ghshkc; then
+    echo 'StrictHostKeyChecking for github.com already disabled'
+else
+    echo 'Disabling StrictHostKeyChecking for github.com'
+    echo -e "# ghshkc\nHost github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+fi
+git clone --branch=gh-pages git@github.com:ngn/apl.git
 cd apl
-git checkout gh-pages
-git merge master --no-edit
+git merge origin/master --no-edit
 npm install
 ./build-web
 ./build-m
