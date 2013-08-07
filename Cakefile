@@ -89,6 +89,7 @@ task 'web', 'Build everything for the web demo', ->
         'web/index.css'
         'web/keyboard.css'
         'web/tipsy.css'
+        'web/apl385.css'
       ]
       'web/all.css'
     )
