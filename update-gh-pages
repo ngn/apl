@@ -15,7 +15,7 @@ else
     echo 'Disabling StrictHostKeyChecking for github.com'
     echo -e "# ghshkc\nHost github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 fi
-git clone --branch=gh-pages git@github.com:ngn/apl.git
+git clone -b gh-pages https://${GH_TOKEN}@github.com/ngn/apl.git
 cd apl
 git merge origin/master --no-edit
 npm install
