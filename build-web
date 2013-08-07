@@ -1,0 +1,50 @@
+#!/bin/bash
+source ./build
+
+mkdir -pv web web-tmp
+
+stitched=web-tmp/apl-stitched.js
+for f in $(find src -name '*.coffee'); do
+    if [ $f -nt $stitched ]; then
+        echo "Stitching to $stitched"
+        node >$stitched <<EOF
+            require('stitch')
+                .createPackage({paths: ['lib']})
+                .compile(function (err, source) {
+                    if (err) { throw err; }
+                    require('fs').writeFileSync('$stitched', source);
+                });
+EOF
+        break
+    fi
+done
+
+i=web-src/index.coffee ; o=web-tmp/index.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -b -o $(dirname $o) -c $i
+
+i=web-src/index.jade ; o=web/index.html
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/jade <$i >$o
+
+i=web-src/index.sass ; o=web-tmp/index.css
+[ $i -nt $o ] && echo "Compiling $i" && sass <$i >$o
+
+i=web-src/apl385.ttf ; o=web/apl385.ttf
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+echo 'Collecting all JS into web/all.js'
+cat $stitched                            \
+    web-src/jquery.min.js                \
+    web-src/jquery.fieldselection.min.js \
+    web-src/jquery.keyboard.js           \
+    web-src/jquery.retype.min.js         \
+    web-src/jquery.tipsy.js              \
+    web-src/examples.js                  \
+    web-tmp/index.js                     \
+        >web/all.js
+
+echo 'Collecting all CSS into web/all.css'
+cat web-tmp/index.css    \
+    web-src/keyboard.css \
+    web-src/tipsy.css    \
+    web-src/apl385.css   \
+        > web/all.css

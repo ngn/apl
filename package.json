@@ -6,7 +6,7 @@
     "bin": "./bin"
   },
   "scripts": {
-    "test": "node_modules/.bin/cake test"
+    "test": "./test.sh"
   },
   "main": "./lib/apl",
   "dependencies": {
@@ -16,7 +16,6 @@
     "coffee-script": "",
     "jade": "",
     "glob": "",
-    "ake": "",
     "async": "",
     "stitch": "git+https://github.com/ngn/stitch"
   }

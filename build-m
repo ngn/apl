@@ -1,0 +1,31 @@
+#!/bin/bash
+source ./build-web
+
+mkdir -pv m/images m-tmp
+
+i=m-src/index.coffee ; o=m-tmp/index.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -b -o $(dirname $o) -c $i
+
+i=m-src/index.jade ; o=m/index.html
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/jade <$i >$o
+
+i=m-src/index.sass ; o=m-tmp/index.css
+[ $i -nt $o ] && echo "Compiling $i" && sass <$i >$o
+
+i=web-src/apl385.ttf ; o=m/apl385.ttf
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+i=m-src/images/cursor.png ; o=m/images/cursor.png
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+echo 'Collecting all JS into m/all.js'
+cat web-tmp/apl-stitched.js \
+    web-src/jquery.min.js   \
+    web-src/examples.js     \
+    m-tmp/index.js          \
+        >m/all.js
+
+echo 'Collecting all CSS into m/all.css'
+cat web-src/apl385.css \
+    m-tmp/index.css    \
+        >m/all.css
