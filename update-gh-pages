@@ -2,9 +2,6 @@
 set -ev
 cd $(dirname "$0")
 
-[ "$(git rev-parse --abbrev-ref HEAD)" == master ] \
-    || (echo 'This is not the master branch.' ; exit 1)
-
 rm -rf web m
 git checkout gh-pages
 git merge master
@@ -14,4 +11,5 @@ if [ -n "$(git status m web --porcelain)" ]; then
     git add web m
     git commit -a -m 'built demo'
 fi
+git push origin gh-pages
 git checkout master
