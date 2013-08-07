@@ -1,15 +1,20 @@
 #!/bin/bash
-set -ev
+set -e
 cd $(dirname "$0")
 
+if [ -n "$TRAVIS_PULL_REQUEST" -a "$TRAVIS_PULL_REQUEST" != "false" ]; then
+    echo 'This is a pull request.  Skipping gh-pages update'
+    exit 0
+fi
+
 rm -rf web m
-git checkout gh-pages
+git checkout -t origin/gh-pages
 git merge master
 ./build-web
 ./build-m
 if [ -n "$(git status m web --porcelain)" ]; then
-    git add web m
-    git commit -a -m 'built demo'
+    git add -A web m
+    git commit -m 'built demo'
 fi
 git push origin gh-pages
 git checkout master
