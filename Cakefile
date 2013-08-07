@@ -84,6 +84,14 @@ task 'web', 'Build everything for the web demo', ->
       ]
       'web/all.js'
     )
+    cat(
+      [
+        'web/index.css'
+        'web/keyboard.css'
+        'web/tipsy.css'
+      ]
+      'web/all.css'
+    )
   ]
 
 task 'm', 'Build everything for the mobile demo', ->
