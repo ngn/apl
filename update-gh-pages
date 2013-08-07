@@ -7,9 +7,13 @@ if [ -n "$TRAVIS_PULL_REQUEST" -a "$TRAVIS_PULL_REQUEST" != "false" ]; then
     exit 0
 fi
 
-rm -rf web m
-git checkout -t origin/gh-pages
-git merge master
+rm -rf /tmp/apl
+cd /tmp
+git clone git@github.com:ngn/apl.git
+cd apl
+git checkout gh-pages
+git merge master --no-edit
+npm install
 ./build-web
 ./build-m
 if [ -n "$(git status m web --porcelain)" ]; then
@@ -17,4 +21,3 @@ if [ -n "$(git status m web --porcelain)" ]; then
     git commit -m 'built demo'
 fi
 git push origin gh-pages
-git checkout master
