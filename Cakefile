@@ -71,6 +71,19 @@ task 'web', 'Build everything for the web demo', ->
     coffee 'web/index.coffee'
     jade   'web/index.jade'
     sass   'web/index.sass'
+    cat(
+      [
+        'web/apl-stitched.js'
+        'web/jquery.min.js'
+        'web/jquery.fieldselection.min.js'
+        'web/jquery.keyboard.js'
+        'web/jquery.retype.min.js'
+        'web/jquery.tipsy.js'
+        'web/examples.js'
+        'web/index.js'
+      ]
+      'web/all.js'
+    )
   ]
 
 task 'm', 'Build everything for the mobile demo', ->
