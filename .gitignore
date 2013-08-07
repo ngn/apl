@@ -1,7 +1,3 @@
-node_modules/
-lib/
-web/
-web-tmp/
-m/
-m-tmp/
-test/doctest.js
+*/
+!web
+!m
