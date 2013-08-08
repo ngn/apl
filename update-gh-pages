@@ -7,13 +7,6 @@ if [ -n "$TRAVIS_PULL_REQUEST" -a "$TRAVIS_PULL_REQUEST" != "false" ]; then
     exit 0
 fi
 
-if grep ~/.ssh/config -e ghshkc; then
-    echo 'StrictHostKeyChecking for github.com already disabled'
-else
-    echo 'Disabling StrictHostKeyChecking for github.com'
-    echo -e "# ghshkc\nHost github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-fi
-
 rm -rf /tmp/apl
 cd /tmp
 git clone -b gh-pages https://${GH_TOKEN}@github.com/ngn/apl.git
