@@ -1,4 +1,5 @@
 {format} = require './format'
+{APLArray} = require '../array'
 
 @['get_⎕'] = ->
   if typeof window?.prompt is 'function'

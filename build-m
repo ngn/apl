@@ -18,7 +18,6 @@ i=m-src/images/cursor.png ; o=m/images/cursor.png
 echo 'Collecting all JS into m/all.js'
 cat web-tmp/apl-stitched.js \
     web-src/jquery.min.js   \
-    web-src/examples.js     \
     m-tmp/index.js          \
         >m/all.js
 
