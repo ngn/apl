@@ -1,91 +1,109 @@
 body {
-  width: 1000px;
-  margin: 10px auto;
-  font-family: apl; }
+    width: 1000px;
+    margin: 10px auto;
+    font-family: apl;
+}
 
 textarea {
-  font-family: apl; }
+    font-family: apl;
+}
 
 h1 {
-  font-family: monospace; }
+    font-family: apl;
+}
 
 a {
-  padding: 1px 1px;
-  margin: 1px 0;
-  text-decoration: none;
-  color: #000088; }
+    padding: 1px 1px;
+    margin: 1px 0;
+    text-decoration: none;
+    color: #008;
+}
 
 a:hover {
-  background-color: #ffdd88; }
+    background-color: #fd8;
+}
 
 #linkToMobile {
-  float: right; }
+    float: right;
+}
 
 #permalink {
-  float: right; }
+    float: right;
+}
 
 #code {
-  font-size: 28px;
-  vertical-align: bottom;
-  height: 200px;
-  width: 100%; }
+    font-size: 28px;
+    vertical-align: bottom;
+    height: 200px;
+    width: 100%;
+}
 
 #go {
-  float: right;
-  width: 100px;
-  font-size: 48px;
-  background-color: #aaccff;
-  border-color: #aaccff;
-  border-radius: 4px;
-  cursor: pointer; }
+    float: right;
+    width: 100px;
+    font-size: 48px;
+    background-color: #acf;
+    border-color: #acf;
+    border-radius: 4px;
+    cursor: pointer;
+}
 
 #result {
-  margin-top: 20px;
-  white-space: pre; }
+    margin-top: 20px;
+    white-space: pre;
+}
 
 #result.error {
-  color: red; }
+    color: red;
+}
 
 .ui-keyboard {
-  position: fixed !important;
-  top: auto !important;
-  bottom: 0 !important;
-  left: 50% !important;
-  right: auto !important;
-  margin-left: -15em !important;
-  background-color: #cccccc;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-  border: solid #aaaaaa 1px;
-  border-width: 1px 1px 0 1px; }
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    right: auto !important;
+    margin-left: -15em !important;
+    background-color: #ccc;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border: solid #aaa 1px;
+    border-width: 1px 1px 0 1px;
+}
 
 .ui-keyboard-button {
-  background-color: #eeeeee;
-  font-family: apl;
-  font-size: large;
-  border-radius: 6px;
-  border-style: solid;
-  border-width: 2px;
-  border-color: #cccccc #aaaaaa #aaaaaa #cccccc; }
+    background-color: #eee;
+    font-family: apl;
+    font-size: large;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #ccc #aaa #aaa #ccc;
+}
 
 .ui-state-hover {
-  border-color: #cccc88 !important; }
+    border-color: #cc8 !important;
+}
 
 .ui-keyboard-space {
-  min-width: 16em !important;
-  width: auto !important; }
+    min-width: 16em !important;
+    width: auto !important;
+}
 
 .ui-keyboard-shift, .ui-keyboard-alt {
-  background-color: #ffdd88; }
+    background-color: #fd8;
+}
 
 .ui-keyboard-shift.ui-state-active, .ui-keyboard-alt.ui-state-active {
-  background-color: #ddbb66;
-  border-color: #cccccc #aaaaaa #aaaaaa #cccccc; }
+    background-color: #db6;
+    border-color: #ccc #aaa #aaa #ccc;
+}
 
 .ui-keyboard-exec {
-  background-color: #aaccff !important;
-  min-width: 4em !important;
-  width: auto !important; }
+    background-color: #acf !important;
+    min-width: 4em !important;
+    width: auto !important;
+}
 /* keyboard - jQuery UI Widget */
 .ui-keyboard { padding: .3em; position: absolute; left: 0; top: 0; z-index: 16000; }
 .ui-keyboard-has-focus { z-index: 16001; }
