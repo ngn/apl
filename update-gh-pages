@@ -1,0 +1,31 @@
+#!/bin/bash
+set -e
+cd $(dirname "$0")
+
+if [ -n "$TRAVIS_PULL_REQUEST" -a "$TRAVIS_PULL_REQUEST" != "false" ]; then
+    echo 'This is a pull request.  Skipping gh-pages update'
+    exit 0
+fi
+
+if grep ~/.ssh/config -e ghshkc; then
+    echo 'StrictHostKeyChecking for github.com already disabled'
+else
+    echo 'Disabling StrictHostKeyChecking for github.com'
+    echo -e "# ghshkc\nHost github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+fi
+
+rm -rf /tmp/apl
+cd /tmp
+git clone -b gh-pages https://${GH_TOKEN}@github.com/ngn/apl.git
+cd apl
+git config user.email travis@example.com
+git config user.name travis
+git merge origin/master --no-edit
+npm install
+./build-web
+./build-m
+if [ -n "$(git status m web --porcelain)" ]; then
+    git add -A web m
+    git commit -m 'built demo'
+fi
+git push origin gh-pages

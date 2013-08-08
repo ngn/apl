@@ -9,9 +9,6 @@ i=m-src/index.coffee ; o=m-tmp/index.js
 i=m-src/index.jade ; o=m/index.html
 [ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/jade <$i >$o
 
-i=m-src/index.sass ; o=m-tmp/index.css
-[ $i -nt $o ] && echo "Compiling $i" && sass <$i >$o
-
 i=web-src/apl385.ttf ; o=m/apl385.ttf
 [ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
 
@@ -27,5 +24,5 @@ cat web-tmp/apl-stitched.js \
 
 echo 'Collecting all CSS into m/all.css'
 cat web-src/apl385.css \
-    m-tmp/index.css    \
+    m-src/index.css    \
         >m/all.css
