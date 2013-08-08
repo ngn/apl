@@ -28,6 +28,12 @@ i=web-src/index.jade ; o=web/index.html
 i=web-src/apl385.ttf ; o=web/apl385.ttf
 [ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
 
+i=web-src/examples-gen.coffee ; o=web-tmp/examples-gen.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -b -o $(dirname $o) -c $i
+
+i=web-tmp/examples-gen.js ; o=web-tmp/examples.js
+[ $i -nt $o ] && echo "Generating $o" && node $i
+
 echo 'Collecting all JS into web/all.js'
 cat $stitched                            \
     web-src/jquery.min.js                \
@@ -35,7 +41,7 @@ cat $stitched                            \
     web-src/jquery.keyboard.js           \
     web-src/jquery.retype.min.js         \
     web-src/jquery.tipsy.js              \
-    web-src/examples.js                  \
+    web-tmp/examples.js                  \
     web-tmp/index.js                     \
         >web/all.js
 

@@ -4,17 +4,17 @@
 
 fs = require 'fs'
 
-names = for name in fs.readdirSync '../examples' when name.match /.*\.apl/ then name
+names = for name in fs.readdirSync "#{__dirname}/../examples" when name.match /.*\.apl/ then name
 names.sort()
 
-fs.writeFileSync 'examples.js', """
+fs.writeFileSync "#{__dirname}/examples.js", """
   // Generated code, do not edit
   window.examples = [
   #{(
     for name in names
       '  ' + JSON.stringify [
         name.replace(/(^\d+-|\.apl$)/g, '')
-        fs.readFileSync('../examples/' + name).toString()
+        fs.readFileSync("#{__dirname}/../examples/#{name}").toString()
           .replace(/(^#!.*\n+|\n+$)/g, '')
           .replace(/\n *⎕ *← *(.*)$/, '\n$1')
       ]
