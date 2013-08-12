@@ -1,5 +1,6 @@
 #!/bin/bash
-source ./build-web
+set -e
+source $(dirname "$0")/build-web
 
 mkdir -pv m/images m-tmp
 

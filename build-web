@@ -1,5 +1,6 @@
 #!/bin/bash
-source ./build
+set -e
+source $(dirname "$0")/build
 
 mkdir -pv web web-tmp
 
@@ -26,6 +27,9 @@ i=web-src/index.jade ; o=web/index.html
 [ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/jade <$i >$o
 
 i=web-src/apl385.ttf ; o=web/apl385.ttf
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+i=web-src/tipsy.gif ; o=web/tipsy.gif
 [ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
 
 i=web-src/examples-gen.coffee ; o=web-tmp/examples-gen.js
