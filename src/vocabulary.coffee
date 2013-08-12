@@ -1,58 +1,16 @@
-# lazyRequires maps module names to the list of symbols we want to import from them
-lazyRequires =
-  arithmetic:    '+-×÷*⍟∣|'
-  floorceil:     '⌊⌈'
-  question:      '?'
-  exclamation:   '!'
-  circle:        '○'
-  comparisons:   '=≠<>≤≥≡≢'
-  logic:         '~∨∧⍱⍲'
-  rho:           '⍴'
-  iota:          '⍳'
-  rotate:        '⌽⊖'
-  transpose:     '⍉'
-  epsilon:       '∊'
-  zilde:         ['get_⍬', 'set_⍬']
-  comma:         ',⍪'
-  grade:         '⍋⍒'
-  take:          '↑'
-  drop:          '↓'
-  squish:        ['⌷', '_index']
-  quad:          ['get_⎕', 'set_⎕', 'get_⍞', 'set_⍞']
-  format:        '⍕'
-  forkhook:      ['_fork', '_hook']
-  each:          '¨'
-  commute:       '⍨'
-  cupcap:        '∪∩'
-  find:          '⍷'
-  enclose:       '⊂'
-  disclose:      '⊃'
-  execute:       '⍎'
-  poweroperator: '⍣'
-  innerproduct:  '.'
-  outerproduct:  ['∘.']
-  slash:         '/⌿'
-  backslash:     '\\⍀'
-  tack:          '⊣⊢'
-  encode:        '⊤'
-  decode:        '⊥'
-  special:       ['_aplify', '_complex', '_bool', 'get_⎕IO', 'set_⎕IO']
+moduleNames = '''
+  arithmetic backslash circle comma commute comparisons cupcap decode disclose
+  drop each enclose encode epsilon exclamation execute find floorceil forkhook
+  format grade innerproduct iota logic outerproduct poweroperator quad question
+  rho rotate slash special squish tack take transpose vhelpers zilde
+'''.split /\s+/
 
-# With a bit of metaprogramming, the call to require() can be delayed as much as possible
-createLazyRequire = (obj, name, fromModule) ->
-  obj[name] = (args...) ->
-    obj[name] = f = require(fromModule)[name]
-    f.aplName = name
-    f.aplMetaInfo = arguments.callee.aplMetaInfo
-    f args...
-
-for fromModule, names of lazyRequires
-  for name in names
-    createLazyRequire @, name, './vocabulary/' + fromModule
+for moduleName in moduleNames
+  for k, v of require "./vocabulary/#{moduleName}"
+    @[k] = v
+    if typeof v is 'function' then v.aplName = k
 
 # Some symbols can act as adverbs or conjunctions.  They need to be marked as such.
-for name in ['∘.']    then (@[name].aplMetaInfo ?= {}).isPrefixAdverb = true
+for name in ['∘.']    then (@[name].aplMetaInfo ?= {}).isPrefixAdverb  = true
 for name in '⍨¨/⌿\\⍀' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
-for name in '.⍣'      then (@[name].aplMetaInfo ?= {}).isConjunction = true
-
-for k, v of @ when typeof v is 'function' then v.aplName = k
+for name in '.⍣'      then (@[name].aplMetaInfo ?= {}).isConjunction   = true
