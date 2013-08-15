@@ -104,6 +104,7 @@ jQuery ($) ->
     ['⋄', 'Statement separator']
     ['⍺', 'Left formal parameter']
     ['⍵', 'Right formal parameter']
+    ['APL', 'Press backquote (`) followed by another key to insert an APL symbol, e.g. `r inserts rho (⍴)']
   ]
 
   # Symbols setup {{{1
@@ -136,7 +137,7 @@ jQuery ($) ->
     display:
       bksp: 'Bksp'
       shift: '⇧'
-      alt: 'Alt'
+      alt: 'APL'
       enter: 'Enter'
       exec: '⍎'
     autoAccept: true
