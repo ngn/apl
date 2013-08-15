@@ -5771,7 +5771,7 @@ jQuery(function($) {
       '∘.', 'Outer product', {
         keys: '`j.'
       }
-    ], ['/', 'Reduce'], ['⌿', '1st axis reduce'], ['\\', 'Scan'], ['⍀', '1st axis scan'], ['⍣', 'Power operator'], ['⍨', 'Commute'], ['¯', 'Negative number sign'], ['⍝', 'Comment'], ['←', 'Assignment'], ['⍬', 'Zilde'], ['⋄', 'Statement separator'], ['⍺', 'Left formal parameter'], ['⍵', 'Right formal parameter']
+    ], ['/', 'Reduce'], ['⌿', '1st axis reduce'], ['\\', 'Scan'], ['⍀', '1st axis scan'], ['⍣', 'Power operator'], ['⍨', 'Commute'], ['¯', 'Negative number sign'], ['⍝', 'Comment'], ['←', 'Assignment'], ['⍬', 'Zilde'], ['⋄', 'Statement separator'], ['⍺', 'Left formal parameter'], ['⍵', 'Right formal parameter'], ['APL', 'Press backquote (`) followed by another key to insert an APL symbol, e.g. `r inserts rho (⍴)']
   ];
   mapping = {};
   rMapping = {};
@@ -5802,7 +5802,7 @@ jQuery(function($) {
     display: {
       bksp: 'Bksp',
       shift: '⇧',
-      alt: 'Alt',
+      alt: 'APL',
       enter: 'Enter',
       exec: '⍎'
     },
