@@ -2,7 +2,7 @@
 
 parser = require './parser'
 vocabulary = require './vocabulary'
-{inherit, assert, all} = require './helpers'
+{assert, all} = require './helpers'
 {SyntaxError} = require './errors'
 
 # # Stage 1: Resolve expr nodes
@@ -74,7 +74,7 @@ resolveExprs = (ast, opts = {}) ->
       node.scopeNode = scopeNode
       switch node[0]
         when 'body'
-          node.vars = inherit vars
+          node.vars = Object.create vars
           node.scopeDepth = scopeNode.scopeDepth + 1
           node.scopeObjectJS = '_' + node.scopeDepth
           node.scopeInitJS = "var #{node.scopeObjectJS} = {}"
@@ -397,7 +397,7 @@ compilerError = (node, opts, message) ->
 
 @nodes = nodes = (aplCode, opts = {}) ->
   opts.aplCode = aplCode
-  opts.ctx ?= inherit vocabulary
+  opts.ctx ?= Object.create vocabulary
   ast = parser.parse aplCode, opts
   resolveExprs ast, opts
   ast

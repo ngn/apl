@@ -1,14 +1,3 @@
-# Prototypal inheritance of JavaScript objects
-# (see [Douglas Crockford's
-# explanation](http://javascript.crockford.com/prototypal.html))
-#
-# This implementation allows extra properties to be assigned
-# to the newly-created object.
-@inherit = (x, extraProperties = {}) ->
-  f = (->); f:: = x; r = new f
-  for k, v of extraProperties then r[k] = v
-  r
-
 @extend = extend = (x, extraProperties) ->
   for k, v of extraProperties then x[k] = v
   x
