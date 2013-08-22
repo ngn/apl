@@ -1,7 +1,3 @@
-@extend = extend = (x, extraProperties) ->
-  for k, v of extraProperties then x[k] = v
-  x
-
 @prod = (xs) -> r = 1; (for x in xs then r *= x); r
 @all = (xs) -> (for x in xs when not x then return false); true
 
@@ -15,6 +11,9 @@
   a.concat a[... m - a.length]
 
 @assert = assert = (flag, s = '') ->
-  if not flag then throw extend Error(s), name: 'AssertionError'
+  if not flag
+    e = Error s
+    e.name = 'AssertionError'
+    throw e
 
 @isInt = isInt = (x, start = -Infinity, end = Infinity) -> x is ~~x and start <= x < end
