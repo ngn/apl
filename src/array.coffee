@@ -1,4 +1,4 @@
-{assert, extend, prod, isInt} = require './helpers'
+{assert, prod, isInt} = require './helpers'
 {LengthError, DomainError} = require './errors'
 
 # This is an experimental data structure intended to replace the current
@@ -127,10 +127,8 @@
   r
 
 
-extend APLArray,
-  zero:   new APLArray [0], []
-  one:    new APLArray [1], []
-  zilde:  new APLArray [], [0]
-  scalar: (x) -> new APLArray [x], []
-
-APLArray.bool = [APLArray.zero, APLArray.one]
+APLArray.zero   = new APLArray [0], []
+APLArray.one    = new APLArray [1], []
+APLArray.zilde  = new APLArray [], [0]
+APLArray.scalar = (x) -> new APLArray [x], []
+APLArray.bool   = [APLArray.zero, APLArray.one]
