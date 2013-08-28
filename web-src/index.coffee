@@ -167,7 +167,7 @@ jQuery ($) ->
       'alt-shift': [
         '⍣ {empty} {empty} {empty} {empty} {empty} {empty} {empty} ⍱ ⍲ ≡ {empty}'
         '{empty} ⌽ ⍷ {empty} ⍉ {empty} {empty} ⌷ ⍬ ⍟ {empty} {empty}'
-        '⊖ ⍨ {empty} {empty} ⍒ ⍋ {empty} {empty} ⍞ {enter}'
+        '⊖ ⍨ ⌹ {empty} ⍒ ⍋ {empty} {empty} ⍞ {enter}'
         '{shift} {empty} {empty} ⍝ {empty} ⍎ ⍕ {empty} « » {bksp}'
         '{alt} {space} {exec!!}'
       ]
