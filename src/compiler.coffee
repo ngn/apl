@@ -210,7 +210,8 @@ toJavaScript = (node) ->
 
     when 'body'
       if node.length is 1
-        'return [];\n'
+        # {}0   <=>   ⍬
+        'return _["get_⍬"]();\n'
       else
         a = [node.scopeInitJS]
         for child in node[1...] then a.push toJavaScript child

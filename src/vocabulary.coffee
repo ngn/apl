@@ -13,4 +13,4 @@ for moduleName in moduleNames
 # Some symbols can act as adverbs or conjunctions.  They need to be marked as such.
 for name in ['∘.']    then (@[name].aplMetaInfo ?= {}).isPrefixAdverb  = true
 for name in '⍨¨/⌿\\⍀' then (@[name].aplMetaInfo ?= {}).isPostfixAdverb = true
-for name in '.⍣⌹'     then (@[name].aplMetaInfo ?= {}).isConjunction   = true
+for name in '.⍣⍠'     then (@[name].aplMetaInfo ?= {}).isConjunction   = true
