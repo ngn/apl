@@ -758,7 +758,7 @@ toJavaScript = function(node) {
   switch (node[0]) {
     case 'body':
       if (node.length === 1) {
-        return 'return [];\n';
+        return 'return _["get_⍬"]();\n';
       } else {
         a = [node.scopeInitJS];
         _ref1 = node.slice(1);
@@ -1315,7 +1315,7 @@ for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
   ((_base1 = this[name]).aplMetaInfo != null ? (_base1 = this[name]).aplMetaInfo : _base1.aplMetaInfo = {}).isPostfixAdverb = true;
 }
 
-_ref3 = '.⍣⌹';
+_ref3 = '.⍣⍠';
 for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
   name = _ref3[_l];
   ((_base2 = this[name]).aplMetaInfo != null ? (_base2 = this[name]).aplMetaInfo : _base2.aplMetaInfo = {}).isConjunction = true;
@@ -3647,7 +3647,7 @@ var assert;
 
 assert = require('../helpers').assert;
 
-this['⌹'] = function(f, g) {
+this['⍠'] = function(f, g) {
   assert(typeof f === 'function');
   assert(typeof g === 'function');
   return function(omega, alpha, axis) {
