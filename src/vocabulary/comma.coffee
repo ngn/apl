@@ -47,7 +47,15 @@
 
   else
 
-    throw Error 'Not implemented'
+    # Table (`⍪`)
+    #
+    # ⍪2 3 4 <=> 3 1⍴2 3 4
+    # ⍪0 <=> 1 1⍴0
+    # ⍪2 2⍴2 3 4 5 <=> 4 1⍴2 3 4 5
+    data = []
+    omega.each (x) -> data.push x
+    new APLArray data, [data.length, 1]
+
 
 
 catenate = (omega, alpha, axis) ->

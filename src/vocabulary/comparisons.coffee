@@ -79,4 +79,14 @@ depthOf = (x) ->
     APLArray.bool[+not match omega, alpha]
 
   else
-    throw Error 'Not implemented'
+
+    # Tally (`≢`)
+    #
+    # ≢0 <=> 1
+    # ≢0 0 0 <=> 3
+    # ≢⍬ <=> 0
+    # ≢2 3⍴⍳6 <=> 2
+    if omega.shape.length
+      new APLArray [omega.shape[0]], []
+    else
+      APLArray.one
