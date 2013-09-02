@@ -279,9 +279,9 @@ toJavaScript = (node) ->
     # {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8 <=> 34 # Fibonacci sequence
     when 'lambda'
       """
-        function (_w, _a) {
+        (function (_w, _a) {
           #{toJavaScript node[1]}
-        }
+        })
       """
 
     # Strings of length one are scalars, all other strings are vectors.
