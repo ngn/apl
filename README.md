@@ -104,6 +104,11 @@ The index origin is fixed at 0
     ⎕IO                    ⍝ returns 0
     ⎕IO ← 1                ⍝ gives an error
 
+Comparison tolerance was deliberately left out.  A limited form of it can be implemented in user code as:
+
+    ⎕CT ← 1e¯13
+    = ← {⎕CT>|⍺-⍵}         ⍝ a different symbol might be a good idea, e.g. ≈ (U+2248)
+
 Embedded JavaScript
 
     3 + «Math.sqrt(25)»    ⍝ returns 8
