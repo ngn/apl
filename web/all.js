@@ -802,7 +802,7 @@ toJavaScript = function(node) {
       }
       break;
     case 'lambda':
-      return "function (_w, _a) {\n  " + (toJavaScript(node[1])) + "\n}";
+      return "(function (_w, _a) {\n  " + (toJavaScript(node[1])) + "\n})";
     case 'string':
       s = node[1];
       d = s[0];
@@ -3558,7 +3558,7 @@ this['↑'] = function(omega, alpha) {
       throw RankError();
     }
     if (omega.shape.length === 0) {
-      omega = new APLArray([omega.unwrap()]);
+      omega = new APLArray([omega.unwrap()], (alpha.shape.length === 0 ? [1] : repeat([1], alpha.shape[0])));
     }
     a = alpha.toArray();
     if (a.length > omega.shape.length) {
