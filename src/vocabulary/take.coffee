@@ -25,10 +25,11 @@
     # 3↑⍬              <=> 0 0 0
     # ¯2↑⍬             <=> 0 0
     # 0↑⍬              <=> ⍬
+    # 3 3↑1            <=> 3 3⍴1 0 0 0 0 0 0 0 0
     if alpha.shape.length > 1
       throw RankError()
     if omega.shape.length is 0
-      omega = new APLArray [omega.unwrap()]
+      omega = new APLArray [omega.unwrap()], (if alpha.shape.length is 0 then [1] else repeat [1], alpha.shape[0])
     a = alpha.toArray()
     if a.length > omega.shape.length
       throw RankError()
