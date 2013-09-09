@@ -283,6 +283,10 @@ this.APLArray = APLArray = (function() {
     return true;
   };
 
+  APLArray.prototype.isSimple = function() {
+    return this.shape.length === 0 && !(this.data[this.offset] instanceof APLArray);
+  };
+
   APLArray.prototype.unwrap = function() {
     if (prod(this.shape) !== 1) {
       throw LengthError();
@@ -2168,7 +2172,7 @@ this['⊂'] = function(omega, alpha, axes) {
       for (var _i = 0, _ref = omega.shape.length; 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
       return _results;
     }).apply(this);
-    if (omega.shape.length === 0) {
+    if (omega.isSimple()) {
       return omega;
     }
     unitShape = (function() {
