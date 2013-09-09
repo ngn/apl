@@ -15,10 +15,11 @@
     # ⍴⊂[0]2 3⍴⍳6   <=> ,3
     # ⊂[1]2 3⍴⍳6    <=> (0 1 2)(3 4 5)
     # ⍴⊂[1]2 3⍴⍳6   <=> ,2
-    #! ⊃⊂[1 0]2 3⍴⍳6 <=> 3 2⍴0 3 1 4 2 5
+    # ⊃⊂[1 0]2 3⍴⍳6 <=> 3 2⍴0 3 1 4 2 5
     # ⍴⊂[1 0]2 3⍴⍳6 <=> ⍬
+    # ⍴⊃⊂⊂1 2 3     <=> ⍬
     axes = if axes? then getAxisList axes, omega.shape.length else [0...omega.shape.length]
-    if omega.shape.length is 0 then return omega
+    if omega.isSimple() then return omega
     unitShape = for axis in axes then omega.shape[axis]
     unitStride = for axis in axes then omega.stride[axis]
     resultAxes = for axis in [0...omega.shape.length] when axis not in axes then axis

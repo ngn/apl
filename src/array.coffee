@@ -107,6 +107,9 @@
     for n in @shape when n isnt 1 then return false
     true
 
+  isSimple: ->
+    @shape.length is 0 and @data[@offset] not instanceof APLArray
+
   unwrap: ->
     if prod(@shape) isnt 1
       throw LengthError()
