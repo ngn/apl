@@ -1,6 +1,7 @@
-{pervasive, numeric} = require './vhelpers'
+{pervasive, numeric, withIdentity} = require './vhelpers'
+{APLArray} = require '../array'
 
-@['⌊'] = pervasive
+@['⌊'] = withIdentity new APLArray([Infinity], []), pervasive
 
   # Floor (`⌊`)
   #
@@ -16,9 +17,10 @@
   # Lesser of (`⌊`)
   #
   # 3⌊5 <=> 3
+  # ⌊/⍬ <=> ¯
   dyad: numeric (y, x) -> Math.min y, x
 
-@['⌈'] = pervasive
+@['⌈'] = withIdentity new APLArray([-Infinity], []), pervasive
 
   # Ceiling (`⌈`)
   #
@@ -34,4 +36,5 @@
   # Greater of (`⌈`)
   #
   # 3⌈5 <=> 5
+  # ⌈/⍬ <=> ¯¯
   dyad: numeric (y, x) -> Math.max y, x

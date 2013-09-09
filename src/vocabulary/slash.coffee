@@ -63,7 +63,11 @@ reduce = @reduce = (f, g, axis0) ->
       rShape = rShape[...]
       rShape.splice axis, 1
 
-    if omega.empty() then throw DomainError()
+    if omega.empty()
+      if (z = f.aplMetaInfo?.identity)?
+        return z
+      else
+        throw DomainError()
 
     data = []
     indices = repeat [0], shape.length

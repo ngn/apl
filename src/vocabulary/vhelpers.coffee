@@ -124,3 +124,7 @@ numApprox = (x, y) ->
     [a]
   else
     throw DomainError()
+
+@withIdentity = (identity, f) ->
+  (f.aplMetaInfo ?= {}).identity = identity
+  f
