@@ -1,6 +1,6 @@
 {APLArray} = require '../array'
 {RankError, DomainError} = require '../errors'
-{numeric, pervasive, bool, match} = require './vhelpers'
+{numeric, pervasive, bool, match, withIdentity} = require './vhelpers'
 {assert, isInt} = require '../helpers'
 
 negate = pervasive monad: (x) -> +not bool x
@@ -39,7 +39,7 @@ negate = pervasive monad: (x) -> +not bool x
     negate omega
 
 
-@['∨'] = pervasive
+@['∨'] = withIdentity APLArray.zero, pervasive
 
   # Or (LCM) (`∨`)
   #
@@ -52,6 +52,7 @@ negate = pervasive monad: (x) -> +not bool x
   # 299∨323           <=> 1   # 299=13×23, 323=17×19
   # 12345∨12345       <=> 12345
   # 0∨123             <=> 123
+  # ∨/⍬               <=> 0
   dyad: numeric (y, x) ->
     if not (isInt(x, 0) and isInt(y, 0))
       throw DomainError '∨ is implemented only for non-negative integers' # todo
@@ -61,7 +62,7 @@ negate = pervasive monad: (x) -> +not bool x
     x
 
 
-@['∧'] = pervasive
+@['∧'] = withIdentity APLArray.one, pervasive
 
   # And (GCD) (`∧`)
   #
@@ -77,6 +78,7 @@ negate = pervasive monad: (x) -> +not bool x
   # 299∧323 # 299=13×23, 323=17×19 <=> 96577
   # 12345∧12345                    <=> 12345
   # 0∧123                          <=> 0
+  # ∧/⍬                            <=> 1
   dyad: numeric (y, x) ->
     assert x is Math.floor(x) and y is Math.floor(y), '∧ is defined only for integers'
     if x is 0 or y is 0 then return 0

@@ -1,8 +1,9 @@
-{pervasive} = require './vhelpers'
+{pervasive, withIdentity} = require './vhelpers'
 {Complex, complexify, simplify} = require '../complex'
 {DomainError} = require '../errors'
+{APLArray} = require '../array'
 
-@['+'] = pervasive
+@['+'] = withIdentity APLArray.zero, pervasive
 
   # Conjugate (`+`)
   #
@@ -30,6 +31,7 @@
   # 1 2 3 + 4 5                    !!! LENGTH ERROR
   # (2 3⍴⍳6) + 3 2⍴⍳6              !!! LENGTH ERROR
   # 1j¯2+¯2j3                      <=> ¯1j1
+  # +/⍬            <=> 0
   dyad: (y, x) ->
     if typeof x is 'number' and typeof y is 'number'
       x + y
@@ -38,7 +40,7 @@
       y = complexify y
       simplify x.re + y.re, x.im + y.im
 
-@['-'] = pervasive
+@['-'] = withIdentity APLArray.zero, pervasive
 
   # Negate (`-`)
   #
@@ -59,6 +61,7 @@
   # 5-¯3    <=> 8
   # 5j2-3j8 <=> 2j¯6
   # 5-3j8   <=> 2j¯8
+  # -/⍬     <=> 0
   dyad: (y, x) ->
     if typeof x is 'number' and typeof y is 'number'
       x - y
@@ -67,7 +70,7 @@
       y = complexify y
       simplify x.re - y.re, x.im - y.im
 
-@['×'] = pervasive
+@['×'] = withIdentity APLArray.one, pervasive
 
   # Sign of (`×`)
   #
@@ -90,6 +93,7 @@
   # 7×8       <=> 56
   # 1j¯2×¯2j3 <=> 4j7
   # 2×1j¯2    <=> 2j¯4
+  # ×/⍬       <=> 1
   dyad: mult = (y, x) ->
     if typeof x is typeof y is 'number'
       x * y
@@ -98,7 +102,7 @@
       y = complexify y
       simplify x.re * y.re - x.im * y.im, x.re * y.im + x.im * y.re
 
-@['÷'] = pervasive
+@['÷'] = withIdentity APLArray.one, pervasive
 
   # Reciprocal (`÷`)
   #
@@ -119,6 +123,7 @@
   # 4j7÷1j¯2 <=> ¯2j3
   # 0j2÷0j1  <=> 2
   # 5÷2j1    <=> 2j¯1
+  # ÷/⍬      <=> 1
   dyad: div = (y, x) ->
     if typeof x is typeof y is 'number'
       x / y
@@ -128,7 +133,7 @@
       d = y.re * y.re + y.im * y.im
       simplify (x.re * y.re + x.im * y.im) / d, (y.re * x.im - y.im * x.re) / d
 
-@['*'] = pervasive
+@['*'] = withIdentity APLArray.one, pervasive
 
   # *2   <=> 7.38905609893065
   # *2j3 <=> ¯7.315110094901103J1.0427436562359045
@@ -150,6 +155,7 @@
   # ¯3*2 <=> 9
   # ¯1*.5 <=> 0j1
   # 1j2*3j4 <=> .129009594074467j.03392409290517014
+  # */⍬ <=> 1
   dyad: (y, x) ->
     if typeof x is typeof y is 'number' and x >= 0
       Math.pow x, y

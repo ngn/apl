@@ -1,5 +1,5 @@
 {APLArray} = require '../array'
-{pervasive, numeric, match} = require './vhelpers'
+{pervasive, numeric, match, withIdentity} = require './vhelpers'
 {Complex} = require '../complex'
 
 # Equals (`=`)
@@ -27,7 +27,13 @@
   else
     +(x is y)
 
-@['≠'] = pervasive dyad: (y, x) -> 1 - eq y, x
+# Not equals (`≠`)
+#
+# 3≢5 <=> 1
+# 8≠8 <=> 0
+# ≠/⍬ <=> 0
+@['≠'] = withIdentity APLArray.zero, pervasive dyad: (y, x) -> 1 - eq y, x
+
 @['<'] = pervasive dyad: numeric (y, x) -> +(x < y)
 @['>'] = pervasive dyad: numeric (y, x) -> +(x > y)
 @['≤'] = pervasive dyad: numeric (y, x) -> +(x <= y)
