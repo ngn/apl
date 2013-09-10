@@ -2354,7 +2354,7 @@ this['!'] = pervasive({
       }
       return u / v;
     } else {
-      return factorial(n) / (factorial(k) * factorial(n - k));
+      return Gamma(n + 1) / (Gamma(k + 1) * Gamma(n - k + 1));
     }
   })
 });
