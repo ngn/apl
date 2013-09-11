@@ -26,10 +26,9 @@
     # ⊃123              <=> 123
     # ⊃⍬                <=> 0
     #!    ⊃''               <=> ' '
+    if omega.empty()
+      return APLArray.zero
     pick = []
 
-  if omega.empty()
-    APLArray.zero
-  else
-    x = omega.get pick
-    if x instanceof APLArray then x else APLArray.scalar x
+  x = omega.get pick
+  if x instanceof APLArray then x else APLArray.scalar x
