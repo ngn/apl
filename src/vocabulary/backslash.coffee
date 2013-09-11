@@ -1,5 +1,5 @@
 {APLArray} = require '../array'
-{assert} = require '../helpers'
+{assert, isInt, repeat} = require '../helpers'
 {RankError, NonceError, DomainError, LengthError} = require '../errors'
 
 # Scan or expand (`\`)
@@ -19,12 +19,16 @@
 # T←"ONE(TWO) BOOK(S)" ⋄ ≠\T∊"()" <=> 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
 # T←"ONE(TWO) BOOK(S)" ⋄ ((T∊"()")⍱≠\T∊"()")/T   <=> 'ONE BOOK'
 #
-# 1 0 1\'ab'     <=> 'a b'
-# 0 1 0 1 0\2 3  <=> 0 2 0 3 0
-# (2 2⍴0)\'food' !!! RANK ERROR
-# 'abc'\'def'    !!! DOMAIN ERROR
-# 1 0 1 1\'ab'   !!! LENGTH ERROR
-# 1 0 1 1\'abcd' !!! LENGTH ERROR
+# 1 0 1\'ab'          <=> 'a b'
+# 0 1 0 1 0\2 3       <=> 0 2 0 3 0
+# (2 2⍴0)\'food'      !!! RANK ERROR
+# 'abc'\'def'         !!! DOMAIN ERROR
+# 1 0 1 1\'ab'        !!! LENGTH ERROR
+# 1 0 1 1\'abcd'      !!! LENGTH ERROR
+# 1 0 1\2 2⍴'ABCD'    <=> 2 3⍴'A BC D'
+# 1 0 1⍀2 2⍴'ABCD'    <=> 3 2⍴'AB  CD'
+# 1 0 1\[0]2 2⍴'ABCD' <=> 3 2⍴'AB  CD'
+# 1 0 1\[1]2 2⍴'ABCD' <=> 2 3⍴'A BC D'
 @['\\'] = (omega, alpha, axis) ->
   if typeof omega is 'function'
     scan omega, undefined, axis
@@ -57,27 +61,40 @@ scan = (f, g, axis) ->
       x
 
 # Helper for `\` and `⍀` in their verbal sense
-expand = (omega, alpha) ->
-  if alpha.shape.length isnt 1
-    throw RankError()
-  if omega.shape.length isnt 1
-    throw NonceError 'Expand of non-vectors not implemented'
-  array = omega.toArray()
-  proto = omega.getPrototype()
-  data = []
+expand = (omega, alpha, axis) ->
+  if omega.shape.length is 0 then throw NonceError 'Expand of scalar not implemented'
+  axis = if axis then axis.toInt 0, omega.shape.length else omega.shape.length - 1
+  if alpha.shape.length > 1 then throw RankError()
+  a = alpha.toArray()
+
+  shape = omega.shape[...]
+  shape[axis] = a.length
+  b = []
   i = 0
-  alpha.each (x) ->
-    if typeof x isnt 'number'
-      throw DomainError()
-    if x is 0
-      data.push proto
-    else if x is 1
-      if i is array.length
-        throw LengthError()
-      data.push array[i]
-      i = i + 1
-    else
-      throw NonceError 'Expand with non-boolean left argument not implemented'
-  if i isnt array.length
-    throw LengthError()
-  new APLArray data
+  for x in a
+    if not isInt x, 0, 2 then throw DomainError()
+    b.push(if x > 0 then i++ else null)
+  if i isnt omega.shape[axis] then throw LengthError()
+
+  data = []
+  if shape[axis] isnt 0 and not omega.empty()
+    filler = omega.getPrototype()
+    p = omega.offset
+    indices = repeat [0], shape.length
+    loop
+      x =
+        if b[indices[axis]]?
+          omega.data[p + b[indices[axis]] * omega.stride[axis]]
+        else
+          filler
+      data.push x
+
+      i = shape.length - 1
+      while i >= 0 and indices[i] + 1 is shape[i]
+        if i isnt axis then p -= omega.stride[i] * indices[i]
+        indices[i--] = 0
+      if i < 0 then break
+      if i isnt axis then p += omega.stride[i]
+      indices[i]++
+
+  new APLArray data, shape
