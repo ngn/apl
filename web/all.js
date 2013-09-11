@@ -672,28 +672,28 @@ resolveExprs = function(ast, opts) {
               i--;
             }
           }
-          i = 0;
-          while (i < a.length - 1) {
-            if (h[i].type === 'F' && h[i + 1].isPostfixAdverb) {
-              [].splice.apply(a, [i, (i + 2) - i].concat(_ref11 = [['postfixAdverb'].concat(a.slice(i, i + 2))])), _ref11;
+          i = a.length - 1;
+          while (--i >= 0) {
+            if (h[i].isPrefixAdverb && h[i + 1].type === 'F') {
+              [].splice.apply(a, [i, (i + 2) - i].concat(_ref11 = [['prefixAdverb'].concat(a.slice(i, i + 2))])), _ref11;
               [].splice.apply(h, [i, (i + 2) - i].concat(_ref12 = [
                 {
                   type: 'F'
                 }
               ])), _ref12;
-            } else {
-              i++;
             }
           }
-          i = a.length - 1;
-          while (--i >= 0) {
-            if (h[i].isPrefixAdverb && h[i + 1].type === 'F') {
-              [].splice.apply(a, [i, (i + 2) - i].concat(_ref13 = [['prefixAdverb'].concat(a.slice(i, i + 2))])), _ref13;
+          i = 0;
+          while (i < a.length - 1) {
+            if (h[i].type === 'F' && h[i + 1].isPostfixAdverb) {
+              [].splice.apply(a, [i, (i + 2) - i].concat(_ref13 = [['postfixAdverb'].concat(a.slice(i, i + 2))])), _ref13;
               [].splice.apply(h, [i, (i + 2) - i].concat(_ref14 = [
                 {
                   type: 'F'
                 }
               ])), _ref14;
+            } else {
+              i++;
             }
           }
           if (h.length === 2 && (h[0].type === (_ref15 = h[1].type) && _ref15 === 'F')) {
@@ -1761,13 +1761,14 @@ var assert;
 
 assert = require('../helpers').assert;
 
-this['⍨'] = function(f) {
+this['⍨'] = function(f, g) {
   assert(typeof f === 'function');
+  assert(g == null);
   return function(omega, alpha, axis) {
     if (alpha) {
       return f(alpha, omega, axis);
     } else {
-      return f(omega, void 0, axis);
+      return f(omega, omega, axis);
     }
   };
 };
