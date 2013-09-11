@@ -1,5 +1,6 @@
 {APLArray} = require '../array'
 {assert} = require '../helpers'
+{RankError, NonceError, DomainError, LengthError} = require '../errors'
 
 # Scan or expand (`\`)
 #
@@ -17,6 +18,13 @@
 # ,\ 'ABC'                   <=> 'A' 'AB' 'ABC'
 # T←"ONE(TWO) BOOK(S)" ⋄ ≠\T∊"()" <=> 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
 # T←"ONE(TWO) BOOK(S)" ⋄ ((T∊"()")⍱≠\T∊"()")/T   <=> 'ONE BOOK'
+#
+# 1 0 1\'ab'     <=> 'a b'
+# 0 1 0 1 0\2 3  <=> 0 2 0 3 0
+# (2 2⍴0)\'food' !!! RANK ERROR
+# 'abc'\'def'    !!! DOMAIN ERROR
+# 1 0 1 1\'ab'   !!! LENGTH ERROR
+# 1 0 1 1\'abcd' !!! LENGTH ERROR
 @['\\'] = (omega, alpha, axis) ->
   if typeof omega is 'function'
     scan omega, undefined, axis
@@ -49,5 +57,27 @@ scan = (f, g, axis) ->
       x
 
 # Helper for `\` and `⍀` in their verbal sense
-expand = ->
-  # todo
+expand = (omega, alpha) ->
+  if alpha.shape.length isnt 1
+    throw RankError()
+  if omega.shape.length isnt 1
+    throw NonceError 'Expand of non-vectors not implemented'
+  array = omega.toArray()
+  proto = omega.getPrototype()
+  data = []
+  i = 0
+  alpha.each (x) ->
+    if typeof x isnt 'number'
+      throw DomainError()
+    if x is 0
+      data.push proto
+    else if x is 1
+      if i is array.length
+        throw LengthError()
+      data.push array[i]
+      i = i + 1
+    else
+      throw NonceError 'Expand with non-boolean left argument not implemented'
+  if i isnt array.length
+    throw LengthError()
+  new APLArray data
