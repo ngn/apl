@@ -1,4 +1,5 @@
 {APLArray} = require '../array'
+{RankError, IndexError} = require '../errors'
 
 @['⊃'] = (omega, alpha) ->
   if alpha
@@ -9,11 +10,17 @@
     # 2⊃'PICK'       <=> 'C'
     # 1 0⊃2 2⍴'ABCD' <=> 'C'
     # 1⊃'foo' 'bar'  <=> 'bar'
+    # (2 2⍴0)⊃1 2    !!! RANK ERROR
+    # (2 2)⊃1 2      !!! RANK ERROR
+    # 0 2⊃2 2⍴'ABCD' !!! INDEX ERROR
     if alpha.shape.length > 1
-      throw RankError
+      throw RankError()
     pick = alpha.toArray()
     if pick.length isnt omega.shape.length
-      throw RankError
+      throw RankError()
+    for i in [0...pick.length]
+      if pick[i] >= omega.shape[i]
+        throw IndexError()
     omega.get pick
 
   else
