@@ -149,6 +149,13 @@ resolveExprs = (ast, opts = {}) ->
               h[i...i+3] = [{type: 'F'}]
               i--
 
+          # Apply prefix adverbs
+          i = a.length - 1
+          while --i >= 0
+            if h[i].isPrefixAdverb and h[i + 1].type is 'F'
+              a[i...i+2] = [['prefixAdverb'].concat a[i...i+2]]
+              h[i...i+2] = [{type: 'F'}]
+
           # Apply postfix adverbs
           i = 0
           while i < a.length - 1
@@ -157,13 +164,6 @@ resolveExprs = (ast, opts = {}) ->
               h[i...i+2] = [{type: 'F'}]
             else
               i++
-
-          # Apply prefix adverbs
-          i = a.length - 1
-          while --i >= 0
-            if h[i].isPrefixAdverb and h[i + 1].type is 'F'
-              a[i...i+2] = [['prefixAdverb'].concat a[i...i+2]]
-              h[i...i+2] = [{type: 'F'}]
 
           # Hooks
           if h.length is 2 and h[0].type is h[1].type is 'F'
