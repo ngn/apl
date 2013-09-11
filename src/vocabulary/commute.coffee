@@ -1,13 +1,17 @@
 {assert} = require '../helpers'
 
-# [Commute](http://www.jsoftware.com/papers/opfns1.htm#3) (`⍨`)
+# Commute (`⍨`)
 #
-# Definition: `x f⍨ y  <->  y f x`
+# Definition:
+#     x f⍨ y  <->  y f x
+#       f⍨ x  <->  x f x
 #
 # 17-⍨23 <=> 6
 # 7⍴⍨2 3 <=> 2 3⍴7
-# -⍨123  <=> ¯123
-@['⍨'] = (f) ->
+# +⍨2    <=> 4
+# -⍨123  <=> 0
+@['⍨'] = (f, g) ->
   assert typeof f is 'function'
+  assert not g?
   (omega, alpha, axis) ->
-    if alpha then f alpha, omega, axis else f omega, undefined, axis
+    if alpha then f alpha, omega, axis else f omega, omega, axis
