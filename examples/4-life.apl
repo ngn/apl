@@ -16,7 +16,7 @@ creature ← (3 3 ⍴ ⍳ 9) ∊ 1 3 6 7 8   ⍝ Glider
 board ← ¯1 ⊖ ¯2 ⌽ 5 7 ↑ creature
 
 ⍝ A function to move from one generation to the next
-life ← {∨/ 1 ⍵ ∧ 3 4 = ⊂+/ +⌿ 1 0 ¯1 ∘.⊖ 1 0 ¯1 ⌽¨ ⊂⍵}
+life ← {⊃1 ⍵ ∨.∧ 3 4 = +/ +⌿ 1 0 ¯1 ∘.⊖ 1 0 ¯1 ⌽¨ ⊂⍵}
 
 ⍝ Compute n-th generation and format it as a
 ⍝ character matrix
