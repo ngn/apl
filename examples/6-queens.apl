@@ -1,3 +1,5 @@
+#!/usr/bin/env apl
+
 queens←{⎕IO ⎕ML←0 1                 ⍝ The N-queens problem.
 
     search←{                        ⍝ Search for all solutions.
