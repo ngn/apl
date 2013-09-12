@@ -62,7 +62,7 @@ negate = pervasive monad: (x) -> +not bool x
     x
 
 
-@['∧'] = withIdentity APLArray.one, pervasive
+@['∧'] = @['^'] = withIdentity APLArray.one, pervasive
 
   # And (GCD) (`∧`)
   #
