@@ -3008,7 +3008,7 @@ this['∨'] = withIdentity(APLArray.zero, pervasive({
   })
 }));
 
-this['∧'] = withIdentity(APLArray.one, pervasive({
+this['∧'] = this['^'] = withIdentity(APLArray.one, pervasive({
   dyad: numeric(function(y, x) {
     var p, _ref3, _ref4;
     assert(x === Math.floor(x) && y === Math.floor(y), '∧ is defined only for integers');
