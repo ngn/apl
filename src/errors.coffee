@@ -25,3 +25,4 @@ APLError = (name, message = '', opts) ->
 @LengthError = (message, opts) -> APLError 'LENGTH ERROR', message, opts
 @RankError   = (message, opts) -> APLError 'RANK ERROR',   message, opts
 @IndexError  = (message, opts) -> APLError 'INDEX ERROR',  message, opts
+@NonceError  = (message, opts) -> APLError 'NONCE ERROR',  message, opts

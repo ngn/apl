@@ -1,5 +1,5 @@
 {APLArray} = require '../array'
-{DomainError, RankError} = require '../errors'
+{DomainError, RankError, NonceError} = require '../errors'
 {prod, repeat} = require '../helpers'
 
 @['↑'] = (omega, alpha) ->
@@ -85,4 +85,24 @@
       new APLArray omega.data, shape, stride, offset
 
   else
-    throw Error 'Not implemented'
+
+    # Mix (`↑`)
+    #
+    # ↑3          <=> 3
+    # ↑(1 2)(3 4) <=> 2 2⍴1 2 3 4
+    if omega.shape.length is 0
+      x = omega.data[omega.offset]
+      if x instanceof APLArray then x else APLArray.scalar x
+    else
+      shapes = []
+      omega.each (x) -> shapes.push x.shape
+      if shapes.length is 0
+        throw NonceError 'Mix of empty array not implemented'
+      shape = shapes.reduce (a, b) ->
+        if a.length isnt b.length
+          throw NonceError 'Mix of different ranks not implemented'
+        for i in [0...a.length]
+          Math.max a[i], b[i]
+      data = []
+      omega.each (x) -> data = data.concat x.toArray()
+      new APLArray data, omega.shape.concat shape
