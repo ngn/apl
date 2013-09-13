@@ -1,6 +1,6 @@
 {APLArray} = require '../array'
 {RankError, DomainError} = require '../errors'
-{numeric, pervasive, bool, match, withIdentity} = require './vhelpers'
+{real, pervasive, bool, match, withIdentity} = require './vhelpers'
 {assert, isInt} = require '../helpers'
 
 negate = pervasive monad: (x) -> +not bool x
@@ -53,7 +53,7 @@ negate = pervasive monad: (x) -> +not bool x
   # 12345∨12345       <=> 12345
   # 0∨123             <=> 123
   # ∨/⍬               <=> 0
-  dyad: numeric (y, x) ->
+  dyad: real (y, x) ->
     if not (isInt(x, 0) and isInt(y, 0))
       throw DomainError '∨ is implemented only for non-negative integers' # todo
     if x is 0 and y is 0 then return 0
@@ -79,7 +79,7 @@ negate = pervasive monad: (x) -> +not bool x
   # 12345∧12345                    <=> 12345
   # 0∧123                          <=> 0
   # ∧/⍬                            <=> 1
-  dyad: numeric (y, x) ->
+  dyad: real (y, x) ->
     assert x is Math.floor(x) and y is Math.floor(y), '∧ is defined only for integers'
     if x is 0 or y is 0 then return 0
     p = x * y
@@ -95,7 +95,7 @@ negate = pervasive monad: (x) -> +not bool x
 # 1⍱0 <=> 0
 # 1⍱1 <=> 0
 # 0⍱2 !!! DOMAIN ERROR
-@['⍱'] = pervasive dyad: numeric (y, x) -> +!(bool(x) | bool(y))
+@['⍱'] = pervasive dyad: real (y, x) -> +!(bool(x) | bool(y))
 
 # Nand (`⍲`)
 #
@@ -104,4 +104,4 @@ negate = pervasive monad: (x) -> +not bool x
 # 1⍲0 <=> 1
 # 1⍲1 <=> 0
 # 0⍲2 !!! DOMAIN ERROR
-@['⍲'] = pervasive dyad: numeric (y, x) -> +!(bool(x) & bool(y))
+@['⍲'] = pervasive dyad: real (y, x) -> +!(bool(x) & bool(y))

@@ -1,13 +1,13 @@
 {APLArray} = require '../array'
 {DomainError} = require '../errors'
-{numeric, pervasive} = require './vhelpers'
+{real, pervasive} = require './vhelpers'
 
 # Roll (`?`)
 #
 # n←6 ⋄ r←?n ⋄ (0≤r)∧(r<n) <=> 1
 # ?0                       <=> 0
 # ?1                       <=> 0
-roll = pervasive monad: numeric (x) -> Math.floor Math.random() * x
+roll = pervasive monad: real (x) -> Math.floor Math.random() * x
 
 # Deal (`?`)
 #

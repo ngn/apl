@@ -49,7 +49,7 @@ multiplicitySymbol = (z) ->
     assert alpha instanceof APLArray or typeof alpha is 'undefined'
     (if alpha then pervadeDyadic else pervadeMonadic) omega, alpha
 
-@numeric = (f) -> (x, y, axis) ->
+@real = (f) -> (x, y, axis) ->
   if typeof x isnt 'number' or (y? and typeof y isnt 'number')
     throw DomainError()
   f x, y, axis

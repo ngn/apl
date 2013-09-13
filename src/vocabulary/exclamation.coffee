@@ -1,4 +1,4 @@
-{pervasive, numeric} = require './vhelpers'
+{pervasive, real} = require './vhelpers'
 {isInt} = require '../helpers'
 
 @['!'] = pervasive
@@ -8,7 +8,7 @@
   # !5    <=> 120
   # !21   <=> 51090942171709440000
   # !0    <=> 1
-  monad: numeric (x) ->
+  monad: real (x) ->
     if isInt x, 0, 25
       r = 1; i = 2; (while i <= x then r *= i++); r
     else if x < -150
@@ -26,7 +26,7 @@
   # (2 3⍴1+⍳6)!2 3⍴3 6 9 12 15 18 <=> 2 3⍴ 3 15 84 495 3003 18564
   # 0.5!1       <=> 1.2732395447351612
   # 1.2!3.4     <=> 3.795253463731253
-  dyad: numeric (n, k) ->
+  dyad: real (n, k) ->
     if isInt(k, 0, 100) and isInt(n, 0, 100)
       if n < k then return 0
       if 2 * k > n then k = n - k # do less work
