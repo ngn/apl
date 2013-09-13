@@ -1,7 +1,8 @@
-{pervasive, real} = require './vhelpers'
+{pervasive, real, withIdentity} = require './vhelpers'
 {isInt} = require '../helpers'
+{APLArray} = require '../array'
 
-@['!'] = pervasive
+@['!'] = withIdentity APLArray.one, pervasive
 
   # Factorial (`!`)
   #
@@ -26,6 +27,7 @@
   # (2 3⍴1+⍳6)!2 3⍴3 6 9 12 15 18 <=> 2 3⍴ 3 15 84 495 3003 18564
   # 0.5!1       <=> 1.2732395447351612
   # 1.2!3.4     <=> 3.795253463731253
+  # !/⍬         <=> 1
   dyad: real (n, k) ->
     if isInt(k, 0, 100) and isInt(n, 0, 100)
       if n < k then return 0

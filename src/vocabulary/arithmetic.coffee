@@ -160,7 +160,7 @@
       y = complexify y
       div ln(x), ln(y)
 
-@['∣'] = @['|'] = pervasive
+@['∣'] = @['|'] = withIdentity APLArray.zero, pervasive
 
   # Absolute value (`∣`)
   #
@@ -176,6 +176,7 @@
   # 1j2|3j4 !!!
   # 7 ¯7 ∘.| 31 28 ¯30        <=> 2 3⍴3 0 5 ¯4 0 ¯2
   # ¯0.2 0 0.2 ∘.| ¯0.3 0 0.3 <=> 3 3⍴¯0.1 0 ¯0.1 ¯0.3 0 0.3 0.1 0 0.1
+  # |/⍬ <=> 0
   dyad: real (y, x) ->
     if x is 0
       y

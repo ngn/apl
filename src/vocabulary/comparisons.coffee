@@ -21,7 +21,8 @@
 #     0j0                   <=> 0
 #     123j0                 <=> «123»
 #     2j¯3+¯2j3             <=> «0»
-@['='] = pervasive dyad: eq = (y, x) ->
+#     =/⍬                   <=> 1
+@['='] = withIdentity APLArray.one, pervasive dyad: eq = (y, x) ->
   if x instanceof Complex and y instanceof Complex
     +(x.re is y.re and x.im is y.im)
   else
@@ -34,10 +35,25 @@
 # ≠/⍬ <=> 0
 @['≠'] = withIdentity APLArray.zero, pervasive dyad: (y, x) -> 1 - eq y, x
 
-@['<'] = pervasive dyad: real (y, x) -> +(x < y)
-@['>'] = pervasive dyad: real (y, x) -> +(x > y)
-@['≤'] = pervasive dyad: real (y, x) -> +(x <= y)
-@['≥'] = pervasive dyad: real (y, x) -> +(x >= y)
+# Less than (`<`)
+#
+# </⍬ <=> 0
+@['<'] = withIdentity APLArray.zero, pervasive dyad: real (y, x) -> +(x < y)
+
+# Greater than (`<`)
+#
+# >/⍬ <=> 0
+@['>'] = withIdentity APLArray.zero, pervasive dyad: real (y, x) -> +(x > y)
+
+# Less than or equal to (`≤`)
+#
+# ≤/⍬ <=> 1
+@['≤'] = withIdentity APLArray.one,  pervasive dyad: real (y, x) -> +(x <= y)
+
+# Greater than or equal to (`≥`)
+#
+# ≥/⍬ <=> 1
+@['≥'] = withIdentity APLArray.one,  pervasive dyad: real (y, x) -> +(x >= y)
 
 @['≡'] = (omega, alpha) ->
   if alpha
