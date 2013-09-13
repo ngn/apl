@@ -1,12 +1,22 @@
 {APLArray} = require '../array'
 {numeric, pervasive} = require './vhelpers'
+{DomainError} = require '../errors'
+{Complex} = require '../complex'
 
 @['○'] = pervasive
 
   # Pi times (`○`)
   #
-  # ○2 <=> 6.283185307179586
-  monad: numeric (x) -> Math.PI * x
+  # ○2     <=> 6.283185307179586
+  # ○2J2   <=> 6.283185307179586J6.283185307179586
+  # ○'ABC' !!! DOMAIN ERROR
+  monad: (x) ->
+    if typeof x is 'number'
+      Math.PI * x
+    else if x instanceof Complex
+      new Complex Math.PI * x.re, Math.PI * x.im
+    else
+      throw DomainError()
 
   # Circular and hyperbolic functions (`○`)
   #
