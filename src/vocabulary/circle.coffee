@@ -11,7 +11,8 @@
   # ○2J2   <=> 6.283185307179586J6.283185307179586
   # ○'ABC' !!! DOMAIN ERROR
   monad: numeric ((x) -> Math.PI * x),
-    ((x) -> new Complex Math.PI * x.re, Math.PI * x.im)
+    (x) ->
+      new Complex Math.PI * x.re, Math.PI * x.im
 
   # Circular and hyperbolic functions (`○`)
   #

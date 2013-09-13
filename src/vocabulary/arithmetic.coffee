@@ -1,4 +1,4 @@
-{pervasive, withIdentity} = require './vhelpers'
+{numeric, pervasive, withIdentity} = require './vhelpers'
 {Complex, complexify, simplify} = require '../complex'
 {DomainError} = require '../errors'
 {APLArray} = require '../array'
@@ -13,13 +13,9 @@
   # +((5 6) (7 1)) <=> (5 6) (7 1)
   # + (5 6) (7 1)  <=> (5 6) (7 1)
   # +1j¯2          <=> 1j2
-  monad: (x) ->
-    if typeof x is 'number'
-      x
-    else if x instanceof Complex
+  monad: numeric ((x) -> x),
+    (x) ->
       new Complex x.re, -x.im
-    else
-      throw DomainError()
 
   # Add (`+`)
   #
@@ -47,13 +43,9 @@
   # -4     <=> ¯4
   # -1 2 3 <=> ¯1 ¯2 ¯3
   # -1j2   <=> ¯1j¯2
-  monad: (x) ->
-    if typeof x is 'number'
-      -x
-    else if x instanceof Complex
+  monad: numeric ((x) -> -x),
+    (x) ->
       new Complex -x.re, -x.im
-    else
-      throw DomainError()
 
   # Subtract (`-`)
   #
@@ -79,14 +71,10 @@
   # × ¯           <=> 1
   # × ¯¯          <=> ¯1
   # ×3j¯4         <=> .6j¯.8
-  monad: (x) ->
-    if typeof x is 'number'
-      (x > 0) - (x < 0)
-    else if x instanceof Complex
+  monad: numeric ((x) -> (x > 0) - (x < 0)),
+    (x) ->
       d = Math.sqrt x.re * x.re + x.im * x.im
       simplify x.re / d, x.im / d
-    else
-      throw DomainError()
 
   # Multiply (`×`)
   #
@@ -108,14 +96,10 @@
   #
   # ÷2   <=> .5
   # ÷2j3 <=> 0.15384615384615385J¯0.23076923076923078
-  monad: (x) ->
-    if typeof x is 'number'
-      1 / x
-    else if x instanceof Complex
+  monad: numeric ((x) -> 1 / x),
+    (x) ->
       d = x.re * x.re + x.im * x.im
       simplify x.re / d, -x.im / d
-    else
-      throw DomainError()
 
   # Divide (`÷`)
   #
@@ -137,17 +121,13 @@
 
   # *2   <=> 7.38905609893065
   # *2j3 <=> ¯7.315110094901103J1.0427436562359045
-  monad: exp = (x) ->
-    if typeof x is 'number'
-      Math.exp x
-    else if x instanceof Complex
+  monad: exp = numeric ((x) -> Math.exp x),
+    (x) ->
       r = Math.exp x.re
       simplify(
         r * Math.cos x.im
         r * Math.sin x.im
       )
-    else
-      throw DomainError()
 
   # 2*3 <=> 8
   # 3*2 <=> 9
@@ -202,13 +182,9 @@
   #
   # ∣ ¯8 0 8 ¯3.5 <=> 8 0 8 3.5
   # |5j12 <=> 13
-  monad: (x) ->
-    if typeof x is 'number'
-      Math.abs x
-    else if x instanceof Complex
+  monad: numeric ((x) -> Math.abs x),
+    (x) ->
       Math.sqrt x.re * x.re + x.im * x.im
-    else
-      throw DomainError()
 
   # Residue (`∣`)
   #
