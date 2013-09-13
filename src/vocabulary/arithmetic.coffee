@@ -30,8 +30,6 @@
   # +/⍬            <=> 0
   dyad: numeric ((y, x) -> x + y),
     (y, x) ->
-      x = complexify x
-      y = complexify y
       simplify x.re + y.re, x.im + y.im
 
 @['-'] = withIdentity APLArray.zero, pervasive
@@ -54,8 +52,6 @@
   # -/⍬     <=> 0
   dyad: numeric ((y, x) -> x - y),
     (y, x) ->
-      x = complexify x
-      y = complexify y
       simplify x.re - y.re, x.im - y.im
 
 @['×'] = withIdentity APLArray.one, pervasive
@@ -80,8 +76,6 @@
   # ×/⍬       <=> 1
   dyad: mult = numeric ((y, x) -> x * y),
     (y, x) ->
-      x = complexify x
-      y = complexify y
       simplify x.re * y.re - x.im * y.im, x.re * y.im + x.im * y.re
 
 @['÷'] = withIdentity APLArray.one, pervasive
@@ -104,8 +98,6 @@
   # ÷/⍬      <=> 1
   dyad: div = numeric ((y, x) -> x / y),
     (y, x) ->
-      x = complexify x
-      y = complexify y
       d = y.re * y.re + y.im * y.im
       simplify (x.re * y.re + x.im * y.im) / d, (y.re * x.im - y.im * x.re) / d
 

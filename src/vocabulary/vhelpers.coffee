@@ -1,7 +1,7 @@
 {assert, isInt} = require '../helpers'
 {DomainError, LengthError, RankError, SyntaxError} = require '../errors'
 {APLArray} = require '../array'
-{Complex} = require '../complex'
+{Complex, complexify} = require '../complex'
 
 multiplicitySymbol = (z) ->
   if z instanceof APLArray then (if z.isSingleton() then '1' else '*') else '.'
@@ -58,11 +58,11 @@ multiplicitySymbol = (z) ->
 @numeric = (f, g) -> (x, y, axis) ->
   if typeof x is 'number' and (not y? or typeof y is 'number')
     f x, y, axis
-  else if (typeof x is 'number' or x instanceof Complex) and
-          (not y? or typeof y is 'number' or y instanceof Complex)
-    g x, y, axis
   else
-    throw DomainError()
+    x = complexify x
+    if y?
+      y = complexify y
+    g x, y, axis
 
 @match = match = (x, y) ->
   if x instanceof APLArray
