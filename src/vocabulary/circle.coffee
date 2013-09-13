@@ -1,5 +1,5 @@
 {APLArray} = require '../array'
-{real, pervasive} = require './vhelpers'
+{numeric, pervasive, real} = require './vhelpers'
 {DomainError} = require '../errors'
 {Complex} = require '../complex'
 
@@ -10,13 +10,8 @@
   # ○2     <=> 6.283185307179586
   # ○2J2   <=> 6.283185307179586J6.283185307179586
   # ○'ABC' !!! DOMAIN ERROR
-  monad: (x) ->
-    if typeof x is 'number'
-      Math.PI * x
-    else if x instanceof Complex
-      new Complex Math.PI * x.re, Math.PI * x.im
-    else
-      throw DomainError()
+  monad: numeric ((x) -> Math.PI * x),
+    ((x) -> new Complex Math.PI * x.re, Math.PI * x.im)
 
   # Circular and hyperbolic functions (`○`)
   #

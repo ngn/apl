@@ -50,9 +50,19 @@ multiplicitySymbol = (z) ->
     (if alpha then pervadeDyadic else pervadeMonadic) omega, alpha
 
 @real = (f) -> (x, y, axis) ->
-  if typeof x isnt 'number' or (y? and typeof y isnt 'number')
+  if typeof x is 'number' and (not y? or typeof y is 'number')
+    f x, y, axis
+  else
     throw DomainError()
-  f x, y, axis
+
+@numeric = (f, g) -> (x, y, axis) ->
+  if typeof x is 'number' and (not y? or typeof y is 'number')
+    f x, y, axis
+  else if (typeof x is 'number' or x instanceof Complex) and
+          (not y? or typeof y is 'number' or y instanceof Complex)
+    g x, y, axis
+  else
+    throw DomainError()
 
 @match = match = (x, y) ->
   if x instanceof APLArray
