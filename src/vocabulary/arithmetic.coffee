@@ -1,4 +1,4 @@
-{numeric, pervasive, withIdentity} = require './vhelpers'
+{numeric, pervasive, real, withIdentity} = require './vhelpers'
 {Complex, complexify, simplify} = require '../complex'
 {DomainError} = require '../errors'
 {APLArray} = require '../array'
@@ -28,10 +28,8 @@
   # (2 3⍴⍳6) + 3 2⍴⍳6              !!! LENGTH ERROR
   # 1j¯2+¯2j3                      <=> ¯1j1
   # +/⍬            <=> 0
-  dyad: (y, x) ->
-    if typeof x is 'number' and typeof y is 'number'
-      x + y
-    else
+  dyad: numeric ((y, x) -> x + y),
+    (y, x) ->
       x = complexify x
       y = complexify y
       simplify x.re + y.re, x.im + y.im
@@ -54,10 +52,8 @@
   # 5j2-3j8 <=> 2j¯6
   # 5-3j8   <=> 2j¯8
   # -/⍬     <=> 0
-  dyad: (y, x) ->
-    if typeof x is 'number' and typeof y is 'number'
-      x - y
-    else
+  dyad: numeric ((y, x) -> x - y),
+    (y, x) ->
       x = complexify x
       y = complexify y
       simplify x.re - y.re, x.im - y.im
@@ -82,10 +78,8 @@
   # 1j¯2×¯2j3 <=> 4j7
   # 2×1j¯2    <=> 2j¯4
   # ×/⍬       <=> 1
-  dyad: mult = (y, x) ->
-    if typeof x is typeof y is 'number'
-      x * y
-    else
+  dyad: mult = numeric ((y, x) -> x * y),
+    (y, x) ->
       x = complexify x
       y = complexify y
       simplify x.re * y.re - x.im * y.im, x.re * y.im + x.im * y.re
@@ -108,10 +102,8 @@
   # 0j2÷0j1  <=> 2
   # 5÷2j1    <=> 2j¯1
   # ÷/⍬      <=> 1
-  dyad: div = (y, x) ->
-    if typeof x is typeof y is 'number'
-      x / y
-    else
+  dyad: div = numeric ((y, x) -> x / y),
+    (y, x) ->
       x = complexify x
       y = complexify y
       d = y.re * y.re + y.im * y.im
@@ -190,8 +182,4 @@
   #
   # 3∣5 <=> 2
   # 1j2|3j4 !!!
-  dyad: (y, x) ->
-    if typeof x is typeof y is 'number'
-      y % x
-    else
-      throw DomainError()
+  dyad: real (y, x) -> y % x
