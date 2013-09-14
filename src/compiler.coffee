@@ -84,20 +84,8 @@ resolveExprs = (ast, opts = {}) ->
           visit node[1]
           visit node[2]
         when 'assign'
-          if not (node[1] instanceof Array and node[1][0] is 'symbol')
-            compilerError node, opts, 'Compound assignment is not supported.'
-          name = node[1][1]
-          assert typeof name is 'string'
           h = visit node[2]
-          if vars[name]
-            if vars[name].type isnt h.type
-              compilerError node, opts,
-                "Inconsistent usage of symbol '#{name}', it is " +
-                "assigned both data and functions."
-          else
-            vars[name] =
-              type: h.type
-              jsCode: "#{scopeNode.scopeObjectJS}[#{JSON.stringify name}]"
+          visitLHS node[1], h.type
           h
         when 'symbol'
           name = node[1]
@@ -197,6 +185,33 @@ resolveExprs = (ast, opts = {}) ->
         else
           assert false, "Unrecognised node type, '#{node[0]}'"
 
+    visitLHS = (node, rhsType) ->
+      node.scopeNode = scopeNode
+      switch node[0]
+        when 'symbol'
+          name = node[1]
+          if name is '∇'
+            compilerError node, opts,
+              'Assignment to ∇ is not allowed.'
+          assert typeof name is 'string'
+          if vars[name]
+            if vars[name].type isnt rhsType
+              compilerError node, opts,
+                "Inconsistent usage of symbol '#{name}', it is " +
+                "assigned both nouns and verbs."
+          else
+            vars[name] =
+              type: rhsType
+              jsCode: "#{scopeNode.scopeObjectJS}[#{JSON.stringify name}]"
+        when 'expr'
+          if rhsType isnt 'X'
+            compilerError node, opts, 'Strand assignment can be used only for nouns.'
+          for child in node[1...]
+            visitLHS child, rhsType
+        else
+          compilerError node, opts, "Invalid LHS node type: #{JSON.stringify node[0]}"
+      {type: rhsType}
+
     for node in scopeNode[1...]
       visit node
 
@@ -205,7 +220,7 @@ resolveExprs = (ast, opts = {}) ->
 
 
 # # Stage 2: Render JavaScript code
-toJavaScript = (node) ->
+toJavaScript = (node, opts) ->
   switch node[0]
 
     when 'body'
@@ -214,14 +229,14 @@ toJavaScript = (node) ->
         'return _["get_⍬"]();\n'
       else
         a = [node.scopeInitJS]
-        for child in node[1...] then a.push toJavaScript child
+        for child in node[1...] then a.push toJavaScript child, opts
         a[a.length - 1] = "return #{a[a.length - 1]};"
         a.join ';\n'
 
     when 'guard'
       """
-        if (_._bool(#{toJavaScript node[1]})) {
-          return #{toJavaScript node[2]};
+        if (_._bool(#{toJavaScript node[1], opts})) {
+          return #{toJavaScript node[2], opts};
         }
       """
 
@@ -230,22 +245,9 @@ toJavaScript = (node) ->
     # A←5     <=> 5
     # A×A←2 5 <=> 4 25
     when 'assign'
-      if not (node[1] instanceof Array and
-              node[1].length is 2 and
-              node[1][0] is 'symbol')
-        compilerError node, opts,
-          'Compound assignment is not supported.'
-      name = node[1][1]
-      assert typeof name is 'string'
-      if name is '∇'
-        compilerError node, opts,
-          'Assignment to ∇ is not allowed.'
       vars = node.scopeNode.vars
-      if (v = vars["set_#{name}"])?.type is 'F'
-        v.used = true
-        "#{v.jsCode}(#{toJavaScript node[2]})" # todo: pass-through value
-      else
-        "#{vars[name].jsCode} = #{toJavaScript node[2]}"
+      rhsJS = toJavaScript node[2], opts
+      lhsToJavaScript node[1], rhsJS
 
     # Symbols
     #
@@ -280,7 +282,7 @@ toJavaScript = (node) ->
     when 'lambda'
       """
         (function (_w, _a) {
-          #{toJavaScript node[1]}
+          #{toJavaScript node[1], opts}
         })
       """
 
@@ -341,8 +343,8 @@ toJavaScript = (node) ->
     # ⍴ x[⍋x←6?40] <=> ,6
     when 'index'
       "_._index(
-        _._aplify([#{(for c in node[2...] when c then toJavaScript c).join ', '}]),
-        #{toJavaScript node[1]},
+        _._aplify([#{(for c in node[2...] when c then toJavaScript c, opts).join ', '}]),
+        #{toJavaScript node[1], opts},
         _._aplify([#{(for c, i in node[2...] when c isnt null then i)}])
       )"
 
@@ -352,29 +354,29 @@ toJavaScript = (node) ->
     when 'vector'
       n = node.length - 1
       "_._aplify([#{
-        (for child in node[1...] then toJavaScript child).join ', '
+        (for child in node[1...] then toJavaScript child, opts).join ', '
       }])"
 
     when 'monadic'
-      "#{toJavaScript node[1]}(#{toJavaScript node[2]})"
+      "#{toJavaScript node[1], opts}(#{toJavaScript node[2], opts})"
 
     when 'dyadic'
-      "#{toJavaScript node[2]}(#{toJavaScript node[3]}, #{toJavaScript node[1]})"
+      "#{toJavaScript node[2], opts}(#{toJavaScript node[3], opts}, #{toJavaScript node[1], opts})"
 
     when 'prefixAdverb'
-      "#{toJavaScript node[1]}(#{toJavaScript node[2]})"
+      "#{toJavaScript node[1], opts}(#{toJavaScript node[2], opts})"
 
     when 'conjunction'
-      "#{toJavaScript node[2]}(#{toJavaScript node[3]}, #{toJavaScript node[1]})"
+      "#{toJavaScript node[2], opts}(#{toJavaScript node[3], opts}, #{toJavaScript node[1], opts})"
 
     when 'postfixAdverb'
-      "#{toJavaScript node[2]}(#{toJavaScript node[1]})"
+      "#{toJavaScript node[2], opts}(#{toJavaScript node[1], opts})"
 
     when 'hook'
-      "_._hook(#{toJavaScript node[2]}, #{toJavaScript node[1]})"
+      "_._hook(#{toJavaScript node[2], opts}, #{toJavaScript node[1], opts})"
 
     when 'fork'
-      "_._fork([#{for c in node[1...] then toJavaScript c}])"
+      "_._fork([#{for c in node[1...] then toJavaScript c, opts}])"
 
     # Embedded JavaScript
     #
@@ -383,6 +385,40 @@ toJavaScript = (node) ->
     when 'embedded'
       "_._aplify(#{node[1].replace /(^«|»$)/g, ''})"
 
+    else
+      assert false, "Unrecognised node type, '#{node[0]}'"
+
+lhsToJavaScript = (node, rhsJS) ->
+  switch node[0]
+    when 'symbol'
+      name = node[1]
+      vars = node.scopeNode.vars
+      if (v = vars["set_#{name}"])?.type is 'F'
+        v.used = true
+        "#{v.jsCode}(#{rhsJS})"
+      else
+        "#{vars[name].jsCode} = #{rhsJS}"
+    when 'expr' # strand assignment
+      # (a b) ← 1 2 ⋄ a           <=> 1
+      # (a b) ← 1 2 ⋄ b           <=> 2
+      # (a b) ← +                 !!!
+      # (a b c) ← 3 4 5 ⋄ a b c   <=> 3 4 5
+      # (a b c) ← 6     ⋄ a b c   <=> 6 6 6
+      # (a b c) ← 7 8   ⋄ a b c   !!!
+      # ((a b)c)←3(4 5) ⋄ a b c   <=> 3 3 (4 5)
+      """
+        (function (_x) {
+          if (_x.isSingleton()) {
+            #{(for child in node[1...] then lhsToJavaScript child, '_x').join '; '}
+          } else if (_x.shape.length === 1 && _x.shape[0] === #{node.length - 1}) {
+            var _y = _x.toArray();
+            #{(for child, i in node[1...] then lhsToJavaScript child, "_._aplify(_y[#{i}])").join '; '}
+          } else {
+            throw Error('LENGTH ERROR, Cannot perform strand assignment');
+          }
+          return _x;
+        })(#{rhsJS})
+      """
     else
       assert false, "Unrecognised node type, '#{node[0]}'"
 
@@ -408,7 +444,7 @@ compilerError = (node, opts, message) ->
   ast = nodes aplCode, opts
   if opts.exposeTopLevelScope
     ast.scopeObjectJS = '_'
-  jsCode = toJavaScript ast
+  jsCode = toJavaScript ast, opts
   if opts.embedded
     jsCode = """
       var _ = require('apl').createGlobalContext(),
