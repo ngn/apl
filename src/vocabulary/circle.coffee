@@ -19,6 +19,8 @@
   # 1e¯10>∣.5-1○○÷6 <=> 1 # sin(pi/6) = .5
   #  9○3j4         <=> 3
   # 11○3j4         <=> 4
+  # 99○1           !!! DOMAIN ERROR
+  # 99○1j2         !!! DOMAIN ERROR
   dyad: (x, i) ->
     if typeof x is 'number'
       switch i
@@ -37,11 +39,11 @@
         when  5 then (Math.exp(2 * x) - 1) / 2 # sinh
         when  6 then (Math.exp(2 * x) + 1) / 2 # cosh
         when  7 then ex = Math.exp(2 * x); (ex - 1) / (ex + 1) # tanh
-        else throw Error 'Unknown circular or hyperbolic function ' + i
+        else throw DomainError 'Unknown circular or hyperbolic function ' + i
     else if x instanceof Complex
       switch i
         when  9 then x.re
         when 11 then x.im
-        else throw Error 'Unknown circular or hyperbolic function ' + i
+        else throw DomainError 'Unknown circular or hyperbolic function ' + i
     else
       throw DomainError()
