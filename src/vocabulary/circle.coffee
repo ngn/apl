@@ -36,6 +36,8 @@
   # 1e¯10>∣.5-1○○÷6 <=> 1 # sin(pi/6) = .5
   # 4○2            <=> 2.2360679774998
   # 4○2j3          <=> 2.0795565201111J2.8852305489054
+  # 8○2            <=> 0J2.2360679774998
+  # 8○2j3          <=> 2.8852305489054J¯2.0795565201111
   #  9○3j4         <=> 3
   # 11○3j4         <=> 4
   # 1○'hello'      !!! DOMAIN ERROR
@@ -66,6 +68,7 @@
         when  5 then (Math.exp(2 * x) - 1) / 2 # sinh
         when  6 then (Math.exp(2 * x) + 1) / 2 # cosh
         when  7 then ex = Math.exp(2 * x); (ex - 1) / (ex + 1) # tanh
+        when  8 then Complex.sqrt(-1 - x * x)
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
     else if x instanceof Complex
       switch i
@@ -83,6 +86,7 @@
           )
         when  0 then Complex.sqrt Complex.subtract 1, Complex.multiply x, x
         when  4 then Complex.sqrt Complex.add 1, Complex.multiply x, x
+        when  8 then Complex.sqrt Complex.subtract -1, Complex.multiply x, x
         when  9 then x.re
         when 11 then x.im
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
