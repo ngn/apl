@@ -43,7 +43,7 @@
 
   @conjugate = (x) -> new Complex x.re, -x.im
 
-  @negate = (x) -> new Complex -x.re, -x.im
+  @negate = negate = (x) -> new Complex -x.re, -x.im
 
   @add = add = (x, y) ->
     x = complexify x
@@ -86,3 +86,11 @@
       multiply x, new Complex 0, 1
       sqrt subtract 1, pow x, 2
     )
+
+  @acos = (x) -> # arccos x = -i ln(x + i sqrt(x^2 - 1))
+    x = complexify x
+    r = multiply new Complex(0, -1), log add(
+      x
+      sqrt subtract pow(x, 2), 1
+    )
+    if r instanceof Complex and (r.re < 0 or (r.re is 0 and r.im < 0)) then negate r else r
