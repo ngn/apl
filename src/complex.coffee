@@ -27,6 +27,7 @@
     "#{@re}J#{@im}".replace /-/g, '¯'
 
   @exp = exp = (x) ->
+    x = complexify x
     r = Math.exp x.re
     simplify(
       r * Math.cos x.im
@@ -44,12 +45,12 @@
 
   @negate = (x) -> new Complex -x.re, -x.im
 
-  @add = (x, y) ->
+  @add = add = (x, y) ->
     x = complexify x
     y = complexify y
     simplify x.re + y.re, x.im + y.im
 
-  @subtract = (x, y) ->
+  @subtract = subtract = (x, y) ->
     x = complexify x
     y = complexify y
     simplify x.re - y.re, x.im - y.im
@@ -67,7 +68,7 @@
 
   @pow = pow = (x, y) -> exp multiply(y, log x)
 
-  @sqrt = (x) ->
+  @sqrt = sqrt = (x) ->
     if typeof x is 'number' and x >= 0
       Math.sqrt x
     else
@@ -78,3 +79,10 @@
 
   @direction = direction = (x) ->
     Math.atan2 x.im, x.re
+
+  @asin = (x) -> # arcsin x = -i ln(ix + sqrt(1 - x^2))
+    x = complexify x
+    multiply new Complex(0, -1), log add(
+      multiply x, new Complex 0, 1
+      sqrt subtract 1, pow x, 2
+    )

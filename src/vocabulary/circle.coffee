@@ -30,6 +30,8 @@
   # ¯4○0           <=> 0j1
   # ¯4○¯2          <=> ¯1.7320508075689
   # ¯4○2j3         <=> 1.9256697360917J3.1157990841034
+  # ¯1○2           <=> 1.570796326794896619231321692J¯1.316957896924816708625046347
+  # ¯1○2j3         <=> 0.5706527843210994007102838797J1.983387029916535432347076903
   # 0○0.5          <=> 0.86602540378444
   # 0○2            <=> 0J1.7320508075689
   # 0○2j3          <=> 3.1157990841034J¯1.9256697360917
@@ -65,7 +67,7 @@
           if x < -1 then -t else t
         when -3 then Math.atan x
         when -2 then Math.acos x
-        when -1 then Math.asin x
+        when -1 then Complex.asin x
         when  0 then Complex.sqrt(1 - x * x)
         when  1 then Math.sin x
         when  2 then Math.cos x
@@ -94,6 +96,7 @@
           else Complex.multiply (Complex.add x, 1), Complex.sqrt(
             Complex.divide (Complex.subtract x, 1), Complex.add x, 1
           )
+        when -1 then Complex.asin x
         when  0 then Complex.sqrt Complex.subtract 1, Complex.multiply x, x
         when  4 then Complex.sqrt Complex.add 1, Complex.multiply x, x
         when  8 then Complex.sqrt Complex.subtract -1, Complex.multiply x, x
