@@ -95,7 +95,7 @@
     )
     if r instanceof Complex and (r.re < 0 or (r.re is 0 and r.im < 0)) then negate r else r
 
-  @atan = (x) -> # arctan x = (i/2) (ln(1-ix) - ln(1+ix))
+  @atan = atan = (x) -> # arctan x = (i/2) (ln(1-ix) - ln(1+ix))
     x = complexify x
     ix = multiply x, new Complex 0, 1
     multiply new Complex(0, .5), subtract(
@@ -110,3 +110,6 @@
     x = complexify x
     sign = if x.im > 0 or (x.im is 0 and x.re <= 1) then 1 else -1
     multiply new Complex(0, sign), acos x
+
+  @atanh = (x) -> # arctanh x = i arctan(-ix)
+    multiply new Complex(0, 1), atan multiply x, new Complex 0, -1
