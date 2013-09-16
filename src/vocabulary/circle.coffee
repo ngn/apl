@@ -109,9 +109,10 @@
           when -5 then Complex.asinh x
           when -4
             if x.re is -1 and x.im is 0 then 0
-            else Complex.multiply (Complex.add x, 1), Complex.sqrt(
-              Complex.divide (Complex.subtract x, 1), Complex.add x, 1
-            )
+            else
+              a = Complex.add x, 1
+              b = Complex.subtract x, 1
+              Complex.multiply a, Complex.sqrt (Complex.divide b, a)
           when -3 then Complex.atan x
           when -2 then Complex.acos x
           when -1 then Complex.asin x
