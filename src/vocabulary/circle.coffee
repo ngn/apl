@@ -44,6 +44,8 @@
   # 10○¯2j3        <=> 3.605551275464
   # 11○2           <=> 0
   # 11○2j3         <=> 3
+  # 12○2           <=> 0
+  # 12○2j3         <=> 0.98279372324733
   # 1○'hello'      !!! DOMAIN ERROR
   # 99○1           !!! DOMAIN ERROR
   # 99○1j2         !!! DOMAIN ERROR
@@ -76,6 +78,7 @@
         when  9 then x
         when 10 then Math.abs x
         when 11 then 0
+        when 12 then 0
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
     else if x instanceof Complex
       switch i
@@ -97,6 +100,7 @@
         when  9 then x.re
         when 10 then Complex.magnitude x
         when 11 then x.im
+        when 12 then Complex.direction x
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
     else
       throw DomainError()

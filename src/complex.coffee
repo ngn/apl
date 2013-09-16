@@ -37,7 +37,7 @@
     x = complexify x
     simplify(
       Math.log Math.sqrt x.re * x.re + x.im * x.im
-      Math.atan2 x.im, x.re
+      direction x
     )
 
   @conjugate = (x) -> new Complex x.re, -x.im
@@ -75,3 +75,6 @@
 
   @magnitude = (x) ->
     Math.sqrt x.re * x.re + x.im * x.im
+
+  @direction = direction = (x) ->
+    Math.atan2 x.im, x.re
