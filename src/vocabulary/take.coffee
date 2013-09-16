@@ -90,8 +90,9 @@ take = (omega, alpha) ->
 
 # Mix (`↑`)
 #
-# ↑3          <=> 3
-# ↑(1 2)(3 4) <=> 2 2⍴1 2 3 4
+# ↑3            <=> 3
+# ↑(1 2)(3 4)   <=> 2 2⍴1 2 3 4
+# ↑(1 2)(3 4 5) <=> 2 3⍴1 2 0 3 4 5
 mix = (omega) ->
   if omega.shape.length is 0
     x = omega.data[omega.offset]
@@ -106,6 +107,7 @@ mix = (omega) ->
         throw NonceError 'Mix of different ranks not implemented'
       for i in [0...a.length]
         Math.max a[i], b[i]
+    s = new APLArray shape
     data = []
-    omega.each (x) -> data = data.concat x.toArray()
+    omega.each (x) -> data = data.concat (take x, s).toArray()
     new APLArray data, omega.shape.concat shape
