@@ -145,9 +145,7 @@
   #
   # ∣ ¯8 0 8 ¯3.5 <=> 8 0 8 3.5
   # |5j12 <=> 13
-  monad: numeric ((x) -> Math.abs x),
-    (x) ->
-      Math.sqrt x.re * x.re + x.im * x.im
+  monad: numeric ((x) -> Math.abs x), Complex.magnitude
 
   # Residue (`∣`)
   #

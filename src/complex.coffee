@@ -72,3 +72,6 @@
       Math.sqrt x
     else
       pow x, 0.5
+
+  @magnitude = (x) ->
+    Math.sqrt x.re * x.re + x.im * x.im

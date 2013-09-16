@@ -40,6 +40,8 @@
   # 8○2j3          <=> 2.8852305489054J¯2.0795565201111
   # 9○2            <=> 2
   # 9○2j3          <=> 2
+  # 10○¯2          <=> 2
+  # 10○¯2j3        <=> 3.605551275464
   # 11○3j4         <=> 4
   # 1○'hello'      !!! DOMAIN ERROR
   # 99○1           !!! DOMAIN ERROR
@@ -71,6 +73,7 @@
         when  7 then ex = Math.exp(2 * x); (ex - 1) / (ex + 1) # tanh
         when  8 then Complex.sqrt(-1 - x * x)
         when  9 then x
+        when 10 then Math.abs x
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
     else if x instanceof Complex
       switch i
@@ -90,6 +93,7 @@
         when  4 then Complex.sqrt Complex.add 1, Complex.multiply x, x
         when  8 then Complex.sqrt Complex.subtract -1, Complex.multiply x, x
         when  9 then x.re
+        when 10 then Complex.magnitude x
         when 11 then x.im
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
     else
