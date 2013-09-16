@@ -31,7 +31,7 @@
     dyad: numeric ((y, x) -> x + y),
       (y, x) -> Complex.add x, y
 
-  '-': withIdentity 0, pervasive
+  '-': aka '−', withIdentity 0, pervasive
 
     # Negate (`-`)
     #
@@ -94,7 +94,7 @@
     dyad: div = numeric ((y, x) -> x / y),
       (y, x) -> Complex.divide x, y
 
-  '*': withIdentity 1, pervasive
+  '*': aka '⋆', withIdentity 1, pervasive
 
     # *2   <=> 7.38905609893065
     # *2j3 <=> ¯7.315110094901103J1.0427436562359045

@@ -1,9 +1,9 @@
 {APLArray} = require '../array'
-{match} = require './vhelpers'
+{match, aka} = require './vhelpers'
 
 @vocabulary =
 
-  '∊': (omega, alpha) ->
+  '∊': aka '∈', (omega, alpha) ->
     if alpha
       # Membership (`∊`)
       #
