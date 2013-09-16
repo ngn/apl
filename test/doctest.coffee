@@ -96,7 +96,10 @@ runDoctests = (continuation) ->
         else "All #{nTests} tests passed") +
         " in #{Date.now() - t0} ms."
       )
-      continuation?()
+      if nFailed
+        process.exit 1
+      else
+        continuation?()
   )
 
 if module? and module is require.main
