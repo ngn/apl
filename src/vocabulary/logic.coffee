@@ -1,6 +1,6 @@
 {APLArray} = require '../array'
 {RankError, DomainError} = require '../errors'
-{real, pervasive, bool, match, withIdentity} = require './vhelpers'
+{real, pervasive, bool, match, withIdentity, aka} = require './vhelpers'
 {assert, isInt} = require '../helpers'
 
 negate = pervasive monad: (x) -> +not bool x
@@ -62,7 +62,7 @@ negate = pervasive monad: (x) -> +not bool x
     x
 
 
-@['∧'] = @['^'] = withIdentity APLArray.one, pervasive
+@['∧'] = aka '^', withIdentity APLArray.one, pervasive
 
   # And (GCD) (`∧`)
   #

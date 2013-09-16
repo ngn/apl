@@ -145,3 +145,10 @@ meta = (f, name, value) ->
 @adverb       = (f)    -> meta f, 'isPostfixAdverb', true
 @prefixAdverb = (f)    -> meta f, 'isPrefixAdverb', true
 @conjunction  = (f)    -> meta f, 'isConjunction', true
+
+@aka = (aliases, f) -> # "also known as" decorator
+  if typeof aliases is 'string'
+    aliases = [aliases]
+  else
+    assert aliases instanceof Array
+  meta f, 'aliases', aliases

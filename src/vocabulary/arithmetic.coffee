@@ -1,4 +1,4 @@
-{numeric, pervasive, real, withIdentity} = require './vhelpers'
+{numeric, pervasive, real, withIdentity, aka} = require './vhelpers'
 {Complex, complexify, simplify} = require '../complex'
 {DomainError} = require '../errors'
 {APLArray} = require '../array'
@@ -139,7 +139,7 @@
       y = complexify y
       div ln(x), ln(y)
 
-@['∣'] = @['|'] = withIdentity APLArray.zero, pervasive
+@['∣'] = aka '|', withIdentity APLArray.zero, pervasive
 
   # Absolute value (`∣`)
   #
