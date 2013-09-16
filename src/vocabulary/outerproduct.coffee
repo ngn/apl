@@ -1,5 +1,6 @@
 {APLArray} = require '../array'
 {assert} = require '../helpers'
+{prefixAdverb} = require './vhelpers'
 
 # Outer product
 #
@@ -33,7 +34,7 @@
 # ⍴ ((4 3 ⍴ 0) ∘.+ (5 2 ⍴ 0))   <=> 4 3 5 2
 # 2 3 ∘.× 4 5       <=> 2 2⍴ 8 10 12 15
 # 2 3 ∘.{⍺×⍵} 4 5   <=> 2 2⍴ 8 10 12 15
-@['∘.'] = (f) ->
+@['∘.'] = prefixAdverb (f) ->
   assert typeof f is 'function'
   (omega, alpha) ->
     if not alpha

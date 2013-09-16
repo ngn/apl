@@ -1,6 +1,6 @@
 {assert} = require '../helpers'
 {APLArray} = require '../array'
-{withIdentity} = require './vhelpers'
+{withIdentity, conjunction} = require './vhelpers'
 {RankError} = require '../errors'
 
 # Identity operator (`⍁`)
@@ -11,7 +11,7 @@
 # f←{⍺+2×⍵} ⋄ g←f⍁789 ⋄ f/⍬ !!! DOMAIN ERROR
 # {}⍁1 2                    !!! RANK ERROR
 # ({}⍁(1 1 1⍴123))/⍬        <=> 123
-@['⍁'] = (f, x) ->
+@['⍁'] = conjunction (f, x) ->
   if f instanceof APLArray then [f, x] = [x, f]
   assert typeof f is 'function'
   assert x instanceof APLArray

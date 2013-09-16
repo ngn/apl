@@ -135,6 +135,13 @@ numApprox = (x, y) ->
   else
     throw DomainError()
 
-@withIdentity = (identity, f) ->
-  (f.aplMetaInfo ?= {}).identity = identity
+meta = (f, name, value) ->
+  assert typeof f is 'function'
+  assert typeof name is 'string'
+  (f.aplMetaInfo ?= {})[name] = value
   f
+
+@withIdentity = (x, f) -> meta f, 'identity', x
+@adverb       = (f)    -> meta f, 'isPostfixAdverb', true
+@prefixAdverb = (f)    -> meta f, 'isPrefixAdverb', true
+@conjunction  = (f)    -> meta f, 'isConjunction', true

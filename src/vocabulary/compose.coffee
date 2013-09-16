@@ -1,4 +1,5 @@
 {assert} = require '../helpers'
+{conjunction} = require './vhelpers'
 
 # Composition operator (`∘`)
 #
@@ -10,7 +11,7 @@
 # 3⍴∘⍴2 3⍴⍳6 <=> 2 3 2
 # 3∘-1       <=> 2
 # (-∘2)9     <=> 7
-@['∘'] = (g, f) ->
+@['∘'] = conjunction (g, f) ->
   if typeof f is 'function'
     if typeof g is 'function'
       (omega, alpha) -> # f∘g

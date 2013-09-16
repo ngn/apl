@@ -1,15 +1,16 @@
 {APLArray} = require '../array'
 {RankError, LengthError, DomainError} = require '../errors'
 {assert, repeat, isInt} = require '../helpers'
+{adverb} = require './vhelpers'
 
 
-@['/'] = (omega, alpha, axis) ->
+@['/'] = adverb (omega, alpha, axis) ->
   if typeof omega is 'function'
     reduce omega, alpha, axis
   else
     compressOrReplicate omega, alpha, axis
 
-@['⌿'] = (omega, alpha, axis = APLArray.zero) ->
+@['⌿'] = adverb (omega, alpha, axis = APLArray.zero) ->
   if typeof omega is 'function'
     reduce omega, alpha, axis
   else

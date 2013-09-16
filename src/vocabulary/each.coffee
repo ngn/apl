@@ -1,6 +1,7 @@
 {APLArray} = require '../array'
 {LengthError} = require '../errors'
 {assert} = require '../helpers'
+{adverb} = require './vhelpers'
 
 # Each (`¨`)
 #
@@ -16,7 +17,7 @@
 # 2 3 ⍴¨ 1 2                         <=> (1 1) (2 2 2)
 # 4 5 ⍴¨ "THE" "CAT"                 <=> 'THET' 'CATCA'
 # {1+⍵*2}¨ 2 3 ⍴ ⍳ 6                 <=> 2 3 ⍴ 1 2 5 10 17 26
-@['¨'] = (f, g) ->
+@['¨'] = adverb (f, g) ->
   assert typeof f is 'function'
   assert typeof g is 'undefined'
   (omega, alpha) ->

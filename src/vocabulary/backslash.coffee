@@ -1,6 +1,7 @@
 {APLArray} = require '../array'
 {assert, isInt, repeat} = require '../helpers'
 {RankError, NonceError, DomainError, LengthError} = require '../errors'
+{adverb} = require './vhelpers'
 
 # Scan or expand (`\`)
 #
@@ -29,13 +30,13 @@
 # 1 0 1⍀2 2⍴'ABCD'    <=> 3 2⍴'AB  CD'
 # 1 0 1\[0]2 2⍴'ABCD' <=> 3 2⍴'AB  CD'
 # 1 0 1\[1]2 2⍴'ABCD' <=> 2 3⍴'A BC D'
-@['\\'] = (omega, alpha, axis) ->
+@['\\'] = adverb (omega, alpha, axis) ->
   if typeof omega is 'function'
     scan omega, undefined, axis
   else
     expand omega, alpha, axis
 
-@['⍀'] = (omega, alpha, axis = APLArray.zero) ->
+@['⍀'] = adverb (omega, alpha, axis = APLArray.zero) ->
   if typeof omega is 'function'
     scan omega, undefined, axis
   else

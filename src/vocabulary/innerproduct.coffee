@@ -3,6 +3,7 @@ reduce = require('./slash')['/']
 enclose = require('./enclose')['⊂']
 outerProduct = require('./outerproduct')['∘.']
 each = require('./each')['¨']
+{conjunction} = require './vhelpers'
 
 # Inner product (`.`)
 #
@@ -19,7 +20,7 @@ each = require('./each')['¨']
 # 8 8 7 7 8 7 5 +.= 7   <=> 3
 # 7 +.= 7               <=> 1
 # (3 2⍴5 ¯3 ¯2 4 ¯1 0) +.× 2 2⍴6 ¯3 5 7  <=> 3 2⍴15 ¯36 8 34 ¯6 3
-@['.'] = (g, f) ->
+@['.'] = conjunction (g, f) ->
   F = each reduce f
   G = outerProduct g
   (omega, alpha) ->

@@ -1,4 +1,5 @@
 {assert, isInt} = require '../helpers'
+{conjunction} = require './vhelpers'
 
 # Power operator (`⍣`)
 #
@@ -7,7 +8,7 @@
 # (⍴⍣3)2 2⍴⍳4 <=> ,1
 # 'a'(,⍣3)'b' <=> 'aaab'
 # 1(+÷)⍣=1    <=> 1.618033988749895
-@['⍣'] = (g, f) ->
+@['⍣'] = conjunction (g, f) ->
   if typeof f is 'number' and typeof g is 'function'
     h = f; f = g; g = h
   else

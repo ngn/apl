@@ -1,4 +1,5 @@
 {assert} = require '../helpers'
+{adverb} = require './vhelpers'
 
 # Commute (`⍨`)
 #
@@ -10,7 +11,7 @@
 # 7⍴⍨2 3 <=> 2 3⍴7
 # +⍨2    <=> 4
 # -⍨123  <=> 0
-@['⍨'] = (f, g) ->
+@['⍨'] = adverb (f, g) ->
   assert typeof f is 'function'
   assert not g?
   (omega, alpha, axis) ->
