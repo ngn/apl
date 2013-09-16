@@ -26,6 +26,8 @@
   # ¯9○2j3         <=> 2j3
   # ¯8○2           <=> 0J¯2.2360679774998
   # ¯8○2j3         <=> ¯2.8852305489054J2.0795565201111
+  # ¯5○2           <=> 1.443635475178810342493276740
+  # ¯5○2j3         <=> 1.968637925793096291788665095j0.9646585044076027920454110595
   # ¯4○2           <=> 1.7320508075689
   # ¯4○0           <=> 0j1
   # ¯4○¯2          <=> ¯1.7320508075689
@@ -65,7 +67,7 @@
         when -8 then simplify 0, -Math.sqrt(1 + x * x)
         when -7 then Math.log((1 + x) / (1 - x)) / 2 # arctanh
         when -6 then Math.log(x + Math.sqrt(x * x - 1)) # arccosh
-        when -5 then Math.log(x + Math.sqrt(x * x + 1)) # arcsinh
+        when -5 then Complex.asinh x
         when -4
           t = Complex.sqrt(x * x - 1)
           if x < -1 then -t else t
@@ -95,6 +97,7 @@
         when -8
           t =  Complex.subtract -1, (Complex.multiply x, x)
           Complex.negate Complex.sqrt t
+        when -5 then Complex.asinh x
         when -4
           if x.re is -1 and x.im is 0 then 0
           else Complex.multiply (Complex.add x, 1), Complex.sqrt(

@@ -80,7 +80,7 @@
   @direction = direction = (x) ->
     Math.atan2 x.im, x.re
 
-  @asin = (x) -> # arcsin x = -i ln(ix + sqrt(1 - x^2))
+  @asin = asin = (x) -> # arcsin x = -i ln(ix + sqrt(1 - x^2))
     x = complexify x
     multiply new Complex(0, -1), log add(
       multiply x, new Complex 0, 1
@@ -102,3 +102,6 @@
       log subtract 1, ix
       log add 1, ix
     )
+
+  @asinh = (x) -> # arcsinh x = i arcsin(-ix)
+    multiply new Complex(0, 1), asin multiply x, new Complex 0, -1
