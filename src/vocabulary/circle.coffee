@@ -42,7 +42,8 @@
   # 9○2j3          <=> 2
   # 10○¯2          <=> 2
   # 10○¯2j3        <=> 3.605551275464
-  # 11○3j4         <=> 4
+  # 11○2           <=> 0
+  # 11○2j3         <=> 3
   # 1○'hello'      !!! DOMAIN ERROR
   # 99○1           !!! DOMAIN ERROR
   # 99○1j2         !!! DOMAIN ERROR
@@ -74,6 +75,7 @@
         when  8 then Complex.sqrt(-1 - x * x)
         when  9 then x
         when 10 then Math.abs x
+        when 11 then 0
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
     else if x instanceof Complex
       switch i
