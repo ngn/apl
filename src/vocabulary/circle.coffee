@@ -102,7 +102,7 @@
           when -10 then Complex.conjugate x
           when -9 then x
           when -8
-            t =  Complex.subtract -1, (Complex.multiply x, x)
+            t = Complex.subtract -1, (Complex.multiply x, x)
             Complex.negate Complex.sqrt t
           when -7 then Complex.atanh x
           when -6 then Complex.acosh x
