@@ -67,4 +67,8 @@
 
   @pow = pow = (x, y) -> exp multiply(y, log x)
 
-  @sqrt = (x) -> pow x, 0.5
+  @sqrt = (x) ->
+    if typeof x is 'number' and x >= 0
+      Math.sqrt x
+    else
+      pow x, 0.5
