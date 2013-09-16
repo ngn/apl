@@ -5,7 +5,7 @@
 
 @vocabulary =
 
-  '+': withIdentity APLArray.zero, pervasive
+  '+': withIdentity 0, pervasive
 
     # Conjugate (`+`)
     #
@@ -31,7 +31,7 @@
     dyad: numeric ((y, x) -> x + y),
       (y, x) -> Complex.add x, y
 
-  '-': withIdentity APLArray.zero, pervasive
+  '-': withIdentity 0, pervasive
 
     # Negate (`-`)
     #
@@ -50,7 +50,7 @@
     dyad: numeric ((y, x) -> x - y),
       (y, x) -> Complex.subtract x, y
 
-  '×': withIdentity APLArray.one, pervasive
+  '×': withIdentity 1, pervasive
 
     # Sign of (`×`)
     #
@@ -73,7 +73,7 @@
     dyad: mult = numeric ((y, x) -> x * y),
       (y, x) -> Complex.multiply x, y
 
-  '÷': withIdentity APLArray.one, pervasive
+  '÷': withIdentity 1, pervasive
 
     # Reciprocal (`÷`)
     #
@@ -94,7 +94,7 @@
     dyad: div = numeric ((y, x) -> x / y),
       (y, x) -> Complex.divide x, y
 
-  '*': withIdentity APLArray.one, pervasive
+  '*': withIdentity 1, pervasive
 
     # *2   <=> 7.38905609893065
     # *2j3 <=> ¯7.315110094901103J1.0427436562359045
@@ -141,7 +141,7 @@
         y = complexify y
         div ln(x), ln(y)
 
-  '|': aka '∣', withIdentity APLArray.zero, pervasive
+  '|': aka '∣', withIdentity 0, pervasive
 
     # Absolute value (`∣`)
     #

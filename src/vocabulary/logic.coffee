@@ -38,7 +38,7 @@
       # ~2   !!! DOMAIN ERROR
       negate omega
 
-  '∨': withIdentity APLArray.zero, pervasive
+  '∨': withIdentity 0, pervasive
 
     # Or (LCM) (`∨`)
     #
@@ -61,7 +61,7 @@
       x
 
 
-  '∧': aka '^', withIdentity APLArray.one, pervasive
+  '∧': aka '^', withIdentity 1, pervasive
 
     # And (GCD) (`∧`)
     #

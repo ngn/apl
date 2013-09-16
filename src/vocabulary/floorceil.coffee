@@ -4,7 +4,7 @@
 
 @vocabulary =
 
-  '⌊': withIdentity new APLArray([Infinity], []), pervasive
+  '⌊': withIdentity Infinity, pervasive
 
     # Floor (`⌊`)
     #
@@ -33,7 +33,7 @@
     # ⌊/⍬ <=> ¯
     dyad: real (y, x) -> Math.min y, x
 
-  '⌈': withIdentity new APLArray([-Infinity], []), pervasive
+  '⌈': withIdentity -Infinity, pervasive
 
     # Ceiling (`⌈`)
     #

@@ -141,7 +141,10 @@ meta = (f, name, value) ->
   (f.aplMetaInfo ?= {})[name] = value
   f
 
-@withIdentity = (x, f) -> meta f, 'identity', x
+@withIdentity = (x, f) ->
+  if x not instanceof APLArray then x = APLArray.scalar x
+  meta f, 'identity', x
+
 @adverb       = (f)    -> meta f, 'isPostfixAdverb', true
 @prefixAdverb = (f)    -> meta f, 'isPrefixAdverb', true
 @conjunction  = (f)    -> meta f, 'isConjunction', true

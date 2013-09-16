@@ -4,7 +4,7 @@
 
 @vocabulary =
 
-  '!': withIdentity APLArray.one, pervasive
+  '!': withIdentity 1, pervasive
 
     # Factorial (`!`)
     #
