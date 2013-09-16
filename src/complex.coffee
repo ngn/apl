@@ -87,7 +87,7 @@
       sqrt subtract 1, pow x, 2
     )
 
-  @acos = (x) -> # arccos x = -i ln(x + i sqrt(x^2 - 1))
+  @acos = acos = (x) -> # arccos x = -i ln(x + i sqrt(x^2 - 1))
     x = complexify x
     r = multiply new Complex(0, -1), log add(
       x
@@ -105,3 +105,8 @@
 
   @asinh = (x) -> # arcsinh x = i arcsin(-ix)
     multiply new Complex(0, 1), asin multiply x, new Complex 0, -1
+
+  @acosh = (x) -> # arccosh x = +/- i arccos x
+    x = complexify x
+    sign = if x.im > 0 or (x.im is 0 and x.re <= 1) then 1 else -1
+    multiply new Complex(0, sign), acos x
