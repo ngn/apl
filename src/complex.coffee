@@ -104,6 +104,21 @@
       log add 1, ix
     )
 
+  @sinh = (x) ->
+    a = Complex.exp x
+    b = Complex.divide 1, a
+    Complex.multiply 0.5, (Complex.subtract a, b)
+
+  @cosh = (x) ->
+    a = Complex.exp x
+    b = Complex.divide 1, a
+    Complex.multiply 0.5, (Complex.add a, b)
+
+  @tanh = (x) ->
+    a = Complex.exp x
+    b = Complex.divide 1, a
+    Complex.divide (Complex.subtract a, b), (Complex.add a, b)
+
   @asinh = (x) -> # arcsinh x = i arcsin(-ix)
     multiply new Complex(0, 1), asin multiply x, new Complex 0, -1
 

@@ -49,8 +49,11 @@
     # 4○2            <=> 2.2360679774998
     # 4○2j3          <=> 2.0795565201111J2.8852305489054
     # 5○2            <=> 3.626860407847
+    # 5○2j3          <=> ¯3.5905645899858J0.53092108624852
     # 6○2            <=> 3.7621956910836
+    # 6○2j3          <=> ¯3.7245455049153J0.51182256998738
     # 7○2            <=> 0.96402758007582
+    # 7○2j3          <=> 0.96538587902213J¯0.0098843750383225
     # 8○2            <=> 0J2.2360679774998
     # 8○2j3          <=> 2.8852305489054J¯2.0795565201111
     # 9○2            <=> 2
@@ -118,6 +121,9 @@
           when -1 then Complex.asin x
           when  0 then Complex.sqrt Complex.subtract 1, Complex.multiply x, x
           when  4 then Complex.sqrt Complex.add 1, Complex.multiply x, x
+          when  5 then Complex.sinh x
+          when  6 then Complex.cosh x
+          when  7 then Complex.tanh x
           when  8 then Complex.sqrt Complex.subtract -1, Complex.multiply x, x
           when  9 then x.re
           when 10 then Complex.magnitude x
