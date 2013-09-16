@@ -30,6 +30,9 @@
   # ¯4○0           <=> 0j1
   # ¯4○¯2          <=> ¯1.7320508075689
   # ¯4○2j3         <=> 1.9256697360917J3.1157990841034
+  # 0○0.5          <=> 0.86602540378444
+  # 0○2            <=> 0J1.7320508075689
+  # 0○2j3          <=> 3.1157990841034J¯1.9256697360917
   # 1e¯10>∣.5-1○○÷6 <=> 1 # sin(pi/6) = .5
   #  9○3j4         <=> 3
   # 11○3j4         <=> 4
@@ -53,7 +56,7 @@
         when -3 then Math.atan x
         when -2 then Math.acos x
         when -1 then Math.asin x
-        when  0 then Math.sqrt(1 - x * x)
+        when  0 then Complex.sqrt(1 - x * x)
         when  1 then Math.sin x
         when  2 then Math.cos x
         when  3 then Math.tan x
@@ -76,6 +79,7 @@
           else Complex.multiply (Complex.add x, 1), Complex.sqrt(
             Complex.divide (Complex.subtract x, 1), Complex.add x, 1
           )
+        when  0 then Complex.sqrt Complex.subtract 1, Complex.multiply x, x
         when  9 then x.re
         when 11 then x.im
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
