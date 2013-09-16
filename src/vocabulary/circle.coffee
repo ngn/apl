@@ -19,6 +19,7 @@
   # 1e¯10>∣.5-1○○÷6 <=> 1 # sin(pi/6) = .5
   #  9○3j4         <=> 3
   # 11○3j4         <=> 4
+  # 1○'hello'      !!! DOMAIN ERROR
   # 99○1           !!! DOMAIN ERROR
   # 99○1j2         !!! DOMAIN ERROR
   dyad: (x, i) ->
