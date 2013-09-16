@@ -94,3 +94,11 @@
       sqrt subtract pow(x, 2), 1
     )
     if r instanceof Complex and (r.re < 0 or (r.re is 0 and r.im < 0)) then negate r else r
+
+  @atan = (x) -> # arctan x = (i/2) (ln(1-ix) - ln(1+ix))
+    x = complexify x
+    ix = multiply x, new Complex 0, 1
+    multiply new Complex(0, .5), subtract(
+      log subtract 1, ix
+      log add 1, ix
+    )
