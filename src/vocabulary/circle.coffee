@@ -18,6 +18,8 @@
   #
   # ¯12○2          <=> ¯0.4161468365471J0.9092974268257
   # ¯12○2j3        <=> ¯0.02071873100224J0.04527125315609
+  # ¯11○2          <=> 0j2
+  # ¯11○2j3        <=> ¯3j2
   # 1e¯10>∣.5-1○○÷6 <=> 1 # sin(pi/6) = .5
   #  9○3j4         <=> 3
   # 11○3j4         <=> 4
@@ -28,6 +30,7 @@
     if typeof x is 'number'
       switch i
         when -12 then Complex.exp simplify 0, x
+        when -11 then simplify 0, x
         when -7 then Math.log((1 + x) / (1 - x)) / 2 # arctanh
         when -6 then Math.log(x + Math.sqrt(x * x - 1)) # arccosh
         when -5 then Math.log(x + Math.sqrt(x * x + 1)) # arcsinh
@@ -47,6 +50,7 @@
     else if x instanceof Complex
       switch i
         when -12 then Complex.exp simplify -x.im, x.re
+        when -11 then simplify -x.im, x.re
         when  9 then x.re
         when 11 then x.im
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
