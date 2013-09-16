@@ -32,6 +32,7 @@
 # 2↑3 3⍴⍳9         <=> 2 3⍴⍳6
 # ¯2↑3 3⍴⍳9        <=> 2 3⍴3+⍳6
 # 4↑3 3⍴⍳9         <=> 4 3⍴(⍳9),0 0 0
+# ⍬↑3 3⍴⍳9         <=> 3 3⍴⍳9
 take = (omega, alpha) ->
   if alpha.shape.length > 1
     throw RankError()
