@@ -22,6 +22,8 @@
   # ¯11○2j3        <=> ¯3j2
   # ¯10○2          <=> 2
   # ¯10○2j3        <=> 2j¯3
+  # ¯9○2           <=> 2
+  # ¯9○2j3         <=> 2j3
   # 1e¯10>∣.5-1○○÷6 <=> 1 # sin(pi/6) = .5
   #  9○3j4         <=> 3
   # 11○3j4         <=> 4
@@ -34,6 +36,7 @@
         when -12 then Complex.exp simplify 0, x
         when -11 then simplify 0, x
         when -10 then x
+        when -9 then x
         when -7 then Math.log((1 + x) / (1 - x)) / 2 # arctanh
         when -6 then Math.log(x + Math.sqrt(x * x - 1)) # arccosh
         when -5 then Math.log(x + Math.sqrt(x * x + 1)) # arcsinh
@@ -55,6 +58,7 @@
         when -12 then Complex.exp simplify -x.im, x.re
         when -11 then simplify -x.im, x.re
         when -10 then Complex.conjugate x
+        when -9 then x
         when  9 then x.re
         when 11 then x.im
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
