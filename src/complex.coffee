@@ -32,3 +32,5 @@
       r * Math.cos x.im
       r * Math.sin x.im
     )
+
+  @conjugate = (x) -> new Complex x.re, -x.im

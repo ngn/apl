@@ -13,9 +13,7 @@
   # +((5 6) (7 1)) <=> (5 6) (7 1)
   # + (5 6) (7 1)  <=> (5 6) (7 1)
   # +1j¯2          <=> 1j2
-  monad: numeric ((x) -> x),
-    (x) ->
-      new Complex x.re, -x.im
+  monad: numeric ((x) -> x), Complex.conjugate
 
   # Add (`+`)
   #
