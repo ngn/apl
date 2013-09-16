@@ -78,15 +78,11 @@ take = (omega, alpha) ->
         copyIndices[axis]++
     new APLArray data, shape, stride
   else
-    stride = []
     offset = omega.offset
     for x, i in a
-      if x >= 0
-        stride.push omega.stride[i]
-      else
-        stride.push omega.stride[i]
+      if x < 0
         offset += (omega.shape[i] + x) * omega.stride[i]
-    new APLArray omega.data, shape, stride, offset
+    new APLArray omega.data, shape, omega.stride, offset
 
 # Mix (`↑`)
 #
