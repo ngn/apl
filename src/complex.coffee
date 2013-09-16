@@ -48,6 +48,14 @@
 
   @negate = negate = (x) -> new Complex -x.re, -x.im
 
+  @itimes = itimes = (x) ->
+    x = complexify x
+    simplify -x.im, x.re
+
+  @negitimes = negitimes = (x) ->
+    x = complexify x
+    simplify x.im, -x.re
+
   @add = add = (x, y) ->
     x = complexify x
     y = complexify y
@@ -89,14 +97,14 @@
 
   @asin = asin = (x) -> # arcsin x = -i ln(ix + sqrt(1 - x^2))
     x = complexify x
-    multiply new Complex(0, -1), log add(
-      multiply x, new Complex 0, 1
+    negitimes log add(
+      itimes x
       sqrt subtract 1, pow x, 2
     )
 
   @acos = acos = (x) -> # arccos x = -i ln(x + i sqrt(x^2 - 1))
     x = complexify x
-    r = multiply new Complex(0, -1), log add(
+    r = negitimes log add(
       x
       sqrt subtract pow(x, 2), 1
     )
@@ -105,7 +113,7 @@
 
   @atan = atan = (x) -> # arctan x = (i/2) (ln(1-ix) - ln(1+ix))
     x = complexify x
-    ix = multiply x, new Complex 0, 1
+    ix = itimes x
     multiply new Complex(0, .5), subtract(
       log subtract 1, ix
       log add 1, ix
@@ -127,7 +135,7 @@
     Complex.divide (Complex.subtract a, b), (Complex.add a, b)
 
   @asinh = (x) -> # arcsinh x = i arcsin(-ix)
-    multiply new Complex(0, 1), asin multiply x, new Complex 0, -1
+    itimes asin negitimes x
 
   @acosh = (x) -> # arccosh x = +/- i arccos x
     x = complexify x
@@ -135,4 +143,4 @@
     multiply new Complex(0, sign), acos x
 
   @atanh = (x) -> # arctanh x = i arctan(-ix)
-    multiply new Complex(0, 1), atan multiply x, new Complex 0, -1
+    itimes atan negitimes x

@@ -101,7 +101,7 @@
       else if x instanceof Complex
         switch i
           when -12 then Complex.exp simplify -x.im, x.re
-          when -11 then simplify -x.im, x.re
+          when -11 then Complex.itimes x
           when -10 then Complex.conjugate x
           when -9 then x
           when -8
