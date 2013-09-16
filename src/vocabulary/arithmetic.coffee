@@ -1,5 +1,5 @@
 {numeric, pervasive, real, withIdentity, aka} = require './vhelpers'
-{Complex, complexify, simplify} = require '../complex'
+{Complex, simplify} = require '../complex'
 {DomainError} = require '../errors'
 {APLArray} = require '../array'
 
@@ -70,7 +70,7 @@
     # 1j¯2×¯2j3 <=> 4j7
     # 2×1j¯2    <=> 2j¯4
     # ×/⍬       <=> 1
-    dyad: mult = numeric ((y, x) -> x * y),
+    dyad: numeric ((y, x) -> x * y),
       (y, x) -> Complex.multiply x, y
 
   '÷': withIdentity 1, pervasive
@@ -91,7 +91,7 @@
     # 0j2÷0j1  <=> 2
     # 5÷2j1    <=> 2j¯1
     # ÷/⍬      <=> 1
-    dyad: div = numeric ((y, x) -> x / y),
+    dyad: numeric ((y, x) -> x / y),
       (y, x) -> Complex.divide x, y
 
   '*': aka '⋆', withIdentity 1, pervasive
@@ -117,7 +117,7 @@
     # ⍟0 <=> ¯¯
     # ⍟¯1 <=> 0j1 × ○1
     # ⍟123j456 <=> 6.157609243895447J1.3073297857599793
-    monad: ln = Complex.log
+    monad: Complex.log
 
     # Logarithm to the base (`⍟`)
     #
@@ -129,9 +129,7 @@
       if typeof x is typeof y is 'number' and x > 0 and y > 0
         Math.log(y) / Math.log(x)
       else
-        x = complexify x
-        y = complexify y
-        div ln(x), ln(y)
+        Complex.divide (Complex.log y), (Complex.log x)
 
   '|': aka '∣', withIdentity 0, pervasive
 
