@@ -48,6 +48,9 @@
     # 1e¯10>∣.5-1○○÷6 <=> 1 # sin(pi/6) = .5
     # 4○2            <=> 2.2360679774998
     # 4○2j3          <=> 2.0795565201111J2.8852305489054
+    # 5○2            <=> 3.626860407847
+    # 6○2            <=> 3.7621956910836
+    # 7○2            <=> 0.96402758007582
     # 8○2            <=> 0J2.2360679774998
     # 8○2j3          <=> 2.8852305489054J¯2.0795565201111
     # 9○2            <=> 2
@@ -83,9 +86,9 @@
           when  2 then Math.cos x
           when  3 then Math.tan x
           when  4 then Math.sqrt(1 + x * x)
-          when  5 then (Math.exp(2 * x) - 1) / 2 # sinh
-          when  6 then (Math.exp(2 * x) + 1) / 2 # cosh
-          when  7 then ex = Math.exp(2 * x); (ex - 1) / (ex + 1) # tanh
+          when  5 then a = Math.exp x; b = 1 / a ; 0.5 * (a - b) # sinh
+          when  6 then a = Math.exp x; b = 1 / a ; 0.5 * (a + b) # cosh
+          when  7 then a = Math.exp x; b = 1 / a; (a - b) / (a + b) # tanh
           when  8 then Complex.sqrt(-1 - x * x)
           when  9 then x
           when 10 then Math.abs x
