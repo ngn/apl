@@ -29,6 +29,9 @@
 # ¯2↑⍬             <=> 0 0
 # 0↑⍬              <=> ⍬
 # 3 3↑1            <=> 3 3⍴1 0 0 0 0 0 0 0 0
+# 2↑3 3⍴⍳9         <=> 2 3⍴⍳6
+# ¯2↑3 3⍴⍳9        <=> 2 3⍴3+⍳6
+# 4↑3 3⍴⍳9         <=> 4 3⍴(⍳9),0 0 0
 take = (omega, alpha) ->
   if alpha.shape.length > 1
     throw RankError()
@@ -41,9 +44,9 @@ take = (omega, alpha) ->
     throw DomainError()
 
   mustCopy = false
-  shape = []
+  shape = omega.shape[...]
   for x, i in a
-    shape.push Math.abs x
+    shape[i] = Math.abs x
     if shape[i] > omega.shape[i]
       mustCopy = true
 
@@ -53,11 +56,11 @@ take = (omega, alpha) ->
     for i in [stride.length - 2 .. 0] by -1
       stride[i] = stride[i + 1] * shape[i + 1]
     data = repeat [omega.getPrototype()], prod shape
-    copyShape = []
+    copyShape = shape[...]
     p = omega.offset
     q = 0
     for x, i in a
-      copyShape.push Math.min omega.shape[i], Math.abs x
+      copyShape[i] = Math.min omega.shape[i], Math.abs x
       if x < 0
         if x < -omega.shape[i]
           q -= (x + omega.shape[i]) * stride[i]
