@@ -6,8 +6,8 @@ moduleNames = '''
   transpose variant vhelpers zilde
 '''.split /\s+/
 
-for moduleName in moduleNames
-  for k, v of require "./vocabulary/#{moduleName}"
+for m in moduleNames
+  for k, v of require("./vocabulary/#{m}").vocabulary
     @[k] = v
     for alias in v?.aplMetaInfo?.aliases ? []
       @[alias] = v

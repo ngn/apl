@@ -2,11 +2,13 @@
 {DomainError, RankError, NonceError} = require '../errors'
 {prod, repeat} = require '../helpers'
 
-@['↑'] = (omega, alpha) ->
-  if alpha
-    take omega, alpha
-  else
-    mix omega
+@vocabulary =
+
+  '↑': (omega, alpha) ->
+    if alpha
+      take omega, alpha
+    else
+      mix omega
 
 # Take (`↑`)
 #

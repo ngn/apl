@@ -3,18 +3,19 @@
 {assert, repeat, isInt} = require '../helpers'
 {adverb} = require './vhelpers'
 
+@vocabulary =
 
-@['/'] = adverb (omega, alpha, axis) ->
-  if typeof omega is 'function'
-    reduce omega, alpha, axis
-  else
-    compressOrReplicate omega, alpha, axis
+  '/': adverb (omega, alpha, axis) ->
+    if typeof omega is 'function'
+      reduce omega, alpha, axis
+    else
+      compressOrReplicate omega, alpha, axis
 
-@['⌿'] = adverb (omega, alpha, axis = APLArray.zero) ->
-  if typeof omega is 'function'
-    reduce omega, alpha, axis
-  else
-    compressOrReplicate omega, alpha, axis
+  '⌿': adverb (omega, alpha, axis = APLArray.zero) ->
+    if typeof omega is 'function'
+      reduce omega, alpha, axis
+    else
+      compressOrReplicate omega, alpha, axis
 
 # Reduce (`/`)
 #

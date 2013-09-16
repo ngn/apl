@@ -2,6 +2,11 @@
 {DomainError} = require '../errors'
 {real, pervasive} = require './vhelpers'
 
+@vocabulary =
+
+  '?': (omega, alpha) ->
+    if alpha then deal omega, alpha else roll omega
+
 # Roll (`?`)
 #
 # n←6 ⋄ r←?n ⋄ (0≤r)∧(r<n) <=> 1
@@ -25,6 +30,3 @@ deal = (omega, alpha) ->
   if x > y then throw DomainError()
   available = [0...y]
   new APLArray(for [0...x] then available.splice(Math.floor(available.length * Math.random()), 1)[0])
-
-@['?'] = (omega, alpha) ->
-  if alpha then deal omega, alpha else roll omega

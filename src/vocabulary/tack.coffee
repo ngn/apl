@@ -1,13 +1,15 @@
 {APLArray} = require '../array'
 
-# Left (`⊣`)
-#
-# 123⊣456 <=> 123
-# ⊣456 <=> ⍬
-@['⊣'] = (omega, alpha = APLArray.zilde) -> alpha
+@vocabulary =
 
-# Left (`⊢`)
-#
-# 123⊢456 <=> 456
-# ⊢456 <=> 456
-@['⊢'] = (omega) -> omega
+  # Left (`⊣`)
+  #
+  # 123⊣456 <=> 123
+  # ⊣456 <=> ⍬
+  '⊣': (omega, alpha = APLArray.zilde) -> alpha
+
+  # Left (`⊢`)
+  #
+  # 123⊢456 <=> 456
+  # ⊢456 <=> 456
+  '⊢': (omega) -> omega
