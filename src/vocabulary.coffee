@@ -9,4 +9,3 @@ moduleNames = '''
 for moduleName in moduleNames
   for k, v of require "./vocabulary/#{moduleName}"
     @[k] = v
-    if typeof v is 'function' then v.aplName = k

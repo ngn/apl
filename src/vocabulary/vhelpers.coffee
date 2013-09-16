@@ -21,7 +21,7 @@ multiplicitySymbol = (z) ->
         if x instanceof APLArray
           x.map pervadeMonadic
         else
-          (x[F.aplName]?()) ? monad x
+          monad x
     else
       -> throw Error 'Not implemented'
   pervadeDyadic =
@@ -30,7 +30,7 @@ multiplicitySymbol = (z) ->
         tx = multiplicitySymbol x
         ty = multiplicitySymbol y
         switch tx + ty
-          when '..' then (y?[F.aplName]?(x)) ? (x?['right_' + F.aplName]?(y)) ? (dyad x, y)
+          when '..' then dyad x, y
           when '.1' then y.map (yi) -> pervadeDyadic x, yi
           when '.*' then y.map (yi) -> pervadeDyadic x, yi
           when '1.' then x.map (xi) -> pervadeDyadic xi, y
