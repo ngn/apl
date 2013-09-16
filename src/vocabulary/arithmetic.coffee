@@ -105,13 +105,7 @@
 
   # *2   <=> 7.38905609893065
   # *2j3 <=> ¯7.315110094901103J1.0427436562359045
-  monad: exp = numeric ((x) -> Math.exp x),
-    (x) ->
-      r = Math.exp x.re
-      simplify(
-        r * Math.cos x.im
-        r * Math.sin x.im
-      )
+  monad: exp = numeric Math.exp, Complex.exp
 
   # 2*3 <=> 8
   # 3*2 <=> 9

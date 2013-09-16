@@ -15,7 +15,7 @@
 # simplify(re, im)
 #   * if the imaginary part is 0, the real part is returned
 #   * otherwise, a Complex instance is created
-@simplify = (re, im) -> if im then new Complex re, im else re
+@simplify = simplify = (re, im) -> if im then new Complex re, im else re
 
 @Complex = class Complex
 
@@ -25,3 +25,10 @@
 
   toString: ->
     "#{@re}J#{@im}".replace /-/g, '¯'
+
+  @exp = (x) ->
+    r = Math.exp x.re
+    simplify(
+      r * Math.cos x.im
+      r * Math.sin x.im
+    )
