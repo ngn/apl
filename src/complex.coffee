@@ -95,6 +95,12 @@
   @direction = direction = (x) ->
     Math.atan2 x.im, x.re
 
+  @sin = (x) -> negitimes sinh itimes x
+
+  @cos = (x) -> cosh itimes x
+
+  @tan = (x) -> negitimes tanh itimes x
+
   @asin = asin = (x) -> # arcsin x = -i ln(ix + sqrt(1 - x^2))
     x = complexify x
     negitimes log add(
@@ -119,17 +125,17 @@
       log add 1, ix
     )
 
-  @sinh = (x) ->
+  @sinh = sinh = (x) ->
     a = Complex.exp x
     b = Complex.divide 1, a
     Complex.multiply 0.5, (Complex.subtract a, b)
 
-  @cosh = (x) ->
+  @cosh = cosh = (x) ->
     a = Complex.exp x
     b = Complex.divide 1, a
     Complex.multiply 0.5, (Complex.add a, b)
 
-  @tanh = (x) ->
+  @tanh = tanh = (x) ->
     a = Complex.exp x
     b = Complex.divide 1, a
     Complex.divide (Complex.subtract a, b), (Complex.add a, b)

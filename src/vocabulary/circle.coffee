@@ -46,6 +46,12 @@
     # 0○2            <=> 0J1.7320508075689
     # 0○2j3          <=> 3.1157990841034J¯1.9256697360917
     # 1e¯10>∣.5-1○○÷6 <=> 1 # sin(pi/6) = .5
+    # 1○1            <=> 0.8414709848079
+    # 1○2j3          <=> 9.1544991469114J¯4.1689069599666
+    # 2○1            <=> 0.54030230586814
+    # 2○2j3          <=> ¯4.1896256909688J¯9.1092278937553
+    # 3○1            <=> 1.5574077246549
+    # 3○2j3          <=> ¯0.0037640256415041J1.0032386273536
     # 4○2            <=> 2.2360679774998
     # 4○2j3          <=> 2.0795565201111J2.8852305489054
     # 5○2            <=> 3.626860407847
@@ -120,6 +126,9 @@
           when -2 then Complex.acos x
           when -1 then Complex.asin x
           when  0 then Complex.sqrt Complex.subtract 1, Complex.multiply x, x
+          when  1 then Complex.sin x
+          when  2 then Complex.cos x
+          when  3 then Complex.tan x
           when  4 then Complex.sqrt Complex.add 1, Complex.multiply x, x
           when  5 then Complex.sinh x
           when  6 then Complex.cosh x
