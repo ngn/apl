@@ -34,6 +34,8 @@
   # 0○2            <=> 0J1.7320508075689
   # 0○2j3          <=> 3.1157990841034J¯1.9256697360917
   # 1e¯10>∣.5-1○○÷6 <=> 1 # sin(pi/6) = .5
+  # 4○2            <=> 2.2360679774998
+  # 4○2j3          <=> 2.0795565201111J2.8852305489054
   #  9○3j4         <=> 3
   # 11○3j4         <=> 4
   # 1○'hello'      !!! DOMAIN ERROR
@@ -80,6 +82,7 @@
             Complex.divide (Complex.subtract x, 1), Complex.add x, 1
           )
         when  0 then Complex.sqrt Complex.subtract 1, Complex.multiply x, x
+        when  4 then Complex.sqrt Complex.add 1, Complex.multiply x, x
         when  9 then x.re
         when 11 then x.im
         else throw DomainError 'Unknown circular or hyperbolic function ' + i
