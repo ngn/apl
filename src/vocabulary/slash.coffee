@@ -24,6 +24,7 @@
 # ×/2 3⍴1 2 3 4 5 6      <=> 6 120
 # 2,/'AB' 'CD' 'EF' 'HI' <=> 'ABCD' 'CDEF' 'EFHI'
 # 3,/'AB' 'CD' 'EF' 'HI' <=> 'ABCDEF' 'CDEFHI'
+# -/3 0⍴42               <=> 3⍴0
 #
 # N-Wise reduce
 #
@@ -65,7 +66,8 @@ reduce = @reduce = (f, g, axis0) ->
 
     if omega.empty()
       if (z = f.aplMetaInfo?.identity)?
-        return z
+        assert z.shape.length is 0
+        return new APLArray z.data, rShape, repeat([0], rShape.length), z.offset
       else
         throw DomainError()
 
