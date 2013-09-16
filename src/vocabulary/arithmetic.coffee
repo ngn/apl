@@ -27,8 +27,7 @@
   # 1j¯2+¯2j3                      <=> ¯1j1
   # +/⍬            <=> 0
   dyad: numeric ((y, x) -> x + y),
-    (y, x) ->
-      simplify x.re + y.re, x.im + y.im
+    (y, x) -> Complex.add x, y
 
 @['-'] = withIdentity APLArray.zero, pervasive
 
@@ -37,9 +36,7 @@
   # -4     <=> ¯4
   # -1 2 3 <=> ¯1 ¯2 ¯3
   # -1j2   <=> ¯1j¯2
-  monad: numeric ((x) -> -x),
-    (x) ->
-      new Complex -x.re, -x.im
+  monad: numeric ((x) -> -x), Complex.negate
 
   # Subtract (`-`)
   #
@@ -49,8 +46,7 @@
   # 5-3j8   <=> 2j¯8
   # -/⍬     <=> 0
   dyad: numeric ((y, x) -> x - y),
-    (y, x) ->
-      simplify x.re - y.re, x.im - y.im
+    (y, x) -> Complex.subtract x, y
 
 @['×'] = withIdentity APLArray.one, pervasive
 
@@ -73,8 +69,7 @@
   # 2×1j¯2    <=> 2j¯4
   # ×/⍬       <=> 1
   dyad: mult = numeric ((y, x) -> x * y),
-    (y, x) ->
-      simplify x.re * y.re - x.im * y.im, x.re * y.im + x.im * y.re
+    (y, x) -> Complex.multiply x, y
 
 @['÷'] = withIdentity APLArray.one, pervasive
 
@@ -95,9 +90,7 @@
   # 5÷2j1    <=> 2j¯1
   # ÷/⍬      <=> 1
   dyad: div = numeric ((y, x) -> x / y),
-    (y, x) ->
-      d = y.re * y.re + y.im * y.im
-      simplify (x.re * y.re + x.im * y.im) / d, (y.re * x.im - y.im * x.re) / d
+    (y, x) -> Complex.divide x, y
 
 @['*'] = withIdentity APLArray.one, pervasive
 
@@ -116,9 +109,7 @@
     if typeof x is typeof y is 'number' and x >= 0
       Math.pow x, y
     else
-      x = complexify x
-      y = complexify y
-      exp mult ln(x), y
+      Complex.pow x, y
 
 @['⍟'] = pervasive
 
@@ -132,11 +123,7 @@
     if typeof x is 'number' and x > 0
       Math.log x
     else
-      x = complexify x
-      simplify(
-        Math.log Math.sqrt x.re * x.re + x.im * x.im
-        Math.atan2 x.im, x.re
-      )
+      Complex.log x
 
   # Logarithm to the base (`⍟`)
   #
