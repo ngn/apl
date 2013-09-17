@@ -93,6 +93,7 @@
       x
       sqrt subtract pow(x, 2), 1
     )
+    # TODO look up the algorithm for determining the sign of arccos; the following line is dubious
     if r instanceof Complex and (r.re < 0 or (r.re is 0 and r.im < 0)) then negate r else r
 
   @atan = atan = (x) -> # arctan x = (i/2) (ln(1-ix) - ln(1+ix))
