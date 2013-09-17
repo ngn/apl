@@ -107,11 +107,7 @@
     # ¯1*.5 <=> 0j1
     # 1j2*3j4 <=> .129009594074467j.03392409290517014
     # */⍬ <=> 1
-    dyad: (y, x) ->
-      if typeof x is typeof y is 'number' and x >= 0
-        Math.pow x, y
-      else
-        Complex.pow x, y
+    dyad: (y, x) -> Complex.pow x, y
 
   '⍟': pervasive
 
@@ -121,11 +117,7 @@
     # ⍟0 <=> ¯¯
     # ⍟¯1 <=> 0j1 × ○1
     # ⍟123j456 <=> 6.157609243895447J1.3073297857599793
-    monad: ln = (x) ->
-      if typeof x is 'number' and x > 0
-        Math.log x
-      else
-        Complex.log x
+    monad: ln = Complex.log
 
     # Logarithm to the base (`⍟`)
     #

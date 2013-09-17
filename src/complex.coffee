@@ -35,11 +35,14 @@
     )
 
   @log = log = (x) ->
-    x = complexify x
-    simplify(
-      Math.log Math.sqrt x.re * x.re + x.im * x.im
-      direction x
-    )
+    if typeof x is 'number' and x > 0
+      Math.log x
+    else
+      x = complexify x
+      simplify(
+        Math.log Math.sqrt x.re * x.re + x.im * x.im
+        direction x
+      )
 
   @conjugate = (x) -> new Complex x.re, -x.im
 
@@ -66,7 +69,11 @@
     d = y.re * y.re + y.im * y.im
     simplify (x.re * y.re + x.im * y.im) / d, (y.re * x.im - y.im * x.re) / d
 
-  @pow = pow = (x, y) -> exp multiply(y, log x)
+  @pow = pow = (x, y) ->
+    if typeof x is typeof y is 'number' and x >= 0
+      Math.pow x, y
+    else
+      exp multiply(y, log x)
 
   @sqrt = sqrt = (x) ->
     if typeof x is 'number' and x >= 0
