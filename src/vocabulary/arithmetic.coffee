@@ -142,12 +142,15 @@
     # Residue (`∣`)
     #
     # 3∣5 <=> 2
-    # 1j2|3j4 !!!
+    # 1j2|3j4 <=> ¯1j1
     # 7 ¯7 ∘.| 31 28 ¯30        <=> 2 3⍴3 0 5 ¯4 0 ¯2
     # ¯0.2 0 0.2 ∘.| ¯0.3 0 0.3 <=> 3 3⍴¯0.1 0 ¯0.1 ¯0.3 0 0.3 0.1 0 0.1
     # |/⍬ <=> 0
-    dyad: real (y, x) ->
-      if x is 0
-        y
-      else
-        y - x * Math.floor y / x
+    # 0|¯4 <=> ¯4
+    # 0|¯4j5 <=> ¯4j5
+    # 10|4j3 <=> 4j3
+    # 4j6|7j10 <=> 3j4
+    # ¯10 7j10 0.3|17 5 10 <=> ¯3 ¯5j7 0.1
+    dyad: numeric ((y, x) -> if x is 0 then y else y - x * Math.floor y / x),
+      (y, x) -> if x.re is x.im is 0 then y else
+        Complex.subtract y, Complex.multiply x, Complex.floor Complex.divide y, x
