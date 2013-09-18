@@ -40,7 +40,7 @@
 
   '∨': withIdentity 0, pervasive
 
-    # Or (LCM) (`∨`)
+    # Or (GCD) (`∨`)
     #
     # 1∨1               <=> 1
     # 1∨0               <=> 1
@@ -63,7 +63,7 @@
 
   '∧': aka '^', withIdentity 1, pervasive
 
-    # And (GCD) (`∧`)
+    # And (LCM) (`∧`)
     #
     # 1∧1                            <=> 1
     # 1∧0                            <=> 0
