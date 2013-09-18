@@ -51,12 +51,11 @@
     # 299∨323           <=> 1   # 299=13×23, 323=17×19
     # 12345∨12345       <=> 12345
     # 0∨123             <=> 123
+    # 123∨0             <=> 123
     # ∨/⍬               <=> 0
     dyad: real (y, x) ->
       if not (isInt(x, 0) and isInt(y, 0))
         throw DomainError '∨ is implemented only for non-negative integers' # todo
-      if x is 0 and y is 0 then return 0
-      if x < y then [x, y] = [y, x]
       while y then [x, y] = [y, x % y] # Euclid's algorithm
       x
 
@@ -77,12 +76,12 @@
     # 299∧323 # 299=13×23, 323=17×19 <=> 96577
     # 12345∧12345                    <=> 12345
     # 0∧123                          <=> 0
+    # 123∧0                          <=> 0
     # ∧/⍬                            <=> 1
     dyad: real (y, x) ->
       assert x is Math.floor(x) and y is Math.floor(y), '∧ is defined only for integers'
-      if x is 0 or y is 0 then return 0
       p = x * y
-      if x < y then [x, y] = [y, x]
+      if p is 0 then return 0
       while y then [x, y] = [y, x % y] # Euclid's algorithm
       p / x # LCM(x, y) = x * y / GCD(x, y)
 
