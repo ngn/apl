@@ -56,6 +56,7 @@
     # ¯12∨18            <=> 6
     # 12∨¯18            <=> 6
     # ¯12∨¯18           <=> 6
+    # 1.5∨2.5           !!! DOMAIN ERROR
     dyad: real (y, x) ->
       if not (x is Math.floor(x) and y is Math.floor(y))
         throw DomainError '∨ is implemented only for integers' # todo
@@ -84,8 +85,10 @@
     # ¯12∧18                         <=> 36
     # 12∧¯18                         <=> 36
     # ¯12∧¯18                        <=> 36
+    # 1.5∧2.5                        !!! DOMAIN ERROR
     dyad: real (y, x) ->
-      assert x is Math.floor(x) and y is Math.floor(y), '∧ is defined only for integers'
+      if not (x is Math.floor(x) and y is Math.floor(y))
+        throw DomainError '∧ is implemented only for integers' # todo
       p = x * y
       if p is 0 then return 0
       while y then [x, y] = [y, x % y] # Euclid's algorithm
