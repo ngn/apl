@@ -173,3 +173,12 @@
       if r + i >= 1
         if r >= i then re-- else im--
       simplify re, im
+
+  @residue = (x, y) ->
+    if typeof x is typeof y is 'number'
+      if x is 0 then y else y - x * Math.floor y / x
+    else
+      x = complexify x
+      if x.re is x.im is 0 then y else
+        Complex.subtract y, Complex.multiply x,
+          Complex.floor Complex.divide y, x

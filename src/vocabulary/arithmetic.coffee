@@ -152,6 +152,4 @@
     # 10|4j3 <=> 4j3
     # 4j6|7j10 <=> 3j4
     # ¯10 7j10 0.3|17 5 10 <=> ¯3 ¯5j7 0.1
-    dyad: numeric ((y, x) -> if x is 0 then y else y - x * Math.floor y / x),
-      (y, x) -> if x.re is x.im is 0 then y else
-        Complex.subtract y, Complex.multiply x, Complex.floor Complex.divide y, x
+    dyad: (y, x) -> Complex.residue x, y
