@@ -53,11 +53,14 @@
     # 0∨123             <=> 123
     # 123∨0             <=> 123
     # ∨/⍬               <=> 0
+    # ¯12∨18            <=> 6
+    # 12∨¯18            <=> 6
+    # ¯12∨¯18           <=> 6
     dyad: real (y, x) ->
-      if not (isInt(x, 0) and isInt(y, 0))
-        throw DomainError '∨ is implemented only for non-negative integers' # todo
+      if not (x is Math.floor(x) and y is Math.floor(y))
+        throw DomainError '∨ is implemented only for integers' # todo
       while y then [x, y] = [y, x % y] # Euclid's algorithm
-      x
+      Math.abs x
 
 
   '∧': aka '^', withIdentity 1, pervasive
@@ -78,12 +81,15 @@
     # 0∧123                          <=> 0
     # 123∧0                          <=> 0
     # ∧/⍬                            <=> 1
+    # ¯12∧18                         <=> 36
+    # 12∧¯18                         <=> 36
+    # ¯12∧¯18                        <=> 36
     dyad: real (y, x) ->
       assert x is Math.floor(x) and y is Math.floor(y), '∧ is defined only for integers'
       p = x * y
       if p is 0 then return 0
       while y then [x, y] = [y, x % y] # Euclid's algorithm
-      p / x # LCM(x, y) = x * y / GCD(x, y)
+      Math.abs p / x # LCM(x, y) = x * y / GCD(x, y)
 
 
   # Nor (`⍱`)
