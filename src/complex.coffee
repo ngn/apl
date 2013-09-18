@@ -150,3 +150,25 @@
 
   @atanh = (x) -> # arctanh x = i arctan(-ix)
     itimes atan negitimes x
+
+  @floor = (x) ->
+    if typeof x is 'number'
+      Math.floor x
+    else
+      x = complexify x
+      [re, im] = [(Math.floor x.re), (Math.floor x.im)]
+      [r, i] = [x.re - re, x.im - im]
+      if r + i >= 1
+        if r >= i then re++ else im++
+      simplify re, im
+
+  @ceil = (x) ->
+    if typeof x is 'number'
+      Math.ceil x
+    else
+      x = complexify x
+      [re, im] = [(Math.ceil x.re), (Math.ceil x.im)]
+      [r, i] = [re - x.re, im - x.im]
+      if r + i >= 1
+        if r >= i then re-- else im--
+      simplify re, im
