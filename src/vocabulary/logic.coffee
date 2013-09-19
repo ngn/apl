@@ -82,8 +82,8 @@
     # 0∧123                          <=> 0
     # 123∧0                          <=> 0
     # ∧/⍬                            <=> 1
-    # ¯12∧18                         <=> 36
-    # 12∧¯18                         <=> 36
+    # ¯12∧18                         <=> ¯36
+    # 12∧¯18                         <=> ¯36
     # ¯12∧¯18                        <=> 36
     # 1.5∧2.5                        !!! DOMAIN ERROR
     dyad: real (y, x) ->
@@ -92,7 +92,7 @@
       p = x * y
       if p is 0 then return 0
       while y then [x, y] = [y, x % y] # Euclid's algorithm
-      Math.abs p / x # LCM(x, y) = x * y / GCD(x, y)
+      p / Math.abs x # LCM(x, y) = x * y / GCD(x, y)
 
 
   # Nor (`⍱`)
