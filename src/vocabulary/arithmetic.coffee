@@ -1,6 +1,5 @@
 {numeric, pervasive, real, withIdentity, aka} = require './vhelpers'
 {Complex, simplify} = require '../complex'
-{DomainError} = require '../errors'
 {APLArray} = require '../array'
 
 @vocabulary =
@@ -28,6 +27,8 @@
     # (2 3⍴⍳6) + 3 2⍴⍳6              !!! LENGTH ERROR
     # 1j¯2+¯2j3                      <=> ¯1j1
     # +/⍬            <=> 0
+    # ¯+¯¯           !!! DOMAIN ERROR
+    # 1j¯+2j¯¯       !!! DOMAIN ERROR
     dyad: numeric ((y, x) -> x + y),
       (y, x) -> Complex.add x, y
 
@@ -55,7 +56,6 @@
     # Sign of (`×`)
     #
     # × ¯2 ¯1 0 1 2 <=> ¯1 ¯1 0 1 1
-    # × 0÷0         <=> 0
     # × ¯           <=> 1
     # × ¯¯          <=> ¯1
     # ×3j¯4         <=> .6j¯.8
@@ -79,6 +79,7 @@
     #
     # ÷2   <=> .5
     # ÷2j3 <=> 0.15384615384615385J¯0.23076923076923078
+    # 0÷0  !!! DOMAIN ERROR
     monad: numeric ((x) -> 1 / x),
       (x) ->
         d = x.re * x.re + x.im * x.im

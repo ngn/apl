@@ -15,13 +15,14 @@
 # simplify(re, im)
 #   * if the imaginary part is 0, the real part is returned
 #   * otherwise, a Complex instance is created
-@simplify = simplify = (re, im) -> if im then new Complex re, im else re
+@simplify = simplify = (re, im) -> if im isnt 0 then new Complex re, im else re
 
 @Complex = class Complex
 
   constructor: (@re, @im = 0) ->
     assert typeof @re is 'number'
     assert typeof @im is 'number'
+    if isNaN(@re) or isNaN(@im) then throw DomainError 'NaN'
 
   toString: ->
     "#{@re}J#{@im}".replace /-/g, '¯'

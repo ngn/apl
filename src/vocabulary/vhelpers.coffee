@@ -21,7 +21,9 @@ multiplicitySymbol = (z) ->
         if x instanceof APLArray
           x.map pervadeMonadic
         else
-          monad x
+          r = monad x
+          if typeof r is 'number' and isNaN r then throw DomainError 'NaN'
+          r
     else
       -> throw Error 'Not implemented'
   pervadeDyadic =
@@ -30,7 +32,10 @@ multiplicitySymbol = (z) ->
         tx = multiplicitySymbol x
         ty = multiplicitySymbol y
         switch tx + ty
-          when '..' then dyad x, y
+          when '..'
+            r = dyad x, y
+            if typeof r is 'number' and isNaN r then throw DomainError 'NaN'
+            r
           when '.1' then y.map (yi) -> pervadeDyadic x, yi
           when '.*' then y.map (yi) -> pervadeDyadic x, yi
           when '1.' then x.map (xi) -> pervadeDyadic xi, y
