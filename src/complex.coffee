@@ -25,7 +25,7 @@
     if isNaN(@re) or isNaN(@im) then throw DomainError 'NaN'
 
   toString: ->
-    "#{@re}J#{@im}".replace /-/g, '¯'
+    "#{@re}J#{@im}".replace /-|Infinity/g, '¯'
 
   @exp = exp = (x) ->
     x = complexify x
