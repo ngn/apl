@@ -1,6 +1,7 @@
 {pervasive, real, withIdentity} = require './vhelpers'
 {isInt} = require '../helpers'
 {APLArray} = require '../array'
+{DomainError} = require '../errors'
 
 @vocabulary =
 
@@ -11,13 +12,21 @@
     # !5    <=> 120
     # !21   <=> 51090942171709440000
     # !0    <=> 1
+    # !1.5  <=> 1.3293403881791
+    # !¯1.5 <=> ¯3.544907701811
+    # !¯2.5 <=> 2.3632718012074
+    # !¯200.5 <=> 0
+    # !¯1   !!! DOMAIN ERROR
+    # !¯200 !!! DOMAIN ERROR
     monad: real (x) ->
       if isInt x, 0, 25
         r = 1; i = 2; (while i <= x then r *= i++); r
-      else if x < -150
-        0
       else if x > 150
         1 / 0
+      else if x < 0 and x is Math.floor x
+        throw DomainError()
+      else if x < -150
+        0
       else
         Gamma(x + 1)
 
