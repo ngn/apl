@@ -72,7 +72,7 @@
     y = complexify y
     simplify x.re * y.re - x.im * y.im, x.re * y.im + x.im * y.re
 
-  @divide = (x, y) ->
+  @divide = divide = (x, y) ->
     x = complexify x
     y = complexify y
     d = y.re * y.re + y.im * y.im
@@ -177,10 +177,41 @@
   iszero = (x) ->
     x is 0 or (x instanceof Complex and x.re is 0 and x.im is 0)
 
-  @residue = (x, y) ->
+  @residue = residue = (x, y) ->
     if typeof x is typeof y is 'number'
       if x is 0 then y else y - x * Math.floor y / x
     else
       if iszero x then y else
         Complex.subtract y, Complex.multiply x,
           Complex.floor Complex.divide y, x
+
+  @isint = (x) ->
+    if typeof x is 'number'
+      x is Math.floor x
+    else
+      (x.re is Math.floor x.re) and (x.im is Math.floor x.im)
+
+  firstquadrant = (x) -> # rotate into first quadrant
+    if typeof x is 'number'
+      Math.abs x
+    else
+      if x.re < 0
+        x = negate x
+      if x.im < 0
+        x = itimes x
+      if x.re is 0
+        x = x.im
+      x
+
+  @gcd = gcd = (x, y) ->
+    if typeof x is typeof y is 'number'
+      while y then [x, y] = [y, x % y] # Euclid's algorithm
+      Math.abs x
+    else
+      while not iszero y then [x, y] = [y, residue y, x] # Euclid's algorithm
+      firstquadrant x
+
+  @lcm = (x, y) ->
+    p = multiply x, y
+    if iszero p then p
+    else divide p, gcd x, y

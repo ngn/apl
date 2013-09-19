@@ -2,6 +2,7 @@
 {RankError, DomainError} = require '../errors'
 {real, pervasive, bool, match, withIdentity, aka} = require './vhelpers'
 {assert, isInt} = require '../helpers'
+{Complex} = require '../complex'
 
 @vocabulary =
 
@@ -57,12 +58,16 @@
     # 12∨¯18            <=> 6
     # ¯12∨¯18           <=> 6
     # 1.5∨2.5           !!! DOMAIN ERROR
-    dyad: real (y, x) ->
-      if not (x is Math.floor(x) and y is Math.floor(y))
-        throw DomainError '∨ is implemented only for integers' # todo
-      while y then [x, y] = [y, x % y] # Euclid's algorithm
-      Math.abs x
-
+    # 'a'∨1             !!! DOMAIN ERROR
+    # 1∨'a'             !!! DOMAIN ERROR
+    # 'a'∨'b'           !!! DOMAIN ERROR
+    # 135j¯14∨155j34    <=> 5j12
+    # 2 3 4∨0j1 1j2 2j3 <=> 1 1 1
+    # 2j2 2j4∨5j5 4j4   <=> 1j1 2
+    dyad: (y, x) ->
+      if not (Complex.isint x) or not (Complex.isint y)
+        throw DomainError '∨ is implemented only for Gaussian integers' # todo
+      Complex.gcd x, y
 
   '∧': aka '^', withIdentity 1, pervasive
 
@@ -86,14 +91,16 @@
     # 12∧¯18                         <=> ¯36
     # ¯12∧¯18                        <=> 36
     # 1.5∧2.5                        !!! DOMAIN ERROR
-    dyad: real (y, x) ->
-      if not (x is Math.floor(x) and y is Math.floor(y))
-        throw DomainError '∧ is implemented only for integers' # todo
-      p = x * y
-      if p is 0 then return 0
-      while y then [x, y] = [y, x % y] # Euclid's algorithm
-      p / Math.abs x # LCM(x, y) = x * y / GCD(x, y)
-
+    # 'a'∧1                          !!! DOMAIN ERROR
+    # 1∧'a'                          !!! DOMAIN ERROR
+    # 'a'∧'b'                        !!! DOMAIN ERROR
+    # 135j¯14∧155j34                 <=> 805j¯1448
+    # 2 3 4∧0j1 1j2 2j3              <=> 0j2 3j6 8j12
+    # 2j2 2j4∧5j5 4j4                <=> 10j10 ¯4j12
+    dyad: (y, x) ->
+      if not (Complex.isint x) or not (Complex.isint y)
+        throw DomainError '∧ is implemented only for Gaussian integers' # todo
+      Complex.lcm x, y
 
   # Nor (`⍱`)
   #
