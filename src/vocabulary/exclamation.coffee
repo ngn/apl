@@ -50,17 +50,21 @@ lnΓ = Γ.log
     # 3!5   <=> 10  #      0   0   0       (!⍵)÷(!⍺)×!⍵-⍺
     # 5!3   <=> 0   #      0   0   1       0
     #               #      0   1   0       Domain Error
-    ##3!¯5  <=> ¯35 #      0   1   1       (¯1*⍺)×⍺!⍺-⍵+1
-    ##¯3!5  <=> 0   #      1   0   0       0
+    # 3!¯5  <=> ¯35 #      0   1   1       (¯1*⍺)×⍺!⍺-⍵+1
+    # ¯3!5  <=> 0   #      1   0   0       0
     #               #      1   0   1       Cannot arise
-    ##¯5!¯3 <=> 6   #      1   1   0       (¯1*⍵-⍺)×(|⍵+1)!(|⍺+1)
-    ##¯3!¯5 <=> 0   #      1   1   1       0
-    dyad: real (n, k) ->
-      if isInt(k, 0, 100) and isInt(n, 0, 100)
-        if n < k then return 0
-        if 2 * k > n then k = n - k # do less work
-        u = v = 1
-        for i in [0...k] by 1 then (u *= n - i; v *= i + 1)
-        u / v
-      else
-        Math.exp lnΓ(n + 1) - lnΓ(k + 1) - lnΓ(n - k + 1)
+    # ¯5!¯3 <=> 6   #      1   1   0       (¯1*⍵-⍺)×(|⍵+1)!(|⍺+1)
+    # ¯3!¯5 <=> 0   #      1   1   1       0
+    dyad: Beta = real (n, k) ->
+      r =
+        if 0 <= n < k or k < 0 <= n or n < k < 0
+          0
+        else if n < 0 <= k
+          if not isInt k then throw DomainError()
+          Math.pow(-1, k) * Beta k - n - 1, k
+        else if k <= n < 0
+          if not isInt n - k then throw DomainError()
+          Math.pow(-1, n - k) * Beta Math.abs(k + 1), Math.abs(n + 1)
+        else
+          Math.exp lnΓ(n + 1) - lnΓ(k + 1) - lnΓ(n - k + 1)
+      if isInt(n) and isInt(k) then Math.round r else r
