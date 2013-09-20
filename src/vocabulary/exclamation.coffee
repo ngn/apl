@@ -2,7 +2,8 @@
 {isInt} = require '../helpers'
 {APLArray} = require '../array'
 {DomainError} = require '../errors'
-Gamma = require 'gamma'
+Γ = require 'gamma'
+lnΓ = Γ.log
 
 @vocabulary =
 
@@ -29,7 +30,7 @@ Gamma = require 'gamma'
       else if x < -150
         0
       else
-        Gamma(x + 1)
+        Γ(x + 1)
 
     # Binomial (`!`)
     #
@@ -50,4 +51,4 @@ Gamma = require 'gamma'
         for i in [0...k] by 1 then (u *= n - i; v *= i + 1)
         u / v
       else
-        Math.exp Gamma.log(n + 1) - Gamma.log(k + 1) - Gamma.log(n - k + 1)
+        Math.exp lnΓ(n + 1) - lnΓ(k + 1) - lnΓ(n - k + 1)
