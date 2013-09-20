@@ -127,19 +127,17 @@
     )
 
   @sinh = sinh = (x) ->
-    a = Complex.exp x
-    b = Complex.divide 1, a
-    Complex.multiply 0.5, (Complex.subtract a, b)
+    a = exp x
+    multiply 0.5, subtract a, divide 1, a
 
   @cosh = cosh = (x) ->
-    a = Complex.exp x
-    b = Complex.divide 1, a
-    Complex.multiply 0.5, (Complex.add a, b)
+    a = exp x
+    multiply 0.5, add a, divide 1, a
 
   @tanh = tanh = (x) ->
-    a = Complex.exp x
-    b = Complex.divide 1, a
-    Complex.divide (Complex.subtract a, b), (Complex.add a, b)
+    a = exp x
+    b = divide 1, a
+    divide (subtract a, b), (add a, b)
 
   @asinh = (x) -> # arcsinh x = i arcsin(-ix)
     itimes asin negitimes x
@@ -152,7 +150,7 @@
   @atanh = (x) -> # arctanh x = i arctan(-ix)
     itimes atan negitimes x
 
-  @floor = (x) ->
+  @floor = floor = (x) ->
     if typeof x is 'number'
       Math.floor x
     else
@@ -181,9 +179,7 @@
     if typeof x is typeof y is 'number'
       if x is 0 then y else y - x * Math.floor y / x
     else
-      if iszero x then y else
-        Complex.subtract y, Complex.multiply x,
-          Complex.floor Complex.divide y, x
+      if iszero x then y else subtract y, multiply x, floor divide y, x
 
   @isint = (x) ->
     if typeof x is 'number'
