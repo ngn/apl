@@ -40,6 +40,8 @@ Gamma = require 'gamma'
     # 0.5!1       <=> 1.2732395447351612
     # 1.2!3.4     <=> 3.795253463731253
     # !/⍬         <=> 1
+    # ≈←{1e¯5>|⍺-⍵} ⋄ (2!1000)≈499500 <=> 1
+    # ≈←{1e¯5>|⍺-⍵} ⋄ (998!1000)≈499500 <=> 1
     dyad: real (n, k) ->
       if isInt(k, 0, 100) and isInt(n, 0, 100)
         if n < k then return 0
@@ -48,4 +50,4 @@ Gamma = require 'gamma'
         for i in [0...k] by 1 then (u *= n - i; v *= i + 1)
         u / v
       else
-        Gamma(n + 1) / (Gamma(k + 1) * Gamma(n - k + 1))
+        Math.exp Gamma.log(n + 1) - Gamma.log(k + 1) - Gamma.log(n - k + 1)
