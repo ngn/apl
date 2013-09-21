@@ -1,9 +1,9 @@
 moduleNames = '''
   arithmetic backslash circle comma commute comparisons compose cupcap decode
-  disclose drop each enclose encode epsilon exclamation execute find floorceil
-  forkhook format grade identity innerproduct iota logic outerproduct
-  poweroperator quad question rho rotate slash special squish tack take
-  transpose variant vhelpers zilde
+  disclose dot drop each enclose encode epsilon exclamation execute find
+  floorceil forkhook format grade identity iota logic poweroperator quad
+  question rho rotate slash special squish tack take transpose variant vhelpers
+  zilde
 '''.split /\s+/
 
 for m in moduleNames
