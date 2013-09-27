@@ -208,6 +208,12 @@ resolveExprs = (ast, opts = {}) ->
             compilerError node, opts, 'Strand assignment can be used only for nouns.'
           for child in node[1...]
             visitLHS child, rhsType
+        when 'index'
+          if rhsType isnt 'X'
+            compilerError node, opts, 'Index assignment can be used only for nouns.'
+          visitLHS node[1], 'X'
+          for child in node[2...]
+            visit child
         else
           compilerError node, opts, "Invalid LHS node type: #{JSON.stringify node[0]}"
       {type: rhsType}
@@ -247,7 +253,7 @@ toJavaScript = (node, opts) ->
     when 'assign'
       vars = node.scopeNode.vars
       rhsJS = toJavaScript node[2], opts
-      lhsToJavaScript node[1], rhsJS
+      lhsToJavaScript node[1], opts, rhsJS
 
     # Symbols
     #
@@ -388,7 +394,7 @@ toJavaScript = (node, opts) ->
     else
       assert false, "Unrecognised node type, '#{node[0]}'"
 
-lhsToJavaScript = (node, rhsJS) ->
+lhsToJavaScript = (node, opts, rhsJS) ->
   switch node[0]
     when 'symbol'
       name = node[1]
@@ -409,15 +415,24 @@ lhsToJavaScript = (node, rhsJS) ->
       """
         (function (_x) {
           if (_x.isSingleton()) {
-            #{(for child in node[1...] then lhsToJavaScript child, '_x').join '; '}
+            #{(for child in node[1...] then lhsToJavaScript child, opts, '_x').join '; '}
           } else if (_x.shape.length === 1 && _x.shape[0] === #{node.length - 1}) {
             var _y = _x.toArray();
-            #{(for child, i in node[1...] then lhsToJavaScript child, "_._aplify(_y[#{i}])").join '; '}
+            #{(for child, i in node[1...] then lhsToJavaScript child, opts, "_._aplify(_y[#{i}])").join '; '}
           } else {
             throw Error('LENGTH ERROR, Cannot perform strand assignment');
           }
           return _x;
         })(#{rhsJS})
+      """
+    when 'index' # index assignment
+      lhsToJavaScript node[1], opts, """
+        _._substitute(
+          #{rhsJS},
+          _._aplify([#{(for c in node[2...] when c then toJavaScript c, opts).join ', '}]),
+          #{toJavaScript node[1], opts},
+          _._aplify([#{(for c, i in node[2...] when c isnt null then i)}])
+        )
       """
     else
       assert false, "Unrecognised node type, '#{node[0]}'"
