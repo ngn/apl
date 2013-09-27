@@ -82,6 +82,7 @@ runDoctests = (continuation) ->
       if not outcome.success
         nFailed++
         console.info "Test failed: #{JSON.stringify code}"
+        console.info "             #{JSON.stringify expectation}"
         if outcome.reason then console.error outcome.reason
         if outcome.error then console.error outcome.error.stack
       if Date.now() - lastTestTimestamp > 100
