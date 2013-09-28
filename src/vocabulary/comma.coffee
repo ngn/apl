@@ -2,59 +2,61 @@
 {DomainError, RankError, LengthError} = require '../errors'
 {assert, prod, repeat, isInt} = require '../helpers'
 
-@[','] = (omega, alpha, axis) ->
-  if alpha
+@vocabulary =
 
-    # Catenate (`,`)
-    #
-    # 10,66               <=> 10 66
-    # '10 ','MAY ','1985' <=> '10 MAY 1985'
-    # (2 3⍴⍳6),2 2⍴⍳4     <=> 2 5⍴(0 1 2 0 1  3 4 5 2 3)
-    # (3 2⍴⍳6),2 2⍴⍳4     !!! LENGTH ERROR
-    # (2 3⍴⍳6),9          <=> 2 4⍴(0 1 2 9  3 4 5 9)
-    # (2 3 4⍴⍳24),99      <=> 2 3 5⍴(
-    # ...                          0  1  2  3 99
-    # ...                          4  5  6  7 99
-    # ...                          8  9 10 11 99
-    # ...
-    # ...                         12 13 14 15 99
-    # ...                         16 17 18 19 99
-    # ...                         20 21 22 23 99)
-    # ⍬,⍬                 <=> ⍬
-    # ⍬,1                 <=> ,1
-    # 1,⍬                 <=> ,1
-    catenate omega, alpha, axis
+  ',': (omega, alpha, axis) ->
+    if alpha
 
-  else
+      # Catenate (`,`)
+      #
+      # 10,66               <=> 10 66
+      # '10 ','MAY ','1985' <=> '10 MAY 1985'
+      # (2 3⍴⍳6),2 2⍴⍳4     <=> 2 5⍴(0 1 2 0 1  3 4 5 2 3)
+      # (3 2⍴⍳6),2 2⍴⍳4     !!! LENGTH ERROR
+      # (2 3⍴⍳6),9          <=> 2 4⍴(0 1 2 9  3 4 5 9)
+      # (2 3 4⍴⍳24),99      <=> 2 3 5⍴(
+      # ...                          0  1  2  3 99
+      # ...                          4  5  6  7 99
+      # ...                          8  9 10 11 99
+      # ...
+      # ...                         12 13 14 15 99
+      # ...                         16 17 18 19 99
+      # ...                         20 21 22 23 99)
+      # ⍬,⍬                 <=> ⍬
+      # ⍬,1                 <=> ,1
+      # 1,⍬                 <=> ,1
+      catenate omega, alpha, axis
 
-    # Ravel (`,`)
-    #
-    # ,2 3 4⍴'abcdefghijklmnopqrstuvwx' <=> 'abcdefghijklmnopqrstuvwx'
-    # ,123 <=> 1⍴123
-    data = []
-    omega.each (x) -> data.push x
-    new APLArray data
+    else
 
-@['⍪'] = (omega, alpha, axis = APLArray.zero) ->
-  if alpha
+      # Ravel (`,`)
+      #
+      # ,2 3 4⍴'abcdefghijklmnopqrstuvwx' <=> 'abcdefghijklmnopqrstuvwx'
+      # ,123 <=> 1⍴123
+      data = []
+      omega.each (x) -> data.push x
+      new APLArray data
 
-    # 1st axis catenate (`⍪`)
-    #
-    # (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2
-    # ...                 3 4 5
-    # ...                 9 9 9)
-    catenate omega, alpha, axis
+  '⍪': (omega, alpha, axis = APLArray.zero) ->
+    if alpha
 
-  else
+      # 1st axis catenate (`⍪`)
+      #
+      # (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2
+      # ...                 3 4 5
+      # ...                 9 9 9)
+      catenate omega, alpha, axis
 
-    # Table (`⍪`)
-    #
-    # ⍪2 3 4 <=> 3 1⍴2 3 4
-    # ⍪0 <=> 1 1⍴0
-    # ⍪2 2⍴2 3 4 5 <=> 4 1⍴2 3 4 5
-    data = []
-    omega.each (x) -> data.push x
-    new APLArray data, [data.length, 1]
+    else
+
+      # Table (`⍪`)
+      #
+      # ⍪2 3 4 <=> 3 1⍴2 3 4
+      # ⍪0 <=> 1 1⍴0
+      # ⍪2 2⍴2 3 4 5 <=> 4 1⍴2 3 4 5
+      data = []
+      omega.each (x) -> data.push x
+      new APLArray data, [data.length, 1]
 
 
 

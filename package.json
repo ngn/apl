@@ -10,7 +10,8 @@
   },
   "main": "./lib/apl",
   "dependencies": {
-    "optimist": ""
+    "optimist": "",
+    "gamma": ""
   },
   "devDependencies": {
     "coffee-script": "",

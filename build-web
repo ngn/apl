@@ -4,16 +4,23 @@ source $(dirname "$0")/build
 
 mkdir -pv web web-tmp
 
+# Prepare libraries for stitching
+mkdir -p web-tmp/gamma
+
+i=node_modules/gamma/index.js ; o=web-tmp/gamma/gamma.js
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+# Stitch
 stitched=web-tmp/apl-stitched.js
 for f in $(find src -name '*.coffee'); do
     if [ $f -nt $stitched ]; then
         echo "Stitching to $stitched"
         node >$stitched <<EOF
             require('stitch')
-                .createPackage({paths: ['lib']})
+                .createPackage({paths: ['lib', 'web-tmp/gamma']})
                 .compile(function (err, source) {
                     if (err) { throw err; }
-                    require('fs').writeFileSync('$stitched', source);
+                    process.stdout.write(source);
                 });
 EOF
         break

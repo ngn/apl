@@ -66,7 +66,6 @@ fs = require 'fs'
   # Prepare for compilation/execution, create a context object.
   vocabulary = require './vocabulary'
   ctx = Object.create vocabulary
-  ctx['⍵'] = for a in argv._ then a.split ''
 
   # Start a REPL if requested or if no input is specified.
   if argv.interactive or not (argv._.length or argv.stdio)

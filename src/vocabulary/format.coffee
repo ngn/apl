@@ -1,32 +1,34 @@
 {APLArray} = require '../array'
 {prod, repeat} = require '../helpers'
 
-@['⍕'] = (omega, alpha) ->
-  if alpha
+@vocabulary =
 
-    # Format by example or specification (`⍕`)
-    throw Error 'Not implemented'
+  '⍕': (omega, alpha) ->
+    if alpha
 
-  else
+      # Format by example or specification (`⍕`)
+      throw Error 'Not implemented'
 
-    # Format (`⍕`)
-    #
-    # ⍕123            <=> 1 3⍴'123'
-    # ⍕123 456        <=> 1 7⍴'123 456'
-    # ⍕123 'a'        <=> 1 5⍴'123 a'
-    # ⍕12 'ab'        <=> 1 7⍴'12  ab '
-    # ⍕1 2⍴'a'        <=> 1 2⍴'a'
-    # ⍕2 2⍴'a'        <=> 2 2⍴'a'
-    # ⍕2 2⍴5          <=> 2 3⍴('5 5',
-    # ...                      '5 5')
-    # ⍕2 2⍴0 0 0 'a'  <=> 2 3⍴('0 0',
-    # ...                      '0 a')
-    # ⍕2 2⍴0 0 0 'ab' <=> 2 6⍴('0  0  ',
-    # ...                      '0  ab ')
-    # ⍕2 2⍴0 0 0 123  <=> 2 5⍴('0   0',
-    # ...                      '0 123')
-    t = format omega
-    new APLArray t.join(''), [t.length, t[0].length]
+    else
+
+      # Format (`⍕`)
+      #
+      # ⍕123            <=> 1 3⍴'123'
+      # ⍕123 456        <=> 1 7⍴'123 456'
+      # ⍕123 'a'        <=> 1 5⍴'123 a'
+      # ⍕12 'ab'        <=> 1 7⍴'12  ab '
+      # ⍕1 2⍴'a'        <=> 1 2⍴'a'
+      # ⍕2 2⍴'a'        <=> 2 2⍴'a'
+      # ⍕2 2⍴5          <=> 2 3⍴('5 5',
+      # ...                      '5 5')
+      # ⍕2 2⍴0 0 0 'a'  <=> 2 3⍴('0 0',
+      # ...                      '0 a')
+      # ⍕2 2⍴0 0 0 'ab' <=> 2 6⍴('0  0  ',
+      # ...                      '0  ab ')
+      # ⍕2 2⍴0 0 0 123  <=> 2 5⍴('0   0',
+      # ...                      '0 123')
+      t = format omega
+      new APLArray t.join(''), [t.length, t[0].length]
 
 # Format an APL object as an array of strings
 @format = format = (a) ->

@@ -1,45 +1,48 @@
 {APLArray} = require '../array'
 {assert, isInt, repeat} = require '../helpers'
 {RankError, NonceError, DomainError, LengthError} = require '../errors'
+{adverb} = require './vhelpers'
 
-# Scan or expand (`\`)
-#
-# +\ 20 10 ¯5 7              <=> 20 30 25 32
-# ,\ "AB" "CD" "EF"          <=> 'AB' 'ABCD' 'ABCDEF'
-# ×\ 2 3⍴5 2 3 4 7 6         <=> 2 3 ⍴ 5 10 30 4 28 168
-# ∧\ 1 1 1 0 1 1             <=> 1 1 1 0 0 0
-# -\ 1 2 3 4                 <=> 1 ¯1 2 ¯2
-# ∨\ 0 0 1 0 0 1 0           <=> 0 0 1 1 1 1 1
-# +\ 1 2 3 4 5               <=> 1 3 6 10 15
-# +\ (1 2 3)(4 5 6)(7 8 9)   <=> (1 2 3) (5 7 9) (12 15 18)
-# M←2 3⍴1 2 3 4 5 6 ⋄ +\M    <=> 2 3 ⍴ 1 3 6 4 9 15
-# M←2 3⍴1 2 3 4 5 6 ⋄ +⍀M    <=> 2 3 ⍴ 1 2 3 5 7 9
-# //gives 'M←2 3⍴1 2 3 4 5 6 ⋄ +\[0]M', [1, 2, 3, 5, 7, 9] # todo
-# ,\ 'ABC'                   <=> 'A' 'AB' 'ABC'
-# T←"ONE(TWO) BOOK(S)" ⋄ ≠\T∊"()" <=> 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
-# T←"ONE(TWO) BOOK(S)" ⋄ ((T∊"()")⍱≠\T∊"()")/T   <=> 'ONE BOOK'
-#
-# 1 0 1\'ab'          <=> 'a b'
-# 0 1 0 1 0\2 3       <=> 0 2 0 3 0
-# (2 2⍴0)\'food'      !!! RANK ERROR
-# 'abc'\'def'         !!! DOMAIN ERROR
-# 1 0 1 1\'ab'        !!! LENGTH ERROR
-# 1 0 1 1\'abcd'      !!! LENGTH ERROR
-# 1 0 1\2 2⍴'ABCD'    <=> 2 3⍴'A BC D'
-# 1 0 1⍀2 2⍴'ABCD'    <=> 3 2⍴'AB  CD'
-# 1 0 1\[0]2 2⍴'ABCD' <=> 3 2⍴'AB  CD'
-# 1 0 1\[1]2 2⍴'ABCD' <=> 2 3⍴'A BC D'
-@['\\'] = (omega, alpha, axis) ->
-  if typeof omega is 'function'
-    scan omega, undefined, axis
-  else
-    expand omega, alpha, axis
+@vocabulary =
 
-@['⍀'] = (omega, alpha, axis = APLArray.zero) ->
-  if typeof omega is 'function'
-    scan omega, undefined, axis
-  else
-    expand omega, alpha, axis
+  # Scan or expand (`\`)
+  #
+  # +\ 20 10 ¯5 7              <=> 20 30 25 32
+  # ,\ "AB" "CD" "EF"          <=> 'AB' 'ABCD' 'ABCDEF'
+  # ×\ 2 3⍴5 2 3 4 7 6         <=> 2 3 ⍴ 5 10 30 4 28 168
+  # ∧\ 1 1 1 0 1 1             <=> 1 1 1 0 0 0
+  # -\ 1 2 3 4                 <=> 1 ¯1 2 ¯2
+  # ∨\ 0 0 1 0 0 1 0           <=> 0 0 1 1 1 1 1
+  # +\ 1 2 3 4 5               <=> 1 3 6 10 15
+  # +\ (1 2 3)(4 5 6)(7 8 9)   <=> (1 2 3) (5 7 9) (12 15 18)
+  # M←2 3⍴1 2 3 4 5 6 ⋄ +\M    <=> 2 3 ⍴ 1 3 6 4 9 15
+  # M←2 3⍴1 2 3 4 5 6 ⋄ +⍀M    <=> 2 3 ⍴ 1 2 3 5 7 9
+  # //gives 'M←2 3⍴1 2 3 4 5 6 ⋄ +\[0]M', [1, 2, 3, 5, 7, 9] # todo
+  # ,\ 'ABC'                   <=> 'A' 'AB' 'ABC'
+  # T←"ONE(TWO) BOOK(S)" ⋄ ≠\T∊"()" <=> 0 0 0 1 1 1 1 0 0 0 0 0 0 1 1 0
+  # T←"ONE(TWO) BOOK(S)" ⋄ ((T∊"()")⍱≠\T∊"()")/T   <=> 'ONE BOOK'
+  #
+  # 1 0 1\'ab'          <=> 'a b'
+  # 0 1 0 1 0\2 3       <=> 0 2 0 3 0
+  # (2 2⍴0)\'food'      !!! RANK ERROR
+  # 'abc'\'def'         !!! DOMAIN ERROR
+  # 1 0 1 1\'ab'        !!! LENGTH ERROR
+  # 1 0 1 1\'abcd'      !!! LENGTH ERROR
+  # 1 0 1\2 2⍴'ABCD'    <=> 2 3⍴'A BC D'
+  # 1 0 1⍀2 2⍴'ABCD'    <=> 3 2⍴'AB  CD'
+  # 1 0 1\[0]2 2⍴'ABCD' <=> 3 2⍴'AB  CD'
+  # 1 0 1\[1]2 2⍴'ABCD' <=> 2 3⍴'A BC D'
+  '\\': adverb (omega, alpha, axis) ->
+    if typeof omega is 'function'
+      scan omega, undefined, axis
+    else
+      expand omega, alpha, axis
+
+  '⍀': adverb (omega, alpha, axis = APLArray.zero) ->
+    if typeof omega is 'function'
+      scan omega, undefined, axis
+    else
+      expand omega, alpha, axis
 
 # Helper for `\` and `⍀` in their adverbial sense
 scan = (f, g, axis) ->

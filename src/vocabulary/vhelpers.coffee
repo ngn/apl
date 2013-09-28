@@ -1,7 +1,7 @@
 {assert, isInt} = require '../helpers'
 {DomainError, LengthError, RankError, SyntaxError} = require '../errors'
 {APLArray} = require '../array'
-{Complex} = require '../complex'
+{Complex, complexify} = require '../complex'
 
 multiplicitySymbol = (z) ->
   if z instanceof APLArray then (if z.isSingleton() then '1' else '*') else '.'
@@ -21,7 +21,9 @@ multiplicitySymbol = (z) ->
         if x instanceof APLArray
           x.map pervadeMonadic
         else
-          (x[F.aplName]?()) ? monad x
+          r = monad x
+          if typeof r is 'number' and isNaN r then throw DomainError 'NaN'
+          r
     else
       -> throw Error 'Not implemented'
   pervadeDyadic =
@@ -30,7 +32,10 @@ multiplicitySymbol = (z) ->
         tx = multiplicitySymbol x
         ty = multiplicitySymbol y
         switch tx + ty
-          when '..' then (y?[F.aplName]?(x)) ? (x?['right_' + F.aplName]?(y)) ? (dyad x, y)
+          when '..'
+            r = dyad x, y
+            if typeof r is 'number' and isNaN r then throw DomainError 'NaN'
+            r
           when '.1' then y.map (yi) -> pervadeDyadic x, yi
           when '.*' then y.map (yi) -> pervadeDyadic x, yi
           when '1.' then x.map (xi) -> pervadeDyadic xi, y
@@ -49,10 +54,20 @@ multiplicitySymbol = (z) ->
     assert alpha instanceof APLArray or typeof alpha is 'undefined'
     (if alpha then pervadeDyadic else pervadeMonadic) omega, alpha
 
-@numeric = (f) -> (x, y, axis) ->
-  if typeof x isnt 'number' or (y? and typeof y isnt 'number')
+@real = (f) -> (x, y, axis) ->
+  if typeof x is 'number' and (not y? or typeof y is 'number')
+    f x, y, axis
+  else
     throw DomainError()
-  f x, y, axis
+
+@numeric = (f, g) -> (x, y, axis) ->
+  if typeof x is 'number' and (not y? or typeof y is 'number')
+    f x, y, axis
+  else
+    x = complexify x
+    if y?
+      y = complexify y
+    g x, y, axis
 
 @match = match = (x, y) ->
   if x instanceof APLArray
@@ -125,6 +140,23 @@ numApprox = (x, y) ->
   else
     throw DomainError()
 
-@withIdentity = (identity, f) ->
-  (f.aplMetaInfo ?= {}).identity = identity
+meta = (f, name, value) ->
+  assert typeof f is 'function'
+  assert typeof name is 'string'
+  (f.aplMetaInfo ?= {})[name] = value
   f
+
+@withIdentity = (x, f) ->
+  if x not instanceof APLArray then x = APLArray.scalar x
+  meta f, 'identity', x
+
+@adverb       = (f)    -> meta f, 'isPostfixAdverb', true
+@prefixAdverb = (f)    -> meta f, 'isPrefixAdverb', true
+@conjunction  = (f)    -> meta f, 'isConjunction', true
+
+@aka = (aliases, f) -> # "also known as" decorator
+  if typeof aliases is 'string'
+    aliases = [aliases]
+  else
+    assert aliases instanceof Array
+  meta f, 'aliases', aliases

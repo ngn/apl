@@ -1,7 +1,7 @@
 language: node_js
 node_js:
 - '0.8'
-after_success: ./update-gh-pages
+after_success: ./.travis-update-gh-pages
 env:
   global:
     secure: Pb4yMw9zs7AraJ6yp+xcbJUiaf6WMezaduzrUi5DEqFarGzOvA6ytakNexAU8w/yltmoAhaJw2DOva8PxiGRkPb+dJr3SqYZDW9PepGPFpB5ts2oNZsoSDNtbDHbKh9W1g0zIaPzACBqpwWHZoVEbAs4FWaIdHscgmCwr/kh/6o=

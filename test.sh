@@ -7,3 +7,6 @@ i=test/doctest.coffee ; o=test/doctest.js
 
 echo 'Running doctests'
 node test/doctest.js
+
+echo 'Running example tests'
+test/examplestest.sh

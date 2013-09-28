@@ -1,40 +1,51 @@
-{pervasive, numeric, withIdentity} = require './vhelpers'
+{numeric, pervasive, real, withIdentity} = require './vhelpers'
 {APLArray} = require '../array'
+{Complex} = require '../complex'
 
-@['⌊'] = withIdentity new APLArray([Infinity], []), pervasive
+@vocabulary =
 
-  # Floor (`⌊`)
-  #
-  # ⌊123   <=> 123
-  # ⌊12.3  <=> 12
-  # ⌊¯12.3 <=> ¯13
-  # ⌊¯123  <=> ¯123
-  # ⌊'a'   !!! DOMAIN ERROR
-  # ⌊12j3  !!!
-  # ⌊0 5 ¯5 (○1) ¯1.5   <=> 0 5 ¯5 3 ¯2
-  monad: numeric Math.floor
+  '⌊': withIdentity Infinity, pervasive
 
-  # Lesser of (`⌊`)
-  #
-  # 3⌊5 <=> 3
-  # ⌊/⍬ <=> ¯
-  dyad: numeric (y, x) -> Math.min y, x
+    # Floor (`⌊`)
+    #
+    # ⌊123   <=> 123
+    # ⌊12.3  <=> 12
+    # ⌊¯12.3 <=> ¯13
+    # ⌊¯123  <=> ¯123
+    # ⌊'a'   !!! DOMAIN ERROR
+    # ⌊12j3      <=> 12j3
+    # ⌊1.2j2.3   <=> 1j2
+    # ⌊1.2j¯2.3  <=> 1j¯3
+    # ⌊¯1.2j2.3  <=> ¯1j2
+    # ⌊¯1.2j¯2.3 <=> ¯1j¯3
+    # ⌊0 5 ¯5 (○1) ¯1.5   <=> 0 5 ¯5 3 ¯2
+    monad: Complex.floor
 
-@['⌈'] = withIdentity new APLArray([-Infinity], []), pervasive
+    # Lesser of (`⌊`)
+    #
+    # 3⌊5 <=> 3
+    # ⌊/⍬ <=> ¯
+    dyad: real (y, x) -> Math.min y, x
 
-  # Ceiling (`⌈`)
-  #
-  # ⌈123   <=> 123
-  # ⌈12.3  <=> 13
-  # ⌈¯12.3 <=> ¯12
-  # ⌈¯123  <=> ¯123
-  # ⌈'a'   !!! DOMAIN ERROR
-  # ⌈12j3  !!!
-  # ⌈0 5 ¯5 (○1) ¯1.5 <=> 0 5 ¯5 4 ¯1
-  monad: numeric Math.ceil
+  '⌈': withIdentity -Infinity, pervasive
 
-  # Greater of (`⌈`)
-  #
-  # 3⌈5 <=> 5
-  # ⌈/⍬ <=> ¯¯
-  dyad: numeric (y, x) -> Math.max y, x
+    # Ceiling (`⌈`)
+    #
+    # ⌈123   <=> 123
+    # ⌈12.3  <=> 13
+    # ⌈¯12.3 <=> ¯12
+    # ⌈¯123  <=> ¯123
+    # ⌈'a'   !!! DOMAIN ERROR
+    # ⌈12j3      <=> 12j3
+    # ⌈1.2j2.3   <=> 1j3
+    # ⌈1.2j¯2.3  <=> 1j¯2
+    # ⌈¯1.2j2.3  <=> ¯1j3
+    # ⌈¯1.2j¯2.3 <=> ¯1j¯2
+    # ⌈0 5 ¯5 (○1) ¯1.5 <=> 0 5 ¯5 4 ¯1
+    monad: Complex.ceil
+
+    # Greater of (`⌈`)
+    #
+    # 3⌈5 <=> 5
+    # ⌈/⍬ <=> ¯¯
+    dyad: real (y, x) -> Math.max y, x

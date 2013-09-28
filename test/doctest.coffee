@@ -82,6 +82,7 @@ runDoctests = (continuation) ->
       if not outcome.success
         nFailed++
         console.info "Test failed: #{JSON.stringify code}"
+        console.info "             #{JSON.stringify expectation}"
         if outcome.reason then console.error outcome.reason
         if outcome.error then console.error outcome.error.stack
       if Date.now() - lastTestTimestamp > 100
@@ -96,7 +97,10 @@ runDoctests = (continuation) ->
         else "All #{nTests} tests passed") +
         " in #{Date.now() - t0} ms."
       )
-      continuation?()
+      if nFailed
+        process.exit 1
+      else
+        continuation?()
   )
 
 if module? and module is require.main

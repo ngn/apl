@@ -1,0 +1,4 @@
+This directory contains artefacts for the mobile demo.  They are processed in
+various ways by ../build-m and the result is ultimately put in ../m/
+
+../build-m also uses some files from ../web-src to avoid repetition.

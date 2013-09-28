@@ -57,18 +57,19 @@ lexer = require './lexer'
       if token.type in ['eof', '}'] then return body
       while consume 'separator newline' then ;
       if token.type in ['eof', '}'] then return body
-      expr = parseExpr()
-      if consume ':' then expr = ['guard', expr, parseExpr()]
-      body.push expr
+      node = parseAssignments()
+      if consume ':' then node = ['guard', node, parseAssignments()]
+      body.push node
+
+  parseAssignments = ->
+    node = parseExpr()
+    if consume '←' then ['assign', node, parseAssignments()] else node
 
   parseExpr = ->
-    expr = ['expr']
-    loop
-      item = parseItem()
-      if consume '←' then return expr.concat [['assign', item, parseExpr()]]
-      expr.push item
-      if token.type in ') ] } : ; separator newline eof'.split ' '
-        return expr
+    items =
+      while token.type not in ['←', ')', ']', '}', ':', ';', 'separator', 'newline', 'eof']
+        parseItem()
+    if items.length is 1 then items[0] else ['expr'].concat items
 
   parseItem = ->
     item = parseIndexable()
@@ -83,14 +84,14 @@ lexer = require './lexer'
       if consume ';' then indices.push null
       else if token.type is ']' then (indices.push null; return indices)
       else
-        indices.push parseExpr()
+        indices.push parseAssignments()
         if token.type is ']' then return indices
         demand ';'
 
   parseIndexable = ->
     t = token
     if consume 'number string symbol embedded' then [t.type, t.value]
-    else if consume '(' then (expr = parseExpr(); demand ')'; expr)
+    else if consume '(' then (expr = parseAssignments(); demand ')'; expr)
     else if consume '{' then (b = parseBody(); demand '}'; ['lambda', b])
     else parserError "Encountered unexpected token of type '#{token.type}'"
 

@@ -22,7 +22,7 @@ tokenDefs = [
   ['string',    ///^(?: '(?:[^\\']|\\.)*' | "(?:[^\\"]|\\.)*" )+///]
   ['',          /^[\(\)\[\]\{\}:;←]/]
   ['embedded',  /^«[^»]*»/]
-  ['symbol',    ///^(?: ∘\. | ⎕?[a-z_][0-9a-z_]* | [^¯'":«»] )///i]
+  ['symbol',    ///^(?: ⎕?[a-z_][0-9a-z_]* | [^¯'":«»] )///i]
 ]
 
 # A couple of interesting things are going on in this tokenization loop:

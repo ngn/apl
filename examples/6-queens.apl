@@ -1,10 +1,11 @@
-queens←{⎕IO ⎕ML←0 1                 ⍝ The N-queens problem.
+#!/usr/bin/env apl
+
+queens←{                            ⍝ The N-queens problem.
 
     search←{                        ⍝ Search for all solutions.
         (⊂⍬)∊⍵:0⍴⊂⍬                 ⍝ stitched: abandon this branch.
         0=⍴⍵:rmdups ⍺               ⍝ all done: solution!
-        hd←⊃⍵                       ⍝ head...
-        tl←1↓⍵                      ⍝ ... 'n tail of remaining ranks.
+        (hd tl)←(⊃⍵)(1↓⍵)           ⍝ head 'n tail of remaining ranks.
         next←⍺∘,¨hd                 ⍝ possible next steps.
         rems←hd free¨⊂tl            ⍝ unchecked squares.
         ↑,/next ∇¨rems              ⍝ ... in following ranks.

@@ -1,19 +1,21 @@
 {APLArray} = require '../array'
 {RankError, LengthError, DomainError} = require '../errors'
 {assert, repeat, isInt} = require '../helpers'
+{adverb} = require './vhelpers'
 
+@vocabulary =
 
-@['/'] = (omega, alpha, axis) ->
-  if typeof omega is 'function'
-    reduce omega, alpha, axis
-  else
-    compressOrReplicate omega, alpha, axis
+  '/': adverb (omega, alpha, axis) ->
+    if typeof omega is 'function'
+      reduce omega, alpha, axis
+    else
+      compressOrReplicate omega, alpha, axis
 
-@['⌿'] = (omega, alpha, axis = APLArray.zero) ->
-  if typeof omega is 'function'
-    reduce omega, alpha, axis
-  else
-    compressOrReplicate omega, alpha, axis
+  '⌿': adverb (omega, alpha, axis = APLArray.zero) ->
+    if typeof omega is 'function'
+      reduce omega, alpha, axis
+    else
+      compressOrReplicate omega, alpha, axis
 
 # Reduce (`/`)
 #
@@ -24,6 +26,7 @@
 # ×/2 3⍴1 2 3 4 5 6      <=> 6 120
 # 2,/'AB' 'CD' 'EF' 'HI' <=> 'ABCD' 'CDEF' 'EFHI'
 # 3,/'AB' 'CD' 'EF' 'HI' <=> 'ABCDEF' 'CDEFHI'
+# -/3 0⍴42               <=> 3⍴0
 #
 # N-Wise reduce
 #
@@ -65,7 +68,8 @@ reduce = @reduce = (f, g, axis0) ->
 
     if omega.empty()
       if (z = f.aplMetaInfo?.identity)?
-        return z
+        assert z.shape.length is 0
+        return new APLArray z.data, rShape, repeat([0], rShape.length), z.offset
       else
         throw DomainError()
 

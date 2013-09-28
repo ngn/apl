@@ -1,3 +1,3 @@
 #!/usr/bin/env apl
 ⍝ Sieve of Eratosthenes
-⎕ ← (2=+⌿0=A∘.∣A)/A←⍳100
+⎕ ← (1=+⌿0=A∘.∣A)/(A←2↓⍳100)
