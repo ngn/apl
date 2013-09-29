@@ -76,6 +76,7 @@
   # ...                                        0 0 0 0 0)
   # a←'this is a test' ⋄ a[0 5]←'TI' <=> 'This Is a test'
   # Data←0 4 8 ⋄ 10+ (Data[0 2]← 7 9) <=> 17 14 19
+  # a←3 4⍴⍳12 ⋄ a[;1 2]←99 <=> 3 4⍴0 99 99 3 4 99 99 7 8 99 99 11
   _substitute: (value, alpha, omega, axes) ->
     [subscripts, subscriptShapes] = prepareForIndexing omega, alpha, axes
     indexShape = [].concat subscriptShapes...
