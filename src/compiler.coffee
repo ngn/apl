@@ -248,8 +248,8 @@ toJavaScript = (node, opts) ->
 
     # Assignment
     #
-    # A←5 <=> 5
-    # A×(A←2 5) <=> 4 25
+    # A←5     <=> 5
+    # A×A←2 5 <=> 4 25
     when 'assign'
       vars = node.scopeNode.vars
       rhsJS = toJavaScript node[2], opts
@@ -346,7 +346,7 @@ toJavaScript = (node, opts) ->
     # so `B` gets evaluated before `A` as one would expect from APL's
     # right-to-left order of execution.
     #
-    # ⍴ x[⍋(x←6?40)] <=> ,6
+    # ⍴ x[⍋x←6?40] <=> ,6
     when 'index'
       "_._index(
         _._aplify([#{(for c in node[2...] when c then toJavaScript c, opts).join ', '}]),
