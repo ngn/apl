@@ -764,7 +764,9 @@ resolveExprs = function(ast, opts) {
           _ref4 = node.slice(2);
           for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
             child = _ref4[_k];
-            visit(child);
+            if (child) {
+              visit(child);
+            }
           }
           break;
         default:
