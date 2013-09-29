@@ -212,7 +212,7 @@ resolveExprs = (ast, opts = {}) ->
           if rhsType isnt 'X'
             compilerError node, opts, 'Index assignment can be used only for nouns.'
           visitLHS node[1], 'X'
-          for child in node[2...]
+          for child in node[2...] when child
             visit child
         else
           compilerError node, opts, "Invalid LHS node type: #{JSON.stringify node[0]}"
