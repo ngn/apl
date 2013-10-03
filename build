@@ -14,6 +14,6 @@ for coffeeDir in $(find src -type d); do
     )
     if [ -n "$coffeeFiles" ]; then
         echo Compiling $coffeeFiles
-        node_modules/.bin/coffee -b -c -o ${coffeeDir/#src/lib} $coffeeFiles
+        node_modules/.bin/coffee --macro -b -c -o ${coffeeDir/#src/lib} $coffeeFiles
     fi
 done

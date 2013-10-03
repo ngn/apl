@@ -28,7 +28,7 @@ EOF
 done
 
 i=web-src/index.coffee ; o=web-tmp/index.js
-[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -b -o $(dirname $o) -c $i
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee --macro -b -o $(dirname $o) -c $i
 
 i=web-src/index.jade ; o=web/index.html
 [ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/jade <$i >$o
@@ -40,7 +40,7 @@ i=web-src/tipsy.gif ; o=web/tipsy.gif
 [ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
 
 i=web-src/examples-gen.coffee ; o=web-tmp/examples-gen.js
-[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -b -o $(dirname $o) -c $i
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee --macro -b -o $(dirname $o) -c $i
 
 i=web-tmp/examples-gen.js ; o=web-tmp/examples.js
 [ $i -nt $o ] && echo "Generating $o" && node $i
