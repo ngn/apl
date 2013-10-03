@@ -6853,7 +6853,8 @@ jQuery(function($) {
     }
   }
   $.keyboard.keyaction.exec = execute;
-  $.keyboard.comboRegex = /(.)(.)/mig;
+  $.keyboard.defaultOptions.combos = {};
+  $.keyboard.comboRegex = /(`)(.)/mig;
   $('textarea').keyboard({
     layout: 'custom',
     useCombos: false,
