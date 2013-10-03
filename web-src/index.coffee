@@ -3,7 +3,7 @@
 
 jQuery ($) ->
 
-  # Bookmarkable source code {{{1
+  # Bookmarkable source code
   hashParams = {}
   if location.hash
     for nameValue in location.hash.substring(1).split ','
@@ -18,7 +18,7 @@ jQuery ($) ->
 
 
 
-  # "Execute" button {{{1
+  # "Execute" button
   execute = ->
     try
       result = exec $('#code').val()
@@ -35,7 +35,7 @@ jQuery ($) ->
 
 
 
-  # Symbols table {{{1
+  # Symbols table
   hSymbolDefs =
     '+': 'Conjugate, Add'
     '-': 'Negate, Subtract'
@@ -109,69 +109,64 @@ jQuery ($) ->
 
 
 
-  # Keyboard {{{1
-  $('textarea').keyboard
-    layout: 'custom'
-    useCombos: false
-    display:
-      bksp: 'Bksp'
-      shift: '⇧'
-      alt: 'APL'
-      enter: 'Enter'
-      exec: '⍎'
-    autoAccept: true
-    usePreview: false
-    customLayout: layout =
-      default: [
-        '~ 1 2 3 4 5 6 7 8 9 0 - ='
-        'q w e r t y u i o p [ ] \''
-        'a s d f g h j k l ; \' {enter}'
-        '{shift} z x c v b n m , . / {bksp}'
-        '{alt} {space} {exec!!}'
-      ]
-      shift: [
-        '` ! @ # $ % ^ & * ( ) _ +'
-        'Q W E R T Y U I O P { } |'
-        'A S D F G H J K L : " {enter}'
-        '{shift} Z X C V B N M < > ? {bksp}'
-        '{alt} {space} {exec!!}'
-      ]
-      alt: [
-        '{empty} ¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ ÷ ×'
-        '{empty} ⍵ ∊ ⍴ ~ ↑ ↓ ⍳ ○ ⍟ ← → ⍀'
-        '⍺ ⌈ ⌊ {empty} ∇ ∆ ∘ {empty} ⎕ ⋄ {empty} {enter}'
-        '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ {empty} ⌿ {bksp}'
-        '{alt} {space} {exec!!}'
-      ]
-      'alt-shift': [
-        '⍨ {empty} ⍁ ⍂ ⍠ ≈ ⌸ ⍯ ⍣ ⍱ ⍲ ≢ ≡'
-        '⌹ ⍹ ⍷ ⍤ {empty} {empty} ⊖ ⍸ ⍬ ⌽ ⊣ ⊢ ⍉'
-        '⍶ {empty} {empty} {empty} ⍒ ⍋ ⍝ {empty} ⍞ {empty} {empty} {enter}'
-        '{shift} ⊆ ⊇ ⋔ ⍦ ⍎ ⍕ ⌷ « » ↗ {bksp}'
-        '{alt} {space} {exec!!}'
-      ]
+  # Keyboard
+  layout =
+    default: [
+      '` 1 2 3 4 5 6 7 8 9 0 - ='
+      'q w e r t y u i o p [ ] \''
+      'a s d f g h j k l ; \' {enter}'
+      '{shift} z x c v b n m , . / {bksp}'
+      '{alt} {space} {exec!!}'
+    ]
+    shift: [
+      '~ ! @ # $ % ^ & * ( ) _ +'
+      'Q W E R T Y U I O P { } |'
+      'A S D F G H J K L : " {enter}'
+      '{shift} Z X C V B N M < > ? {bksp}'
+      '{alt} {space} {exec!!}'
+    ]
+    alt: [
+      '{empty} ¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ ÷ ×'
+      '{empty} ⍵ ∊ ⍴ ~ ↑ ↓ ⍳ ○ ⍟ ← → ⍀'
+      '⍺ ⌈ ⌊ {empty} ∇ ∆ ∘ {empty} ⎕ ⋄ {empty} {enter}'
+      '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ {empty} ⌿ {bksp}'
+      '{alt} {space} {exec!!}'
+    ]
+    'alt-shift': [
+      '⍨ {empty} ⍁ ⍂ ⍠ ≈ ⌸ ⍯ ⍣ ⍱ ⍲ ≢ ≡'
+      '⌹ ⍹ ⍷ ⍤ {empty} {empty} ⊖ ⍸ ⍬ ⌽ ⊣ ⊢ ⍉'
+      '⍶ {empty} {empty} {empty} ⍒ ⍋ ⍝ {empty} ⍞ {empty} {empty} {enter}'
+      '{shift} ⊆ ⊇ ⋔ ⍦ ⍎ ⍕ ⌷ « » ↗ {bksp}'
+      '{alt} {space} {exec!!}'
+    ]
 
-  $.keyboard.keyaction.exec = execute
-
-  $('textarea').focus()
-
-
-
-  # Key mappings {{{1
-  mapping = {}
+  # Key mappings
+  combos = '`': {}
   asciiKeys = layout.default.concat(layout.shift).join(' ').split ' '
   aplKeys = layout.alt.concat(layout['alt-shift']).join(' ').split ' '
   for k, i in asciiKeys
     v = aplKeys[i]
-    if '{' not in [k[0], v[0]]
-      mapping['`' + k] = v
+    if not (/^\{\w+\}$/.test(k) or /^\{\w+\}$/.test(v))
+      combos['`'][k] = v
+
+  $.keyboard.keyaction.exec = execute
+  $.keyboard.comboRegex = /(.)(.)/mig
+  $('textarea').keyboard
+    layout: 'custom'
+    useCombos: false
+    display: {bksp: 'Bksp', shift: '⇧', alt: 'APL', enter: 'Enter', exec: '⍎'}
+    autoAccept: true
+    usePreview: false
+    customLayout: layout
+    useCombos: true
+    combos: combos
+
+  $('textarea').addTyping().focus()
 
   $('#code').keydown (event) -> if event.keyCode is 13 and event.ctrlKey then $('#go').click(); false
-  $('#code').retype 'on', {mapping}
 
   tipsyOpts =
     title: ->
-      console.info 'k', $(@).text()
       hSymbolDefs[$(@).text()] ? ''
     gravity: 's'
     delayIn: 1000
@@ -185,7 +180,7 @@ jQuery ($) ->
 
 
 
-  # Examples {{{1
+  # Examples
   for [name, code], i in window.examples
     $('#examples').append(" <a href='#example#{i}'>#{name}</a>")
 

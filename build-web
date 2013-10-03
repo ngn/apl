@@ -46,14 +46,14 @@ i=web-tmp/examples-gen.js ; o=web-tmp/examples.js
 [ $i -nt $o ] && echo "Generating $o" && node $i
 
 echo 'Collecting all JS into web/all.js'
-cat $stitched                            \
-    web-src/jquery.min.js                \
-    web-src/jquery.fieldselection.min.js \
-    web-src/jquery.keyboard.js           \
-    web-src/jquery.retype.min.js         \
-    web-src/jquery.tipsy.js              \
-    web-tmp/examples.js                  \
-    web-tmp/index.js                     \
+cat $stitched                                   \
+    web-src/jquery.min.js                       \
+    web-src/jquery.fieldselection.min.js        \
+    web-src/jquery.keyboard.js                  \
+    web-src/jquery.keyboard.extension-typing.js \
+    web-src/jquery.tipsy.js                     \
+    web-tmp/examples.js                         \
+    web-tmp/index.js                            \
         >web/all.js
 
 echo 'Collecting all CSS into web/all.css'
