@@ -14,7 +14,7 @@
     "gamma": ""
   },
   "devDependencies": {
-    "coffee-script": "git+https://github.com/ngn/coffee-script#macro",
+    "coffee-script": "git+https://github.com/ngn/coffee-script#macro-build",
     "jade": "",
     "glob": "",
     "async": "",
