@@ -121,7 +121,7 @@ fs = require 'fs'
 repl = (ctx) ->
   readline = require 'readline'
   rl = readline.createInterface process.stdin, process.stdout
-  rl.setPrompt 'APL> '
+  rl.setPrompt '      '
 
   {format} = require('./vocabulary/format')
   rl.on 'line', (line) ->
