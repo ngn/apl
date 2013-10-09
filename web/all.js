@@ -6865,7 +6865,7 @@ jQuery(function($) {
     APL: 'Press backquote (`) followed by another key to insert an APL symbol, e.g. `r inserts rho (⍴)'
   };
   layout = {
-    "default": ['` 1 2 3 4 5 6 7 8 9 0 - =', 'q w e r t y u i o p [ ] \'', 'a s d f g h j k l ; \' {enter}', '{shift} z x c v b n m , . / {bksp}', '{alt} {space} {exec!!}'],
+    "default": ['` 1 2 3 4 5 6 7 8 9 0 - =', 'q w e r t y u i o p [ ] \\', 'a s d f g h j k l ; \' {enter}', '{shift} z x c v b n m , . / {bksp}', '{alt} {space} {exec!!}'],
     shift: ['~ ! @ # $ % ^ & * ( ) _ +', 'Q W E R T Y U I O P { } |', 'A S D F G H J K L : " {enter}', '{shift} Z X C V B N M < > ? {bksp}', '{alt} {space} {exec!!}'],
     alt: ['{empty} ¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ ÷ ×', '{empty} ⍵ ∊ ⍴ ~ ↑ ↓ ⍳ ○ ⍟ ← → ⍀', '⍺ ⌈ ⌊ {empty} ∇ ∆ ∘ {empty} ⎕ ⋄ {empty} {enter}', '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ {empty} ⌿ {bksp}', '{alt} {space} {exec!!}'],
     'alt-shift': ['⍨ {empty} ⍁ ⍂ ⍠ ≈ ⌸ ⍯ ⍣ ⍱ ⍲ ≢ ≡', '⌹ ⍹ ⍷ ⍤ {empty} {empty} ⊖ ⍸ ⍬ ⌽ ⊣ ⊢ ⍉', '⍶ {empty} {empty} {empty} ⍒ ⍋ ⍝ {empty} ⍞ {empty} {empty} {enter}', '{shift} ⊆ ⊇ ⋔ ⍦ ⍎ ⍕ ⌷ « » ↗ {bksp}', '{alt} {space} {exec!!}']
