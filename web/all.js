@@ -428,7 +428,7 @@ repl = function(ctx) {
   var format, readline, rl;
   readline = require('readline');
   rl = readline.createInterface(process.stdin, process.stdout);
-  rl.setPrompt('APL> ');
+  rl.setPrompt('      ');
   format = require('./vocabulary/format').format;
   rl.on('line', function(line) {
     var e, result;
