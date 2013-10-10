@@ -1,3 +1,4 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 {APLArray} = require '../array'
 {match, aka} = require './vhelpers'
 

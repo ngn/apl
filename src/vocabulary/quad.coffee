@@ -1,3 +1,4 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 {format} = require './format'
 {APLArray} = require '../array'
 

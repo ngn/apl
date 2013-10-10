@@ -1,4 +1,5 @@
-{assert, isInt} = require '../helpers'
+macro -> macro.fileToNode 'src/macros.coffee'
+{isInt} = require '../helpers'
 {conjunction} = require './vhelpers'
 {APLArray} = require '../array'
 

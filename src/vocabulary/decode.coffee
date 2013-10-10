@@ -1,5 +1,5 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 {APLArray} = require '../array'
-{assert} = require '../helpers'
 
 @vocabulary =
 

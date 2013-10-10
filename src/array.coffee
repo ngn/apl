@@ -1,4 +1,5 @@
-{assert, prod, isInt} = require './helpers'
+macro -> macro.fileToNode 'src/macros.coffee'
+{prod, isInt} = require './helpers'
 {LengthError, DomainError} = require './errors'
 
 # This is an experimental data structure intended to replace the current

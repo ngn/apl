@@ -1,6 +1,7 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 {APLArray} = require '../array'
 {RankError, DomainError} = require '../errors'
-{assert, prod, isInt, repeat} = require '../helpers'
+{prod, isInt, repeat} = require '../helpers'
 
 @vocabulary =
 

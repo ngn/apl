@@ -1,3 +1,4 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 {DomainError} = require '../errors'
 
 @vocabulary =

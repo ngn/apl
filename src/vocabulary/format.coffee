@@ -1,3 +1,4 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 {APLArray} = require '../array'
 {prod, repeat} = require '../helpers'
 

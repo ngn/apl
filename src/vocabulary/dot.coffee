@@ -1,10 +1,10 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 {APLArray} = require '../array'
 reduce = require('./slash').vocabulary['/']
 enclose = require('./enclose').vocabulary['⊂']
 jot = require('./compose').vocabulary['∘']
 each = require('./each').vocabulary['¨']
 {conjunction} = require './vhelpers'
-{assert} = require '../helpers'
 
 @vocabulary =
   '.': conjunction (g, f) ->
