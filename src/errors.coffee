@@ -1,4 +1,5 @@
-{assert, repeat} = require './helpers'
+macro -> macro.fileToNode 'src/macros.coffee'
+{repeat} = require './helpers'
 
 APLError = (name, message = '', opts) ->
   assert typeof name is 'string'

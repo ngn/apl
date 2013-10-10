@@ -1,8 +1,9 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 # `compiler.coffee` transforms an AST into JavaScript code.
 
 parser = require './parser'
 vocabulary = require './vocabulary'
-{assert, all} = require './helpers'
+{all} = require './helpers'
 {SyntaxError} = require './errors'
 
 # # Stage 1: Resolve expr nodes
@@ -183,7 +184,7 @@ resolveExprs = (ast, opts = {}) ->
           h[0]
 
         else
-          assert false, "Unrecognised node type, '#{node[0]}'"
+          throw Error "Unrecognised node type, '#{node[0]}'"
 
     visitLHS = (node, rhsType) ->
       node.scopeNode = scopeNode
@@ -193,7 +194,6 @@ resolveExprs = (ast, opts = {}) ->
           if name is '∇'
             compilerError node, opts,
               'Assignment to ∇ is not allowed.'
-          assert typeof name is 'string'
           if vars[name]
             if vars[name].type isnt rhsType
               compilerError node, opts,
@@ -355,7 +355,7 @@ toJavaScript = (node, opts) ->
       )"
 
     when 'expr'
-      assert false, 'No "expr" nodes are expected at this stage.'
+      throw Error 'No "expr" nodes are expected at this stage.'
 
     when 'vector'
       n = node.length - 1
@@ -392,7 +392,7 @@ toJavaScript = (node, opts) ->
       "_._aplify(#{node[1].replace /(^«|»$)/g, ''})"
 
     else
-      assert false, "Unrecognised node type, '#{node[0]}'"
+      throw Error "Unrecognised node type, '#{node[0]}'"
 
 lhsToJavaScript = (node, opts, rhsJS) ->
   switch node[0]
@@ -435,7 +435,7 @@ lhsToJavaScript = (node, opts, rhsJS) ->
         )
       """
     else
-      assert false, "Unrecognised node type, '#{node[0]}'"
+      throw Error "Unrecognised node type, '#{node[0]}'"
 
 # Used to report the AST node where the error happened
 compilerError = (node, opts, message) ->

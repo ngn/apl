@@ -1,3 +1,4 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 {numeric, pervasive, real, withIdentity, aka} = require './vhelpers'
 {Complex, simplify} = require '../complex'
 {APLArray} = require '../array'

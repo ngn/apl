@@ -1,4 +1,4 @@
-{assert} = require '../helpers'
+macro -> macro.fileToNode 'src/macros.coffee'
 {adverb} = require './vhelpers'
 
 @vocabulary =

@@ -1,3 +1,4 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 # `command.coffee` contains the `main()` entry point to the APL compiler when
 # invoked as a shell command.
 #

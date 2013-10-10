@@ -1,3 +1,4 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 moduleNames = '''
   arithmetic backslash circle comma commute comparisons compose cupcap decode
   disclose dot drop each enclose encode epsilon exclamation execute find

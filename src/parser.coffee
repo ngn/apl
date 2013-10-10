@@ -1,3 +1,4 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 lexer = require './lexer'
 {SyntaxError} = require './errors'
 

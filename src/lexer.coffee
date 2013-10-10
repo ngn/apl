@@ -1,3 +1,4 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 {SyntaxError} = require './errors'
 
 # The lexer transforms APL source into a stream of tokens.

@@ -1,4 +1,5 @@
-{assert, isInt} = require '../helpers'
+macro -> macro.fileToNode 'src/macros.coffee'
+{isInt} = require '../helpers'
 {DomainError, LengthError, RankError, SyntaxError} = require '../errors'
 {APLArray} = require '../array'
 {Complex, complexify} = require '../complex'

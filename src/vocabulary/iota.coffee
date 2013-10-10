@@ -1,3 +1,4 @@
+macro -> macro.fileToNode 'src/macros.coffee'
 {APLArray} = require '../array'
 {DomainError, RankError} = require '../errors'
 {repeat, prod, isInt} = require '../helpers'
