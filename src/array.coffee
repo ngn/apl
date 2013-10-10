@@ -1,5 +1,5 @@
 macro -> macro.fileToNode 'src/macros.coffee'
-{prod, isInt} = require './helpers'
+{prod} = require './helpers'
 {LengthError, DomainError} = require './errors'
 
 # This is an experimental data structure intended to replace the current
