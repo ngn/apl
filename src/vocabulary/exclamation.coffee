@@ -1,6 +1,6 @@
 macro -> macro.fileToNode 'src/macros.coffee'
 {pervasive, real, withIdentity} = require './vhelpers'
-{isInt, prod} = require '../helpers'
+{prod} = require '../helpers'
 {APLArray} = require '../array'
 {DomainError} = require '../errors'
 Γ = require 'gamma'

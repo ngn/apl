@@ -1,4 +1,5 @@
 macro -> macro.fileToNode 'src/macros.coffee'
+
 @prod = (xs) -> r = 1; (for x in xs then r *= x); r
 @all = (xs) -> (for x in xs when not x then return false); true
 
@@ -10,5 +11,3 @@ macro -> macro.fileToNode 'src/macros.coffee'
   m = n * a.length
   while a.length * 2 < m then a = a.concat a
   a.concat a[... m - a.length]
-
-@isInt = isInt = (x, start = -Infinity, end = Infinity) -> x is ~~x and start <= x < end
