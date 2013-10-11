@@ -4,4 +4,4 @@ web/
 web-tmp/
 m/
 m-tmp/
-test/doctest.js
+test/*.js
