@@ -126,11 +126,11 @@ Computed variables are syntactically indistinguishable from other variables
 
 As a hashbang interpreter for APL scripts:
 
-    sudo npm install apl -g
+    sudo npm install -g apl
 
     cat >a.apl <<EOF
     #!/usr/bin/env apl
-    ⎕ ← 'Hell, oh, world!'
+    ⎕ ← 1 2 3 + 4 5 6
     EOF
 
     chmod +x a.apl
@@ -138,16 +138,24 @@ As a hashbang interpreter for APL scripts:
 
 As a compiler:
 
+    sudo npm install -g apl
     apl -c a.apl
     node a.js
 
-As a library:
+As a NodeJS library:
 
     npm install apl
     node <<EOF
     var apl = require('apl');
-    console.info(apl('1 2 3 + 4 5 6'));
+    console.log(apl('1 2 3 + 4 5 6'));
     EOF
+
+In a browser:
+
+    <script src="http://ngn.github.io/apl/downloads/apl.js">
+    <script>
+        var result = apl('1 2 3 + 4 5 6'); // apl is a global variable
+    </script>
 
 # Editor support
 
