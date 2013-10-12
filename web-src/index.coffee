@@ -21,8 +21,13 @@ jQuery ($) ->
   # "Execute" button
   execute = ->
     try
-      result = exec $('#code').val()
-      $('#result').removeClass('error').text format(result).join '\n'
+      s = $('#code').val()
+      if s.toLowerCase() in [')test', ')t']
+        $('#result').removeClass('error').text 'Running tests...'
+        setTimeout runDocTests, 1
+      else
+        result = exec s
+        $('#result').removeClass('error').text format(result).join '\n'
     catch err
       console?.error?(err.stack)
       $('#result').addClass('error').text err
@@ -189,5 +194,33 @@ jQuery ($) ->
     [name, code] = window.examples[parseInt $(@).attr('href').replace /#example(\d+)$/, '$1']
     $('#code').val(code).focus()
     false
+
+
+
+  # Tests
+  runDocTests = ->
+    $('#result').removeClass('error').html ''
+    {exec} = require './compiler'
+    {approx} = require './vocabulary/vhelpers'
+    nExecuted = nFailed = 0
+    t0 = Date.now()
+    for [code, mode, expectation] in aplTests
+      nExecuted++
+      outcome = runDocTest [code, mode, expectation], exec, approx
+      if not outcome.success
+        nFailed++
+        s = """
+          Test failed: #{JSON.stringify code}
+                       #{JSON.stringify expectation}\n
+        """
+        if outcome.reason then s += outcome.reason + '\n'
+        if outcome.error then s += outcome.error.stack + '\n'
+        $('#result').text $('#result').text() + s
+    $('#result').text $('#result').text() + (
+      (if nFailed then "#{nFailed} out of #{nExecuted} tests failed"
+      else "All #{nExecuted} tests passed") +
+      " in #{Date.now() - t0} ms.\n"
+    )
+    return
 
   return

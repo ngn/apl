@@ -38,8 +38,7 @@ fs = require 'fs'
   if argv.help then return optimist.showHelp()
 
   # Complain about unknown or incompatible options.
-  knownOptions =
-    'c compile h help i interactive n nodes p print s stdio _'.split ' '
+  knownOptions = 'c compile h help i interactive n nodes p print s stdio _'.split ' '
   for k of argv when (k not in knownOptions) and not k.match /^\$\d+/
     process.stderr.write "Unknown option, \"#{k}\"\n\n"
     optimist.showHelp()
@@ -89,7 +88,7 @@ fs = require 'fs'
 
   # If printing of nodes is requested, do it and stop.
   if argv.nodes
-    printAST nodes aplCode, opts
+    process.stdout.write astToString nodes aplCode, opts
     return
 
   # Compile.
@@ -116,22 +115,19 @@ fs = require 'fs'
       #{jsCode}
     """) require('./apl').createGlobalContext()
 
-
-
 # Read-eval-print loop
 repl = (ctx) ->
-  readline = require 'readline'
-  rl = readline.createInterface process.stdin, process.stdout
+  rl = require('readline').createInterface process.stdin, process.stdout
   rl.setPrompt '      '
 
-  {format} = require('./vocabulary/format')
+  {format} = require './vocabulary/format'
   rl.on 'line', (line) ->
     try
       if not line.match /^[\ \t\f\r\n]*$/
         result = exec line, ctx: ctx, exposeTopLevelScope: true
         process.stdout.write format(result).join('\n') + '\n'
     catch e
-      console.error e
+      process.stdout.write e.toString()
     rl.prompt()
     return
 
@@ -143,19 +139,12 @@ repl = (ctx) ->
   rl.prompt()
   return
 
-
-
 # Helper functions for printing AST nodes
-printAST = (x, indent = '') ->
-  if isArray x
-    if x.length is 2 and not isArray x[1]
-      console.info indent + x[0] + ' ' + JSON.stringify x[1]
+astToString = (x, indent = '') ->
+  if x instanceof Array
+    if x.length is 2 and x[1] not instanceof Array
+      "#{indent}#{x[0]} #{JSON.stringify x[1]}\n"
     else
-      console.info indent + x[0]
-      for y in x[1...]
-        printAST y, indent + '  '
+      "#{indent}#{x[0]}\n#{(for y in x[1...] then astToString y, indent + '  ').join ''}"
   else
-    console.info indent + JSON.stringify x
-  return
-
-isArray = (x) -> x?.length? and typeof x isnt 'string'
+    "#{indent}#{JSON.stringify x}\n"

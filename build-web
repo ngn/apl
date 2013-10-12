@@ -45,16 +45,29 @@ i=web-src/examples-gen.coffee ; o=web-tmp/examples-gen.js
 i=web-tmp/examples-gen.js ; o=web-tmp/examples.js
 [ $i -nt $o ] && echo "Generating $o" && node $i
 
+i=test/collectdoctests.coffee ; o=${i%.coffee}.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -abc $i
+
+i=test/rundoctest.coffee ; o=${i%.coffee}.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -abc $i
+
+i=test/rundoctests.coffee ; o=${i%.coffee}.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -abc $i
+
 echo 'Collecting all JS into web/all.js'
-cat $stitched                                   \
-    web-src/jquery.min.js                       \
-    web-src/jquery.fieldselection.min.js        \
-    web-src/jquery.keyboard.js                  \
-    web-src/jquery.keyboard.extension-typing.js \
-    web-src/jquery.tipsy.js                     \
-    web-tmp/examples.js                         \
-    web-tmp/index.js                            \
-        >web/all.js
+(
+    cat $stitched                                   \
+        web-src/jquery.min.js                       \
+        web-src/jquery.fieldselection.min.js        \
+        web-src/jquery.keyboard.js                  \
+        web-src/jquery.keyboard.extension-typing.js \
+        web-src/jquery.tipsy.js                     \
+        web-tmp/examples.js                         \
+        web-tmp/index.js                            \
+        test/rundoctest.js
+    echo -n 'var aplTests = '
+    node test/collectdoctests.js
+) >web/all.js
 
 echo 'Collecting all CSS into web/all.css'
 cat web-src/index.css    \
