@@ -30,8 +30,8 @@ done
 i=web-src/index.coffee ; o=web-tmp/index.js
 [ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee --macro -b -o $(dirname $o) -c $i
 
-i=web-src/index.jade ; o=web/index.html
-[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/jade <$i >$o
+i=web-src/index.html ; o=web/index.html
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
 
 i=web-src/apl385.ttf ; o=web/apl385.ttf
 [ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o

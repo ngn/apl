@@ -7,8 +7,8 @@ mkdir -pv m/images m-tmp
 i=m-src/index.coffee ; o=m-tmp/index.js
 [ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee --macro -b -o $(dirname $o) -c $i
 
-i=m-src/index.jade ; o=m/index.html
-[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/jade <$i >$o
+i=m-src/index.html ; o=m/index.html
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
 
 i=web-src/apl385.ttf ; o=m/apl385.ttf
 [ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
