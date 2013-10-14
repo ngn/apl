@@ -119,6 +119,8 @@ macro -> macro.fileToNode 'src/macros.coffee'
   getPrototype: -> # todo
     if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' '
 
+  toString: ->
+    require('./vocabulary/format').format(@).join '\n'
 
 @strideForShape = strideForShape = (shape) ->
   assert shape instanceof Array
