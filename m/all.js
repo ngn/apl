@@ -336,6 +336,10 @@ this.APLArray = APLArray = (function() {
     }
   };
 
+  APLArray.prototype.toString = function() {
+    return require('./vocabulary/format').format(this).join('\n');
+  };
+
   return APLArray;
 
 })();
@@ -343,7 +347,7 @@ this.APLArray = APLArray = (function() {
 this.strideForShape = strideForShape = function(shape) {
   var i, r, tmp3, _i, _ref1;
   if (!(shape instanceof Array)) {
-    throw Error("\"assert shape instanceof Array\" at src/array.coffee:124");
+    throw Error("\"assert shape instanceof Array\" at src/array.coffee:126");
   }
   if (shape.length === 0) {
     return [];
@@ -352,7 +356,7 @@ this.strideForShape = strideForShape = function(shape) {
   r[r.length - 1] = 1;
   for (i = _i = _ref1 = r.length - 2; _i >= 0; i = _i += -1) {
     if (!((tmp3 = shape[i]) === ~~tmp3 && (0) <= tmp3)) {
-      throw Error("\"assert isInt shape[i], 0\" at src/array.coffee:129");
+      throw Error("\"assert isInt shape[i], 0\" at src/array.coffee:131");
     }
     r[i] = r[i + 1] * shape[i + 1];
   }
