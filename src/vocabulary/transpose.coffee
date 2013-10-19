@@ -15,18 +15,27 @@ macro -> macro.fileToNode 'src/macros.coffee'
       # 'a'⍉1 2 !!! DOMAIN ERROR
       # 2⍉1 2 !!! RANK ERROR
       # 2 0 1⍉2 3 4⍴⍳24 <=> 3 4 2⍴0 12 1 13 2 14 3 15 4 16 5 17 6 18 7 19 8 20 9 21 10 22 11 23
+      # 2 0 0⍉2 3 4⍴⍳24 !!! RANK ERROR
+      # 0 0⍉3 3⍴⍳9 <=> 0 4 8
+      # 0 0⍉2 3⍴⍳9 <=> 0 4
+      # 0 0 0⍉3 3 3⍴⍳27 <=> 0 13 26
+      # 0 1 0⍉3 3 3⍴⍳27 <=> 3 3⍴0 3 6 10 13 16 20 23 26
       if alpha.shape.length > 1 then throw RankError()
       if alpha.shape.length is 0 then alpha = new APLArray [alpha.unwrap()]
       n = omega.shape.length
       if alpha.shape[0] isnt n then throw LengthError()
-      shape = Array n
-      stride = Array n
+      shape = []
+      stride = []
       for x, i in alpha.toArray()
         if not isInt x, 0 then throw DomainError()
         if x >= n then throw RankError()
-        if shape[x]? then throw DomainError 'Duplicate axis'
-        shape[x] = omega.shape[i]
-        stride[x] = omega.stride[i]
+        if shape[x]?
+          shape[x] = Math.min shape[x], omega.shape[i]
+          stride[x] += omega.stride[i]
+        else
+          shape[x] = omega.shape[i]
+          stride[x] = omega.stride[i]
+      for u in shape when not u? then throw RankError()
       new APLArray omega.data, shape, stride, omega.offset
     else
       # Transpose (`⍉`)
