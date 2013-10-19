@@ -4497,7 +4497,7 @@ _ref = require('../errors'), DomainError = _ref.DomainError, RankError = _ref.Ra
 
 this.vocabulary = {
   '⍉': function(omega, alpha) {
-    var i, n, shape, stride, tmp0, x, _i, _len, _ref1;
+    var i, n, shape, stride, tmp0, u, x, _i, _j, _len, _len1, _ref1;
     if (alpha) {
       if (alpha.shape.length > 1) {
         throw RankError();
@@ -4509,8 +4509,8 @@ this.vocabulary = {
       if (alpha.shape[0] !== n) {
         throw LengthError();
       }
-      shape = Array(n);
-      stride = Array(n);
+      shape = [];
+      stride = [];
       _ref1 = alpha.toArray();
       for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
         x = _ref1[i];
@@ -4521,10 +4521,18 @@ this.vocabulary = {
           throw RankError();
         }
         if (shape[x] != null) {
-          throw DomainError('Duplicate axis');
+          shape[x] = Math.min(shape[x], omega.shape[i]);
+          stride[x] += omega.stride[i];
+        } else {
+          shape[x] = omega.shape[i];
+          stride[x] = omega.stride[i];
         }
-        shape[x] = omega.shape[i];
-        stride[x] = omega.stride[i];
+      }
+      for (_j = 0, _len1 = shape.length; _j < _len1; _j++) {
+        u = shape[_j];
+        if (u == null) {
+          throw RankError();
+        }
       }
       return new APLArray(omega.data, shape, stride, omega.offset);
     } else {
