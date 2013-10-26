@@ -562,9 +562,6 @@ resolveExprs = function(ast, opts) {
     if (typeof v === 'function') {
       varInfo.type = 'F';
       if ((m = v.aplMetaInfo) != null) {
-        if (m.isPrefixAdverb) {
-          varInfo.isPrefixAdverb = true;
-        }
         if (m.isPostfixAdverb) {
           varInfo.isPostfixAdverb = true;
         }
@@ -601,7 +598,7 @@ resolveExprs = function(ast, opts) {
   while (queue.length) {
     vars = (scopeNode = queue.shift()).vars;
     visit = function(node) {
-      var a, c, h, i, j, name, t, x, _j, _k, _len1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref2, _ref20, _ref21, _ref22, _ref23, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+      var a, c, h, i, j, name, t, x, _j, _k, _len1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref17, _ref18, _ref19, _ref2, _ref20, _ref21, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
       node.scopeNode = scopeNode;
       switch (node[0]) {
         case 'body':
@@ -693,31 +690,20 @@ resolveExprs = function(ast, opts) {
               i--;
             }
           }
-          i = a.length - 1;
-          while (--i >= 0) {
-            if (h[i].isPrefixAdverb && h[i + 1].type === 'F') {
-              [].splice.apply(a, [i, (i + 2) - i].concat(_ref10 = [['prefixAdverb'].concat(a.slice(i, i + 2))])), _ref10;
+          i = 0;
+          while (i < a.length - 1) {
+            if (h[i].type === 'F' && h[i + 1].isPostfixAdverb) {
+              [].splice.apply(a, [i, (i + 2) - i].concat(_ref10 = [['adverb'].concat(a.slice(i, i + 2))])), _ref10;
               [].splice.apply(h, [i, (i + 2) - i].concat(_ref11 = [
                 {
                   type: 'F'
                 }
               ])), _ref11;
-            }
-          }
-          i = 0;
-          while (i < a.length - 1) {
-            if (h[i].type === 'F' && h[i + 1].isPostfixAdverb) {
-              [].splice.apply(a, [i, (i + 2) - i].concat(_ref12 = [['postfixAdverb'].concat(a.slice(i, i + 2))])), _ref12;
-              [].splice.apply(h, [i, (i + 2) - i].concat(_ref13 = [
-                {
-                  type: 'F'
-                }
-              ])), _ref13;
             } else {
               i++;
             }
           }
-          if (h.length === 2 && (h[0].type === (_ref14 = h[1].type) && _ref14 === 'F')) {
+          if (h.length === 2 && (h[0].type === (_ref12 = h[1].type) && _ref12 === 'F')) {
             a = [['hook'].concat(a)];
             h = [
               {
@@ -748,23 +734,23 @@ resolveExprs = function(ast, opts) {
           } else {
             while (h.length > 1) {
               if (h.length === 2 || h[h.length - 3].type === 'F') {
-                [].splice.apply(a, [(_ref15 = h.length - 2), 9e9].concat(_ref16 = [['monadic'].concat(a.slice(h.length - 2))])), _ref16;
-                [].splice.apply(h, [(_ref17 = h.length - 2), 9e9].concat(_ref18 = [
+                [].splice.apply(a, [(_ref13 = h.length - 2), 9e9].concat(_ref14 = [['monadic'].concat(a.slice(h.length - 2))])), _ref14;
+                [].splice.apply(h, [(_ref15 = h.length - 2), 9e9].concat(_ref16 = [
                   {
                     type: 'X'
                   }
-                ])), _ref18;
+                ])), _ref16;
               } else {
-                [].splice.apply(a, [(_ref19 = h.length - 3), 9e9].concat(_ref20 = [['dyadic'].concat(a.slice(h.length - 3))])), _ref20;
-                [].splice.apply(h, [(_ref21 = h.length - 3), 9e9].concat(_ref22 = [
+                [].splice.apply(a, [(_ref17 = h.length - 3), 9e9].concat(_ref18 = [['dyadic'].concat(a.slice(h.length - 3))])), _ref18;
+                [].splice.apply(h, [(_ref19 = h.length - 3), 9e9].concat(_ref20 = [
                   {
                     type: 'X'
                   }
-                ])), _ref22;
+                ])), _ref20;
               }
             }
           }
-          [].splice.apply(node, [0, 9e9].concat(_ref23 = a[0])), _ref23;
+          [].splice.apply(node, [0, 9e9].concat(_ref21 = a[0])), _ref21;
           return h[0];
         default:
           throw Error("Unrecognised node type, '" + node[0] + "'");
@@ -938,11 +924,9 @@ toJavaScript = function(node, opts) {
       return "" + (toJavaScript(node[1], opts)) + "(" + (toJavaScript(node[2], opts)) + ")";
     case 'dyadic':
       return "" + (toJavaScript(node[2], opts)) + "(" + (toJavaScript(node[3], opts)) + ", " + (toJavaScript(node[1], opts)) + ")";
-    case 'prefixAdverb':
-      return "" + (toJavaScript(node[1], opts)) + "(" + (toJavaScript(node[2], opts)) + ")";
     case 'conjunction':
       return "" + (toJavaScript(node[2], opts)) + "(" + (toJavaScript(node[3], opts)) + ", " + (toJavaScript(node[1], opts)) + ")";
-    case 'postfixAdverb':
+    case 'adverb':
       return "" + (toJavaScript(node[2], opts)) + "(" + (toJavaScript(node[1], opts)) + ")";
     case 'hook':
       return "_._hook(" + (toJavaScript(node[2], opts)) + ", " + (toJavaScript(node[1], opts)) + ")";
@@ -4839,10 +4823,6 @@ this.adverb = function(f) {
   return meta(f, 'isPostfixAdverb', true);
 };
 
-this.prefixAdverb = function(f) {
-  return meta(f, 'isPrefixAdverb', true);
-};
-
 this.conjunction = function(f) {
   return meta(f, 'isConjunction', true);
 };
@@ -4852,7 +4832,7 @@ this.aka = function(aliases, f) {
     aliases = [aliases];
   } else {
     if (!(aliases instanceof Array)) {
-      throw Error("\"assert aliases instanceof Array\" at src/vocabulary/vhelpers.coffee:161");
+      throw Error("\"assert aliases instanceof Array\" at src/vocabulary/vhelpers.coffee:160");
     }
   }
   return meta(f, 'aliases', aliases);
