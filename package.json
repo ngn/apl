@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "coffee-script": "git+https://github.com/ngn/coffee-script#macro-build",
+    "macronym": "git+https://github.com/ngn/macronym",
     "glob": "",
     "async": "",
     "stitch": "git+https://github.com/ngn/stitch"
