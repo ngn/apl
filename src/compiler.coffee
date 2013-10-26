@@ -52,7 +52,6 @@ resolveExprs = (ast, opts = {}) ->
     if typeof v is 'function'
       varInfo.type = 'F'
       if (m = v.aplMetaInfo)?
-        if m.isPrefixAdverb  then varInfo.isPrefixAdverb  = true
         if m.isPostfixAdverb then varInfo.isPostfixAdverb = true
         if m.isConjunction   then varInfo.isConjunction   = true
       if /^[gs]et_.*/.test k
@@ -138,18 +137,11 @@ resolveExprs = (ast, opts = {}) ->
               h[i...i+3] = [{type: 'F'}]
               i--
 
-          # Apply prefix adverbs
-          i = a.length - 1
-          while --i >= 0
-            if h[i].isPrefixAdverb and h[i + 1].type is 'F'
-              a[i...i+2] = [['prefixAdverb'].concat a[i...i+2]]
-              h[i...i+2] = [{type: 'F'}]
-
           # Apply postfix adverbs
           i = 0
           while i < a.length - 1
             if h[i].type is 'F' and h[i + 1].isPostfixAdverb
-              a[i...i+2] = [['postfixAdverb'].concat a[i...i+2]]
+              a[i...i+2] = [['adverb'].concat a[i...i+2]]
               h[i...i+2] = [{type: 'F'}]
             else
               i++
@@ -369,13 +361,10 @@ toJavaScript = (node, opts) ->
     when 'dyadic'
       "#{toJavaScript node[2], opts}(#{toJavaScript node[3], opts}, #{toJavaScript node[1], opts})"
 
-    when 'prefixAdverb'
-      "#{toJavaScript node[1], opts}(#{toJavaScript node[2], opts})"
-
     when 'conjunction'
       "#{toJavaScript node[2], opts}(#{toJavaScript node[3], opts}, #{toJavaScript node[1], opts})"
 
-    when 'postfixAdverb'
+    when 'adverb'
       "#{toJavaScript node[2], opts}(#{toJavaScript node[1], opts})"
 
     when 'hook'

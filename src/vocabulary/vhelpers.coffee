@@ -151,7 +151,6 @@ meta = (f, name, value) ->
   meta f, 'identity', x
 
 @adverb       = (f)    -> meta f, 'isPostfixAdverb', true
-@prefixAdverb = (f)    -> meta f, 'isPrefixAdverb', true
 @conjunction  = (f)    -> meta f, 'isConjunction', true
 
 @aka = (aliases, f) -> # "also known as" decorator
