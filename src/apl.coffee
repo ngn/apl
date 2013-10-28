@@ -48,7 +48,42 @@ macro -> macro.fileToNode 'src/vocabulary/variant.coffee'
 macro -> macro.fileToNode 'src/vocabulary/zilde.coffee'
 macro -> macro.fileToNode 'src/compiler.coffee'
 
-apl = (aplCode) -> exec aplCode
+@apl = apl = (aplCode) -> exec aplCode
 apl.createGlobalContext = -> Object.create vocabulary
 apl.approx = approx
-if module? then module.exports = apl else @apl = apl
+if module?
+  module.exports = apl
+  if module is require?.main then do ->
+    usage = 'Usage: apl.js filename.apl\n'
+    file = null
+    for arg in process.argv[2...]
+      if arg in ['-h', '--help'] then (process.stderr.write usage; process.exit 0)
+      else if /^-/.test arg then (process.stderr.write "unrecognized option: #{arg}\n#{usage}"; exit 1)
+      else if file? then (process.stderr.write usage; process.exit 1)
+      else file = arg
+    if file?
+      exec require('fs').readFileSync file, 'utf8'
+    else if not require('tty').isatty()
+      exec Buffer.concat(loop # read all of stdin
+        b = new Buffer 1024
+        break unless (k = require('fs').readSync 0, b, 0, b.length, null)
+        b.slice 0, k
+      ).toString 'utf8'
+    else
+      macro greeting -> macro.valToNode "ngn apl #{(new Date).toISOString().replace /T.*/, ''}\n"
+      process.stdout.write greeting()
+      rl = require('readline').createInterface process.stdin, process.stdout
+      rl.setPrompt '      '
+      ctx = apl.createGlobalContext()
+      rl.on 'line', (line) ->
+        try
+          if not line.match /^[\ \t\f\r\n]*$/
+            result = exec line, ctx: ctx, exposeTopLevelScope: true
+            process.stdout.write format(result).join('\n') + '\n'
+        catch e
+          process.stdout.write e.toString() + '\n'
+        rl.prompt()
+        return
+      rl.on 'close', -> process.stdout.write '\n'; process.exit 0
+      rl.prompt()
+    return
