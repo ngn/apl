@@ -4,29 +4,6 @@ source $(dirname "$0")/build
 
 mkdir -pv web web-tmp
 
-# Prepare libraries for stitching
-mkdir -p web-tmp/gamma
-
-i=node_modules/gamma/index.js ; o=web-tmp/gamma/gamma.js
-[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
-
-# Stitch
-stitched=web-tmp/apl-stitched.js
-for f in $(find src -name '*.coffee'); do
-    if [ $f -nt $stitched ]; then
-        echo "Stitching to $stitched"
-        node >$stitched <<EOF
-            require('stitch')
-                .createPackage({paths: ['lib', 'web-tmp/gamma']})
-                .compile(function (err, source) {
-                    if (err) { throw err; }
-                    process.stdout.write(source);
-                });
-EOF
-        break
-    fi
-done
-
 i=web-src/index.coffee ; o=web-tmp/index.js
 [ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee --macro -b -o $(dirname $o) -c $i
 
@@ -56,7 +33,7 @@ i=test/rundoctests.coffee ; o=${i%.coffee}.js
 
 echo 'Collecting all JS into web/all.js'
 (
-    cat $stitched                                   \
+    cat lib/apl.js                                  \
         web-src/jquery.min.js                       \
         web-src/jquery.fieldselection.min.js        \
         web-src/jquery.keyboard.js                  \

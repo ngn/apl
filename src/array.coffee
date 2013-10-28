@@ -112,7 +112,7 @@ class APLArray
     if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' '
 
   toString: ->
-    require('./vocabulary/format').format(@).join '\n'
+    format(@).join '\n'
 
 strideForShape = (shape) ->
   assert shape instanceof Array

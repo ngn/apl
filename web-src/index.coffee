@@ -1,6 +1,3 @@
-{exec} = require './compiler'
-{format} = require './vocabulary/format'
-
 jQuery ($) ->
 
   # Bookmarkable source code
@@ -26,8 +23,8 @@ jQuery ($) ->
         $('#result').removeClass('error').text 'Running tests...'
         setTimeout runDocTests, 1
       else
-        result = exec s
-        $('#result').removeClass('error').text format(result).join '\n'
+        result = apl s
+        $('#result').removeClass('error').text result + '\n'
     catch err
       console?.error?(err.stack)
       $('#result').addClass('error').text err
@@ -200,13 +197,11 @@ jQuery ($) ->
   # Tests
   runDocTests = ->
     $('#result').removeClass('error').html ''
-    {exec} = require './compiler'
-    {approx} = require './vocabulary/vhelpers'
     nExecuted = nFailed = 0
     t0 = Date.now()
     for [code, mode, expectation] in aplTests
       nExecuted++
-      outcome = runDocTest [code, mode, expectation], exec, approx
+      outcome = runDocTest [code, mode, expectation], apl, apl.approx
       if not outcome.success
         nFailed++
         s = """
