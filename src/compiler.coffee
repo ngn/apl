@@ -1,10 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
 # `compiler.coffee` transforms an AST into JavaScript code.
-
-parser = require './parser'
-vocabulary = require './vocabulary'
-{all} = require './helpers'
-{SyntaxError} = require './errors'
 
 # # Stage 1: Resolve expr nodes
 
@@ -436,14 +430,14 @@ compilerError = (node, opts, message) ->
 
 # # Public interface to this module
 
-@nodes = nodes = (aplCode, opts = {}) ->
+nodes = (aplCode, opts = {}) ->
   opts.aplCode = aplCode
   opts.ctx ?= Object.create vocabulary
-  ast = parser.parse aplCode, opts
+  ast = parse aplCode, opts
   resolveExprs ast, opts
   ast
 
-@compile = compile = (aplCode, opts = {}) ->
+compile = (aplCode, opts = {}) ->
   opts.aplCode = aplCode
   ast = nodes aplCode, opts
   if opts.exposeTopLevelScope
@@ -458,7 +452,7 @@ compilerError = (node, opts, message) ->
     """
   jsCode
 
-@exec = (aplCode, opts = {}) ->
+exec = (aplCode, opts = {}) ->
   opts.aplCode = aplCode
   jsCode = compile aplCode, opts
   (new Function """

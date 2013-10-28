@@ -1,7 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{DomainError} = require '../errors'
-
-@vocabulary =
+addVocabulary
 
   # Execute (`⍎`)
   #
@@ -20,4 +17,4 @@ macro -> macro.fileToNode 'src/macros.coffee'
         if typeof c isnt 'string'
           throw DomainError()
         s += c
-      require('../compiler').exec s
+      exec s

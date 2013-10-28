@@ -1,10 +1,7 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{DomainError} = require './errors'
-
 # complexify(x)
 #   * if x is real, it's converted to a Complex instance with imaginary part 0
 #   * if x is already complex, it's preserved
-@complexify = complexify = (x) ->
+complexify = (x) ->
   if typeof x is 'number'
     new Complex x, 0
   else if x instanceof Complex
@@ -15,9 +12,9 @@ macro -> macro.fileToNode 'src/macros.coffee'
 # simplify(re, im)
 #   * if the imaginary part is 0, the real part is returned
 #   * otherwise, a Complex instance is created
-@simplify = simplify = (re, im) -> if im isnt 0 then new Complex re, im else re
+simplify = (re, im) -> if im isnt 0 then new Complex re, im else re
 
-@Complex = class Complex
+class Complex
 
   constructor: (@re, @im = 0) ->
     assert typeof @re is 'number'

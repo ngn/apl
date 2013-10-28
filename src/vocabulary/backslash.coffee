@@ -1,10 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{repeat} = require '../helpers'
-{RankError, NonceError, DomainError, LengthError} = require '../errors'
-{adverb} = require './vhelpers'
-
-@vocabulary =
+addVocabulary
 
   # Scan or expand (`\`)
   #

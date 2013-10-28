@@ -1,7 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{conjunction} = require './vhelpers'
-
-@vocabulary =
+addVocabulary
 
   # Variant operator (`⍠`)
   #

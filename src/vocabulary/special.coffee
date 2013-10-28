@@ -1,9 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{Complex} = require '../complex'
-{match} = require './vhelpers'
-
-@vocabulary =
+addVocabulary
 
   _aplify: (x) ->
     assert x?

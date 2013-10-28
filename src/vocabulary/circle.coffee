@@ -1,9 +1,5 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{numeric, pervasive} = require './vhelpers'
-{DomainError} = require '../errors'
-{Complex, simplify} = require '../complex'
+addVocabulary
 
-@vocabulary =
   '○': pervasive
 
     # Pi times (`○`)

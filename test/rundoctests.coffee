@@ -2,8 +2,7 @@
 
 # Reads testcases in JSON format from stdin and runs them.
 
-{exec} = require '../lib/compiler'
-{approx} = require '../lib/vocabulary/vhelpers'
+{approx} = exec = require '../lib/apl'
 {runDocTest} = require './rundoctest'
 
 s = ''

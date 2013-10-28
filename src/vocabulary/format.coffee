@@ -1,8 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{prod, repeat} = require '../helpers'
-
-@vocabulary =
+addVocabulary
 
   '⍕': (omega, alpha) ->
     if alpha
@@ -32,7 +28,7 @@ macro -> macro.fileToNode 'src/macros.coffee'
       new APLArray t.join(''), [t.length, t[0].length]
 
 # Format an APL object as an array of strings
-@format = format = (a) ->
+format = (a) ->
   if typeof a is 'undefined' then ['undefined']
   else if a is null then ['null']
   else if typeof a is 'string' then [a]

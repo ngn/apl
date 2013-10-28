@@ -1,10 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{RankError, LengthError, DomainError} = require '../errors'
-{repeat} = require '../helpers'
-{adverb} = require './vhelpers'
-
-@vocabulary =
+addVocabulary
 
   '/': adverb (omega, alpha, axis) ->
     if typeof omega is 'function'

@@ -1,6 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-
-@vocabulary =
+addVocabulary
 
   # [Phrasal forms](http://www.jsoftware.com/papers/fork1.htm)
 

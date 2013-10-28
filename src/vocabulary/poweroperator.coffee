@@ -1,8 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{conjunction} = require './vhelpers'
-{APLArray} = require '../array'
-
-@vocabulary =
+addVocabulary
 
   # Power operator (`⍣`)
   #

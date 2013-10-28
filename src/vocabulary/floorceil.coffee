@@ -1,9 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{numeric, pervasive, real, withIdentity} = require './vhelpers'
-{APLArray} = require '../array'
-{Complex} = require '../complex'
-
-@vocabulary =
+addVocabulary
 
   '⌊': withIdentity Infinity, pervasive
 

@@ -10,8 +10,7 @@
   },
   "main": "./lib/apl",
   "dependencies": {
-    "optimist": "",
-    "gamma": ""
+    "optimist": ""
   },
   "devDependencies": {
     "coffee-script": "git+https://github.com/ngn/coffee-script#macro-build",

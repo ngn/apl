@@ -1,9 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{repeat} = require '../helpers'
-{getAxisList} = require './vhelpers'
-
-@vocabulary =
+addVocabulary
 
   '⊂': (omega, alpha, axes) ->
     if alpha

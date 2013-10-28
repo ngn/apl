@@ -2,18 +2,4 @@
 set -e
 cd $(dirname "$0")
 
-for coffeeDir in $(find src -type d); do
-    coffeeFiles=$(
-        for coffeeFile in "$coffeeDir"/*.coffee; do
-            jsFile="${coffeeFile/#src/lib}"
-            jsFile="${jsFile/%.coffee/.js}"
-            if [ "$coffeeFile" -nt "$jsFile" ]; then
-                echo -n "$coffeeFile "
-            fi
-        done
-    )
-    if [ -n "$coffeeFiles" ]; then
-        echo Compiling $coffeeFiles
-        node_modules/.bin/coffee --macro -b -c -o ${coffeeDir/#src/lib} $coffeeFiles
-    fi
-done
+node_modules/.bin/coffee -ac -o lib src/apl.coffee
