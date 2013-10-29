@@ -1,6 +1,3 @@
-{exec} = require './compiler'
-{format} = require './vocabulary/format'
-
 $.fn.toggleVisibility = ->
   @css 'visibility', if @css('visibility') is 'hidden' then '' else 'hidden'
 
@@ -107,8 +104,8 @@ jQuery ($) ->
       try
         code = extractTextFromDOM(document.getElementById 'editor')
                 .replace /\xa0/g, ' '
-        result = exec code
-        $('#result').removeClass('error').text format(result).join '\n'
+        result = apl code
+        $('#result').removeClass('error').text result + '\n'
       catch err
         console?.error?(err)
         $('#result').addClass('error').text err

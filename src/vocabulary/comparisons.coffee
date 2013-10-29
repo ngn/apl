@@ -1,9 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{pervasive, real, match, withIdentity} = require './vhelpers'
-{Complex} = require '../complex'
-
-@vocabulary =
+addVocabulary
 
   # Equals (`=`)
   #

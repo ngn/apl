@@ -1,14 +1,6 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-reduce = require('./slash').vocabulary['/']
-enclose = require('./enclose').vocabulary['⊂']
-jot = require('./compose').vocabulary['∘']
-each = require('./each').vocabulary['¨']
-{conjunction} = require './vhelpers'
-
-@vocabulary =
+addVocabulary
   '.': conjunction (g, f) ->
-    if f is jot then outerProduct g else innerProduct g, f
+    if f is vocabulary['∘'] then outerProduct g else innerProduct g, f
 
 # Outer product
 #
@@ -76,6 +68,8 @@ outerProduct = (f) ->
 # 7 +.= 7               <=> 1
 # (3 2⍴5 ¯3 ¯2 4 ¯1 0) +.× 2 2⍴6 ¯3 5 7  <=> 3 2⍴15 ¯36 8 34 ¯6 3
 innerProduct = (g, f) ->
+  each = vocabulary['¨']
+  enclose = vocabulary['⊂']
   F = each reduce f
   G = outerProduct g
   (omega, alpha) ->

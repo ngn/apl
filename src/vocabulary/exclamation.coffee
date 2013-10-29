@@ -1,12 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{pervasive, real, withIdentity} = require './vhelpers'
-{prod} = require '../helpers'
-{APLArray} = require '../array'
-{DomainError} = require '../errors'
-Γ = require 'gamma'
-lnΓ = Γ.log
-
-@vocabulary =
+addVocabulary
 
   '!': withIdentity 1, pervasive
 
@@ -66,3 +58,27 @@ lnΓ = Γ.log
 
 negInt = (x) -> isInt(x) and x < 0
 smallFactorials = do -> [x = 1].concat(for i in [1..25] then x *= i)
+
+{Γ, lnΓ} = do ->
+  g = 7
+  p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7]
+  g_ln = 607/128
+  p_ln = [0.99999999999999709182, 57.156235665862923517, -59.597960355475491248, 14.136097974741747174, -0.49191381609762019978, 0.33994649984811888699e-4, 0.46523628927048575665e-4, -0.98374475304879564677e-4, 0.15808870322491248884e-3, -0.21026444172410488319e-3, 0.21743961811521264320e-3, -0.16431810653676389022e-3, 0.84418223983852743293e-4, -0.26190838401581408670e-4, 0.36899182659531622704e-5]
+
+  # Spouge approximation (suitable for large arguments)
+  lnΓ: (z) ->
+    if z < 0 then return NaN
+    x = p_ln[0]
+    for i in [p_ln.length - 1 ... 0] by -1 then x += p_ln[i] / (z + i)
+    t = z + g_ln + .5
+    .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x)-Math.log(z)
+
+  Γ: (z) ->
+    if z < 0.5 then Math.PI / (Math.sin(Math.PI * z) * Γ(1 - z))
+    else if z > 100 then Math.exp lnΓ z
+    else
+      z--
+      x = p[0]
+      for i in [1...g+2] by 1 then x += p[i] / (z + i)
+      t = z + g + .5
+      Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x

@@ -17,9 +17,9 @@ i=m-src/images/cursor.png ; o=m/images/cursor.png
 [ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
 
 echo 'Collecting all JS into m/all.js'
-cat web-tmp/apl-stitched.js \
-    web-src/jquery.min.js   \
-    m-tmp/index.js          \
+cat lib/apl.js            \
+    web-src/jquery.min.js \
+    m-tmp/index.js        \
         >m/all.js
 
 echo 'Collecting all CSS into m/all.css'

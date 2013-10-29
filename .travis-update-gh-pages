@@ -22,9 +22,8 @@ git merge origin/master --no-edit
 npm install
 ./build-web
 ./build-m
-./build-downloads
 if [ -n "$(git status m web --porcelain)" ]; then
-    git add -A web m downloads
+    git add -A web m lib
     git commit -m 'built demo'
 fi
 git push origin gh-pages

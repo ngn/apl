@@ -1,9 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{withIdentity, conjunction} = require './vhelpers'
-{RankError} = require '../errors'
-
-@vocabulary =
+addVocabulary
 
   # Identity operator (`⍁`)
   #

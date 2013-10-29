@@ -1,12 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{prod} = require './helpers'
-{LengthError, DomainError} = require './errors'
-
-# This is an experimental data structure intended to replace the current
-# representation of APL arrays.
-# Inspired by [ndarray](https://github.com/mikolalysenko/ndarray#readme)
-
-@APLArray = class APLArray
+class APLArray
 
   constructor: (@data, @shape, @stride, @offset = 0) ->
     @shape ?= [@data.length]
@@ -120,9 +112,9 @@ macro -> macro.fileToNode 'src/macros.coffee'
     if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' '
 
   toString: ->
-    require('./vocabulary/format').format(@).join '\n'
+    format(@).join '\n'
 
-@strideForShape = strideForShape = (shape) ->
+strideForShape = (shape) ->
   assert shape instanceof Array
   if shape.length is 0 then return []
   r = Array shape.length
@@ -131,7 +123,6 @@ macro -> macro.fileToNode 'src/macros.coffee'
     assert isInt shape[i], 0
     r[i] = r[i + 1] * shape[i + 1]
   r
-
 
 APLArray.zero   = new APLArray [0], []
 APLArray.one    = new APLArray [1], []

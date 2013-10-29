@@ -1,8 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{match, aka} = require './vhelpers'
-
-@vocabulary =
+addVocabulary
 
   '∊': aka '∈', (omega, alpha) ->
     if alpha

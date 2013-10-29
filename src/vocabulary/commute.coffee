@@ -1,7 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{adverb} = require './vhelpers'
-
-@vocabulary =
+addVocabulary
 
   # Commute (`⍨`)
   #

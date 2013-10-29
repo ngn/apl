@@ -3,21 +3,16 @@
   "version": "0.1.13",
   "directories": {
     "lib": "./lib",
-    "bin": "./bin"
+    "bin": "./lib"
   },
   "scripts": {
+    "start": "./lib/apl.js",
     "test": "./test.sh"
   },
-  "main": "./lib/apl",
-  "dependencies": {
-    "optimist": "",
-    "gamma": ""
-  },
+  "main": "./lib/apl.js",
   "devDependencies": {
     "coffee-script": "git+https://github.com/ngn/coffee-script#macro-build",
     "macronym": "git+https://github.com/ngn/macronym",
-    "glob": "",
-    "async": "",
-    "stitch": "git+https://github.com/ngn/stitch"
+    "glob": ""
   }
 }

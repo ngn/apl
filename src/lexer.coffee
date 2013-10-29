@@ -1,6 +1,3 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{SyntaxError} = require './errors'
-
 # The lexer transforms APL source into a stream of tokens.
 #
 # It does so by trying to match regular expressions at the current source
@@ -36,7 +33,7 @@ tokenDefs = [
 # separators.
 #
 # A sentry `'eof'` token is generated at the end.
-@tokenize = (aplCode, opts = {}) ->
+tokenize = (aplCode, opts = {}) ->
   line = col = 1
   stack = ['{'] # a stack of brackets
   next: ->

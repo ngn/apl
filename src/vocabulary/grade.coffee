@@ -1,9 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{RankError, DomainError} = require '../errors'
-{repeat} = require '../helpers'
-
-@vocabulary =
+addVocabulary
 
   # Grade up/down (`⍋`)
   #

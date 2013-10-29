@@ -1,7 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-
-@vocabulary =
+addVocabulary
 
   # Decode (`⊥`)
   #

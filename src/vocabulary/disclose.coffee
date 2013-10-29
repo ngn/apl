@@ -1,8 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{RankError, IndexError} = require '../errors'
-
-@vocabulary =
+addVocabulary
 
   '⊃': (omega, alpha) ->
     if alpha

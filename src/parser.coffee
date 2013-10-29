@@ -1,7 +1,3 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-lexer = require './lexer'
-{SyntaxError} = require './errors'
-
 # The parser builds an AST from a stream of tokens.
 #
 # A node in the AST is a JavaScript array whose first item is a string
@@ -25,8 +21,8 @@ lexer = require './lexer'
 # This parser is a hand-crafted recursive descent parser.  Various parseX()
 # functions roughly correspond to the set of non-terminals in an imaginary
 # grammar.
-@parse = (aplCode, opts = {}) ->
-  tokenStream = lexer.tokenize aplCode
+parse = (aplCode, opts = {}) ->
+  tokenStream = tokenize aplCode
 
   # A single-token lookahead is used.  Variable `token` stores the upcoming
   # token.

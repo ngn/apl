@@ -1,10 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{RankError, DomainError} = require '../errors'
-{real, pervasive, bool, match, withIdentity, aka} = require './vhelpers'
-{Complex} = require '../complex'
-
-@vocabulary =
+addVocabulary
 
   '~': (omega, alpha) ->
     if alpha

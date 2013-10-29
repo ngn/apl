@@ -1,8 +1,3 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{DomainError, LengthError, RankError, SyntaxError} = require '../errors'
-{APLArray} = require '../array'
-{Complex, complexify} = require '../complex'
-
 multiplicitySymbol = (z) ->
   if z instanceof APLArray then (if z.isSingleton() then '1' else '*') else '.'
 
@@ -14,7 +9,7 @@ multiplicitySymbol = (z) ->
 # What pervasive() actually does is to take two versions of a scalar function
 # (a monadic and a dyadic one), make them pervasive, and combine them into a
 # single function that dispatches based on the number of arguments.
-@pervasive = ({monad, dyad}) ->
+pervasive = ({monad, dyad}) ->
   pervadeMonadic =
     if monad
       (x) ->
@@ -54,13 +49,13 @@ multiplicitySymbol = (z) ->
     assert alpha instanceof APLArray or typeof alpha is 'undefined'
     (if alpha then pervadeDyadic else pervadeMonadic) omega, alpha
 
-@real = (f) -> (x, y, axis) ->
+real = (f) -> (x, y, axis) ->
   if typeof x is 'number' and (not y? or typeof y is 'number')
     f x, y, axis
   else
     throw DomainError()
 
-@numeric = (f, g) -> (x, y, axis) ->
+numeric = (f, g) -> (x, y, axis) ->
   if typeof x is 'number' and (not y? or typeof y is 'number')
     f x, y, axis
   else
@@ -69,7 +64,7 @@ multiplicitySymbol = (z) ->
       y = complexify y
     g x, y, axis
 
-@match = match = (x, y) ->
+match = match = (x, y) ->
   if x instanceof APLArray
     if not (y instanceof APLArray) then false
     else
@@ -94,7 +89,7 @@ numApprox = (x, y) ->
 
 # approx() is like match(), but it is tolerant to precision errors;
 # used for comparing expected and actual results in doctests
-@approx = approx = (x, y) ->
+approx = approx = (x, y) ->
   if x instanceof APLArray
     if not (y instanceof APLArray) then false
     else
@@ -115,12 +110,12 @@ numApprox = (x, y) ->
       else
         (x['≡']?(y)) ? (y['≡']?(x)) ? (x is y)
 
-@bool = (x) ->
+bool = (x) ->
   if x not in [0, 1]
     throw DomainError()
   x
 
-@getAxisList = (axes, rank) ->
+getAxisList = (axes, rank) ->
   assert isInt rank, 0
   if typeof axes is 'undefined' then return []
   assert axes instanceof APLArray
@@ -146,14 +141,14 @@ meta = (f, name, value) ->
   (f.aplMetaInfo ?= {})[name] = value
   f
 
-@withIdentity = (x, f) ->
+withIdentity = (x, f) ->
   if x not instanceof APLArray then x = APLArray.scalar x
   meta f, 'identity', x
 
-@adverb       = (f)    -> meta f, 'isPostfixAdverb', true
-@conjunction  = (f)    -> meta f, 'isConjunction', true
+adverb       = (f)    -> meta f, 'isPostfixAdverb', true
+conjunction  = (f)    -> meta f, 'isConjunction', true
 
-@aka = (aliases, f) -> # "also known as" decorator
+aka = (aliases, f) -> # "also known as" decorator
   if typeof aliases is 'string'
     aliases = [aliases]
   else

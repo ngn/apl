@@ -1,9 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{DomainError, IndexError, RankError, LengthError} = require '../errors'
-{prod, repeat} = require '../helpers'
-
-@vocabulary =
+addVocabulary
 
   # Index (`⌷`)
   #

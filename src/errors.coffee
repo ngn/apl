@@ -1,6 +1,3 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{repeat} = require './helpers'
-
 APLError = (name, message = '', opts) ->
   assert typeof name is 'string'
   assert typeof message is 'string'
@@ -21,9 +18,9 @@ APLError = (name, message = '', opts) ->
   for k, v of opts then e[k] = v
   e
 
-@SyntaxError = (message, opts) -> APLError 'SYNTAX ERROR', message, opts
-@DomainError = (message, opts) -> APLError 'DOMAIN ERROR', message, opts
-@LengthError = (message, opts) -> APLError 'LENGTH ERROR', message, opts
-@RankError   = (message, opts) -> APLError 'RANK ERROR',   message, opts
-@IndexError  = (message, opts) -> APLError 'INDEX ERROR',  message, opts
-@NonceError  = (message, opts) -> APLError 'NONCE ERROR',  message, opts
+SyntaxError = (message, opts) -> APLError 'SYNTAX ERROR', message, opts
+DomainError = (message, opts) -> APLError 'DOMAIN ERROR', message, opts
+LengthError = (message, opts) -> APLError 'LENGTH ERROR', message, opts
+RankError   = (message, opts) -> APLError 'RANK ERROR',   message, opts
+IndexError  = (message, opts) -> APLError 'INDEX ERROR',  message, opts
+NonceError  = (message, opts) -> APLError 'NONCE ERROR',  message, opts

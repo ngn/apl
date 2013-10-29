@@ -1,8 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{format} = require './format'
-{APLArray} = require '../array'
-
-@vocabulary =
+addVocabulary
 
   'get_⎕': ->
     if typeof window?.prompt is 'function'

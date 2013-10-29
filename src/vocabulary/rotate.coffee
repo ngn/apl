@@ -1,9 +1,4 @@
-macro -> macro.fileToNode 'src/macros.coffee'
-{APLArray} = require '../array'
-{DomainError, LengthError, IndexError} = require '../errors'
-{prod, repeat} = require '../helpers'
-
-@vocabulary =
+addVocabulary
 
   '⌽': rotate = (omega, alpha, axis) ->
     assert typeof axis is 'undefined' or axis instanceof APLArray
