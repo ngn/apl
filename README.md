@@ -124,35 +124,27 @@ Computed variables are syntactically indistinguishable from other variables
 
 # Usage
 
-As a hashbang interpreter for APL scripts:
+Install [NodeJS](http://nodejs.org/).
 
-    sudo npm install -g apl
+Download [apl.js](http://ngn.github.io/apl/lib/apl.js) and make it executable:
 
-    cat >a.apl <<EOF
-    #!/usr/bin/env apl
-    ⎕ ← 1 2 3 + 4 5 6
-    EOF
+    wget http://ngn.github.io/apl/lib/apl.js
+    chmod +x apl.js
 
-    chmod +x a.apl
-    ./a.apl
+Running `./apl.js` without arguments starts a REPL.
 
-As a compiler:
+Running it with an argument executes an APL script:
 
-    sudo npm install -g apl
-    apl -c a.apl
-    node a.js
+    ./apl.js filename.apl
 
-As a NodeJS library:
+It can be `require()`d as a CommonJS module:
 
-    npm install apl
-    node <<EOF
-    var apl = require('apl');
-    console.log(apl('1 2 3 + 4 5 6'));
-    EOF
+    var apl = require('./apl');
+    console.log(apl('1 2 3 + 4 5 6').toString());
 
-In a browser:
+or used in an HTML page:
 
-    <script src="http://ngn.github.io/apl/downloads/apl.js">
+    <script src="http://ngn.github.io/apl/lib/apl.js">
     <script>
         var result = apl('1 2 3 + 4 5 6'); // apl is a global variable
     </script>
