@@ -18,8 +18,15 @@ Runs on [NodeJS](http://nodejs.org/) or in a browser<br>
 
 **[In-browser demo](http://ngn.github.com/apl/web/index.html)**
 
-Supports: most primitives, dfns, complex numbers, infinities, forks and hooks<br>
-Doesn't support: traditional functions, non-zero index origin, comparison tolerance, control structures, NaN-s<br>
+Supports: most primitives, dfns (`{⍺ ⍵}`), nested arrays, complex numbers
+(`1j2`), infinities (`¯`), forks and hooks, strand assignment (`a b←c`), index
+assignment (`a[b]←c`)
+
+Doesn't support: traditional functions (`∇R←X f Y`), non-zero index origin
+(`⎕IO`), comparison tolerance (`⎕CT`), prototypes, NaN-s, function assignment
+(`x+←1`), custom operators (`{⍺⍺ ⍵⍵}`), control structures (`:If`),
+object-oriented features, namespaces
+
 [More info](https://github.com/ngn/vector-article/#readme)
 
 # Usage
