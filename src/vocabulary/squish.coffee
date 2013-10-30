@@ -6,6 +6,7 @@ addVocabulary
   #
   # 1⌷3 5 8                <=> 5
   # (3 5 8)[1]             <=> 5
+  # (3 5 8)[⍬]             <=> ⍬
   # (2 2 0)(1 2)⌷3 3⍴⍳9    <=> 3 2⍴7 8 7 8 1 2
   # ¯1⌷3 5 8               !!! INDEX ERROR
   # 2⌷111 222 333 444      <=> 333
@@ -23,19 +24,20 @@ addVocabulary
     [subscripts, subscriptShapes] = prepareForIndexing omega, alpha, axes
 
     data = []
-    u = repeat [0], subscripts.length
-    p = omega.offset
-    for a in [0...subscripts.length]
-      p += subscripts[a][0] * omega.stride[a]
-    loop
-      data.push omega.data[p]
-      a = subscripts.length - 1
-      while a >= 0 and u[a] + 1 is subscripts[a].length
-        p += (subscripts[a][0] - subscripts[a][u[a]]) * omega.stride[a]
-        u[a--] = 0
-      if a < 0 then break
-      p += (subscripts[a][u[a] + 1] - subscripts[a][u[a]]) * omega.stride[a]
-      u[a]++
+    if all(for x in subscripts then x.length)
+      u = repeat [0], subscripts.length
+      p = omega.offset
+      for a in [0...subscripts.length]
+        p += subscripts[a][0] * omega.stride[a]
+      loop
+        data.push omega.data[p]
+        a = subscripts.length - 1
+        while a >= 0 and u[a] + 1 is subscripts[a].length
+          p += (subscripts[a][0] - subscripts[a][u[a]]) * omega.stride[a]
+          u[a--] = 0
+        if a < 0 then break
+        p += (subscripts[a][u[a] + 1] - subscripts[a][u[a]]) * omega.stride[a]
+        u[a]++
 
     new APLArray data, [].concat subscriptShapes...
 
@@ -125,7 +127,6 @@ prepareForIndexing = (omega, alpha, axes) ->
     if typeof subscripts[axis] isnt 'undefined' then throw RankError 'Duplicate axis'
     d = alphaItems[i]
     subscripts[axis] = if d instanceof APLArray then d.toArray() else [d]
-    assert subscripts[axis].length
     subscriptShapes[axis] = if d instanceof APLArray then d.shape else []
     for x in subscripts[axis]
       if not isInt x then throw DomainError()
