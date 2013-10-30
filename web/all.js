@@ -3321,7 +3321,7 @@ addVocabulary({
 
 addVocabulary({
   '⌷': squish = function(omega, alpha, axes) {
-    var a, data, p, subscriptShapes, subscripts, u, _i, _ref1, _ref2, _ref3;
+    var a, data, p, subscriptShapes, subscripts, u, x, _i, _ref1, _ref2, _ref3;
     if (typeof omega === 'function') {
       return function(x, y) {
         return omega(x, y, alpha);
@@ -3332,23 +3332,33 @@ addVocabulary({
     }
     _ref1 = prepareForIndexing(omega, alpha, axes), subscripts = _ref1[0], subscriptShapes = _ref1[1];
     data = [];
-    u = repeat([0], subscripts.length);
-    p = omega.offset;
-    for (a = _i = 0, _ref2 = subscripts.length; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; a = 0 <= _ref2 ? ++_i : --_i) {
-      p += subscripts[a][0] * omega.stride[a];
-    }
-    while (true) {
-      data.push(omega.data[p]);
-      a = subscripts.length - 1;
-      while (a >= 0 && u[a] + 1 === subscripts[a].length) {
-        p += (subscripts[a][0] - subscripts[a][u[a]]) * omega.stride[a];
-        u[a--] = 0;
+    if (all((function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = subscripts.length; _i < _len; _i++) {
+        x = subscripts[_i];
+        _results.push(x.length);
       }
-      if (a < 0) {
-        break;
+      return _results;
+    })())) {
+      u = repeat([0], subscripts.length);
+      p = omega.offset;
+      for (a = _i = 0, _ref2 = subscripts.length; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; a = 0 <= _ref2 ? ++_i : --_i) {
+        p += subscripts[a][0] * omega.stride[a];
       }
-      p += (subscripts[a][u[a] + 1] - subscripts[a][u[a]]) * omega.stride[a];
-      u[a]++;
+      while (true) {
+        data.push(omega.data[p]);
+        a = subscripts.length - 1;
+        while (a >= 0 && u[a] + 1 === subscripts[a].length) {
+          p += (subscripts[a][0] - subscripts[a][u[a]]) * omega.stride[a];
+          u[a--] = 0;
+        }
+        if (a < 0) {
+          break;
+        }
+        p += (subscripts[a][u[a] + 1] - subscripts[a][u[a]]) * omega.stride[a];
+        u[a]++;
+      }
     }
     return new APLArray(data, (_ref3 = []).concat.apply(_ref3, subscriptShapes));
   },
@@ -3401,13 +3411,13 @@ addVocabulary({
 prepareForIndexing = function(omega, alpha, axes) {
   var alphaItems, axis, d, i, subscriptShapes, subscripts, tmp27, tmp28, x, _i, _j, _k, _l, _len, _len1, _m, _ref1, _ref2, _ref3, _ref4, _results, _results1;
   if (!(alpha instanceof APLArray)) {
-    throw Error("\"assert alpha instanceof APLArray\" at src/vocabulary/squish.coffee:109");
+    throw Error("\"assert alpha instanceof APLArray\" at src/vocabulary/squish.coffee:111");
   }
   if (!(omega instanceof APLArray)) {
-    throw Error("\"assert omega instanceof APLArray\" at src/vocabulary/squish.coffee:110");
+    throw Error("\"assert omega instanceof APLArray\" at src/vocabulary/squish.coffee:112");
   }
   if (!((axes == null) || axes instanceof APLArray)) {
-    throw Error("\"assert (not axes?) or axes instanceof APLArray\" at src/vocabulary/squish.coffee:111");
+    throw Error("\"assert (not axes?) or axes instanceof APLArray\" at src/vocabulary/squish.coffee:113");
   }
   if (alpha.shape.length > 1) {
     throw RankError();
@@ -3439,9 +3449,6 @@ prepareForIndexing = function(omega, alpha, axes) {
     }
     d = alphaItems[i];
     subscripts[axis] = d instanceof APLArray ? d.toArray() : [d];
-    if (!subscripts[axis].length) {
-      throw Error("\"assert subscripts[axis].length\" at src/vocabulary/squish.coffee:128");
-    }
     subscriptShapes[axis] = d instanceof APLArray ? d.shape : [];
     _ref2 = subscripts[axis];
     for (_k = 0, _len1 = _ref2.length; _k < _len1; _k++) {
@@ -4243,7 +4250,7 @@ if (typeof module !== "undefined" && module !== null) {
           return _results;
         })()).toString('utf8'));
       } else {
-        process.stdout.write("ngn apl 2013-10-29\n");
+        process.stdout.write("ngn apl 2013-10-30\n");
         rl = require('readline').createInterface(process.stdin, process.stdout);
         rl.setPrompt('      ');
         ctx = apl.createGlobalContext();
@@ -7234,6 +7241,7 @@ var aplTests = [
 ["⎕IO←0","<=>","0"],
 ["1⌷3 5 8","<=>","5"],
 ["(3 5 8)[1]","<=>","5"],
+["(3 5 8)[⍬]","<=>","⍬"],
 ["(2 2 0)(1 2)⌷3 3⍴⍳9","<=>","3 2⍴7 8 7 8 1 2"],
 ["¯1⌷3 5 8","!!!","INDEX ERROR"],
 ["2⌷111 222 333 444","<=>","333"],
