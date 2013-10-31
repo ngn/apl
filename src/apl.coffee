@@ -58,7 +58,7 @@ if module?
     file = null
     for arg in process.argv[2...]
       if arg in ['-h', '--help'] then (process.stderr.write usage; process.exit 0)
-      else if /^-/.test arg then (process.stderr.write "unrecognized option: #{arg}\n#{usage}"; exit 1)
+      else if /^-/.test arg then (process.stderr.write "unrecognized option: #{arg}\n#{usage}"; process.exit 1)
       else if file? then (process.stderr.write usage; process.exit 1)
       else file = arg
     if file?
