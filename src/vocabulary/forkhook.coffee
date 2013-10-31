@@ -36,12 +36,11 @@ addVocabulary
   # Trains (longer forks)
   # (+,-,×,÷) 2   <=> 2 ¯2 1 .5
   # 1 (+,-,×,÷) 2 <=> 3 ¯1 2 .5
-  _fork: (verbs) ->
-    assert verbs.length % 2 is 1
-    assert verbs.length >= 3
-    for f in verbs then assert typeof f is 'function'
-    (b, a) ->
-      r = verbs[verbs.length - 1] b, a
-      for i in [verbs.length - 2 ... 0] by -2
-        r = verbs[i] r, verbs[i - 1] b, a
-      r
+  _fork1: (h, g) ->
+    assert typeof h is 'function'
+    assert typeof g is 'function'
+    [h, g]
+
+  _fork2: ([h, g], f) ->
+    assert typeof h is 'function'
+    (b, a) -> g h(b, a), f b, a

@@ -3,6 +3,7 @@ macro -> macro.fileToNode 'src/helpers.coffee'
 macro -> macro.fileToNode 'src/errors.coffee'
 macro -> macro.fileToNode 'src/array.coffee'
 macro -> macro.fileToNode 'src/complex.coffee'
+macro -> macro.fileToNode 'src/vm.coffee'
 macro -> macro.fileToNode 'src/lexer.coffee'
 macro -> macro.fileToNode 'src/parser.coffee'
 macro -> macro.fileToNode 'src/vocabulary.coffee'
@@ -49,7 +50,6 @@ macro -> macro.fileToNode 'src/vocabulary/zilde.coffee'
 macro -> macro.fileToNode 'src/compiler.coffee'
 
 @apl = apl = (aplCode) -> exec aplCode
-apl.createGlobalContext = -> Object.create vocabulary
 apl.approx = approx
 if module?
   module.exports = apl
@@ -74,11 +74,11 @@ if module?
       process.stdout.write greeting()
       rl = require('readline').createInterface process.stdin, process.stdout
       rl.setPrompt '      '
-      ctx = apl.createGlobalContext()
+      ctx = Object.create vocabulary
       rl.on 'line', (line) ->
         try
           if not line.match /^[\ \t\f\r\n]*$/
-            result = exec line, ctx: ctx, exposeTopLevelScope: true
+            result = exec line, ctx: ctx
             process.stdout.write format(result).join('\n') + '\n'
         catch e
           process.stdout.write e.toString() + '\n'
