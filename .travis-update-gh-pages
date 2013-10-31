@@ -20,8 +20,7 @@ git config user.email travis@example.com
 git config user.name travis
 git merge origin/master --no-edit
 npm install
-./build-web
-./build-m
+./build
 if [ -n "$(git status m web --porcelain)" ]; then
     git add -A web m lib
     git commit -m 'built demo'

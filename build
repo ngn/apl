@@ -2,10 +2,91 @@
 set -e
 cd $(dirname "$0")
 
-mkdir -p lib
+# Build lib/apl.js
+
 f=lib/apl.js
 echo "Building $f"
 mkdir -p lib
 echo '//usr/bin/env node "$0" $@ ; exit $?' >$f
 node_modules/.bin/coffee -abcp src/apl.coffee >>$f
 chmod +x $f
+
+# Build web demo
+
+mkdir -pv web web-tmp
+
+i=web-src/index.coffee ; o=web-tmp/index.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -o $(dirname $o) -abc $i
+
+i=web-src/index.html ; o=web/index.html
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+i=web-src/apl385.ttf ; o=web/apl385.ttf
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+i=web-src/tipsy.gif ; o=web/tipsy.gif
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+i=web-src/examples-gen.coffee ; o=web-tmp/examples-gen.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -o $(dirname $o) -abc $i
+
+i=web-tmp/examples-gen.js ; o=web-tmp/examples.js
+[ $i -nt $o ] && echo "Generating $o" && node $i
+
+i=test/collectdoctests.coffee ; o=${i%.coffee}.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -abc $i
+
+i=test/rundoctest.coffee ; o=${i%.coffee}.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -abc $i
+
+i=test/rundoctests.coffee ; o=${i%.coffee}.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -abc $i
+
+echo 'Collecting all JS into web/all.js'
+(
+    cat lib/apl.js                                  \
+        web-src/jquery.min.js                       \
+        web-src/jquery.fieldselection.min.js        \
+        web-src/jquery.keyboard.js                  \
+        web-src/jquery.keyboard.extension-typing.js \
+        web-src/jquery.tipsy.js                     \
+        web-tmp/examples.js                         \
+        web-tmp/index.js                            \
+        test/rundoctest.js
+    echo -n 'var aplTests = '
+    node test/collectdoctests.js
+) >web/all.js
+
+echo 'Collecting all CSS into web/all.css'
+cat web-src/index.css    \
+    web-src/keyboard.css \
+    web-src/tipsy.css    \
+    web-src/apl385.css   \
+        > web/all.css
+
+# Build mobile demo
+
+mkdir -pv m/images m-tmp
+
+i=m-src/index.coffee ; o=m-tmp/index.js
+[ $i -nt $o ] && echo "Compiling $i" && node_modules/.bin/coffee -o $(dirname $o) -abc $i
+
+i=m-src/index.html ; o=m/index.html
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+i=web-src/apl385.ttf ; o=m/apl385.ttf
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+i=m-src/images/cursor.png ; o=m/images/cursor.png
+[ $i -nt $o ] && echo "Copying $i to $o" && cp $i $o
+
+echo 'Collecting all JS into m/all.js'
+cat lib/apl.js            \
+    web-src/jquery.min.js \
+    m-tmp/index.js        \
+        >m/all.js
+
+echo 'Collecting all CSS into m/all.css'
+cat web-src/apl385.css \
+    m-src/index.css    \
+        >m/all.css
