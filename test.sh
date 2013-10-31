@@ -15,4 +15,4 @@ echo 'Running doctests'
 node test/collectdoctests.js | node test/rundoctests.js
 
 echo 'Running example tests'
-test/examplestest.sh
+examples/test

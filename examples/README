@@ -1,3 +1,3 @@
 Examples are prefixed with a number, so they can sort properly in scripts that process them.
 
-The expected output of X.apl should be in X.out; running ../test/examplestest.sh ensures that all examples produce their expected outputs.
+The expected output of X.apl should be in X.out; running ./test ensures that all examples produce their expected outputs.
