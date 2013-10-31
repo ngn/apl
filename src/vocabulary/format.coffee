@@ -20,10 +20,15 @@ addVocabulary
       # ...                      '5 5')
       # ⍕2 2⍴0 0 0 'a'  <=> 2 3⍴('0 0',
       # ...                      '0 a')
-      # ⍕2 2⍴0 0 0 'ab' <=> 2 6⍴('0  0  ',
+      # ⍕2 2⍴0 0 0 'ab' <=> 2 6⍴('0   0 ',
       # ...                      '0  ab ')
       # ⍕2 2⍴0 0 0 123  <=> 2 5⍴('0   0',
       # ...                      '0 123')
+      # ⍕4 3 ⍴ '---' '---' '---' 1 2 3 4 5 6 100 200 300
+      # ...             <=> 4 17⍴(' ---   ---   --- ',
+      # ...                       '   1     2     3 ',
+      # ...                       '   4     5     6 ',
+      # ...                       ' 100   200   300 ')
       t = format omega
       new APLArray t.join(''), [t.length, t[0].length]
 
@@ -32,7 +37,8 @@ format = (a) ->
   if typeof a is 'undefined' then ['undefined']
   else if a is null then ['null']
   else if typeof a is 'string' then [a]
-  else if typeof a is 'number' then [('' + a).replace /-|Infinity/g, '¯']
+  else if typeof a is 'number'
+    r = [('' + a).replace /-|Infinity/g, '¯']; r.align = 'right'; r
   else if typeof a is 'function' then ['function']
   else if not (a instanceof APLArray) then ['' + a]
   else if a.length is 0 then ['']
@@ -83,7 +89,7 @@ format = (a) ->
     for r, i in rows
       for c, j in cols
         t = grid[i][j]
-        if c.type is 1 # numbers should be right-justified
+        if t.align is 'right'
           left = repeat ' ', c.leftMargin + c.width - t[0].length
           right = repeat ' ', c.rightMargin
         else
