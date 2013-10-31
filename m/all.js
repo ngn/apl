@@ -2523,7 +2523,9 @@ format = function(a) {
   } else if (typeof a === 'string') {
     return [a];
   } else if (typeof a === 'number') {
-    return [('' + a).replace(/-|Infinity/g, '¯')];
+    r = [('' + a).replace(/-|Infinity/g, '¯')];
+    r.align = 'right';
+    return r;
   } else if (typeof a === 'function') {
     return ['function'];
   } else if (!(a instanceof APLArray)) {
@@ -2607,7 +2609,7 @@ format = function(a) {
       for (j = _m = 0, _len2 = cols.length; _m < _len2; j = ++_m) {
         c = cols[j];
         t = grid[i][j];
-        if (c.type === 1) {
+        if (t.align === 'right') {
           left = repeat(' ', c.leftMargin + c.width - t[0].length);
           right = repeat(' ', c.rightMargin);
         } else {
@@ -4226,7 +4228,7 @@ if (typeof module !== "undefined" && module !== null) {
           process.exit(0);
         } else if (/^-/.test(arg)) {
           process.stderr.write("unrecognized option: " + arg + "\n" + usage);
-          exit(1);
+          process.exit(1);
         } else if (file != null) {
           process.stderr.write(usage);
           process.exit(1);
@@ -4250,7 +4252,7 @@ if (typeof module !== "undefined" && module !== null) {
           return _results;
         })()).toString('utf8'));
       } else {
-        process.stdout.write("ngn apl 2013-10-30\n");
+        process.stdout.write("ngn apl 2013-10-31\n");
         rl = require('readline').createInterface(process.stdin, process.stdout);
         rl.setPrompt('      ');
         ctx = apl.createGlobalContext();
