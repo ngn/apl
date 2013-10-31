@@ -49,10 +49,12 @@ addVocabulary
       #
       # ⍪2 3 4 <=> 3 1⍴2 3 4
       # ⍪0 <=> 1 1⍴0
-      # ⍪2 2⍴2 3 4 5 <=> 4 1⍴2 3 4 5
-      data = []
-      omega.each (x) -> data.push x
-      new APLArray data, [data.length, 1]
+      # ⍪2 2⍴2 3 4 5 <=> 2 2⍴2 3 4 5
+      # ⍴⍪2 3⍴⍳6 <=> 2 3
+      # ⍴⍪2 3 4⍴⍳24 <=> 2 12
+      data = omega.toArray()
+      n = omega.shape[0] ? 1
+      new APLArray data, [n, data.length / n]
 
 
 
