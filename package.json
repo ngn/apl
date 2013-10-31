@@ -6,7 +6,7 @@
     "bin": "./lib"
   },
   "scripts": {
-    "start": "./lib/apl.js",
+    "start": "./lib/apl.js"
   },
   "main": "./lib/apl.js",
   "devDependencies": {
