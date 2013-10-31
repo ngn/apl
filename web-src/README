@@ -1,2 +1,2 @@
 This directory contains artefacts for the web demo.  They are processed in
-various ways by ../build-web and the result is ultimately put in ../web/
+various ways by ../build and the result is ultimately put in ../web/

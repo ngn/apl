@@ -6,8 +6,7 @@
     "bin": "./lib"
   },
   "scripts": {
-    "start": "./lib/apl.js",
-    "test": "./test.sh"
+    "start": "./lib/apl.js"
   },
   "main": "./lib/apl.js",
   "devDependencies": {

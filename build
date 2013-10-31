@@ -1,11 +1,71 @@
 #!/bin/bash
 set -e
 cd $(dirname "$0")
+coffee=node_modules/.bin/coffee
 
-mkdir -p lib
+# xcat INPUTFILES OUTPUTFILE
+# Concatenates INPUTFILES into OUTPUTFILE only if at least one of them is newer than OUTPUTFILE
+xcat() { [ -e $2 ] && [ -z "$(find $1 -newer $2)" ] || ( echo "$1 -> $2" && cat $1 >$2 ); }
+
+# xcoffee COFFEEFILE OUTPUTDIR
+# Compiles COFFEEFILE only if newer than the corresponding .js file in OUTPUTDIR
+xcoffee() { if [ $1 -nt $2/`basename $1 .coffee`.js ]; then echo "Compiling $1"; $coffee -o $2 -abc $1; fi; }
+
+# Build lib/apl.js
 f=lib/apl.js
-echo "Building $f"
-mkdir -p lib
-echo '//usr/bin/env node "$0" $@ ; exit $?' >$f
-node_modules/.bin/coffee -abcp src/apl.coffee >>$f
-chmod +x $f
+if [ ! -e $f ] || [ -n "$(find src -name '*.coffee' -newer $f)" ]; then
+    echo "Building $f"
+    mkdir -p lib
+    echo '//usr/bin/env node "$0" $@ ; exit $?' >$f
+    $coffee -abcp src/apl.coffee >>$f
+    chmod +x $f
+fi
+
+# Build web demo
+mkdir -p web web-tmp
+xcoffee web-src/index.coffee web-tmp
+cp -uv web-src/index.html web/index.html
+cp -uv web-src/apl385.ttf web/apl385.ttf
+cp -uv web-src/tipsy.gif  web/tipsy.gif
+xcoffee web-src/examples-gen.coffee web-tmp
+i=web-tmp/examples-gen.js ; o=web-tmp/examples.js ; [ $i -nt $o ] && echo "Building $o" && node $i
+xcoffee test/collectdoctests.coffee test
+xcoffee test/rundoctest.coffee      test
+xcoffee test/rundoctests.coffee     test
+o=web/all.js
+if [ ! -e $o ] || [ -n "$(find src web-src web-tmp test lib -newer $o)" ]; then
+    echo "Building $o"
+    (
+        cat lib/apl.js                                  \
+            web-src/jquery.min.js                       \
+            web-src/jquery.fieldselection.min.js        \
+            web-src/jquery.keyboard.js                  \
+            web-src/jquery.keyboard.extension-typing.js \
+            web-src/jquery.tipsy.js                     \
+            web-tmp/examples.js                         \
+            web-tmp/index.js                            \
+            test/rundoctest.js
+        echo -n 'var aplTests = '
+        node test/collectdoctests.js
+    ) >$o
+fi
+xcat 'web-src/index.css web-src/keyboard.css web-src/tipsy.css web-src/apl385.css' web/all.css
+
+# Build mobile demo
+mkdir -p m/images m-tmp
+xcoffee m-src/index.coffee m-tmp
+cp -uv m-src/index.html        m/index.html
+cp -uv web-src/apl385.ttf      m/apl385.ttf
+cp -uv m-src/images/cursor.png m/images/cursor.png
+xcat 'lib/apl.js web-src/jquery.min.js m-tmp/index.js' m/all.js
+xcat 'web-src/apl385.css m-src/index.css' m/all.css
+
+# Test
+
+echo 'Running doctests'
+node test/collectdoctests.js | node test/rundoctests.js
+
+echo 'Running example tests'
+examples/test
+
+echo 'OK'

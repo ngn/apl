@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+cd $(dirname "$0")
+for f in *.apl; do
+    echo "Testing $f"
+    ../lib/apl.js $f | diff - ${f%.apl}.out # fails if the files are different
+done
