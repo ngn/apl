@@ -7,7 +7,6 @@
   },
   "scripts": {
     "start": "./lib/apl.js",
-    "test": "./test.sh"
   },
   "main": "./lib/apl.js",
   "devDependencies": {

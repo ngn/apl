@@ -5,4 +5,3 @@ for f in *.apl; do
     echo "Testing $f"
     ../lib/apl.js $f | diff - ${f%.apl}.out # fails if the files are different
 done
-echo 'Done.'
