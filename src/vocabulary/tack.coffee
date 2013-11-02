@@ -10,4 +10,4 @@ addVocabulary
   #
   # 123⊢456 <=> 456
   # ⊢456 <=> 456
-  '⊢': (omega) -> omega
+#   '⊢': (omega) -> omega
