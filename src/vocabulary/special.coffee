@@ -15,10 +15,6 @@ addVocabulary
   _complex: (re, im) ->
     APLArray.scalar new Complex re, im
 
-  _bool: (x) ->
-    assert x instanceof APLArray
-    x.toBool()
-
   # Index origin (`⎕IO`)
   #
   # The index origin is fixed at 0.  Reading it returns 0.  Attempts to set it

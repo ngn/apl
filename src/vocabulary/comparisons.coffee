@@ -17,8 +17,8 @@ addVocabulary
   #     2j3=2j3               <=> 1
   #     2j3=3j2               <=> 0
   #     0j0                   <=> 0
-  #     123j0                 <=> «123»
-  #     2j¯3+¯2j3             <=> «0»
+  #     123j0                 <=> 123
+  #     2j¯3+¯2j3             <=> 0
   #     =/⍬                   <=> 1
   '=': withIdentity 1, pervasive dyad: eq = (y, x) ->
     if x instanceof Complex and y instanceof Complex

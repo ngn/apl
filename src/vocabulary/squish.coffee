@@ -59,7 +59,8 @@ addVocabulary
   #! " X"[(3 3⍴⍳9)∊1 3 6 7 8] <=> 3 3⍴,/(' X '
   #! ...                                 'X  '
   #! ...                                 'XXX')
-  _index: (alpha, omega, axes) ->
+  _index: (alphaAndAxes, omega) ->
+    [alpha, axes] = alphaAndAxes.toArray()
     squish omega, alpha, axes
 
   # a←⍳5 ⋄ a[1 3]←7 8 ⋄ a <=> 0 7 2 8 4
@@ -75,7 +76,10 @@ addVocabulary
   # a←'this is a test' ⋄ a[0 5]←'TI' <=> 'This Is a test'
   # Data←0 4 8 ⋄ 10+ (Data[0 2]← 7 9) <=> 17 14 19
   # a←3 4⍴⍳12 ⋄ a[;1 2]←99 <=> 3 4⍴0 99 99 3 4 99 99 7 8 99 99 11
-  _substitute: (value, alpha, omega, axes) ->
+  _substitute: (args) ->
+    [value, alpha, omega, axes] =
+      for x in args.toArray()
+        if x instanceof APLArray then x else new APLArray [x], []
     [subscripts, subscriptShapes] = prepareForIndexing omega, alpha, axes
     indexShape = [].concat subscriptShapes...
     if value.isSingleton()
