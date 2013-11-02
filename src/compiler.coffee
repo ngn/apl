@@ -56,7 +56,7 @@ compileAST = (ast, opts = {}) ->
           else
             vars[name] or err node, "Symbol '#{name}' is referenced before assignment."
         when 'lambda' then visit node[1]; {type: 'F'}
-        when 'string', 'number' then {type: 'X'}
+        when 'string', 'number', 'embedded' then {type: 'X'}
         when 'index'
           for c in node[2...] when c
             (t = visit c).type is 'X' or err node, 'Only expressions of type data can be used as an index.'
@@ -209,6 +209,9 @@ compileAST = (ast, opts = {}) ->
               else parseFloat x
         v = if a[1] then new Complex(a[0], a[1]) else a[0]
         [LDC, new APLArray [v], []]
+      when 'embedded'
+        f = eval "(function (_w, _a) {return (#{node[1].replace /^«|»$/g, ''});})"
+        [EMB, (_w, _a) -> aplify f _w, _a]
       when 'index'
         # ⍴ x[⍋x←6?40] <=> ,6
         v = node.scopeNode.vars._index
@@ -288,3 +291,11 @@ prelude = execInternal(
   macro -> macro.valToNode macro.require('fs').readFileSync macro.file.replace(/[^\/]+$/, 'prelude.apl'), 'utf8'
   ctx: vocabulary
 )
+
+aplify = (x) ->
+  if typeof x is 'string' then (if x.length is 1 then APLArray.scalar x else new APLArray x)
+  else if typeof x is 'number' then APLArray.scalar x
+  else if x instanceof Array
+    new APLArray(for y in x then (y = aplify y; if not y.shape.length then y.unwrap() else y))
+  else if x instanceof APLArray then x
+  else throw Error 'Cannot aplify object ' + x

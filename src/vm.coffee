@@ -9,6 +9,7 @@ RET = 'RET'
 POP = 'POP'
 SPL = 'SPL'
 JEQ = 'JEQ'
+EMB = 'EMB'
 
 class λ
   constructor: (@code, @addr, @env) ->
@@ -72,4 +73,7 @@ vm = ({code, env, stack, pc}) ->
         n = code[pc++]
         if not stack[stack.length - 1].toBool()
           pc += n
+      when EMB
+        frame = env[env.length - 1]
+        stack.push code[pc++](frame[0], frame[2])
       else throw Error 'Unrecognized instruction: ' + code[pc - 1] + ', pc:' + pc
