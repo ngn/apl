@@ -22,7 +22,7 @@ compileAST = (ast, opts = {}) ->
     opts.ctx ?= Object.create vocabulary
     for k, v of opts.ctx when not ast.vars[k]
       ast.vars[k] = varInfo = type: 'X', slot: ast.nSlots++, scopeDepth: ast.scopeDepth
-      if typeof v is 'function'
+      if typeof v is 'function' or v instanceof λ
         varInfo.type = 'F'
         if v.aplMetaInfo?.isAdverb      then varInfo.isAdverb      = true
         if v.aplMetaInfo?.isConjunction then varInfo.isConjunction = true
