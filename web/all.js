@@ -1497,28 +1497,26 @@ addVocabulary({
     }
   },
   '⍪': function(omega, alpha, axis) {
-    var data;
+    var data, n, _ref;
     if (axis == null) {
       axis = APLArray.zero;
     }
     if (alpha) {
       return catenate(omega, alpha, axis);
     } else {
-      data = [];
-      omega.each(function(x) {
-        return data.push(x);
-      });
-      return new APLArray(data, [data.length, 1]);
+      data = omega.toArray();
+      n = (_ref = omega.shape[0]) != null ? _ref : 1;
+      return new APLArray(data, [n, data.length / n]);
     }
   }
 });
 catenate = function(omega, alpha, axis) {
   var a, data, i, nAxes, p, pIndices, q, r, rStride, s, shape, stride, tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp9, _i, _j, _ref, _ref1;
   if (!(alpha)) {
-    throw Error("\"assert alpha\" at src/vocabulary/comma.coffee:60");
+    throw Error("\"assert alpha\" at src/vocabulary/comma.coffee:62");
   }
   if (!(typeof axis === 'undefined' || axis instanceof APLArray)) {
-    throw Error("\"assert typeof axis is 'undefined' or axis instanceof APLArray\" at src/vocabulary/comma.coffee:61");
+    throw Error("\"assert typeof axis is 'undefined' or axis instanceof APLArray\" at src/vocabulary/comma.coffee:63");
   }
   nAxes = Math.max(alpha.shape.length, omega.shape.length);
   if (axis) {
@@ -1568,7 +1566,7 @@ catenate = function(omega, alpha, axis) {
     throw RankError();
   }
   if (!(alpha.shape.length === omega.shape.length)) {
-    throw Error("\"assert alpha.shape.length is omega.shape.length\" at src/vocabulary/comma.coffee:98");
+    throw Error("\"assert alpha.shape.length is omega.shape.length\" at src/vocabulary/comma.coffee:100");
   }
   for (i = _i = 0, _ref = alpha.shape.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
     if (i !== axis && alpha.shape[i] !== omega.shape[i]) {
@@ -4252,7 +4250,7 @@ if (typeof module !== "undefined" && module !== null) {
           return _results;
         })()).toString('utf8'));
       } else {
-        process.stdout.write("ngn apl 2013-10-31\n");
+        process.stdout.write("ngn apl 2013-11-02\n");
         rl = require('readline').createInterface(process.stdin, process.stdout);
         rl.setPrompt('      ');
         ctx = apl.createGlobalContext();
@@ -6308,7 +6306,7 @@ window.examples = [
   ["rho-iota","⍝  ⍳ n  generates a list of numbers from 0 to n-1\n⍝  n n ⍴ A  arranges the elements of A in an n×n matrix\n\n5 5 ⍴ ⍳ 25"],
   ["mult","⍝ Multiplication table\n⍝  a × b    scalar multiplication, \"a times b\"\n⍝  ∘.       is the \"outer product\" operator\n⍝  A ∘.× B  every item in A times every item in B\n(⍳ 10) ∘.× ⍳ 10"],
   ["sierpinski","⍝ Sierpinski's triangle\n\n⍝ It's a recursively defined figure.\n⍝ We will use the following definition:\n⍝\n⍝   * the Sierpinski triangle of rank 0 is a one-by-one matrix 'X'\n⍝\n⍝   * if S is the triangle of rank n, then rank n+1 would be\n⍝     the two-dimensional catenation:\n⍝             S 0\n⍝             S S\n⍝     where \"0\" is an all-blank matrix same size as S.\n\nf ← {(⍵,(⍴⍵)⍴0)⍪⍵,⍵}\nS ← {' #'[(f⍣⍵) 1 1 ⍴ 1]}\nS 5"],
-  ["primes","⍝ Sieve of Eratosthenes\n(1=+⌿0=A∘.∣A)/A←2↓⍳100"],
+  ["primes","⎕ ← (1=+⌿0=A∘.∣A)/A←2↓⍳100"],
   ["life","⍝ Conway's game of life\n\n⍝ This example was inspired by the impressive demo at\n⍝ http://www.youtube.com/watch?v=a9xAKttWgP4\n\n⍝ Create a matrix:\n⍝     0 1 1\n⍝     1 1 0\n⍝     0 1 0\ncreature ← (3 3 ⍴ ⍳ 9) ∊ 1 2 3 4 7   ⍝ Original creature from demo\ncreature ← (3 3 ⍴ ⍳ 9) ∊ 1 3 6 7 8   ⍝ Glider\n\n⍝ Place the creature on a larger board, near the centre\nboard ← ¯1 ⊖ ¯2 ⌽ 5 7 ↑ creature\n\n⍝ A function to move from one generation to the next\nlife ← {⊃1 ⍵ ∨.∧ 3 4 = +/ +⌿ 1 0 ¯1 ∘.⊖ 1 0 ¯1 ⌽¨ ⊂⍵}\n\n⍝ Compute n-th generation and format it as a\n⍝ character matrix\ngen ← {' #'[(life ⍣ ⍵) board]}\n\n⍝ Show first three generations\n(gen 1) (gen 2) (gen 3)"],
   ["rule30","⍝ See https://en.wikipedia.org/wiki/Rule_30\n\nrule ← 30\nruleSet ← ⌽(8/2)⊤rule\nn ← 39 ⍝ number of rows to compute\nrow ← (n/0),1,n/0\ntable ← (0,⍴row)⍴0\n{\n    table ← table⍪row\n    row ← ruleSet[(1⌽row)+(2×row)+4×¯1⌽row]\n}¨⍳n\n' #'[table]"],
   ["queens","queens←{                            ⍝ The N-queens problem.\n\n    search←{                        ⍝ Search for all solutions.\n        (⊂⍬)∊⍵:0⍴⊂⍬                 ⍝ stitched: abandon this branch.\n        0=⍴⍵:rmdups ⍺               ⍝ all done: solution!\n        (hd tl)←(⊃⍵)(1↓⍵)           ⍝ head 'n tail of remaining ranks.\n        next←⍺∘,¨hd                 ⍝ possible next steps.\n        rems←hd free¨⊂tl            ⍝ unchecked squares.\n        ↑,/next ∇¨rems              ⍝ ... in following ranks.\n    }\n\n    cvex←(1+⍳⍵)×⊂¯1 0 1             ⍝ Checking vectors.\n\n    free←{⍵~¨⍺+(⍴⍵)↑cvex}           ⍝ Unchecked squares.\n\n    rmdups←{                        ⍝ Ignore duplicate solution.\n        rots←{{⍒⍵}\\4/⊂⍵}            ⍝ 4 rotations.\n        refs←{{⍋⍵}\\2/⊂⍵}            ⍝ 2 reflections.\n        best←{(⊃⍋↑⍵)⊃⍵}             ⍝ best (=lowest) solution.\n        all8←,↑refs¨rots ⍵          ⍝ all 8 orientations.\n        (⍵≡best all8)⊃⍬(,⊂⍵)        ⍝ ignore if not best.\n    }\n\n    fmt←{                           ⍝ Format solution.\n        chars←'·⍟'[(↑⍵)∘.=⍳⍺]       ⍝ char array of placed queens.\n        expd←1↓,↑⍺⍴⊂0 1             ⍝ expansion mask.\n        ↑¨↓↓expd\\chars              ⍝ vector of char matrices.\n    }\n\n    squares←(⊂⍳⌈⍵÷2),1↓⍵⍴⊂⍳⍵        ⍝ initial squares\n\n    ⍵ fmt ⍬ search squares          ⍝ all distinct solutions.\n}\n\nqueens 5"]
@@ -6795,7 +6793,9 @@ var aplTests = [
 ["(2 3⍴⍳6)⍪9","<=>","3 3⍴(0 1 2\n                 3 4 5\n                 9 9 9)"],
 ["⍪2 3 4","<=>","3 1⍴2 3 4"],
 ["⍪0","<=>","1 1⍴0"],
-["⍪2 2⍴2 3 4 5","<=>","4 1⍴2 3 4 5"],
+["⍪2 2⍴2 3 4 5","<=>","2 2⍴2 3 4 5"],
+["⍴⍪2 3⍴⍳6","<=>","2 3"],
+["⍴⍪2 3 4⍴⍳24","<=>","2 12"],
 ["17-⍨23","<=>","6"],
 ["7⍴⍨2 3","<=>","2 3⍴7"],
 ["+⍨2","<=>","4"],

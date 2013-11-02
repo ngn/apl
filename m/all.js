@@ -1497,28 +1497,26 @@ addVocabulary({
     }
   },
   '⍪': function(omega, alpha, axis) {
-    var data;
+    var data, n, _ref;
     if (axis == null) {
       axis = APLArray.zero;
     }
     if (alpha) {
       return catenate(omega, alpha, axis);
     } else {
-      data = [];
-      omega.each(function(x) {
-        return data.push(x);
-      });
-      return new APLArray(data, [data.length, 1]);
+      data = omega.toArray();
+      n = (_ref = omega.shape[0]) != null ? _ref : 1;
+      return new APLArray(data, [n, data.length / n]);
     }
   }
 });
 catenate = function(omega, alpha, axis) {
   var a, data, i, nAxes, p, pIndices, q, r, rStride, s, shape, stride, tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp9, _i, _j, _ref, _ref1;
   if (!(alpha)) {
-    throw Error("\"assert alpha\" at src/vocabulary/comma.coffee:60");
+    throw Error("\"assert alpha\" at src/vocabulary/comma.coffee:62");
   }
   if (!(typeof axis === 'undefined' || axis instanceof APLArray)) {
-    throw Error("\"assert typeof axis is 'undefined' or axis instanceof APLArray\" at src/vocabulary/comma.coffee:61");
+    throw Error("\"assert typeof axis is 'undefined' or axis instanceof APLArray\" at src/vocabulary/comma.coffee:63");
   }
   nAxes = Math.max(alpha.shape.length, omega.shape.length);
   if (axis) {
@@ -1568,7 +1566,7 @@ catenate = function(omega, alpha, axis) {
     throw RankError();
   }
   if (!(alpha.shape.length === omega.shape.length)) {
-    throw Error("\"assert alpha.shape.length is omega.shape.length\" at src/vocabulary/comma.coffee:98");
+    throw Error("\"assert alpha.shape.length is omega.shape.length\" at src/vocabulary/comma.coffee:100");
   }
   for (i = _i = 0, _ref = alpha.shape.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
     if (i !== axis && alpha.shape[i] !== omega.shape[i]) {
@@ -4252,7 +4250,7 @@ if (typeof module !== "undefined" && module !== null) {
           return _results;
         })()).toString('utf8'));
       } else {
-        process.stdout.write("ngn apl 2013-10-31\n");
+        process.stdout.write("ngn apl 2013-11-02\n");
         rl = require('readline').createInterface(process.stdin, process.stdout);
         rl.setPrompt('      ');
         ctx = apl.createGlobalContext();
