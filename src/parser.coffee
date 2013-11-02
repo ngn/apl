@@ -22,31 +22,32 @@
 # functions roughly correspond to the set of non-terminals in an imaginary
 # grammar.
 parse = (aplCode, opts = {}) ->
-  tokenStream = tokenize aplCode
+  tokens = tokenize aplCode
+  i = 0
 
   # A single-token lookahead is used.  Variable `token` stores the upcoming
   # token.
-  token = tokenStream.next()
+  token = tokens[i++]
 
   # `consume(tt)` consumes the upcoming token and returns a truthy value only
   # if its type matches `tt`.  A space-separated value of `tt` matches any of
   # a set of token types.
-  consume = (tt) ->
-    if token.type in tt.split ' ' then token = tokenStream.next()
+  macro consume (tt) ->
+    new macro.Parens macro.csToNode """
+      if token.type in #{JSON.stringify macro.nodeToVal(tt).split ' '}
+        token = tokens[i++]
+    """
 
   # `demand(tt)` is like `consume(tt)` but intolerant to a mismatch.
-  demand = (tt) ->
-    if token.type isnt tt
-      parserError "Expected token of type '#{tt}' but got '#{token.type}'"
-    token = tokenStream.next()
-    return
+  macro demand (tt) ->
+    new macro.Parens macro.codeToNode(->
+      if token.type is tt then token = tokens[i++]
+      else parserError "Expected token of type '#{tt}' but got '#{token.type}'"
+    ).subst {tt}
 
   parserError = (message) ->
     throw SyntaxError message,
-      file: opts.file
-      line: token.startLine
-      col: token.startCol
-      aplCode: aplCode
+      file: opts.file, line: token.startLine, col: token.startCol, aplCode: aplCode
 
   parseBody = ->
     body = ['body']
@@ -61,37 +62,28 @@ parse = (aplCode, opts = {}) ->
   parseExpr = ->
     expr = ['expr']
     loop
-      item = parseItem()
+      t = token
+      if consume 'number string symbol embedded' then item = [t.type, t.value]
+      else if consume '(' then item = parseExpr(); demand ')'
+      else if consume '{' then b = parseBody(); demand '}'; item = ['lambda', b]
+      else parserError "Encountered unexpected token of type '#{token.type}'"
+      if consume '['
+        item = ['index', item]
+        loop
+          if consume ';' then item.push null
+          else if token.type is ']' then item.push null; break
+          else (item.push parseExpr(); if token.type is ']' then break else demand ';')
+        demand ']'
       if consume '←' then return expr.concat [['assign', item, parseExpr()]]
       expr.push item
-      if token.type in ') ] } : ; separator newline eof'.split ' '
-        return expr
-
-  parseItem = ->
-    item = parseIndexable()
-    if consume '['
-      item = ['index', item].concat parseIndices()
-      demand ']'
-    item
-
-  parseIndices = ->
-    indices = []
-    loop
-      if consume ';' then indices.push null
-      else if token.type is ']' then (indices.push null; return indices)
-      else
-        indices.push parseExpr()
-        if token.type is ']' then return indices
-        demand ';'
-
-  parseIndexable = ->
-    t = token
-    if consume 'number string symbol embedded' then [t.type, t.value]
-    else if consume '(' then (expr = parseExpr(); demand ')'; expr)
-    else if consume '{' then (b = parseBody(); demand '}'; ['lambda', b])
-    else parserError "Encountered unexpected token of type '#{token.type}'"
+      if token.type in ') ] } : ; separator newline eof'.split ' ' then return expr
 
   result = parseBody()
   # 'hello'} !!! SYNTAX ERROR
   demand 'eof'
   result
+
+  macro ->
+    delete macro._macros.consume
+    delete macro._macros.demand
+    return

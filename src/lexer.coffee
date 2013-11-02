@@ -33,36 +33,27 @@ tokenDefs = [
 # separators.
 #
 # A sentry `'eof'` token is generated at the end.
-tokenize = (aplCode, opts = {}) ->
+tokenize = (s, opts = {}) ->
   line = col = 1
   stack = ['{'] # a stack of brackets
-  next: ->
-    loop
-      if not aplCode then return {
-        type: 'eof', value: '',
-        startLine: line, startCol: col, endLine: line, endCol: col
-      }
-      startLine = line
-      startCol = col
-      type = null
-      for [t, re] in tokenDefs when m = aplCode.match re
-        type = t or m[0]
-        break
-      if not type
-        throw SyntaxError 'Unrecognised token',
-          file: opts.file
-          line: line
-          col: col
-          aplCode: opts.aplCode
-      a = m[0].split '\n'
-      line += a.length - 1
-      col = (if a.length is 1 then col else 1) + a[a.length - 1].length
-      aplCode = aplCode.substring m[0].length
-      if type isnt '-'
-        if type in ['(', '[', '{'] then stack.push type
-        else if type in [')', ']', '}'] then stack.pop()
-        if type isnt 'newline' or stack[stack.length - 1] is '{'
-          return {
-            type, startLine, startCol,
-            value: m[0], endLine: line, endCol: col
-          }
+  tokens = []
+  while s
+    startLine = line
+    startCol = col
+    type = null
+    for [t, re] in tokenDefs when m = s.match re
+      type = t or m[0]
+      break
+    if not type
+      throw SyntaxError 'Unrecognized token', {file: opts.file, line, col, s: opts.s}
+    a = m[0].split '\n'
+    line += a.length - 1
+    col = (if a.length is 1 then col else 1) + a[a.length - 1].length
+    s = s[m[0].length ...]
+    if type isnt '-'
+      if type in ['(', '[', '{'] then stack.push type
+      else if type in [')', ']', '}'] then stack.pop()
+      if type isnt 'newline' or stack[stack.length - 1] is '{'
+        tokens.push {type, startLine, startCol, value: m[0], endLine: line, endCol: col}
+  tokens.push type: 'eof', value: '', startLine: line, startCol: col, endLine: line, endCol: col
+  tokens
