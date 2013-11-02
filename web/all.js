@@ -3418,42 +3418,6 @@ compressOrReplicate = function(omega, alpha, axis) {
 };
 
 addVocabulary({
-  _aplify: function(x) {
-    var y;
-    if (!(x != null)) {
-      throw Error("\"assert x?\" at src/vocabulary/special.coffee:4");
-    }
-    if (typeof x === 'string') {
-      if (x.length === 1) {
-        return APLArray.scalar(x);
-      } else {
-        return new APLArray(x);
-      }
-    } else if (typeof x === 'number') {
-      return APLArray.scalar(x);
-    } else if (x instanceof Array) {
-      return new APLArray((function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = x.length; _i < _len; _i++) {
-          y = x[_i];
-          if (y instanceof APLArray && y.shape.length === 0) {
-            _results.push(y.unwrap());
-          } else {
-            _results.push(y);
-          }
-        }
-        return _results;
-      })());
-    } else if (x instanceof APLArray) {
-      return x;
-    } else {
-      throw Error('Cannot aplify object ' + x);
-    }
-  },
-  _complex: function(re, im) {
-    return APLArray.scalar(new Complex(re, im));
-  },
   'get_⎕IO': function() {
     return APLArray.zero;
   },
@@ -3898,7 +3862,7 @@ compileAST = function(ast, opts) {
         slot: ast.nSlots++,
         scopeDepth: ast.scopeDepth
       };
-      if (typeof v === 'function') {
+      if (typeof v === 'function' || v instanceof λ) {
         varInfo.type = 'F';
         if ((_ref2 = v.aplMetaInfo) != null ? _ref2.isAdverb : void 0) {
           varInfo.isAdverb = true;
