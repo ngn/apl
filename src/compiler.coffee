@@ -1,19 +1,26 @@
 exec = (aplCode, opts = {}) ->
-  code = compile aplCode, opts
-  env = [for k, v of opts.ctx then v]
-  r = vm {code, env}
-  for k, v of opts.ast.vars then opts.ctx[k] = env[0][v.slot]
-  r
+  execInternal(aplCode, opts).result
+
+execInternal = (aplCode, opts = {}) ->
+  ast = parse aplCode, opts
+  code = compileAST ast, opts
+  env = if prelude then (for frame in prelude.env then frame[0...]) else [[]]
+  for k, v of ast.vars then env[0][v.slot] = opts.ctx[k]
+  result = vm {code, env}
+  for k, v of ast.vars then opts.ctx[k] = env[0][v.slot]
+  {ast, code, env, result}
 
 compile = (aplCode, opts = {}) ->
   opts.aplCode = aplCode
-  ast = opts.ast = parse aplCode, opts
+  compileAST parse(aplCode, opts), opts
+
+compileAST = (ast, opts = {}) ->
   ast.scopeDepth = 0
-  ast.nSlots = 0
-  ast.vars = {}
+  ast.nSlots = if prelude then prelude.ast.nSlots else 0
+  ast.vars = if prelude then ast.vars = Object.create prelude.ast.vars else {}
   do ->
     opts.ctx ?= Object.create vocabulary
-    for k, v of opts.ctx
+    for k, v of opts.ctx when not ast.vars[k]
       ast.vars[k] = varInfo = type: 'X', slot: ast.nSlots++, scopeDepth: ast.scopeDepth
       if typeof v is 'function'
         varInfo.type = 'F'
@@ -22,7 +29,7 @@ compile = (aplCode, opts = {}) ->
         if /^[gs]et_.*/.test k then ast.vars[k[4...]] = type: 'X'
 
   err = (node, message) ->
-    throw SyntaxError message, file: opts.file, line: node.startLine, col: node.startCol, aplCode: aplCode
+    throw SyntaxError message, file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
 
   queue = [ast] # accumulates "body" nodes which we encounter on our way
   while queue.length
@@ -276,3 +283,8 @@ compile = (aplCode, opts = {}) ->
         throw Error "Unrecognized node type for assignment, '#{node[0]}'"
 
   render ast
+
+prelude = execInternal(
+  macro -> macro.valToNode macro.require('fs').readFileSync macro.file.replace(/[^\/]+$/, 'prelude.apl'), 'utf8'
+  ctx: vocabulary
+)
