@@ -36,7 +36,8 @@ vm = ({code, env, stack, pc}) ->
           if w instanceof λ then w = w.toFunction()
           stack.push f w
         else
-          stack.push pc, env
+          stack.push code, pc, env
+          {code} = f
           pc = f.addr
           env = f.env.concat [[w, f, null]]
       when DYA
@@ -46,7 +47,8 @@ vm = ({code, env, stack, pc}) ->
           if a instanceof λ then a = a.toFunction()
           stack.push f w, a
         else
-          stack.push pc, env
+          stack.push code, pc, env
+          {code} = f
           pc = f.addr
           env = f.env.concat [[w, f, a]]
       when LAM
@@ -55,7 +57,7 @@ vm = ({code, env, stack, pc}) ->
         pc += size
       when RET
         if stack.length is 1 then return stack[0]
-        [pc, env] = stack.splice -3, 2
+        [code, pc, env] = stack.splice -4, 3
       when POP then stack.pop()
       when SPL
         n = code[pc++]

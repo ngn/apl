@@ -42,11 +42,9 @@ macro -> macro.fileToNode 'src/vocabulary/rotate.coffee'
 macro -> macro.fileToNode 'src/vocabulary/slash.coffee'
 macro -> macro.fileToNode 'src/vocabulary/special.coffee'
 macro -> macro.fileToNode 'src/vocabulary/squish.coffee'
-macro -> macro.fileToNode 'src/vocabulary/tack.coffee'
 macro -> macro.fileToNode 'src/vocabulary/take.coffee'
 macro -> macro.fileToNode 'src/vocabulary/transpose.coffee'
 macro -> macro.fileToNode 'src/vocabulary/variant.coffee'
-macro -> macro.fileToNode 'src/vocabulary/zilde.coffee'
 macro -> macro.fileToNode 'src/compiler.coffee'
 
 @apl = apl = (aplCode) -> exec aplCode

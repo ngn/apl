@@ -145,8 +145,8 @@ withIdentity = (x, f) ->
   if x not instanceof APLArray then x = APLArray.scalar x
   meta f, 'identity', x
 
-adverb       = (f)    -> meta f, 'isPostfixAdverb', true
-conjunction  = (f)    -> meta f, 'isConjunction', true
+adverb      = (f) -> meta f, 'isAdverb',      true
+conjunction = (f) -> meta f, 'isConjunction', true
 
 aka = (aliases, f) -> # "also known as" decorator
   if typeof aliases is 'string'

@@ -13,7 +13,7 @@ xcoffee() { if [ $1 -nt $2/`basename $1 .coffee`.js ]; then echo "Compiling $1";
 
 # Build lib/apl.js
 f=lib/apl.js
-if [ ! -e $f ] || [ -n "$(find src -name '*.coffee' -newer $f)" ]; then
+if [ ! -e $f ] || [ -n "$(find src -name '*.coffee' -o -name '*.apl' -newer $f)" ]; then
     echo "Building $f"
     mkdir -p lib
     echo '//usr/bin/env node "$0" $@ ; exit $?' >$f
