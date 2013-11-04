@@ -2677,7 +2677,7 @@ format = function(a) {
     return ['function'];
   } else if (!(a instanceof APLArray)) {
     return ['' + a];
-  } else if (a.length === 0) {
+  } else if (prod(a.shape) === 0) {
     return [''];
   } else {
     sa = a.shape;
@@ -4407,7 +4407,7 @@ if (typeof module !== "undefined" && module !== null) {
           return _results;
         })()).toString('utf8'));
       } else {
-        process.stdout.write("ngn apl 2013-11-03\n");
+        process.stdout.write("ngn apl 2013-11-04\n");
         rl = require('readline').createInterface(process.stdin, process.stdout);
         rl.setPrompt('      ');
         ctx = Object.create(vocabulary);

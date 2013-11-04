@@ -2677,7 +2677,7 @@ format = function(a) {
     return ['function'];
   } else if (!(a instanceof APLArray)) {
     return ['' + a];
-  } else if (a.length === 0) {
+  } else if (prod(a.shape) === 0) {
     return [''];
   } else {
     sa = a.shape;
@@ -4407,7 +4407,7 @@ if (typeof module !== "undefined" && module !== null) {
           return _results;
         })()).toString('utf8'));
       } else {
-        process.stdout.write("ngn apl 2013-11-03\n");
+        process.stdout.write("ngn apl 2013-11-04\n");
         rl = require('readline').createInterface(process.stdin, process.stdout);
         rl.setPrompt('      ');
         ctx = Object.create(vocabulary);
@@ -7208,6 +7208,7 @@ var aplTests = [
 ["⍕2 2⍴0 0 0 'ab'","<=>","2 6⍴('0   0 ',\n                      '0  ab ')"],
 ["⍕2 2⍴0 0 0 123","<=>","2 5⍴('0   0',\n                      '0 123')"],
 ["⍕4 3 ⍴ '---' '---' '---' 1 2 3 4 5 6 100 200 300\n","<=>","4 17⍴(' ---   ---   --- ',\n                       '   1     2     3 ',\n                       '   4     5     6 ',\n                       ' 100   200   300 ')"],
+["⍕1 ⍬ 2 '' 3","<=>","1 11⍴'1    2    3'"],
 ["⍋13 8 122 4","<=>","3 1 0 2"],
 ["a←13 8 122 4 ⋄ a[⍋a]","<=>","4 8 13 122"],
 ["⍋\"ZAMBIA\"","<=>","1 5 3 4 2 0"],
