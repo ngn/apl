@@ -29,6 +29,7 @@ addVocabulary
       # ...                       '   1     2     3 ',
       # ...                       '   4     5     6 ',
       # ...                       ' 100   200   300 ')
+      # ⍕1 ⍬ 2 '' 3     <=> 1 11⍴'1    2    3'
       t = format omega
       new APLArray t.join(''), [t.length, t[0].length]
 
@@ -41,7 +42,7 @@ format = (a) ->
     r = [('' + a).replace /-|Infinity/g, '¯']; r.align = 'right'; r
   else if typeof a is 'function' then ['function']
   else if not (a instanceof APLArray) then ['' + a]
-  else if a.length is 0 then ['']
+  else if prod(a.shape) is 0 then ['']
   else
     sa = a.shape
     a = a.toArray()
