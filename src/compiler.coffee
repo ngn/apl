@@ -44,8 +44,8 @@ compileAST = (ast, opts = {}) ->
       when 'string', 'number', 'embedded' then 0
       when 'symbol'
         switch node[1]
-          when '⍺⍺', '∇∇' then 1
-          when '⍵⍵' then 3
+          when '⍺⍺', '⍶', '∇∇' then 1
+          when '⍵⍵', '⍹' then 3
           else 0
       else throw Error "Unrecognized node type, '#{node[0]}'"
   ) ast
@@ -77,12 +77,15 @@ compileAST = (ast, opts = {}) ->
           if node.isConjunction
             extend body.vars,
               '⍵⍵': type: 'F', slot: 0, scopeDepth: d - 1
-              '∇∇': type: 'F', slot: 1, scopeDepth: d - 1, isAdverb: true, isConjunction: true
+              '⍹':  type: 'F', slot: 0, scopeDepth: d - 1
+              '∇∇': type: 'F', slot: 1, scopeDepth: d - 1, isConjunction: true
               '⍺⍺': type: 'F', slot: 2, scopeDepth: d - 1
+              '⍶':  type: 'F', slot: 2, scopeDepth: d - 1
           else if node.isAdverb
             extend body.vars,
               '⍺⍺': type: 'F', slot: 0, scopeDepth: d - 1
-              '∇∇': type: 'F', slot: 1, scopeDepth: d - 1, isAdverb: true, isConjunction: true
+              '⍶':  type: 'F', slot: 0, scopeDepth: d - 1
+              '∇∇': type: 'F', slot: 1, scopeDepth: d - 1, isAdverb: true
           type: 'F', isAdverb: node.isAdverb, isConjunction: node.isConjunction
         when 'string', 'number', 'embedded' then {type: 'X'}
         when 'index'
@@ -215,6 +218,8 @@ compileAST = (ast, opts = {}) ->
         # {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8 <=> 34 # Fibonacci sequence
         # ⊂{⍺⍺ ⍺⍺ ⍵}'hello'            <=> ⊂⊂'hello'
         # ⊂{⍺⍺ ⍵⍵ ⍵}⌽'hello'           <=> ⊂'olleh'
+        # ⊂{⍶⍶⍵}'hello'                <=> ⊂⊂'hello'
+        # ⊂{⍶⍹⍵}⌽'hello'               <=> ⊂'olleh'
         code = render node[1]
         if node.isAdverb or node.isConjunction
           [LAM, code.length + 3, LAM, code.length].concat code, RET
