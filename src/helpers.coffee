@@ -9,3 +9,7 @@ repeat = (a, n) ->
   m = n * a.length
   while a.length * 2 < m then a = a.concat a
   a.concat a[... m - a.length]
+
+extend = (x, y) ->
+  for k of y then x[k] = y[k]
+  x

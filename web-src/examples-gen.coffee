@@ -1,23 +1,17 @@
 #!/usr/bin/env coffee
-
 # Collect data from ../examples and generate examples.js for inclusion into index.html
-
 fs = require 'fs'
-
-names = for name in fs.readdirSync "#{__dirname}/../examples" when name.match /.*\.apl/ then name
-names.sort()
-
+glob = require 'glob'
+{basename} = require 'path'
 fs.writeFileSync "#{__dirname}/examples.js", """
   // Generated code, do not edit
   window.examples = [
-  #{(
-    for name in names
-      '  ' + JSON.stringify [
-        name.replace(/(^\d+-|\.apl$)/g, '')
-        fs.readFileSync("#{__dirname}/../examples/#{name}").toString()
-          .replace(/(^#!.*\n+|\n+$)/g, '')
-          .replace(/\n *⎕ *← *(.*)$/, '\n$1')
-      ]
-  ).join ',\n'}
+    #{(
+      for f in glob.sync "#{__dirname}/../examples/*.apl"
+        '  ' + JSON.stringify [
+          basename(f).replace(/^\d+-|\.apl$/g, '')
+          fs.readFileSync(f, 'utf8').replace(/^#!.*\n+|\n+$/g, '').replace(/\n* *⎕ *← *(.*)$/, '\n$1')
+        ]
+    ).join ',\n'}
   ];
 """
