@@ -31,6 +31,25 @@ compileAST = (ast, opts = {}) ->
   err = (node, message) ->
     throw SyntaxError message, file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
 
+  (markOperators = (node) ->
+    switch node[0]
+      when 'body', 'guard', 'assign', 'index', 'lambda', 'expr'
+        r = 0; for i in [1...node.length] by 1 when node[i] then r |= markOperators node[i]
+        if r and node[0] is 'lambda'
+          if r & 1 then node.isAdverb = true
+          if r & 2 then node.isConjunction = true
+          0
+        else
+          r
+      when 'string', 'number', 'embedded' then 0
+      when 'symbol'
+        switch node[1]
+          when '⍺⍺', '∇∇' then 1
+          when '⍵⍵' then 3
+          else 0
+      else throw Error "Unrecognized node type, '#{node[0]}'"
+  ) ast
+
   queue = [ast] # accumulates "body" nodes which we encounter on our way
   while queue.length
     {vars} = scopeNode = queue.shift()
@@ -38,15 +57,6 @@ compileAST = (ast, opts = {}) ->
     visit = (node) ->
       node.scopeNode = scopeNode
       switch node[0]
-        when 'body'
-          node.scopeDepth = scopeNode.scopeDepth + 1
-          node.nSlots = 0
-          node.vars = Object.create vars
-          node.vars['⍵'] = type: 'X', slot: node.nSlots++, scopeDepth: node.scopeDepth
-          node.vars['∇'] = type: 'F', slot: node.nSlots++, scopeDepth: node.scopeDepth
-          node.vars['⍺'] = type: 'X', slot: node.nSlots++, scopeDepth: node.scopeDepth
-          queue.push node
-          null
         when 'guard' then r = visit node[1]; visit node[2]; r
         when 'assign' then r = visit node[2]; visitLHS node[1], r.type; r
         when 'symbol'
@@ -55,11 +65,29 @@ compileAST = (ast, opts = {}) ->
             {type: 'X'}
           else
             vars[name] or err node, "Symbol '#{name}' is referenced before assignment."
-        when 'lambda' then visit node[1]; {type: 'F'}
+        when 'lambda'
+          queue.push extend (body = node[1]),
+            scopeNode: scopeNode
+            scopeDepth: (d = scopeNode.scopeDepth + 1 + !!(node.isAdverb or node.isConjunction))
+            nSlots: 3
+            vars: extend Object.create(vars),
+              '⍵': type: 'X', slot: 0, scopeDepth: d
+              '∇': type: 'F', slot: 1, scopeDepth: d
+              '⍺': type: 'X', slot: 2, scopeDepth: d
+          if node.isConjunction
+            extend body.vars,
+              '⍵⍵': type: 'F', slot: 0, scopeDepth: d - 1
+              '∇∇': type: 'F', slot: 1, scopeDepth: d - 1, isAdverb: true, isConjunction: true
+              '⍺⍺': type: 'F', slot: 2, scopeDepth: d - 1
+          else if node.isAdverb
+            extend body.vars,
+              '⍺⍺': type: 'F', slot: 0, scopeDepth: d - 1
+              '∇∇': type: 'F', slot: 1, scopeDepth: d - 1, isAdverb: true, isConjunction: true
+          type: 'F', isAdverb: node.isAdverb, isConjunction: node.isConjunction
         when 'string', 'number', 'embedded' then {type: 'X'}
         when 'index'
           for c in node[2...] when c
-            (t = visit c).type is 'X' or err node, 'Only expressions of type data can be used as an index.'
+            visit(c).type is 'X' or err node, 'Only expressions of type data can be used as an index.'
           visit node[1]
         when 'expr'
           a = node[1...]
@@ -185,8 +213,13 @@ compileAST = (ast, opts = {}) ->
         # {1 + 1} 1                    <=> 2
         # {⍵=0:1 ⋄ 2×∇⍵-1} 5           <=> 32 # two to the power of
         # {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8 <=> 34 # Fibonacci sequence
+        # ⊂{⍺⍺ ⍺⍺ ⍵}'hello'            <=> ⊂⊂'hello'
+        # ⊂{⍺⍺ ⍵⍵ ⍵}⌽'hello'           <=> ⊂'olleh'
         code = render node[1]
-        [LAM, code.length].concat code
+        if node.isAdverb or node.isConjunction
+          [LAM, code.length + 3, LAM, code.length].concat code, RET
+        else
+          [LAM, code.length].concat code
       when 'string'
         # Strings of length one are scalars, all other strings are vectors:
         #   ⍴⍴''   <=> ,1
