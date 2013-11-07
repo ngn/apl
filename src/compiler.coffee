@@ -58,7 +58,7 @@ compileAST = (ast, opts = {}) ->
       node.scopeNode = scopeNode
       switch node[0]
         when 'guard' then r = visit node[1]; visit node[2]; r
-        when 'assign' then r = visit node[2]; visitLHS node[1], r.type; r
+        when 'assign' then visitLHS node[1], visit node[2]
         when 'symbol'
           name = node[1]
           if (v = vars["get_#{name}"])?.type is 'F'
@@ -145,35 +145,33 @@ compileAST = (ast, opts = {}) ->
                 a[h.length - 3...] = [['dyadic'].concat a[h.length - 3...]]
                 h[h.length - 3...] = [{type: 'X'}]
           # Replace `"expr"` node with `a[0]` in the AST
-          node[0...] = a[0]
+          node[...] = a[0]
+          extend node, a[0]
           h[0]
         else
           throw Error "Unrecognized node type, '#{node[0]}'"
 
-    visitLHS = (node, rhsType) ->
+    visitLHS = (node, rhsInfo) ->
       node.scopeNode = scopeNode
       switch node[0]
         when 'symbol'
           name = node[1]
           if name is '∇' then err node, 'Assignment to ∇ is not allowed.'
           if vars[name]
-            if vars[name].type isnt rhsType
+            if vars[name].type isnt rhsInfo.type
               err node, "Inconsistent usage of symbol '#{name}', it is assigned both nouns and verbs."
           else
-            vars[name] =
-              type: rhsType
-              scopeDepth: scopeNode.scopeDepth
-              slot: scopeNode.nSlots++
+            vars[name] = extend {scopeDepth: scopeNode.scopeDepth, slot: scopeNode.nSlots++}, rhsInfo
         when 'expr'
-          rhsType is 'X' or err node, 'Strand assignment can be used only for nouns.'
-          for child in node[1...] then visitLHS child, rhsType
+          rhsInfo.type is 'X' or err node, 'Strand assignment can be used only for nouns.'
+          for child in node[1...] then visitLHS child, rhsInfo
         when 'index'
-          rhsType is 'X' or err node, 'Index assignment can be used only for nouns.'
-          visitLHS node[1], 'X'
+          rhsInfo.type is 'X' or err node, 'Index assignment can be used only for nouns.'
+          visitLHS node[1], rhsInfo
           for c in node[2...] when c then visit c
         else
           err node, "Invalid LHS node type: #{JSON.stringify node[0]}"
-      type: rhsType
+      rhsInfo
 
     for node in scopeNode[1...] then visit node
 
@@ -220,6 +218,9 @@ compileAST = (ast, opts = {}) ->
         # ⊂{⍺⍺ ⍵⍵ ⍵}⌽'hello'           <=> ⊂'olleh'
         # ⊂{⍶⍶⍵}'hello'                <=> ⊂⊂'hello'
         # ⊂{⍶⍹⍵}⌽'hello'               <=> ⊂'olleh'
+        # +{⍵⍶⍵}10 20 30               <=> 20 40 60
+        # f←{⍵⍶⍵} ⋄ +f 10 20 30        <=> 20 40 60
+        # twice←{⍶⍶⍵} ⋄ *twice 2       <=> 1618.1779919126539
         code = render node[1]
         if node.isAdverb or node.isConjunction
           [LAM, code.length + 3, LAM, code.length].concat code, RET
