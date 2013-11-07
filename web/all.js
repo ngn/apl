@@ -3960,9 +3960,7 @@ compileAST = function(ast, opts) {
           visit(node[2]);
           return r;
         case 'assign':
-          r = visit(node[2]);
-          visitLHS(node[1], r.type);
-          return r;
+          return visitLHS(node[1], visit(node[2]));
         case 'symbol':
           name = node[1];
           if (((_ref1 = (v = vars["get_" + name])) != null ? _ref1.type : void 0) === 'F') {
@@ -4161,12 +4159,13 @@ compileAST = function(ast, opts) {
             }
           }
           [].splice.apply(node, [0, 9e9].concat(_ref20 = a[0])), _ref20;
+          extend(node, a[0]);
           return h[0];
         default:
           throw Error("Unrecognized node type, '" + node[0] + "'");
       }
     };
-    visitLHS = function(node, rhsType) {
+    visitLHS = function(node, rhsInfo) {
       var c, child, name, _i, _j, _len, _len1, _ref1, _ref2;
       node.scopeNode = scopeNode;
       switch (node[0]) {
@@ -4176,28 +4175,27 @@ compileAST = function(ast, opts) {
             err(node, 'Assignment to ∇ is not allowed.');
           }
           if (vars[name]) {
-            if (vars[name].type !== rhsType) {
+            if (vars[name].type !== rhsInfo.type) {
               err(node, "Inconsistent usage of symbol '" + name + "', it is assigned both nouns and verbs.");
             }
           } else {
-            vars[name] = {
-              type: rhsType,
+            vars[name] = extend({
               scopeDepth: scopeNode.scopeDepth,
               slot: scopeNode.nSlots++
-            };
+            }, rhsInfo);
           }
           break;
         case 'expr':
-          rhsType === 'X' || err(node, 'Strand assignment can be used only for nouns.');
+          rhsInfo.type === 'X' || err(node, 'Strand assignment can be used only for nouns.');
           _ref1 = node.slice(1);
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             child = _ref1[_i];
-            visitLHS(child, rhsType);
+            visitLHS(child, rhsInfo);
           }
           break;
         case 'index':
-          rhsType === 'X' || err(node, 'Index assignment can be used only for nouns.');
-          visitLHS(node[1], 'X');
+          rhsInfo.type === 'X' || err(node, 'Index assignment can be used only for nouns.');
+          visitLHS(node[1], rhsInfo);
           _ref2 = node.slice(2);
           for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
             c = _ref2[_j];
@@ -4209,9 +4207,7 @@ compileAST = function(ast, opts) {
         default:
           err(node, "Invalid LHS node type: " + (JSON.stringify(node[0])));
       }
-      return {
-        type: rhsType
-      };
+      return rhsInfo;
     };
     _ref1 = scopeNode.slice(1);
     for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
@@ -4518,7 +4514,7 @@ if (typeof module !== "undefined" && module !== null) {
           return _results;
         })()).toString('utf8'));
       } else {
-        process.stdout.write("ngn apl 2013-11-06\n");
+        process.stdout.write("ngn apl 2013-11-07\n");
         rl = require('readline').createInterface(process.stdin, process.stdout);
         rl.setPrompt('      ');
         ctx = Object.create(vocabulary);
@@ -6866,6 +6862,9 @@ var aplTests = [
 ["⊂{⍺⍺ ⍵⍵ ⍵}⌽'hello'","<=>","⊂'olleh'"],
 ["⊂{⍶⍶⍵}'hello'","<=>","⊂⊂'hello'"],
 ["⊂{⍶⍹⍵}⌽'hello'","<=>","⊂'olleh'"],
+["+{⍵⍶⍵}10 20 30","<=>","20 40 60"],
+["f←{⍵⍶⍵} ⋄ +f 10 20 30","<=>","20 40 60"],
+["twice←{⍶⍶⍵} ⋄ *twice 2","<=>","1618.1779919126539"],
 ["⍴⍴''","<=>",",1"],
 ["⍴⍴'x'","<=>",",0"],
 ["⍴⍴'xx'","<=>",",1"],
