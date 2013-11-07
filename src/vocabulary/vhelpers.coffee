@@ -147,6 +147,7 @@ withIdentity = (x, f) ->
 
 adverb      = (f) -> meta f, 'isAdverb',      true
 conjunction = (f) -> meta f, 'isConjunction', true
+cps         = (f) -> meta f, 'cps',           true
 
 aka = (aliases, f) -> # "also known as" decorator
   if typeof aliases is 'string'

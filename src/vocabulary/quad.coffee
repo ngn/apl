@@ -38,3 +38,9 @@ addVocabulary
   # ⎕IO←1 !!!
   'get_⎕IO': -> APLArray.zero
   'set_⎕IO': (x) -> if match x, APLArray.zero then x else throw Error 'The index origin (⎕IO) is fixed at 0'
+
+  # Delay (`⎕DL`)
+  '⎕DL': cps (omega, alpha, _, callback) ->
+    t0 = +new Date
+    setTimeout (-> callback new APLArray [new Date - t0]), omega.unwrap()
+    return
