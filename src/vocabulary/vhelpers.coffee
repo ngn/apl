@@ -82,14 +82,14 @@ match = match = (x, y) ->
       else
         x is y
 
-eps = 1e-13 # comparison tolerance for approx()
+eps = 1e-11 # comparison tolerance for approx()
 
 numApprox = (x, y) ->
   x is y or Math.abs(x - y) < eps
 
 # approx() is like match(), but it is tolerant to precision errors;
 # used for comparing expected and actual results in doctests
-approx = approx = (x, y) ->
+approx = (x, y) ->
   if x instanceof APLArray
     if not (y instanceof APLArray) then false
     else
