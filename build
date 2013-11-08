@@ -17,7 +17,7 @@ if [ ! -e $f ] || [ -n "$(find src \( -name '*.coffee' -o -name '*.apl' \) -newe
     echo "Building $f"
     mkdir -p lib
     echo '//usr/bin/env node "$0" $@ ; exit $?' >$f
-    $coffee -abcp src/apl.coffee >>$f
+    $coffee -acp src/apl.coffee >>$f
     chmod +x $f
 fi
 
