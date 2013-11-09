@@ -24,8 +24,8 @@ compileAST = (ast, opts = {}) ->
       ast.vars[k] = varInfo = type: 'X', slot: ast.nSlots++, scopeDepth: ast.scopeDepth
       if typeof v is 'function' or v instanceof λ
         varInfo.type = 'F'
-        if v.aplMetaInfo?.isAdverb      then varInfo.isAdverb      = true
-        if v.aplMetaInfo?.isConjunction then varInfo.isConjunction = true
+        if v.isAdverb      then varInfo.isAdverb      = true
+        if v.isConjunction then varInfo.isConjunction = true
         if /^[gs]et_.*/.test k then ast.vars[k[4...]] = type: 'X'
 
   err = (node, message) ->

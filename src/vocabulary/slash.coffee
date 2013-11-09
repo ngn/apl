@@ -62,7 +62,7 @@ reduce = @reduce = (f, g, axis0) ->
       rShape.splice axis, 1
 
     if omega.empty()
-      if (z = f.aplMetaInfo?.identity)?
+      if (z = f.identity)?
         assert z.shape.length is 0
         return new APLArray z.data, rShape, repeat([0], rShape.length), z.offset
       else

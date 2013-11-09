@@ -35,7 +35,7 @@ vm = ({code, env, stack, pc}) ->
         [w, f] = stack.splice -2
         if typeof f is 'function'
           if w instanceof λ then w = w.toFunction()
-          if f.aplMetaInfo?.cps
+          if f.cps
             f w, undefined, undefined, (r) -> stack.push r; vm {code, env, stack, pc}; return
             return
           else
@@ -50,7 +50,7 @@ vm = ({code, env, stack, pc}) ->
         if typeof f is 'function'
           if w instanceof λ then w = w.toFunction()
           if a instanceof λ then a = a.toFunction()
-          if f.aplMetaInfo?.cps
+          if f.cps
             f w, a, undefined, (r) -> stack.push r; vm {code, env, stack, pc}; return
             return
           else

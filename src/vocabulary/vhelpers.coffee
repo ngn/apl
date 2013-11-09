@@ -129,23 +129,18 @@ getAxisList = (axes, rank) ->
   else
     throw DomainError()
 
-meta = (f, name, value) ->
-  assert typeof f is 'function'
-  assert typeof name is 'string'
-  (f.aplMetaInfo ?= {})[name] = value
+withIdentity = (x, f) ->
+  f.identity = if x instanceof APLArray then x else APLArray.scalar x
   f
 
-withIdentity = (x, f) ->
-  if x not instanceof APLArray then x = APLArray.scalar x
-  meta f, 'identity', x
-
-adverb      = (f) -> meta f, 'isAdverb',      true
-conjunction = (f) -> meta f, 'isConjunction', true
-cps         = (f) -> meta f, 'cps',           true
+adverb      = (f) -> f.isAdverb      = true; f
+conjunction = (f) -> f.isConjunction = true; f
+cps         = (f) -> f.cps           = true; f
 
 aka = (aliases, f) -> # "also known as" decorator
   if typeof aliases is 'string'
     aliases = [aliases]
   else
     assert aliases instanceof Array
-  meta f, 'aliases', aliases
+  f.aliases = aliases
+  f
