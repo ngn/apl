@@ -89,7 +89,7 @@ compileAST = (ast, opts = {}) ->
           type: 'F', isAdverb: node.isAdverb, isConjunction: node.isConjunction
         when 'string', 'number', 'embedded' then {type: 'X'}
         when 'index'
-          for c in node[2...] when c
+          for i in [2...node.length] by 1 when c = node[i]
             visit(c).type is 'X' or err node, 'Only expressions of type data can be used as an index.'
           visit node[1]
         when 'expr'
@@ -164,16 +164,16 @@ compileAST = (ast, opts = {}) ->
             vars[name] = extend {scopeDepth: scopeNode.scopeDepth, slot: scopeNode.nSlots++}, rhsInfo
         when 'expr'
           rhsInfo.type is 'X' or err node, 'Strand assignment can be used only for nouns.'
-          for child in node[1...] then visitLHS child, rhsInfo
+          for i in [1...node.length] by 1 then visitLHS node[i], rhsInfo
         when 'index'
           rhsInfo.type is 'X' or err node, 'Index assignment can be used only for nouns.'
           visitLHS node[1], rhsInfo
-          for c in node[2...] when c then visit c
+          for i in [2...node.length] by 1 when c = node[i] then visit c
         else
           err node, "Invalid LHS node type: #{JSON.stringify node[0]}"
       rhsInfo
 
-    for node in scopeNode[1...] then visit node
+    for i in [1...scopeNode.length] by 1 then visit scopeNode[i]
 
   render = (node) ->
     switch node[0]
@@ -182,8 +182,10 @@ compileAST = (ast, opts = {}) ->
           # {}0   <=>   ⍬
           [LDC, APLArray.zilde, RET]
         else
-          a = for child in node[1...] then [POP].concat render child
-          [].concat(a...)[1...].concat RET
+          a = []
+          for i in [1...node.length] by 1 then a.push render(node[i])...; a.push POP
+          a[a.length - 1] = RET
+          a
       when 'guard'
         x = render node[1]
         y = render node[2]
@@ -254,18 +256,15 @@ compileAST = (ast, opts = {}) ->
       when 'index'
         # ⍴ x[⍋x←6?40] <=> ,6
         v = node.scopeNode.vars._index
-        axes = for c, i in node[2...] when c then i
-        [].concat(
-          (for c in node[2...] when c then render c)...
-          VEC, axes.length
-          LDC, new APLArray axes
-          VEC, 2,
-          GET, v.scopeDepth, v.slot,
-          render(node[1]),
-          DYA
-        )
+        axes = []
+        a = []
+        for i in [2...node.length] by 1 when c = node[i] then axes.push i - 2; a.push render(c)...
+        a.push VEC, axes.length, LDC, new APLArray(axes), VEC, 2, GET, v.scopeDepth, v.slot
+        a.push render(node[1])...
+        a.push DYA
+        a
       when 'vector'
-        fragments = for child in node[1...] then render child
+        fragments = for i in [1...node.length] by 1 then render node[i]
         if all(for f in fragments then f.length is 2 and f[0] is LDC)
           [LDC, new APLArray(for f in fragments then (if (x = f[1]).isSimple() then x.unwrap() else x))]
         else
@@ -309,18 +308,19 @@ compileAST = (ast, opts = {}) ->
         # (a b c) ← 7 8   ⋄ a b c   !!!
         # ((a b)c)←3(4 5) ⋄ a b c   <=> 3 3 (4 5)
         n = node.length - 1
-        [SPL, n].concat (for child in node[1...] then renderLHS(child).concat POP)...
+        a = [SPL, n]
+        for i in [1...node.length] by 1 then a.push renderLHS(node[i])...; a.push POP
+        a
       when 'index' # index assignment
         v = node.scopeNode.vars._substitute
-        axes = for c, i in node[2...] when c then i
-        [].concat(
-          (for c in node[2...] when c then render c)...
-          VEC, axes.length
-          render node[1]
-          LDC, new APLArray axes
-          VEC, 4, GET, v.scopeDepth, v.slot, MON
-          renderLHS node[1]
-        )
+        axes = []
+        a = []
+        for i in [2...node.length] by 1 when c = node[i] then axes.push i - 2; a.push render(c)...
+        a.push VEC, axes.length
+        a.push render(node[1])...
+        a.push LDC, new APLArray(axes), VEC, 4, GET, v.scopeDepth, v.slot, MON
+        a.push renderLHS(node[1])...
+        a
       else
         throw Error "Unrecognized node type for assignment, '#{node[0]}'"
 
