@@ -4,7 +4,7 @@ exec = (aplCode, opts = {}) ->
 execInternal = (aplCode, opts = {}) ->
   ast = parse aplCode, opts
   code = compileAST ast, opts
-  env = if prelude then (for frame in prelude.env then frame[0...]) else [[]]
+  env = if prelude then (for frame in prelude.env then frame[..]) else [[]]
   for k, v of ast.vars then env[0][v.slot] = opts.ctx[k]
   result = vm {code, env}
   for k, v of ast.vars then opts.ctx[k] = env[0][v.slot]
@@ -17,7 +17,7 @@ compile = (aplCode, opts = {}) ->
 compileAST = (ast, opts = {}) ->
   ast.scopeDepth = 0
   ast.nSlots = if prelude then prelude.ast.nSlots else 0
-  ast.vars = if prelude then ast.vars = Object.create prelude.ast.vars else {}
+  ast.vars = if prelude then Object.create prelude.ast.vars else {}
   do ->
     opts.ctx ?= Object.create vocabulary
     for k, v of opts.ctx when not ast.vars[k]
@@ -26,7 +26,7 @@ compileAST = (ast, opts = {}) ->
         varInfo.type = 'F'
         if v.isAdverb      then varInfo.isAdverb      = true
         if v.isConjunction then varInfo.isConjunction = true
-        if /^[gs]et_.*/.test k then ast.vars[k[4...]] = type: 'X'
+        if /^[gs]et_.*/.test k then ast.vars[k[4..]] = type: 'X'
 
   err = (node, message) ->
     syntaxError message, file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
@@ -62,7 +62,7 @@ compileAST = (ast, opts = {}) ->
         when 'symbol'
           name = node[1]
           if (v = vars["get_#{name}"])?.type is 'F'
-            {type: 'X'}
+            type: 'X'
           else
             vars[name] or err node, "Symbol '#{name}' is referenced before assignment."
         when 'lambda'
@@ -70,33 +70,27 @@ compileAST = (ast, opts = {}) ->
             scopeNode: scopeNode
             scopeDepth: (d = scopeNode.scopeDepth + 1 + !!(node.isAdverb or node.isConjunction))
             nSlots: 3
-            vars: extend Object.create(vars),
+            vars: v = extend Object.create(vars),
               '⍵': type: 'X', slot: 0, scopeDepth: d
               '∇': type: 'F', slot: 1, scopeDepth: d
               '⍺': type: 'X', slot: 2, scopeDepth: d
           if node.isConjunction
-            extend body.vars,
-              '⍵⍵': type: 'F', slot: 0, scopeDepth: d - 1
-              '⍹':  type: 'F', slot: 0, scopeDepth: d - 1
-              '∇∇': type: 'F', slot: 1, scopeDepth: d - 1, isConjunction: true
-              '⍺⍺': type: 'F', slot: 2, scopeDepth: d - 1
-              '⍶':  type: 'F', slot: 2, scopeDepth: d - 1
+            v['⍵⍵'] = v['⍹'] = type: 'F', slot: 0, scopeDepth: d - 1
+            v['∇∇'] =          type: 'F', slot: 1, scopeDepth: d - 1, isConjunction: true
+            v['⍺⍺'] = v['⍶'] = type: 'F', slot: 2, scopeDepth: d - 1
           else if node.isAdverb
-            extend body.vars,
-              '⍺⍺': type: 'F', slot: 0, scopeDepth: d - 1
-              '⍶':  type: 'F', slot: 0, scopeDepth: d - 1
-              '∇∇': type: 'F', slot: 1, scopeDepth: d - 1, isAdverb: true
+            v['⍺⍺'] = v['⍶'] = type: 'F', slot: 0, scopeDepth: d - 1
+            v['∇∇'] =          type: 'F', slot: 1, scopeDepth: d - 1, isAdverb: true
           type: 'F', isAdverb: node.isAdverb, isConjunction: node.isConjunction
-        when 'string', 'number', 'embedded' then {type: 'X'}
+        when 'string', 'number', 'embedded' then type: 'X'
         when 'index'
           for i in [2...node.length] by 1 when c = node[i]
             visit(c).type is 'X' or err node, 'Only expressions of type data can be used as an index.'
           visit node[1]
         when 'expr'
-          a = node[1...]
+          a = node[1..]
           h = Array a.length
-          for i in [a.length - 1 .. 0]
-            h[i] = visit a[i]
+          for i in [a.length - 1..0] by -1 then h[i] = visit a[i]
           # Form vectors from sequences of data
           i = 0
           while i < a.length - 1
@@ -104,48 +98,45 @@ compileAST = (ast, opts = {}) ->
               j = i + 2
               while j < a.length and h[j].type is 'X' then j++
               a[i...j] = [['vector'].concat a[i...j]]
-              h[i...j] = [{type: 'X'}]
+              h[i...j] = type: 'X'
             else
               i++
           # Apply conjunctions
           i = a.length - 2
           while --i >= 0
-            if (h[i + 1].isConjunction and
-                (h[i].type is 'F' or h[i + 2].type is 'F'))
+            if h[i + 1].isConjunction and (h[i].type is 'F' or h[i + 2].type is 'F')
               a[i...i+3] = [['conjunction'].concat a[i...i+3]]
-              h[i...i+3] = [{type: 'F'}]
+              h[i...i+3] = type: 'F'
               i--
           # Apply postfix adverbs
           i = 0
           while i < a.length - 1
             if h[i].type is 'F' and h[i + 1].isAdverb
               a[i...i+2] = [['adverb'].concat a[i...i+2]]
-              h[i...i+2] = [{type: 'F'}]
+              h[i...i+2] = type: 'F'
             else
               i++
           # Hooks
           if h.length is 2 and h[0].type is h[1].type is 'F'
             a = [['hook'].concat a]
-            h = [{type: 'F'}]
+            h = [type: 'F']
           # Forks
-          if (h.length >= 3 and h.length % 2 is 1 and
-                  all(for x in h then x.type is 'F'))
+          if h.length >= 3 and h.length % 2 is 1 and all(for x in h then x.type is 'F')
             a = [['fork'].concat a]
-            h = [{type: 'F'}]
+            h = [type: 'F']
           if h[h.length - 1].type is 'F'
-            if h.length > 1
-              err a[h.length - 1], 'Trailing function in expression'
+            if h.length > 1 then err a[h.length - 1], 'Trailing function in expression'
           else
             # Apply monadic and dyadic functions
             while h.length > 1
               if h.length is 2 or h[h.length - 3].type is 'F'
-                a[h.length - 2...] = [['monadic'].concat a[h.length - 2...]]
-                h[h.length - 2...] = [{type: 'X'}]
+                a[-2..] = [['monadic'].concat a[-2..]]
+                h[-2..] = type: 'X'
               else
-                a[h.length - 3...] = [['dyadic'].concat a[h.length - 3...]]
-                h[h.length - 3...] = [{type: 'X'}]
+                a[-3..] = [['dyadic'].concat a[-3..]]
+                h[-3..] = type: 'X'
           # Replace `"expr"` node with `a[0]` in the AST
-          node[...] = a[0]
+          node[..] = a[0]
           extend node, a[0]
           h[0]
         else
@@ -195,16 +186,11 @@ compileAST = (ast, opts = {}) ->
         # A×A←2 5 <=> 4 25
         render(node[2]).concat renderLHS node[1]
       when 'symbol'
-        # radius ← 3
-        # ... get_circumference ← {2×○radius}
-        # ... get_surface ← {○radius*2}
-        # ...
-        # ... before ← 0.01× ⌊ 100× radius circumference surface
-        # ... radius ← radius + 1
-        # ... after  ← 0.01× ⌊ 100× radius circumference surface
-        # ...
-        # ... before after
-        # ... <=> (3 18.84 28.27)(4 25.13 50.26)
+        # r←3 ⋄ get_c←{2×○r} ⋄ get_S←{○r*2}
+        # ... before←.01×⌊100×r c S
+        # ... r←r+1
+        # ... after←.01×⌊100×r c S
+        # ... before after <=> (3 18.84 28.27)(4 25.13 50.26)
         name = node[1]
         {vars} = node.scopeNode
         if (v = vars["get_#{name}"])?.type is 'F'
