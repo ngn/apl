@@ -14,12 +14,6 @@ class APLArray
     else
       assert prod(@shape) is 0
 
-  get: (indices) ->
-    p = @offset
-    for index, axis in indices
-      p += index * @stride[axis]
-    @data[p]
-
   empty: ->
     for d in @shape when not d then return true
     false
