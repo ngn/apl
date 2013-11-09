@@ -33,14 +33,13 @@ addVocabulary
 # ⍬↑3 3⍴⍳9         <=> 3 3⍴⍳9
 take = (omega, alpha) ->
   if alpha.shape.length > 1
-    throw RankError()
+    rankError()
   if omega.shape.length is 0
     omega = new APLArray [omega.unwrap()], (if alpha.shape.length is 0 then [1] else repeat [1], alpha.shape[0])
   a = alpha.toArray()
   if a.length > omega.shape.length
-    throw RankError()
-  for x in a when typeof x isnt 'number' or x isnt Math.floor x
-    throw DomainError()
+    rankError()
+  for x in a when typeof x isnt 'number' or x isnt Math.floor x then domainError()
 
   mustCopy = false
   shape = omega.shape[...]
@@ -99,10 +98,10 @@ mix = (omega) ->
     shapes = []
     omega.each (x) -> shapes.push x.shape
     if shapes.length is 0
-      throw NonceError 'Mix of empty array not implemented'
+      nonceError 'Mix of empty array not implemented'
     shape = shapes.reduce (a, b) ->
       if a.length isnt b.length
-        throw NonceError 'Mix of different ranks not implemented'
+        nonceError 'Mix of different ranks not implemented'
       for i in [0...a.length]
         Math.max a[i], b[i]
     s = new APLArray shape

@@ -60,9 +60,9 @@ scan = (f, g, axis) ->
 
 # Helper for `\` and `⍀` in their verbal sense
 expand = (omega, alpha, axis) ->
-  if omega.shape.length is 0 then throw NonceError 'Expand of scalar not implemented'
+  if omega.shape.length is 0 then nonceError 'Expand of scalar not implemented'
   axis = if axis then axis.toInt 0, omega.shape.length else omega.shape.length - 1
-  if alpha.shape.length > 1 then throw RankError()
+  if alpha.shape.length > 1 then rankError()
   a = alpha.toArray()
 
   shape = omega.shape[...]
@@ -70,9 +70,9 @@ expand = (omega, alpha, axis) ->
   b = []
   i = 0
   for x in a
-    if not isInt x, 0, 2 then throw DomainError()
+    if not isInt x, 0, 2 then domainError()
     b.push(if x > 0 then i++ else null)
-  if i isnt omega.shape[axis] then throw LengthError()
+  if i isnt omega.shape[axis] then lengthError()
 
   data = []
   if shape[axis] isnt 0 and not omega.empty()

@@ -19,7 +19,7 @@ addVocabulary
   # (1 2)0⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34 <=> 21 31
   '⌷': squish = (omega, alpha, axes) ->
     if typeof omega is 'function' then return (x, y) -> omega x, y, alpha
-    if not alpha then throw Error 'Not implemented'
+    if not alpha then nonceError()
 
     [subscripts, subscriptShapes] = prepareForIndexing omega, alpha, axes
 
@@ -86,11 +86,11 @@ addVocabulary
       value = new APLArray [value.unwrap()], indexShape, repeat([0], indexShape.length)
     else
       if value.shape.length isnt indexShape.length
-        throw RankError()
+        rankError()
       else
         for n, i in indexShape
           if value.shape[i] isnt n
-            throw LengthError()
+            lengthError()
 
     r = new APLArray omega.toArray(), omega.shape
     p = 0 # pointer in r
@@ -116,25 +116,25 @@ prepareForIndexing = (omega, alpha, axes) ->
   assert omega instanceof APLArray
   assert (not axes?) or axes instanceof APLArray
 
-  if alpha.shape.length > 1 then throw RankError()
+  if alpha.shape.length > 1 then rankError()
   alphaItems = alpha.toArray()
-  if alphaItems.length > omega.shape.length then throw LengthError()
+  if alphaItems.length > omega.shape.length then lengthError()
 
   axes = if axes then axes.toArray() else [0...alphaItems.length]
-  if alphaItems.length isnt axes.length then throw LengthError()
+  if alphaItems.length isnt axes.length then lengthError()
 
   subscripts = Array omega.shape.length
   subscriptShapes = Array omega.shape.length
   for axis, i in axes
-    if not isInt axis then throw DomainError()
-    if not (0 <= axis < omega.shape.length) then throw RankError()
-    if typeof subscripts[axis] isnt 'undefined' then throw RankError 'Duplicate axis'
+    if not isInt axis then domainError()
+    if not (0 <= axis < omega.shape.length) then rankError()
+    if typeof subscripts[axis] isnt 'undefined' then rankError 'Duplicate axis'
     d = alphaItems[i]
     subscripts[axis] = if d instanceof APLArray then d.toArray() else [d]
     subscriptShapes[axis] = if d instanceof APLArray then d.shape else []
     for x in subscripts[axis]
-      if not isInt x then throw DomainError()
-      if not (0 <= x < omega.shape[axis]) then throw IndexError()
+      if not isInt x then domainError()
+      if not (0 <= x < omega.shape[axis]) then indexError()
 
   for i in [0...subscripts.length] when typeof subscripts[i] is 'undefined'
     subscripts[i] = [0...omega.shape[i]]

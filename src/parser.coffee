@@ -46,7 +46,7 @@ parse = (aplCode, opts = {}) ->
     ).subst {tt}
 
   parserError = (message) ->
-    throw SyntaxError message,
+    syntaxError message,
       file: opts.file, line: token.startLine, col: token.startCol, aplCode: aplCode
 
   parseBody = ->

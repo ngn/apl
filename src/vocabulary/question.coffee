@@ -23,6 +23,6 @@ roll = pervasive monad: real (x) -> Math.floor Math.random() * x
 deal = (omega, alpha) ->
   y = omega.unwrap()
   x = alpha.unwrap()
-  if x > y then throw DomainError()
+  if x > y then domainError()
   available = [0...y]
   new APLArray(for [0...x] then available.splice(Math.floor(available.length * Math.random()), 1)[0])

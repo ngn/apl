@@ -12,9 +12,9 @@ addVocabulary
       # ⍬⍴⍬       <=> 0
       # 2 3⍴⍬     <=> 2 3⍴0
       # 2 3⍴⍳7    <=> 2 3⍴0 1 2 3 4 5
-      if alpha.shape.length > 1 then throw RankError()
+      if alpha.shape.length > 1 then rankError()
       shape = alpha.toArray()
-      for d in shape when not isInt d, 0 then throw DomainError()
+      for d in shape when not isInt d, 0 then domainError()
       n = prod shape
       a = omega.toArray n
       assert a.length <= n

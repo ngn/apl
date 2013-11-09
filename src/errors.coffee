@@ -1,4 +1,4 @@
-APLError = (name, message = '', opts) ->
+aplError = (name, message = '', opts) ->
   assert typeof name is 'string'
   assert typeof message is 'string'
   if opts?
@@ -16,11 +16,11 @@ APLError = (name, message = '', opts) ->
   e = Error message
   e.name = name
   for k, v of opts then e[k] = v
-  e
+  throw e
 
-SyntaxError = (message, opts) -> APLError 'SYNTAX ERROR', message, opts
-DomainError = (message, opts) -> APLError 'DOMAIN ERROR', message, opts
-LengthError = (message, opts) -> APLError 'LENGTH ERROR', message, opts
-RankError   = (message, opts) -> APLError 'RANK ERROR',   message, opts
-IndexError  = (message, opts) -> APLError 'INDEX ERROR',  message, opts
-NonceError  = (message, opts) -> APLError 'NONCE ERROR',  message, opts
+syntaxError = (a...) -> aplError 'SYNTAX ERROR', a...
+domainError = (a...) -> aplError 'DOMAIN ERROR', a...
+lengthError = (a...) -> aplError 'LENGTH ERROR', a...
+rankError   = (a...) -> aplError 'RANK ERROR',   a...
+indexError  = (a...) -> aplError 'INDEX ERROR',  a...
+nonceError  = (a...) -> aplError 'NONCE ERROR',  a...

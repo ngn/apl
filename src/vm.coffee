@@ -75,7 +75,7 @@ vm = ({code, env, stack, pc}) ->
         if a.length is 1
           a = repeat a, n
         else if a.length isnt n
-          throw LengthError()
+          lengthError()
         stack.push a...
       when JEQ
         n = code[pc++]
@@ -84,5 +84,5 @@ vm = ({code, env, stack, pc}) ->
       when EMB
         frame = env[env.length - 1]
         stack.push code[pc++](frame[0], frame[2])
-      else throw Error 'Unrecognized instruction: ' + code[pc - 1] + ', pc:' + pc
+      else aplError 'Unrecognized instruction: ' + code[pc - 1] + ', pc:' + pc
   return

@@ -24,8 +24,8 @@ addVocabulary
       nAxes = Math.max alpha.shape.length, omega.shape.length
       if axis
         axis = axis.unwrap()
-        if typeof axis isnt 'number' then throw DomainError()
-        if not (-1 < axis < nAxes) then throw RankError()
+        if typeof axis isnt 'number' then domainError()
+        if not (-1 < axis < nAxes) then rankError()
       else
         axis = nAxes - 1
 
@@ -40,26 +40,26 @@ addVocabulary
         if isInt axis then s[axis] = 1
         omega = new APLArray [omega.unwrap()], s, repeat([0], alpha.shape.length)
       else if alpha.shape.length + 1 is omega.shape.length
-        if not isInt axis then throw RankError()
+        if not isInt axis then rankError()
         shape = alpha.shape[...]
         shape.splice axis, 0, 1
         stride = alpha.stride[...]
         stride.splice axis, 0, 0
         alpha = new APLArray alpha.data, shape, stride, alpha.offset
       else if alpha.shape.length is omega.shape.length + 1
-        if not isInt axis then throw RankError()
+        if not isInt axis then rankError()
         shape = omega.shape[...]
         shape.splice axis, 0, 1
         stride = omega.stride[...]
         stride.splice axis, 0, 0
         omega = new APLArray omega.data, shape, stride, omega.offset
       else if alpha.shape.length isnt omega.shape.length
-        throw RankError()
+        rankError()
 
       assert alpha.shape.length is omega.shape.length
       for i in [0...alpha.shape.length]
         if i isnt axis and alpha.shape[i] isnt omega.shape[i]
-          throw LengthError()
+          lengthError()
 
       shape = alpha.shape[...]
       if isInt axis

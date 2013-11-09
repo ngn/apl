@@ -15,7 +15,7 @@ addVocabulary
       #
       # 11 12 13 14 15 16 ~ 2 3⍴1 2 3 14 5 6 <=> 11 12 13 15 16
       if alpha.shape.length > 1
-        throw RankError()
+        rankError()
       data = []
       alpha.each (x) ->
         try
@@ -60,7 +60,7 @@ addVocabulary
     # 2j2 2j4∨5j5 4j4   <=> 1j1 2
     dyad: (y, x) ->
       if not (Complex.isint x) or not (Complex.isint y)
-        throw DomainError '∨ is implemented only for Gaussian integers' # todo
+        domainError '∨ is implemented only for Gaussian integers' # todo
       Complex.gcd x, y
 
   '∧': aka '^', withIdentity 1, pervasive
@@ -93,7 +93,7 @@ addVocabulary
     # 2j2 2j4∧5j5 4j4                <=> 10j10 ¯4j12
     dyad: (y, x) ->
       if not (Complex.isint x) or not (Complex.isint y)
-        throw DomainError '∧ is implemented only for Gaussian integers' # todo
+        domainError '∧ is implemented only for Gaussian integers' # todo
       Complex.lcm x, y
 
   # Nor (`⍱`)

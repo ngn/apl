@@ -4,7 +4,7 @@ addVocabulary
     if typeof window?.prompt is 'function'
       new APLArray(prompt('⎕:') or '')
     else
-      throw Error 'Reading from ⎕ is not implemented.'
+      nonceError 'Reading from ⎕ is not implemented.'
 
   'set_⎕': (x) ->
     s = format(x).join('\n') + '\n'
@@ -18,7 +18,7 @@ addVocabulary
     if typeof window?.prompt is 'function'
       prompt('') or ''
     else
-      throw Error 'Reading from ⍞ is not implemented.'
+      nonceError 'Reading from ⍞ is not implemented.'
 
   'set_⍞': (x) ->
     s = format(x).join '\n'
@@ -37,7 +37,7 @@ addVocabulary
   # ⎕IO←0 <=> 0
   # ⎕IO←1 !!!
   'get_⎕IO': -> APLArray.zero
-  'set_⎕IO': (x) -> if match x, APLArray.zero then x else throw Error 'The index origin (⎕IO) is fixed at 0'
+  'set_⎕IO': (x) -> if match x, APLArray.zero then x else domainError 'The index origin (⎕IO) is fixed at 0'
 
   # Delay (`⎕DL`)
   '⎕DL': cps (omega, alpha, _, callback) ->

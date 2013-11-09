@@ -10,11 +10,10 @@ addVocabulary
   # ⍎123                 !!!
   '⍎': (omega, alpha) ->
     if alpha
-      throw Error 'Not implemented'
+      nonceError()
     else
       s = ''
       omega.each (c) ->
-        if typeof c isnt 'string'
-          throw DomainError()
+        if typeof c isnt 'string' then domainError()
         s += c
       exec s

@@ -1,5 +1,3 @@
-nonceThrower = -> throw NonceError()
-
 # pervasive() is a higher-order function
 #
 # Consider a function that accepts and returns only scalars.  To make it
@@ -16,10 +14,10 @@ pervasive = ({monad, dyad}) ->
           x.map pervadeMonadic
         else
           r = monad x
-          if typeof r is 'number' and isNaN r then throw DomainError 'NaN'
+          if typeof r is 'number' and isNaN r then domainError 'NaN'
           r
     else
-      nonceThrower
+      nonceError
   pervadeDyadic =
     if dyad
       (x, y) ->
@@ -29,19 +27,19 @@ pervasive = ({monad, dyad}) ->
         switch 16 * tx + ty
           when 0x00
             r = dyad x, y
-            if typeof r is 'number' and isNaN r then throw DomainError 'NaN'
+            if typeof r is 'number' and isNaN r then domainError 'NaN'
             r
           when 0x01, 0x02 then y.map (yi) -> pervadeDyadic x, yi
           when 0x10, 0x20 then x.map (xi) -> pervadeDyadic xi, y
           when 0x12       then xi = x.data[x.offset]; y.map (yi) -> pervadeDyadic xi, yi
           when 0x21, 0x11 then yi = y.data[y.offset]; x.map (xi) -> pervadeDyadic xi, yi # todo: use the larger shape for '11'
           when 0x22
-            if x.shape.length isnt y.shape.length then throw RankError()
-            for axis in [0...x.shape.length] by 1 when x.shape[axis] isnt y.shape[axis] then throw LengthError()
+            if x.shape.length isnt y.shape.length then rankError()
+            for axis in [0...x.shape.length] by 1 when x.shape[axis] isnt y.shape[axis] then lengthError()
             x.map2 y, pervadeDyadic
           else assert 0
     else
-      nonceThrower
+      nonceError
   (omega, alpha) ->
     assert omega instanceof APLArray
     assert alpha instanceof APLArray or not alpha?
@@ -51,7 +49,7 @@ real = (f) -> (x, y, axis) ->
   if typeof x is 'number' and (not y? or typeof y is 'number')
     f x, y, axis
   else
-    throw DomainError()
+    domainError()
 
 numeric = (f, g) -> (x, y, axis) ->
   if typeof x is 'number' and (not y? or typeof y is 'number')
@@ -107,27 +105,24 @@ approx = (x, y) ->
         x is y
 
 bool = (x) ->
-  if x not in [0, 1]
-    throw DomainError()
-  x
+  if x not in [0, 1] then domainError() else x
 
 getAxisList = (axes, rank) ->
   assert isInt rank, 0
   if not axes? then return []
   assert axes instanceof APLArray
-  if axes.shape.length isnt 1 or axes.shape[0] isnt 1
-    throw SyntaxError() # [sic]
+  if axes.shape.length isnt 1 or axes.shape[0] isnt 1 then syntaxError() # [sic]
   a = axes.unwrap()
   if a instanceof APLArray
     a = a.toArray()
     for x, i in a
-      if not isInt x, 0, rank then throw DomainError()
-      if x in a[...i] then throw Error 'Non-unique axes'
+      if not isInt x, 0, rank then domainError()
+      if x in a[...i] then domainError 'Non-unique axes'
     a
   else if isInt a, 0, rank
     [a]
   else
-    throw DomainError()
+    domainError()
 
 withIdentity = (x, f) ->
   f.identity = if x instanceof APLArray then x else APLArray.scalar x

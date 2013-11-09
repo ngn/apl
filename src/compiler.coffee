@@ -29,7 +29,7 @@ compileAST = (ast, opts = {}) ->
         if /^[gs]et_.*/.test k then ast.vars[k[4...]] = type: 'X'
 
   err = (node, message) ->
-    throw SyntaxError message, file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
+    syntaxError message, file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
 
   (markOperators = (node) ->
     switch node[0]
@@ -47,7 +47,7 @@ compileAST = (ast, opts = {}) ->
           when '⍺⍺', '⍶', '∇∇' then 1
           when '⍵⍵', '⍹' then 3
           else 0
-      else throw Error "Unrecognized node type, '#{node[0]}'"
+      else assert 0
   ) ast
 
   queue = [ast] # accumulates "body" nodes which we encounter on our way
@@ -149,7 +149,7 @@ compileAST = (ast, opts = {}) ->
           extend node, a[0]
           h[0]
         else
-          throw Error "Unrecognized node type, '#{node[0]}'"
+          assert 0
 
     visitLHS = (node, rhsInfo) ->
       node.scopeNode = scopeNode
@@ -287,7 +287,7 @@ compileAST = (ast, opts = {}) ->
             GET, w.scopeDepth, w.slot, render(node[i--]), DYA
           )
         if i then r.concat render(node[1]), GET, u.scopeDepth, u.slot, DYA else r
-      else throw Error "Unrecognized node type, '#{node[0]}'"
+      else assert 0
 
   renderLHS = (node) ->
     switch node[0]
@@ -322,7 +322,7 @@ compileAST = (ast, opts = {}) ->
         a.push renderLHS(node[1])...
         a
       else
-        throw Error "Unrecognized node type for assignment, '#{node[0]}'"
+        assert 0
 
   render ast
 
@@ -337,4 +337,4 @@ aplify = (x) ->
   else if x instanceof Array
     new APLArray(for y in x then (y = aplify y; if not y.shape.length then y.unwrap() else y))
   else if x instanceof APLArray then x
-  else throw Error 'Cannot aplify object ' + x
+  else aplError 'Cannot aplify object ' + x

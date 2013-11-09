@@ -4,7 +4,7 @@ addVocabulary
     if alpha
 
       # Format by example or specification (`⍕`)
-      throw Error 'Not implemented'
+      nonceError()
 
     else
 

@@ -2,7 +2,7 @@ addVocabulary
 
   '⊂': (omega, alpha, axes) ->
     if alpha
-      throw Error 'Not implemented'
+      nonceError()
     else
 
       # Enclose (`⊂`)

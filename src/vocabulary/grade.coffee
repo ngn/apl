@@ -52,15 +52,14 @@ grade = (omega, alpha, direction) ->
   h = {} # maps a character to its index in the collation
   if alpha
     if not alpha.shape.length
-      throw RankError()
+      rankError()
     h = {}
     alpha.each (x, indices) ->
-      if typeof x isnt 'string'
-        throw DomainError()
+      if typeof x isnt 'string' then domainError()
       h[x] = indices[indices.length - 1]
 
   if not omega.shape.length
-    throw RankError()
+    rankError()
 
   new APLArray [0...omega.shape[0]]
     .sort (i, j) ->
