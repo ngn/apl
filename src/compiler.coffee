@@ -239,7 +239,7 @@ compileAST = (ast, opts = {}) ->
         #   ⍴"\f\t\n\r\u1234\xff"     <=> ,6
         # "unclosed string !!!
         d = node[1][0] # the delimiter: '"' or "'"
-        s = eval d + node[1][1...-1].replace(///#{d + d}///g, '\\' + d) + d
+        s = do Function "return #{d}#{node[1][1...-1].replace ///#{d + d}///g, '\\' + d}#{d};"
         v = if s.length is 1 then new APLArray s, [] else new APLArray s
         [LDC, v]
       when 'number'
@@ -251,7 +251,8 @@ compileAST = (ast, opts = {}) ->
         v = if a[1] then new Complex(a[0], a[1]) else a[0]
         [LDC, new APLArray [v], []]
       when 'embedded'
-        f = eval "(function (_w, _a) {return (#{node[1].replace /^«|»$/g, ''});})"
+        # 123 + «456 + 789» <=> 1368
+        f = do Function "return function(_w,_a){return(#{node[1].replace /^«|»$/g, ''})};"
         [EMB, (_w, _a) -> aplify f _w, _a]
       when 'index'
         # ⍴ x[⍋x←6?40] <=> ,6
