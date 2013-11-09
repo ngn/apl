@@ -3,6 +3,10 @@ set -e
 cd $(dirname "$0")
 coffee=node_modules/.bin/coffee
 
+if [ ! -x $coffee ]; then
+    npm install
+fi
+
 # xcat INPUTFILES OUTPUTFILE
 # Concatenates INPUTFILES into OUTPUTFILE only if at least one of them is newer than OUTPUTFILE
 xcat() { [ -e $2 ] && [ -z "$(find $1 -newer $2)" ] || ( echo "$1 -> $2" && cat $1 >$2 ); }
