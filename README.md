@@ -51,7 +51,7 @@ It can be `require()`d as a CommonJS module:
 
 or used in an HTML page:
 
-    <script src="http://ngn.github.io/apl/lib/apl.js">
+    <script src="http://ngn.github.io/apl/lib/apl.js"></script>
     <script>
         var result = apl('1 2 3 + 4 5 6'); // apl is a global variable
     </script>
