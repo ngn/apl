@@ -45,7 +45,7 @@ tokenize = (s, opts = {}) ->
       type = t or m[0]
       break
     if not type
-      throw SyntaxError 'Unrecognized token', {file: opts.file, line, col, s: opts.s}
+      syntaxError 'Unrecognized token', {file: opts.file, line, col, s: opts.s}
     a = m[0].split '\n'
     line += a.length - 1
     col = (if a.length is 1 then col else 1) + a[a.length - 1].length

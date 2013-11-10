@@ -14,12 +14,6 @@ class APLArray
     else
       assert prod(@shape) is 0
 
-  get: (indices) ->
-    p = @offset
-    for index, axis in indices
-      p += index * @stride[axis]
-    @data[p]
-
   empty: ->
     for d in @shape when not d then return true
     false
@@ -89,30 +83,18 @@ class APLArray
 
   toInt: (start = -Infinity, end = Infinity) ->
     r = @unwrap()
-    if typeof r isnt 'number' or r isnt ~~r or not (start <= r < end)
-      throw DomainError()
-    r
+    if typeof r isnt 'number' or r isnt ~~r or not (start <= r < end) then domainError() else r
 
-  toBool: ->
-    @toInt 0, 2
+  toBool: -> @toInt 0, 2
 
   isSingleton: ->
     for n in @shape when n isnt 1 then return false
     true
 
-  isSimple: ->
-    @shape.length is 0 and @data[@offset] not instanceof APLArray
-
-  unwrap: ->
-    if prod(@shape) isnt 1
-      throw LengthError()
-    @data[@offset]
-
-  getPrototype: -> # todo
-    if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' '
-
-  toString: ->
-    format(@).join '\n'
+  isSimple: -> @shape.length is 0 and @data[@offset] not instanceof APLArray
+  unwrap: -> if prod(@shape) is 1 then @data[@offset] else lengthError()
+  getPrototype: -> if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' ' # todo
+  toString: -> format(@).join '\n'
 
 strideForShape = (shape) ->
   assert shape instanceof Array

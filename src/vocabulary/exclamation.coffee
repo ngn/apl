@@ -15,7 +15,7 @@ addVocabulary
     # !¯200 !!! DOMAIN ERROR
     monad: real (x) ->
       if not isInt x then Γ(x + 1)
-      else if x < 0 then throw DomainError()
+      else if x < 0 then domainError()
       else if x < smallFactorials.length then smallFactorials[x]
       else Math.round Γ(x + 1)
 
@@ -48,7 +48,7 @@ addVocabulary
       r = switch 4*negInt(k) + 2*negInt(n) + negInt(n - k)
         when 0b000 then Math.exp lnΓ(n + 1) - lnΓ(k + 1) - lnΓ(n - k + 1)
         when 0b001 then 0
-        when 0b010 then throw DomainError()
+        when 0b010 then domainError()
         when 0b011 then Math.pow(-1, k) * Beta k - n - 1, k
         when 0b100 then 0
         when 0b101 then ;

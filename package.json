@@ -10,7 +10,7 @@
   },
   "main": "./lib/apl.js",
   "devDependencies": {
-    "coffee-script": "git+https://github.com/ngn/coffee-script#macro-build",
+    "coffee-script": "git+https://github.com/vanviegen/coffee-script#5eebd82",
     "macronym": "git+https://github.com/ngn/macronym",
     "glob": ""
   }

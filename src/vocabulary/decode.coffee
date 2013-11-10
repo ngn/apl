@@ -56,7 +56,7 @@ addVocabulary
     lastDimA = alpha.shape[alpha.shape.length - 1]
     firstDimB = omega.shape[0]
     if lastDimA isnt 1 and firstDimB isnt 1 and lastDimA isnt firstDimB
-      throw LengthError()
+      lengthError()
 
     a = alpha.toArray()
     b = omega.toArray()

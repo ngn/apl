@@ -78,4 +78,4 @@ addVocabulary
       new APLArray data, omega.shape
 
     else
-      throw Error 'Not implemented'
+      nonceError()

@@ -15,16 +15,14 @@ addVocabulary
       # 1 1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"   <=> 1 2 4 ⍴ 'QRSTUVWX'
       # ¯1 ¯1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ" <=> 1 2 4 ⍴ 'ABCDEFGH'
       if alpha.shape.length > 1
-        throw RankError()
+        rankError()
       a = alpha.toArray()
-      for x in a
-        if not isInt x
-          throw DomainError()
+      for x in a when not isInt x then domainError()
       if omega.shape.length is 0
         omega = new APLArray omega.data, repeat([1], a.length), omega.stride, omega.offset
       else
         if a.length > omega.shape.length
-          throw RankError()
+          rankError()
 
       shape = omega.shape[...]
       offset = omega.offset
@@ -47,7 +45,7 @@ addVocabulary
       # ↓2 2⍴⍳4 <=> (0 1)(2 3)
       # ↓2 3 4⍴⍳24 <=> 2 3⍴(0 1 2 3)(4 5 6 7)(8 9 10 11)(12 13 14 15)(16 17 18 19)(20 21 22 23)
       if omega.shape.length is 0
-        throw NonceError 'Split of scalar not implemented'
+        nonceError 'Split of scalar not implemented'
       oshape = omega.shape[...omega.shape.length - 1]
       obound = oshape.reduce ((a, b) -> a * b), 1
       ishape = omega.shape[omega.shape.length - 1]

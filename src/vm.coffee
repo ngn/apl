@@ -25,17 +25,21 @@ vm = ({code, env, stack, pc}) ->
     switch code[pc++]
       when LDC then stack.push code[pc++]
       when VEC
-        stack.push new APLArray(
-          for x in stack.splice stack.length - code[pc++]
-            if x.isSimple() then x.unwrap() else x
-        )
+        a = []
+        for x in stack.splice stack.length - code[pc++]
+          a.push(if x.isSimple() then x.unwrap() else x)
+        stack.push new APLArray a
       when GET then stack.push env[code[pc++]][code[pc++]]
       when SET then env[code[pc++]][code[pc++]] = stack[stack.length - 1]
       when MON
         [w, f] = stack.splice -2
         if typeof f is 'function'
           if w instanceof λ then w = w.toFunction()
-          stack.push f w
+          if f.cps
+            f w, undefined, undefined, (r) -> stack.push r; vm {code, env, stack, pc}; return
+            return
+          else
+            stack.push f w
         else
           stack.push code, pc, env
           {code} = f
@@ -46,7 +50,11 @@ vm = ({code, env, stack, pc}) ->
         if typeof f is 'function'
           if w instanceof λ then w = w.toFunction()
           if a instanceof λ then a = a.toFunction()
-          stack.push f w, a
+          if f.cps
+            f w, a, undefined, (r) -> stack.push r; vm {code, env, stack, pc}; return
+            return
+          else
+            stack.push f w, a
         else
           stack.push code, pc, env
           {code} = f
@@ -67,7 +75,7 @@ vm = ({code, env, stack, pc}) ->
         if a.length is 1
           a = repeat a, n
         else if a.length isnt n
-          throw LengthError()
+          lengthError()
         stack.push a...
       when JEQ
         n = code[pc++]
@@ -76,4 +84,5 @@ vm = ({code, env, stack, pc}) ->
       when EMB
         frame = env[env.length - 1]
         stack.push code[pc++](frame[0], frame[2])
-      else throw Error 'Unrecognized instruction: ' + code[pc - 1] + ', pc:' + pc
+      else aplError 'Unrecognized instruction: ' + code[pc - 1] + ', pc:' + pc
+  return

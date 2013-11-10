@@ -80,27 +80,6 @@ addVocabulary
       # ≡"abc" (2 4⍴("abc" 2 3 "k")) <=> 3
       new APLArray [depthOf omega], []
 
-  '≢': (omega, alpha) ->
-    if alpha
-
-      # Not match (`≢`)
-      #
-      # 3≢3 <=> 0
-      APLArray.bool[+not match omega, alpha]
-
-    else
-
-      # Tally (`≢`)
-      #
-      # ≢0 <=> 1
-      # ≢0 0 0 <=> 3
-      # ≢⍬ <=> 0
-      # ≢2 3⍴⍳6 <=> 2
-      if omega.shape.length
-        new APLArray [omega.shape[0]], []
-      else
-        APLArray.one
-
 depthOf = (x) ->
   if x instanceof APLArray
     if x.shape.length is 0 and not (x.data[0] instanceof APLArray)

@@ -46,7 +46,7 @@ addVocabulary
           assert r instanceof APLArray
           if r.shape.length is 0 then r.unwrap() else r
       else
-        throw LengthError()
+        lengthError()
 
 arrayEquals = (a, b) ->
   assert a instanceof Array

@@ -7,7 +7,7 @@ complexify = (x) ->
   else if x instanceof Complex
     x
   else
-    throw DomainError()
+    domainError()
 
 # simplify(re, im)
 #   * if the imaginary part is 0, the real part is returned
@@ -19,7 +19,7 @@ class Complex
   constructor: (@re, @im = 0) ->
     assert typeof @re is 'number'
     assert typeof @im is 'number'
-    if isNaN(@re) or isNaN(@im) then throw DomainError 'NaN'
+    if isNaN(@re) or isNaN(@im) then domainError 'NaN'
 
   toString: ->
     "#{@re}J#{@im}".replace /-|Infinity/g, '¯'

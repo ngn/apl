@@ -39,7 +39,7 @@ outerProduct = (f) ->
   assert typeof f is 'function'
   (omega, alpha) ->
     if not alpha
-      throw Error 'Adverb ∘. (Outer product) can be applied to dyadic verbs only'
+      syntaxError 'Adverb ∘. (Outer product) can be applied to dyadic verbs only'
     a = alpha.toArray()
     b = omega.toArray()
     data = []

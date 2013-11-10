@@ -39,7 +39,7 @@ reduce = @reduce = (f, g, axis0) ->
   (omega, alpha) ->
     if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
     axis = if axis0? then axis0.toInt() else omega.shape.length - 1
-    if not (0 <= axis < omega.shape.length) then throw RankError()
+    if not (0 <= axis < omega.shape.length) then rankError()
 
     if alpha
       isNWise = true
@@ -56,17 +56,17 @@ reduce = @reduce = (f, g, axis0) ->
     rShape = shape
     if isNWise
       if shape[axis] is 0 then return new APLArray [], rShape
-      if shape[axis] < 0 then throw LengthError()
+      if shape[axis] < 0 then lengthError()
     else
       rShape = rShape[...]
       rShape.splice axis, 1
 
     if omega.empty()
-      if (z = f.aplMetaInfo?.identity)?
+      if (z = f.identity)?
         assert z.shape.length is 0
         return new APLArray z.data, rShape, repeat([0], rShape.length), z.offset
       else
-        throw DomainError()
+        domainError()
 
     data = []
     indices = repeat [0], shape.length
@@ -125,17 +125,17 @@ reduce = @reduce = (f, g, axis0) ->
 compressOrReplicate = (omega, alpha, axis) ->
   if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
   axis = if axis then axis.toInt 0, omega.shape.length else omega.shape.length - 1
-  if alpha.shape.length > 1 then throw RankError()
+  if alpha.shape.length > 1 then rankError()
   a = alpha.toArray()
   n = omega.shape[axis]
   if a.length is 1 then a = repeat a, n
-  if n not in [1, a.length] then throw LengthError()
+  if n not in [1, a.length] then lengthError()
 
   shape = omega.shape[...]
   shape[axis] = 0
   b = []
   for x, i in a
-    if not isInt x then throw DomainError()
+    if not isInt x then domainError()
     shape[axis] += Math.abs x
     for [0...Math.abs(x)] then b.push(if x > 0 then i else null)
   if n is 1

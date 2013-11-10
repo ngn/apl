@@ -105,7 +105,7 @@ addVocabulary
           when 10 then Math.abs x
           when 11 then 0
           when 12 then 0
-          else throw DomainError 'Unknown circular or hyperbolic function ' + i
+          else domainError 'Unknown circular or hyperbolic function ' + i
       else if x instanceof Complex
         switch i
           when -12 then Complex.exp simplify -x.im, x.re
@@ -140,6 +140,6 @@ addVocabulary
           when 10 then Complex.magnitude x
           when 11 then x.im
           when 12 then Complex.direction x
-          else throw DomainError 'Unknown circular or hyperbolic function ' + i
+          else domainError 'Unknown circular or hyperbolic function ' + i
       else
-        throw DomainError()
+        domainError()

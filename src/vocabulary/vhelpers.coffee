@@ -1,6 +1,3 @@
-multiplicitySymbol = (z) ->
-  if z instanceof APLArray then (if z.isSingleton() then '1' else '*') else '.'
-
 # pervasive() is a higher-order function
 #
 # Consider a function that accepts and returns only scalars.  To make it
@@ -17,43 +14,42 @@ pervasive = ({monad, dyad}) ->
           x.map pervadeMonadic
         else
           r = monad x
-          if typeof r is 'number' and isNaN r then throw DomainError 'NaN'
+          if typeof r is 'number' and isNaN r then domainError 'NaN'
           r
     else
-      -> throw Error 'Not implemented'
+      nonceError
   pervadeDyadic =
     if dyad
       (x, y) ->
-        tx = multiplicitySymbol x
-        ty = multiplicitySymbol y
-        switch tx + ty
-          when '..'
+        # tx, ty: 0=unwrapped scalar; 1=singleton array; 2=non-singleton array
+        tx = if x instanceof APLArray then (if x.isSingleton() then 1 else 2) else 0
+        ty = if y instanceof APLArray then (if y.isSingleton() then 1 else 2) else 0
+        switch 16 * tx + ty
+          when 0x00
             r = dyad x, y
-            if typeof r is 'number' and isNaN r then throw DomainError 'NaN'
+            if typeof r is 'number' and isNaN r then domainError 'NaN'
             r
-          when '.1' then y.map (yi) -> pervadeDyadic x, yi
-          when '.*' then y.map (yi) -> pervadeDyadic x, yi
-          when '1.' then x.map (xi) -> pervadeDyadic xi, y
-          when '*.' then x.map (xi) -> pervadeDyadic xi, y
-          when '1*' then xi = x.unwrap(); y.map (yi) -> pervadeDyadic xi, yi
-          when '*1' then yi = y.unwrap(); x.map (xi) -> pervadeDyadic xi, yi
-          when '11' then yi = y.unwrap(); x.map (xi) -> pervadeDyadic xi, yi # todo: use the larger shape
-          when '**'
-            if x.shape.length isnt y.shape.length then throw RankError()
-            for axis in [0...x.shape.length] when x.shape[axis] isnt y.shape[axis] then throw LengthError()
+          when 0x01, 0x02 then y.map (yi) -> pervadeDyadic x, yi
+          when 0x10, 0x20 then x.map (xi) -> pervadeDyadic xi, y
+          when 0x12       then xi = x.data[x.offset]; y.map (yi) -> pervadeDyadic xi, yi
+          when 0x21, 0x11 then yi = y.data[y.offset]; x.map (xi) -> pervadeDyadic xi, yi # todo: use the larger shape for '11'
+          when 0x22
+            if x.shape.length isnt y.shape.length then rankError()
+            for axis in [0...x.shape.length] by 1 when x.shape[axis] isnt y.shape[axis] then lengthError()
             x.map2 y, pervadeDyadic
+          else assert 0
     else
-      -> throw Error 'Not implemented'
-  F = (omega, alpha) ->
+      nonceError
+  (omega, alpha) ->
     assert omega instanceof APLArray
-    assert alpha instanceof APLArray or typeof alpha is 'undefined'
-    (if alpha then pervadeDyadic else pervadeMonadic) omega, alpha
+    assert alpha instanceof APLArray or not alpha?
+    (if alpha? then pervadeDyadic else pervadeMonadic) omega, alpha
 
 real = (f) -> (x, y, axis) ->
   if typeof x is 'number' and (not y? or typeof y is 'number')
     f x, y, axis
   else
-    throw DomainError()
+    domainError()
 
 numeric = (f, g) -> (x, y, axis) ->
   if typeof x is 'number' and (not y? or typeof y is 'number')
@@ -64,12 +60,12 @@ numeric = (f, g) -> (x, y, axis) ->
       y = complexify y
     g x, y, axis
 
-match = match = (x, y) ->
+match = (x, y) ->
   if x instanceof APLArray
-    if not (y instanceof APLArray) then false
+    if y not instanceof APLArray then false
     else
       if x.shape.length isnt y.shape.length then return false
-      for axis in [0 ... x.shape.length]
+      for axis in [0...x.shape.length] by 1
         if x.shape[axis] isnt y.shape[axis] then return false
       r = true
       x.each2 y, (xi, yi) -> if not match xi, yi then r = false
@@ -82,19 +78,17 @@ match = match = (x, y) ->
       else
         x is y
 
-eps = 1e-13 # comparison tolerance for approx()
-
 numApprox = (x, y) ->
-  x is y or Math.abs(x - y) < eps
+  x is y or Math.abs(x - y) < 1e-11
 
 # approx() is like match(), but it is tolerant to precision errors;
 # used for comparing expected and actual results in doctests
-approx = approx = (x, y) ->
+approx = (x, y) ->
   if x instanceof APLArray
     if not (y instanceof APLArray) then false
     else
       if x.shape.length isnt y.shape.length then return false
-      for axis in [0 ... x.shape.length]
+      for axis in [0...x.shape.length] by 1
         if x.shape[axis] isnt y.shape[axis] then return false
       r = true
       x.each2 y, (xi, yi) -> if not approx xi, yi then r = false
@@ -108,49 +102,40 @@ approx = approx = (x, y) ->
       if x instanceof Complex
         y instanceof Complex and numApprox(x.re, y.re) and numApprox(x.im, y.im)
       else
-        (x['≡']?(y)) ? (y['≡']?(x)) ? (x is y)
+        x is y
 
 bool = (x) ->
-  if x not in [0, 1]
-    throw DomainError()
-  x
+  if x not in [0, 1] then domainError() else x
 
 getAxisList = (axes, rank) ->
   assert isInt rank, 0
-  if typeof axes is 'undefined' then return []
+  if not axes? then return []
   assert axes instanceof APLArray
-  if axes.shape.length isnt 1 or axes.shape[0] isnt 1
-    throw SyntaxError() # [sic]
+  if axes.shape.length isnt 1 or axes.shape[0] isnt 1 then syntaxError() # [sic]
   a = axes.unwrap()
   if a instanceof APLArray
     a = a.toArray()
     for x, i in a
-      if not isInt x, 0, rank
-        throw DomainError()
-      if x in a[...i]
-        throw Error 'Non-unique axes'
+      if not isInt x, 0, rank then domainError()
+      if x in a[...i] then domainError 'Non-unique axes'
     a
   else if isInt a, 0, rank
     [a]
   else
-    throw DomainError()
-
-meta = (f, name, value) ->
-  assert typeof f is 'function'
-  assert typeof name is 'string'
-  (f.aplMetaInfo ?= {})[name] = value
-  f
+    domainError()
 
 withIdentity = (x, f) ->
-  if x not instanceof APLArray then x = APLArray.scalar x
-  meta f, 'identity', x
+  f.identity = if x instanceof APLArray then x else APLArray.scalar x
+  f
 
-adverb      = (f) -> meta f, 'isAdverb',      true
-conjunction = (f) -> meta f, 'isConjunction', true
+adverb      = (f) -> f.isAdverb      = true; f
+conjunction = (f) -> f.isConjunction = true; f
+cps         = (f) -> f.cps           = true; f
 
 aka = (aliases, f) -> # "also known as" decorator
   if typeof aliases is 'string'
     aliases = [aliases]
   else
     assert aliases instanceof Array
-  meta f, 'aliases', aliases
+  f.aliases = aliases
+  f

@@ -14,15 +14,12 @@ addVocabulary
       # 0⌽1234                    <=> 1234
       # 5⌽⍬                       <=> ⍬
       axis = if not axis then omega.shape.length - 1 else axis.unwrap()
-      if not isInt axis
-        throw DomainError()
+      if not isInt axis then domainError()
       if omega.shape.length and not (0 <= axis < omega.shape.length)
-        throw IndexError()
+        indexError()
       step = alpha.unwrap()
-      if not isInt step
-        throw DomainError()
-      if not step
-        return omega
+      if not isInt step then domainError()
+      if not step then return omega
       n = omega.shape[axis]
       step = (n + (step % n)) % n # force % to handle negatives properly
       if omega.empty() or step is 0 then return omega
@@ -49,10 +46,10 @@ addVocabulary
       # ⌽    2 5⍴1 2 3 4 5 6 7 8 9 0 <=> 2 5⍴5 4 3 2 1 0 9 8 7 6
       # ⌽[0] 2 5⍴1 2 3 4 5 6 7 8 9 0 <=> 2 5⍴6 7 8 9 0 1 2 3 4 5
       if axis
-        if not axis.isSingleton() then throw LengthError()
+        if not axis.isSingleton() then lengthError()
         axis = axis.unwrap()
-        if not isInt axis then throw DomainError()
-        if not (0 <= axis < omega.shape.length) then throw IndexError()
+        if not isInt axis then domainError()
+        if not (0 <= axis < omega.shape.length) then indexError()
       else
         axis = [omega.shape.length - 1]
       if omega.shape.length is 0 then return omega
