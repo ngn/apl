@@ -4,3 +4,4 @@ addVocabulary = (h) ->
     vocabulary[k] = v
     for alias in v?.aliases ? []
       vocabulary[alias] = v
+  return
