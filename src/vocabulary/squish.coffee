@@ -27,7 +27,7 @@ addVocabulary
     if all(for x in subscripts then x.length)
       u = repeat [0], subscripts.length
       p = omega.offset
-      for a in [0...subscripts.length]
+      for a in [0...subscripts.length] by 1
         p += subscripts[a][0] * omega.stride[a]
       loop
         data.push omega.data[p]
@@ -55,10 +55,14 @@ addVocabulary
   # 'hello'[1]                          <=> 'e'
   # 'ipodlover'[1 2 5 8 3 7 6 0 4]      <=> 'poordevil'
   # ('axlrose'[4 3 0 2 5 6 1])[0 1 2 3] <=> 'oral'
+  # (1 2 3)[⍬]                          <=> ⍬
+  # ⍴(1 2 3)[1 2 3 0 5⍴0]               <=> 1 2 3 0 5
+  # (⍳3)[]                              <=> ⍳3
+  # ⍴(3 3⍴⍳9)[⍬;⍬]                      <=> 0 0
   #
-  #! " X"[(3 3⍴⍳9)∊1 3 6 7 8] <=> 3 3⍴,/(' X '
-  #! ...                                 'X  '
-  #! ...                                 'XXX')
+  # " X"[(3 3⍴⍳9)∊1 3 6 7 8] <=> 3 3⍴(' X ',
+  # ...                               'X  ',
+  # ...                               'XXX')
   _index: (alphaAndAxes, omega) ->
     [alpha, axes] = alphaAndAxes.toArray()
     squish omega, alpha, axes
@@ -76,6 +80,9 @@ addVocabulary
   # a←'this is a test' ⋄ a[0 5]←'TI' <=> 'This Is a test'
   # Data←0 4 8 ⋄ 10+ (Data[0 2]← 7 9) <=> 17 14 19
   # a←3 4⍴⍳12 ⋄ a[;1 2]←99 <=> 3 4⍴0 99 99 3 4 99 99 7 8 99 99 11
+  # a←1 2 3 ⋄ a[⍬]←4 ⋄ a <=> 1 2 3
+  # a←3 3⍴⍳9 ⋄ a[⍬;1 2]←789 ⋄ a <=> 3 3⍴⍳9
+  # a←1 2 3 ⋄ a[]←4 5 6 ⋄ a <=> 4 5 6
   _substitute: (args) ->
     [value, alpha, omega, axes] =
       for x in args.toArray()
@@ -94,7 +101,8 @@ addVocabulary
 
     r = new APLArray omega.toArray(), omega.shape
     p = 0 # pointer in r
-    for a in [0...subscripts.length]
+    for a in [0...subscripts.length] by 1
+      if subscripts[a].length is 0 then return r
       p += subscripts[a][0] * r.stride[a]
     q = value.offset # pointer in value
     u = repeat [0], subscripts.length
@@ -136,7 +144,7 @@ prepareForIndexing = (omega, alpha, axes) ->
       if not isInt x then domainError()
       if not (0 <= x < omega.shape[axis]) then indexError()
 
-  for i in [0...subscripts.length] when typeof subscripts[i] is 'undefined'
+  for i in [0...subscripts.length] by 1 when typeof subscripts[i] is 'undefined'
     subscripts[i] = [0...omega.shape[i]]
     subscriptShapes[i] = [omega.shape[i]]
 
