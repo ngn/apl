@@ -40,7 +40,7 @@ format = (a) ->
   else if typeof a is 'string' then [a]
   else if typeof a is 'number'
     r = [('' + a).replace /-|Infinity/g, '¯']; r.align = 'right'; r
-  else if typeof a is 'function' then ['function']
+  else if typeof a is 'function' then ['λ']
   else if not (a instanceof APLArray) then ['' + a]
   else if prod(a.shape) is 0 then ['']
   else

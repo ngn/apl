@@ -14,6 +14,7 @@ EMB = 'EMB'
 class λ
   constructor: (@code, @addr, @env) ->
   toFunction: -> (x, y) => vm code: @code, env: @env.concat([[x, @, y]]), pc: @addr
+  toString: -> 'λ'
 
 vm = ({code, env, stack, pc}) ->
   assert code instanceof Array
