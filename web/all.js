@@ -728,6 +728,10 @@ var __slice = [].slice,
       };
     };
 
+    λ.prototype.toString = function() {
+      return 'λ';
+    };
+
     return λ;
 
   })();
@@ -735,15 +739,15 @@ var __slice = [].slice,
     var a, code, env, f, frame, n, pc, size, stack, w, x, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
     code = _arg.code, env = _arg.env, stack = _arg.stack, pc = _arg.pc;
     if (!(code instanceof Array)) {
-      throw Error("\"assert code instanceof Array\" at src/vm.coffee:19");
+      throw Error("\"assert code instanceof Array\" at src/vm.coffee:20");
     }
     if (!(env instanceof Array)) {
-      throw Error("\"assert env instanceof Array\" at src/vm.coffee:20");
+      throw Error("\"assert env instanceof Array\" at src/vm.coffee:21");
     }
     for (_i = 0, _len = env.length; _i < _len; _i++) {
       frame = env[_i];
       if (!(frame instanceof Array)) {
-        throw Error("\"for frame in env then assert frame instanceof Array\" at src/vm.coffee:21");
+        throw Error("\"for frame in env then assert frame instanceof Array\" at src/vm.coffee:22");
       }
     }
     if (stack == null) {
@@ -1043,23 +1047,16 @@ var __slice = [].slice,
   };
   vocabulary = {};
   addVocabulary = function(h) {
-    var alias, k, v, _results;
-    _results = [];
+    var alias, k, v, _i, _len, _ref, _ref1;
     for (k in h) {
       v = h[k];
       vocabulary[k] = v;
-      _results.push((function() {
-        var _i, _len, _ref, _ref1, _results1;
-        _ref1 = (_ref = v != null ? v.aliases : void 0) != null ? _ref : [];
-        _results1 = [];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          alias = _ref1[_i];
-          _results1.push(vocabulary[alias] = v);
-        }
-        return _results1;
-      })());
+      _ref1 = (_ref = v != null ? v.aliases : void 0) != null ? _ref : [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        alias = _ref1[_i];
+        vocabulary[alias] = v;
+      }
     }
-    return _results;
   };
   pervasive = function(_arg) {
     var dyad, monad, pervadeDyadic, pervadeMonadic;
@@ -2578,7 +2575,7 @@ var __slice = [].slice,
       r.align = 'right';
       return r;
     } else if (typeof a === 'function') {
-      return ['function'];
+      return ['λ'];
     } else if (!(a instanceof APLArray)) {
       return ['' + a];
     } else if (prod(a.shape) === 0) {
@@ -3352,7 +3349,7 @@ var __slice = [].slice,
       })())) {
         u = repeat([0], subscripts.length);
         p = omega.offset;
-        for (a = _i = 0, _ref2 = subscripts.length; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; a = 0 <= _ref2 ? ++_i : --_i) {
+        for (a = _i = 0, _ref2 = subscripts.length; _i < _ref2; a = _i += 1) {
           p += subscripts[a][0] * omega.stride[a];
         }
         while (true) {
@@ -3410,7 +3407,10 @@ var __slice = [].slice,
       }
       r = new APLArray(omega.toArray(), omega.shape);
       p = 0;
-      for (a = _j = 0, _ref4 = subscripts.length; 0 <= _ref4 ? _j < _ref4 : _j > _ref4; a = 0 <= _ref4 ? ++_j : --_j) {
+      for (a = _j = 0, _ref4 = subscripts.length; _j < _ref4; a = _j += 1) {
+        if (subscripts[a].length === 0) {
+          return r;
+        }
         p += subscripts[a][0] * r.stride[a];
       }
       q = value.offset;
@@ -3436,13 +3436,13 @@ var __slice = [].slice,
   prepareForIndexing = function(omega, alpha, axes) {
     var alphaItems, axis, d, i, subscriptShapes, subscripts, tmp27, tmp28, x, _i, _j, _k, _l, _len, _len1, _m, _ref1, _ref2, _ref3, _ref4, _results, _results1;
     if (!(alpha instanceof APLArray)) {
-      throw Error("\"assert alpha instanceof APLArray\" at src/vocabulary/squish.coffee:115");
+      throw Error("\"assert alpha instanceof APLArray\" at src/vocabulary/squish.coffee:123");
     }
     if (!(omega instanceof APLArray)) {
-      throw Error("\"assert omega instanceof APLArray\" at src/vocabulary/squish.coffee:116");
+      throw Error("\"assert omega instanceof APLArray\" at src/vocabulary/squish.coffee:124");
     }
     if (!((axes == null) || axes instanceof APLArray)) {
-      throw Error("\"assert (not axes?) or axes instanceof APLArray\" at src/vocabulary/squish.coffee:117");
+      throw Error("\"assert (not axes?) or axes instanceof APLArray\" at src/vocabulary/squish.coffee:125");
     }
     if (alpha.shape.length > 1) {
       rankError();
@@ -3486,7 +3486,7 @@ var __slice = [].slice,
         }
       }
     }
-    for (i = _l = 0, _ref3 = subscripts.length; 0 <= _ref3 ? _l < _ref3 : _l > _ref3; i = 0 <= _ref3 ? ++_l : --_l) {
+    for (i = _l = 0, _ref3 = subscripts.length; _l < _ref3; i = _l += 1) {
       if (!(typeof subscripts[i] === 'undefined')) {
         continue;
       }
@@ -7365,6 +7365,11 @@ var aplTests = [
 ["'hello'[1]","<=>","'e'"],
 ["'ipodlover'[1 2 5 8 3 7 6 0 4]","<=>","'poordevil'"],
 ["('axlrose'[4 3 0 2 5 6 1])[0 1 2 3]","<=>","'oral'"],
+["(1 2 3)[⍬]","<=>","⍬"],
+["⍴(1 2 3)[1 2 3 0 5⍴0]","<=>","1 2 3 0 5"],
+["(⍳3)[]","<=>","⍳3"],
+["⍴(3 3⍴⍳9)[⍬;⍬]","<=>","0 0"],
+["\" X\"[(3 3⍴⍳9)∊1 3 6 7 8]","<=>","3 3⍴(' X ',\n                               'X  ',\n                               'XXX')"],
 ["a←⍳5 ⋄ a[1 3]←7 8 ⋄ a","<=>","0 7 2 8 4"],
 ["a←⍳5 ⋄ a[1 3]←7   ⋄ a","<=>","0 7 2 7 4"],
 ["a←⍳5 ⋄ a[1]  ←7 8 ⋄ a","!!!","RANK ERROR"],
@@ -7374,6 +7379,9 @@ var aplTests = [
 ["a←'this is a test' ⋄ a[0 5]←'TI'","<=>","'This Is a test'"],
 ["Data←0 4 8 ⋄ 10+ (Data[0 2]← 7 9)","<=>","17 14 19"],
 ["a←3 4⍴⍳12 ⋄ a[;1 2]←99","<=>","3 4⍴0 99 99 3 4 99 99 7 8 99 99 11"],
+["a←1 2 3 ⋄ a[⍬]←4 ⋄ a","<=>","1 2 3"],
+["a←3 3⍴⍳9 ⋄ a[⍬;1 2]←789 ⋄ a","<=>","3 3⍴⍳9"],
+["a←1 2 3 ⋄ a[]←4 5 6 ⋄ a","<=>","4 5 6"],
 ["5↑'ABCDEFGH'","<=>","'ABCDE'"],
 ["¯3↑'ABCDEFGH'","<=>","'FGH'"],
 ["3↑22 2 19 12","<=>","22 2 19"],
