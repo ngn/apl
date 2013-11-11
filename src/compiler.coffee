@@ -36,22 +36,19 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
   err = (node, message) ->
     syntaxError message, file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
 
-  (markOperators = (node) ->
+  assert VERB < ADVERB < CONJUNCTION # we are relying on this ordering below
+  (categorizeLambdas = (node) ->
     switch node[0]
       when 'body', 'guard', 'assign', 'index', 'lambda', 'expr'
-        r = 0; for i in [1...node.length] by 1 when node[i] then r |= markOperators node[i]
-        if r and node[0] is 'lambda'
-          if r & 1 then node.isAdverb = true
-          if r & 2 then node.isConjunction = true
-          0
-        else
-          r
+        r = VERB
+        for i in [1...node.length] by 1 when node[i] then r = Math.max r, categorizeLambdas node[i]
+        if node[0] is 'lambda' then (node.category = r; VERB) else r
       when 'string', 'number', 'embedded' then 0
       when 'symbol'
         switch node[1]
-          when '⍺⍺', '⍶', '∇∇' then 1
-          when '⍵⍵', '⍹' then 3
-          else 0
+          when '⍺⍺', '⍶', '∇∇' then ADVERB
+          when '⍵⍵', '⍹' then CONJUNCTION
+          else VERB
       else assert 0
   ) ast
 
@@ -74,20 +71,20 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
           for i in [1...node.length]
             queue.push extend (body = node[i]),
               scopeNode: scopeNode
-              scopeDepth: (d = scopeNode.scopeDepth + 1 + !!(node.isAdverb or node.isConjunction))
+              scopeDepth: d = scopeNode.scopeDepth + 1 + (node.category isnt VERB)
               nSlots: 3
               vars: v = extend Object.create(vars),
                 '⍵': slot: 0, scopeDepth: d, category: NOUN
                 '∇': slot: 1, scopeDepth: d, category: VERB
                 '⍺': slot: 2, scopeDepth: d, category: NOUN
-            if node.isConjunction
+            if node.category is CONJUNCTION
               v['⍵⍵'] = v['⍹'] = slot: 0, scopeDepth: d - 1, category: VERB
               v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: CONJUNCTION
               v['⍺⍺'] = v['⍶'] = slot: 2, scopeDepth: d - 1, category: VERB
-            else if node.isAdverb
+            else if node.category is ADVERB
               v['⍺⍺'] = v['⍶'] = slot: 0, scopeDepth: d - 1, category: VERB
               v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: ADVERB
-          if node.isConjunction then CONJUNCTION else if node.isAdverb then ADVERB else VERB
+          node.category ? VERB
         when 'string', 'number', 'embedded' then NOUN
         when 'index'
           for i in [2...node.length] by 1 when node[i] and visit(node[i]) isnt NOUN then err node, 'Indices must be nouns.'
@@ -231,7 +228,7 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
             v = node.scopeNode.vars['⍠']
             ly.concat GET, v.scopeDepth, v.slot, lx, DYA
           else err node
-        if node.isAdverb or node.isConjunction then [LAM, f.length + 1].concat f, RET else f
+        if node.category isnt VERB then [LAM, f.length + 1].concat f, RET else f
       when 'string'
         # Strings of length one are scalars, all other strings are vectors:
         #   ⍴⍴''   <=> ,1
