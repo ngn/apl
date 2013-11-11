@@ -962,11 +962,11 @@ var __slice = [].slice,
       var body, expr, _ref, _ref1, _ref2, _ref3;
       body = ['body'];
       while (true) {
-        if ((_ref = token.type) === 'eof' || _ref === '}') {
+        if ((_ref = token.type) === 'eof' || _ref === '}' || _ref === ';') {
           return body;
         }
         while (((_ref1 = token.type) === "separator" || _ref1 === "newline" ? token = tokens[i++] : void 0)) {}
-        if ((_ref2 = token.type) === 'eof' || _ref2 === '}') {
+        if ((_ref2 = token.type) === 'eof' || _ref2 === '}' || _ref2 === ';') {
           return body;
         }
         expr = parseExpr();
@@ -977,7 +977,7 @@ var __slice = [].slice,
       }
     };
     parseExpr = function() {
-      var b, expr, item, t, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var expr, item, t, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
       expr = ['expr'];
       while (true) {
         t = token;
@@ -991,20 +991,22 @@ var __slice = [].slice,
             parserError("Expected token of type '" + ')' + "' but got '" + token.type + "'");
           }
         } else if (((_ref2 = token.type) === "{" ? token = tokens[i++] : void 0)) {
-          b = parseBody();
+          item = ['lambda', parseBody()];
+          while (((_ref3 = token.type) === ";" ? token = tokens[i++] : void 0)) {
+            item.push(parseBody());
+          }
           if (token.type === '}') {
             token = tokens[i++];
           } else {
             parserError("Expected token of type '" + '}' + "' but got '" + token.type + "'");
           }
-          item = ['lambda', b];
         } else {
           parserError("Encountered unexpected token of type '" + token.type + "'");
         }
-        if (((_ref3 = token.type) === "[" ? token = tokens[i++] : void 0)) {
+        if (((_ref4 = token.type) === "[" ? token = tokens[i++] : void 0)) {
           item = ['index', item];
           while (true) {
-            if (((_ref4 = token.type) === ";" ? token = tokens[i++] : void 0)) {
+            if (((_ref5 = token.type) === ";" ? token = tokens[i++] : void 0)) {
               item.push(null);
             } else if (token.type === ']') {
               item.push(null);
@@ -1028,11 +1030,11 @@ var __slice = [].slice,
             parserError("Expected token of type '" + ']' + "' but got '" + token.type + "'");
           }
         }
-        if (((_ref5 = token.type) === "←" ? token = tokens[i++] : void 0)) {
+        if (((_ref6 = token.type) === "←" ? token = tokens[i++] : void 0)) {
           return expr.concat([['assign', item, parseExpr()]]);
         }
         expr.push(item);
-        if (_ref6 = token.type, __indexOf.call(') ] } : ; separator newline eof'.split(' '), _ref6) >= 0) {
+        if (_ref7 = token.type, __indexOf.call(') ] } : ; separator newline eof'.split(' '), _ref7) >= 0) {
           return expr;
         }
       }
@@ -3752,21 +3754,15 @@ var __slice = [].slice,
           continue;
         }
         ast.vars[k] = varInfo = {
-          type: 'X',
+          category: 1,
           slot: ast.nSlots++,
           scopeDepth: ast.scopeDepth
         };
         if (typeof v === 'function' || v instanceof λ) {
-          varInfo.type = 'F';
-          if (v.isAdverb) {
-            varInfo.isAdverb = true;
-          }
-          if (v.isConjunction) {
-            varInfo.isConjunction = true;
-          }
+          varInfo.category = v.isAdverb ? 3 : v.isConjunction ? 4 : 2;
           if (/^[gs]et_.*/.test(k)) {
             _results.push(ast.vars[k.slice(4)] = {
-              type: 'X'
+              category: 1
             });
           } else {
             _results.push(void 0);
@@ -3831,7 +3827,7 @@ var __slice = [].slice,
           break;
         default:
           if (!(0)) {
-            throw Error("\"else assert 0\" at src/compiler.coffee:50");
+            throw Error("\"else assert 0\" at src/compiler.coffee:55");
           }
       }
     })(ast);
@@ -3839,7 +3835,7 @@ var __slice = [].slice,
     while (queue.length) {
       vars = (scopeNode = queue.shift()).vars;
       visit = function(node) {
-        var a, body, c, d, h, i, j, name, r, v, x, _i, _j, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+        var a, body, d, h, i, j, name, r, v, x, _i, _j, _k, _ref1, _ref10, _ref11, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
         node.scopeNode = scopeNode;
         switch (node[0]) {
           case 'guard':
@@ -3850,180 +3846,161 @@ var __slice = [].slice,
             return visitLHS(node[1], visit(node[2]));
           case 'symbol':
             name = node[1];
-            if (((_ref1 = (v = vars["get_" + name])) != null ? _ref1.type : void 0) === 'F') {
-              return {
-                type: 'X'
-              };
+            if (((_ref1 = (v = vars["get_" + name])) != null ? _ref1.category : void 0) === 2) {
+              return 1;
             } else {
-              return vars[name] || err(node, "Symbol '" + name + "' is referenced before assignment.");
+              return vars[name].category || err(node, "Symbol '" + name + "' is referenced before assignment.");
             }
             break;
           case 'lambda':
-            queue.push(extend((body = node[1]), {
-              scopeNode: scopeNode,
-              scopeDepth: (d = scopeNode.scopeDepth + 1 + !!(node.isAdverb || node.isConjunction)),
-              nSlots: 3,
-              vars: v = extend(Object.create(vars), {
-                '⍵': {
-                  type: 'X',
+            for (i = _i = 1, _ref2 = node.length; 1 <= _ref2 ? _i < _ref2 : _i > _ref2; i = 1 <= _ref2 ? ++_i : --_i) {
+              queue.push(extend((body = node[i]), {
+                scopeNode: scopeNode,
+                scopeDepth: (d = scopeNode.scopeDepth + 1 + !!(node.isAdverb || node.isConjunction)),
+                nSlots: 3,
+                vars: v = extend(Object.create(vars), {
+                  '⍵': {
+                    slot: 0,
+                    scopeDepth: d,
+                    category: 1
+                  },
+                  '∇': {
+                    slot: 1,
+                    scopeDepth: d,
+                    category: 2
+                  },
+                  '⍺': {
+                    slot: 2,
+                    scopeDepth: d,
+                    category: 1
+                  }
+                })
+              }));
+              if (node.isConjunction) {
+                v['⍵⍵'] = v['⍹'] = {
                   slot: 0,
-                  scopeDepth: d
-                },
-                '∇': {
-                  type: 'F',
+                  scopeDepth: d - 1,
+                  category: 2
+                };
+                v['∇∇'] = {
                   slot: 1,
-                  scopeDepth: d
-                },
-                '⍺': {
-                  type: 'X',
+                  scopeDepth: d - 1,
+                  category: 4
+                };
+                v['⍺⍺'] = v['⍶'] = {
                   slot: 2,
-                  scopeDepth: d
-                }
-              })
-            }));
-            if (node.isConjunction) {
-              v['⍵⍵'] = v['⍹'] = {
-                type: 'F',
-                slot: 0,
-                scopeDepth: d - 1
-              };
-              v['∇∇'] = {
-                type: 'F',
-                slot: 1,
-                scopeDepth: d - 1,
-                isConjunction: true
-              };
-              v['⍺⍺'] = v['⍶'] = {
-                type: 'F',
-                slot: 2,
-                scopeDepth: d - 1
-              };
-            } else if (node.isAdverb) {
-              v['⍺⍺'] = v['⍶'] = {
-                type: 'F',
-                slot: 0,
-                scopeDepth: d - 1
-              };
-              v['∇∇'] = {
-                type: 'F',
-                slot: 1,
-                scopeDepth: d - 1,
-                isAdverb: true
-              };
+                  scopeDepth: d - 1,
+                  category: 2
+                };
+              } else if (node.isAdverb) {
+                v['⍺⍺'] = v['⍶'] = {
+                  slot: 0,
+                  scopeDepth: d - 1,
+                  category: 2
+                };
+                v['∇∇'] = {
+                  slot: 1,
+                  scopeDepth: d - 1,
+                  category: 3
+                };
+              }
             }
-            return {
-              type: 'F',
-              isAdverb: node.isAdverb,
-              isConjunction: node.isConjunction
-            };
+            if (node.isConjunction) {
+              return 4;
+            } else if (node.isAdverb) {
+              return 3;
+            } else {
+              return 2;
+            }
+            break;
           case 'string':
           case 'number':
           case 'embedded':
-            return {
-              type: 'X'
-            };
+            return 1;
           case 'index':
-            for (i = _i = 2, _ref2 = node.length; _i < _ref2; i = _i += 1) {
-              if (c = node[i]) {
-                visit(c).type === 'X' || err(node, 'Only expressions of type data can be used as an index.');
+            for (i = _j = 2, _ref3 = node.length; _j < _ref3; i = _j += 1) {
+              if (node[i] && visit(node[i]) !== 1) {
+                err(node, 'Indices must be nouns.');
               }
             }
             return visit(node[1]);
           case 'expr':
             a = node.slice(1);
             h = Array(a.length);
-            for (i = _j = _ref3 = a.length - 1; _j >= 0; i = _j += -1) {
+            for (i = _k = _ref4 = a.length - 1; _k >= 0; i = _k += -1) {
               h[i] = visit(a[i]);
             }
             i = 0;
             while (i < a.length - 1) {
-              if ((h[i].type === (_ref4 = h[i + 1].type) && _ref4 === 'X')) {
+              if ((h[i] === (_ref5 = h[i + 1]) && _ref5 === 1)) {
                 j = i + 2;
-                while (j < a.length && h[j].type === 'X') {
+                while (j < a.length && h[j] === 1) {
                   j++;
                 }
-                [].splice.apply(a, [i, j - i].concat(_ref5 = [['vector'].concat(a.slice(i, j))])), _ref5;
-                [].splice.apply(h, [i, j - i].concat(_ref6 = {
-                  type: 'X'
-                })), _ref6;
+                [].splice.apply(a, [i, j - i].concat(_ref6 = [['vector'].concat(a.slice(i, j))])), _ref6;
+                [].splice.apply(h, [i, j - i].concat(1)), 1;
               } else {
                 i++;
               }
             }
             i = a.length - 2;
             while (--i >= 0) {
-              if (h[i + 1].isConjunction && (h[i].type === 'F' || h[i + 2].type === 'F')) {
+              if (h[i + 1] === 4 && (h[i] !== 1 || h[i + 2] !== 1)) {
                 [].splice.apply(a, [i, (i + 3) - i].concat(_ref7 = [['conjunction'].concat(a.slice(i, i + 3))])), _ref7;
-                [].splice.apply(h, [i, (i + 3) - i].concat(_ref8 = {
-                  type: 'F'
-                })), _ref8;
+                [].splice.apply(h, [i, (i + 3) - i].concat(2)), 2;
                 i--;
               }
             }
             i = 0;
             while (i < a.length - 1) {
-              if (h[i].type === 'F' && h[i + 1].isAdverb) {
-                [].splice.apply(a, [i, (i + 2) - i].concat(_ref9 = [['adverb'].concat(a.slice(i, i + 2))])), _ref9;
-                [].splice.apply(h, [i, (i + 2) - i].concat(_ref10 = {
-                  type: 'F'
-                })), _ref10;
+              if (h[i] !== 1 && h[i + 1] === 3) {
+                [].splice.apply(a, [i, (i + 2) - i].concat(_ref8 = [['adverb'].concat(a.slice(i, i + 2))])), _ref8;
+                [].splice.apply(h, [i, (i + 2) - i].concat(2)), 2;
               } else {
                 i++;
               }
             }
-            if (h.length === 2 && (h[0].type === (_ref11 = h[1].type) && _ref11 === 'F')) {
+            if (h.length === 2 && h[0] !== 1 && h[1] !== 1) {
               a = [['hook'].concat(a)];
-              h = [
-                {
-                  type: 'F'
-                }
-              ];
+              h = [2];
             }
             if (h.length >= 3 && h.length % 2 === 1 && all((function() {
-              var _k, _len, _results;
+              var _l, _len, _results;
               _results = [];
-              for (_k = 0, _len = h.length; _k < _len; _k++) {
-                x = h[_k];
-                _results.push(x.type === 'F');
+              for (_l = 0, _len = h.length; _l < _len; _l++) {
+                x = h[_l];
+                _results.push(x !== 1);
               }
               return _results;
             })())) {
               a = [['fork'].concat(a)];
-              h = [
-                {
-                  type: 'F'
-                }
-              ];
+              h = [2];
             }
-            if (h[h.length - 1].type === 'F') {
+            if (h[h.length - 1] !== 1) {
               if (h.length > 1) {
                 err(a[h.length - 1], 'Trailing function in expression');
               }
             } else {
               while (h.length > 1) {
-                if (h.length === 2 || h[h.length - 3].type === 'F') {
-                  [].splice.apply(a, [-2, 9e9].concat(_ref12 = [['monadic'].concat(a.slice(-2))])), _ref12;
-                  [].splice.apply(h, [-2, 9e9].concat(_ref13 = {
-                    type: 'X'
-                  })), _ref13;
+                if (h.length === 2 || h[h.length - 3] !== 1) {
+                  [].splice.apply(a, [-2, 9e9].concat(_ref9 = [['monadic'].concat(a.slice(-2))])), _ref9;
+                  [].splice.apply(h, [-2, 9e9].concat(1)), 1;
                 } else {
-                  [].splice.apply(a, [-3, 9e9].concat(_ref14 = [['dyadic'].concat(a.slice(-3))])), _ref14;
-                  [].splice.apply(h, [-3, 9e9].concat(_ref15 = {
-                    type: 'X'
-                  })), _ref15;
+                  [].splice.apply(a, [-3, 9e9].concat(_ref10 = [['dyadic'].concat(a.slice(-3))])), _ref10;
+                  [].splice.apply(h, [-3, 9e9].concat(1)), 1;
                 }
               }
             }
-            [].splice.apply(node, [0, 9e9].concat(_ref16 = a[0])), _ref16;
+            [].splice.apply(node, [0, 9e9].concat(_ref11 = a[0])), _ref11;
             extend(node, a[0]);
             return h[0];
           default:
             if (!(0)) {
-              throw Error("\"assert 0\" at src/compiler.coffee:143");
+              throw Error("\"assert 0\" at src/compiler.coffee:148");
             }
         }
       };
-      visitLHS = function(node, rhsInfo) {
+      visitLHS = function(node, rhsType) {
         var c, i, name, _i, _j, _ref1, _ref2;
         node.scopeNode = scopeNode;
         switch (node[0]) {
@@ -4033,25 +4010,26 @@ var __slice = [].slice,
               err(node, 'Assignment to ∇ is not allowed.');
             }
             if (vars[name]) {
-              if (vars[name].type !== rhsInfo.type) {
+              if (vars[name].category !== rhsType) {
                 err(node, "Inconsistent usage of symbol '" + name + "', it is assigned both nouns and verbs.");
               }
             } else {
-              vars[name] = extend({
+              vars[name] = {
                 scopeDepth: scopeNode.scopeDepth,
-                slot: scopeNode.nSlots++
-              }, rhsInfo);
+                slot: scopeNode.nSlots++,
+                category: rhsType
+              };
             }
             break;
           case 'expr':
-            rhsInfo.type === 'X' || err(node, 'Strand assignment can be used only for nouns.');
+            rhsType === 1 || err(node, 'Strand assignment can be used only for nouns.');
             for (i = _i = 1, _ref1 = node.length; _i < _ref1; i = _i += 1) {
-              visitLHS(node[i], rhsInfo);
+              visitLHS(node[i], rhsType);
             }
             break;
           case 'index':
-            rhsInfo.type === 'X' || err(node, 'Index assignment can be used only for nouns.');
-            visitLHS(node[1], rhsInfo);
+            rhsType === 1 || err(node, 'Index assignment can be used only for nouns.');
+            visitLHS(node[1], rhsType);
             for (i = _j = 2, _ref2 = node.length; _j < _ref2; i = _j += 1) {
               if (c = node[i]) {
                 visit(c);
@@ -4061,14 +4039,14 @@ var __slice = [].slice,
           default:
             err(node, "Invalid LHS node type: " + (JSON.stringify(node[0])));
         }
-        return rhsInfo;
+        return rhsType;
       };
       for (i = _i = 1, _ref1 = scopeNode.length; _i < _ref1; i = _i += 1) {
         visit(scopeNode[i]);
       }
     }
     render = function(node) {
-      var a, axes, c, code, d, f, fragments, name, r, s, u, v, w, x, y, _j, _k, _ref2, _ref3, _ref4, _ref5;
+      var a, axes, c, d, f, fragments, lx, ly, name, r, s, u, v, w, x, y, _j, _k, _ref2, _ref3, _ref4, _ref5;
       switch (node[0]) {
         case 'body':
           if (node.length === 1) {
@@ -4092,7 +4070,7 @@ var __slice = [].slice,
         case 'symbol':
           name = node[1];
           vars = node.scopeNode.vars;
-          if (((_ref3 = (v = vars["get_" + name])) != null ? _ref3.type : void 0) === 'F') {
+          if (((_ref3 = (v = vars["get_" + name])) != null ? _ref3.category : void 0) === 2) {
             return [LDC, APLArray.zero, GET, v.scopeDepth, v.slot, MON];
           } else {
             v = vars[name];
@@ -4100,11 +4078,25 @@ var __slice = [].slice,
           }
           break;
         case 'lambda':
-          code = render(node[1]);
+          x = render(node[1]);
+          lx = [LAM, x.length].concat(x);
+          f = (function() {
+            switch (node.length) {
+              case 2:
+                return lx;
+              case 3:
+                y = render(node[2]);
+                ly = [LAM, y.length].concat(y);
+                v = node.scopeNode.vars['⍠'];
+                return ly.concat(GET, v.scopeDepth, v.slot, lx, DYA);
+              default:
+                return err(node);
+            }
+          })();
           if (node.isAdverb || node.isConjunction) {
-            return [LAM, code.length + 3, LAM, code.length].concat(code, RET);
+            return [LAM, f.length + 1].concat(f, RET);
           } else {
-            return [LAM, code.length].concat(code);
+            return f;
           }
           break;
         case 'string':
@@ -4215,7 +4207,7 @@ var __slice = [].slice,
           break;
         default:
           if (!(0)) {
-            throw Error("\"else assert 0\" at src/compiler.coffee:277");
+            throw Error("\"else assert 0\" at src/compiler.coffee:295");
           }
       }
     };
@@ -4225,7 +4217,7 @@ var __slice = [].slice,
         case 'symbol':
           name = node[1];
           vars = node.scopeNode.vars;
-          if (((_ref2 = (v = vars["set_" + name])) != null ? _ref2.type : void 0) === 'F') {
+          if (((_ref2 = (v = vars["set_" + name])) != null ? _ref2.category : void 0) === 2) {
             return [GET, v.scopeDepth, v.slot, MON];
           } else {
             v = vars[name];
@@ -4258,7 +4250,7 @@ var __slice = [].slice,
           return a;
         default:
           if (!(0)) {
-            throw Error("\"assert 0\" at src/compiler.coffee:312");
+            throw Error("\"assert 0\" at src/compiler.coffee:330");
           }
       }
     };
@@ -6688,6 +6680,12 @@ var aplTests = [
 ["+{⍵⍶⍵}10 20 30","<=>","20 40 60"],
 ["f←{⍵⍶⍵} ⋄ +f 10 20 30","<=>","20 40 60"],
 ["twice←{⍶⍶⍵} ⋄ *twice 2","<=>","1618.1779919126539"],
+["f←{-⍵;⍺×⍵} ⋄ (f 5)(3 f 5)","<=>","¯5 15"],
+["f←{;} ⋄ (f 5)(3 f 5)","<=>","⍬⍬"],
+["²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ *²2","<=>","1618.1779919126539"],
+["²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ 3*²2","<=>","19683"],
+["H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ +H÷ 2","<=>","2.5"],
+["H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ 7 +H÷ 2","<=>","7.5"],
 ["⍴⍴''","<=>",",1"],
 ["⍴⍴'x'","<=>",",0"],
 ["⍴⍴'xx'","<=>",",1"],
