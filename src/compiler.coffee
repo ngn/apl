@@ -71,25 +71,23 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
           else
             vars[name].category or err node, "Symbol '#{name}' is referenced before assignment."
         when 'lambda'
-          queue.push extend (body = node[1]),
-            scopeNode: scopeNode
-            scopeDepth: (d = scopeNode.scopeDepth + 1 + !!(node.isAdverb or node.isConjunction))
-            nSlots: 3
-            vars: v = extend Object.create(vars),
-              '⍵': slot: 0, scopeDepth: d, category: NOUN
-              '∇': slot: 1, scopeDepth: d, category: VERB
-              '⍺': slot: 2, scopeDepth: d, category: NOUN
-          if node.isConjunction
-            v['⍵⍵'] = v['⍹'] = slot: 0, scopeDepth: d - 1, category: VERB
-            v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: CONJUNCTION
-            v['⍺⍺'] = v['⍶'] = slot: 2, scopeDepth: d - 1, category: VERB
-            CONJUNCTION
-          else if node.isAdverb
-            v['⍺⍺'] = v['⍶'] = slot: 0, scopeDepth: d - 1, category: VERB
-            v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: ADVERB
-            ADVERB
-          else
-            VERB
+          for i in [1...node.length]
+            queue.push extend (body = node[i]),
+              scopeNode: scopeNode
+              scopeDepth: (d = scopeNode.scopeDepth + 1 + !!(node.isAdverb or node.isConjunction))
+              nSlots: 3
+              vars: v = extend Object.create(vars),
+                '⍵': slot: 0, scopeDepth: d, category: NOUN
+                '∇': slot: 1, scopeDepth: d, category: VERB
+                '⍺': slot: 2, scopeDepth: d, category: NOUN
+            if node.isConjunction
+              v['⍵⍵'] = v['⍹'] = slot: 0, scopeDepth: d - 1, category: VERB
+              v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: CONJUNCTION
+              v['⍺⍺'] = v['⍶'] = slot: 2, scopeDepth: d - 1, category: VERB
+            else if node.isAdverb
+              v['⍺⍺'] = v['⍶'] = slot: 0, scopeDepth: d - 1, category: VERB
+              v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: ADVERB
+          if node.isConjunction then CONJUNCTION else if node.isAdverb then ADVERB else VERB
         when 'string', 'number', 'embedded' then NOUN
         when 'index'
           for i in [2...node.length] by 1 when node[i] and visit(node[i]) isnt NOUN then err node, 'Indices must be nouns.'
@@ -216,11 +214,24 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
         # +{⍵⍶⍵}10 20 30               <=> 20 40 60
         # f←{⍵⍶⍵} ⋄ +f 10 20 30        <=> 20 40 60
         # twice←{⍶⍶⍵} ⋄ *twice 2       <=> 1618.1779919126539
-        code = render node[1]
-        if node.isAdverb or node.isConjunction
-          [LAM, code.length + 3, LAM, code.length].concat code, RET
-        else
-          [LAM, code.length].concat code
+        # f←{-⍵;⍺×⍵} ⋄ (f 5)(3 f 5)    <=> ¯5 15
+        # f←{;} ⋄ (f 5)(3 f 5)         <=> ⍬⍬
+        # ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ *²2          <=> 1618.1779919126539
+        # ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ 3*²2         <=> 19683
+        # H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ +H÷ 2        <=> 2.5
+        # H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ 7 +H÷ 2      <=> 7.5
+        # {;;}                         !!!
+        x = render node[1]
+        lx = [LAM, x.length].concat x
+        f = switch node.length
+          when 2 then lx
+          when 3
+            y = render node[2]
+            ly = [LAM, y.length].concat y
+            v = node.scopeNode.vars['⍠']
+            ly.concat GET, v.scopeDepth, v.slot, lx, DYA
+          else err node
+        if node.isAdverb or node.isConjunction then [LAM, f.length + 1].concat f, RET else f
       when 'string'
         # Strings of length one are scalars, all other strings are vectors:
         #   ⍴⍴''   <=> ,1

@@ -52,9 +52,9 @@ parse = (aplCode, opts = {}) ->
   parseBody = ->
     body = ['body']
     loop
-      if token.type in ['eof', '}'] then return body
+      if token.type in ['eof', '}', ';'] then return body
       while consume 'separator newline' then ;
-      if token.type in ['eof', '}'] then return body
+      if token.type in ['eof', '}', ';'] then return body
       expr = parseExpr()
       if consume ':' then expr = ['guard', expr, parseExpr()]
       body.push expr
@@ -65,7 +65,10 @@ parse = (aplCode, opts = {}) ->
       t = token
       if consume 'number string symbol embedded' then item = [t.type, t.value]
       else if consume '(' then item = parseExpr(); demand ')'
-      else if consume '{' then b = parseBody(); demand '}'; item = ['lambda', b]
+      else if consume '{'
+        item = ['lambda', parseBody()]
+        while consume ';' then item.push parseBody()
+        demand '}'
       else parserError "Encountered unexpected token of type '#{token.type}'"
       if consume '['
         item = ['index', item]
