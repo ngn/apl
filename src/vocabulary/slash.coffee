@@ -103,7 +103,7 @@ reduce = @reduce = (f, g, axis0) ->
 # 0 1 0 1/'ABCD'                                <=> 'BD'
 # 1 1 1 1 0/12 14 16 18 20                      <=> 12 14 16 18
 # MARKS←45 60 33 50 66 19 ⋄ (MARKS≥50)/MARKS    <=> 60 50 66
-#!MARKS←45 60 33 50 66 19 ⋄ (MARKS=50)/⍳↑⍴MARKS <=> ,3
+# MARKS←45 60 33 50 66 19 ⋄ (MARKS=50)/⍳≢MARKS  <=> ,3
 # 1/"FREDERIC"                                  <=> 'FREDERIC'
 # 0/"FREDERIC"                                  <=> ⍬
 # 0 1 0  / 1+2 3⍴⍳6                             <=> 2 1⍴2 5
