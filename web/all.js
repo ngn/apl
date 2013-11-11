@@ -3586,18 +3586,23 @@ var __slice = [].slice,
         return shapes.push(x instanceof APLArray ? x.shape : []);
       });
       if (shapes.length === 0) {
-        nonceError('Mix of empty array not implemented');
+        return APLArray.zilde;
       }
       shape = shapes.reduce(function(a, b) {
         var i, _i, _ref1, _results;
-        if (a.length !== b.length) {
-          nonceError('Mix of different ranks not implemented');
+        if (a.length === 0) {
+          return b;
+        } else if (b.length === 0) {
+          return a;
+        } else if (a.length !== b.length) {
+          return nonceError('Mix of different ranks not implemented');
+        } else {
+          _results = [];
+          for (i = _i = 0, _ref1 = a.length; _i < _ref1; i = _i += 1) {
+            _results.push(Math.max(a[i], b[i]));
+          }
+          return _results;
         }
-        _results = [];
-        for (i = _i = 0, _ref1 = a.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
-          _results.push(Math.max(a[i], b[i]));
-        }
-        return _results;
       });
       s = new APLArray(shape);
       data = [];
@@ -7385,6 +7390,9 @@ var aplTests = [
 ["↑(1 2)(3 4)","<=>","2 2⍴1 2 3 4"],
 ["↑(1 2)(3 4 5)","<=>","2 3⍴1 2 0 3 4 5"],
 ["↑1 2","<=>","1 2"],
+["↑(1 2)3","<=>","2 2⍴1 2 3 0"],
+["↑1(2 3)","<=>","2 2⍴1 0 2 3"],
+["↑⍬","<=>","⍬"],
 ["(2 2⍴⍳4)⍉2 2 2 2⍴⍳16","!!!","RANK ERROR"],
 ["0⍉3 5 8","<=>","3 5 8"],
 ["1 0⍉2 2 2⍴⍳8","!!!","LENGTH ERROR"],
