@@ -3583,7 +3583,7 @@ var __slice = [].slice,
     } else {
       shapes = [];
       omega.each(function(x) {
-        return shapes.push(x.shape);
+        return shapes.push(x instanceof APLArray ? x.shape : []);
       });
       if (shapes.length === 0) {
         nonceError('Mix of empty array not implemented');
@@ -3602,7 +3602,8 @@ var __slice = [].slice,
       s = new APLArray(shape);
       data = [];
       omega.each(function(x) {
-        return data = data.concat((take(x, s)).toArray());
+        x = x instanceof APLArray ? x : APLArray.scalar(x);
+        return data.push.apply(data, (take(x, s)).toArray());
       });
       return new APLArray(data, omega.shape.concat(shape));
     }
