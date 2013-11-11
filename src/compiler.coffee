@@ -14,19 +14,24 @@ compile = (aplCode, opts = {}) ->
   opts.aplCode = aplCode
   compileAST parse(aplCode, opts), opts
 
-compileAST = (ast, opts = {}) ->
+macro withLexicalCategoryConstants (f) ->
+  f.subst
+    NOUN:        macro.valToNode 1
+    VERB:        macro.valToNode 2
+    ADVERB:      macro.valToNode 3
+    CONJUNCTION: macro.valToNode 4
+
+compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
   ast.scopeDepth = 0
   ast.nSlots = if prelude then prelude.ast.nSlots else 0
   ast.vars = if prelude then Object.create prelude.ast.vars else {}
   do ->
     opts.ctx ?= Object.create vocabulary
     for k, v of opts.ctx when not ast.vars[k]
-      ast.vars[k] = varInfo = type: 'X', slot: ast.nSlots++, scopeDepth: ast.scopeDepth
+      ast.vars[k] = varInfo = category: NOUN, slot: ast.nSlots++, scopeDepth: ast.scopeDepth
       if typeof v is 'function' or v instanceof λ
-        varInfo.type = 'F'
-        if v.isAdverb      then varInfo.isAdverb      = true
-        if v.isConjunction then varInfo.isConjunction = true
-        if /^[gs]et_.*/.test k then ast.vars[k[4..]] = type: 'X'
+        varInfo.category = if v.isAdverb then ADVERB else if v.isConjunction then CONJUNCTION else VERB
+        if /^[gs]et_.*/.test k then ast.vars[k[4..]] = category: NOUN
 
   err = (node, message) ->
     syntaxError message, file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
@@ -61,31 +66,31 @@ compileAST = (ast, opts = {}) ->
         when 'assign' then visitLHS node[1], visit node[2]
         when 'symbol'
           name = node[1]
-          if (v = vars["get_#{name}"])?.type is 'F'
-            type: 'X'
+          if (v = vars["get_#{name}"])?.category is VERB
+            NOUN
           else
-            vars[name] or err node, "Symbol '#{name}' is referenced before assignment."
+            vars[name].category or err node, "Symbol '#{name}' is referenced before assignment."
         when 'lambda'
-          queue.push extend (body = node[1]),
-            scopeNode: scopeNode
-            scopeDepth: (d = scopeNode.scopeDepth + 1 + !!(node.isAdverb or node.isConjunction))
-            nSlots: 3
-            vars: v = extend Object.create(vars),
-              '⍵': type: 'X', slot: 0, scopeDepth: d
-              '∇': type: 'F', slot: 1, scopeDepth: d
-              '⍺': type: 'X', slot: 2, scopeDepth: d
-          if node.isConjunction
-            v['⍵⍵'] = v['⍹'] = type: 'F', slot: 0, scopeDepth: d - 1
-            v['∇∇'] =          type: 'F', slot: 1, scopeDepth: d - 1, isConjunction: true
-            v['⍺⍺'] = v['⍶'] = type: 'F', slot: 2, scopeDepth: d - 1
-          else if node.isAdverb
-            v['⍺⍺'] = v['⍶'] = type: 'F', slot: 0, scopeDepth: d - 1
-            v['∇∇'] =          type: 'F', slot: 1, scopeDepth: d - 1, isAdverb: true
-          type: 'F', isAdverb: node.isAdverb, isConjunction: node.isConjunction
-        when 'string', 'number', 'embedded' then type: 'X'
+          for i in [1...node.length]
+            queue.push extend (body = node[i]),
+              scopeNode: scopeNode
+              scopeDepth: (d = scopeNode.scopeDepth + 1 + !!(node.isAdverb or node.isConjunction))
+              nSlots: 3
+              vars: v = extend Object.create(vars),
+                '⍵': slot: 0, scopeDepth: d, category: NOUN
+                '∇': slot: 1, scopeDepth: d, category: VERB
+                '⍺': slot: 2, scopeDepth: d, category: NOUN
+            if node.isConjunction
+              v['⍵⍵'] = v['⍹'] = slot: 0, scopeDepth: d - 1, category: VERB
+              v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: CONJUNCTION
+              v['⍺⍺'] = v['⍶'] = slot: 2, scopeDepth: d - 1, category: VERB
+            else if node.isAdverb
+              v['⍺⍺'] = v['⍶'] = slot: 0, scopeDepth: d - 1, category: VERB
+              v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: ADVERB
+          if node.isConjunction then CONJUNCTION else if node.isAdverb then ADVERB else VERB
+        when 'string', 'number', 'embedded' then NOUN
         when 'index'
-          for i in [2...node.length] by 1 when c = node[i]
-            visit(c).type is 'X' or err node, 'Only expressions of type data can be used as an index.'
+          for i in [2...node.length] by 1 when node[i] and visit(node[i]) isnt NOUN then err node, 'Indices must be nouns.'
           visit node[1]
         when 'expr'
           a = node[1..]
@@ -94,47 +99,47 @@ compileAST = (ast, opts = {}) ->
           # Form vectors from sequences of data
           i = 0
           while i < a.length - 1
-            if h[i].type is h[i + 1].type is 'X'
+            if h[i] is h[i + 1] is NOUN
               j = i + 2
-              while j < a.length and h[j].type is 'X' then j++
+              while j < a.length and h[j] is NOUN then j++
               a[i...j] = [['vector'].concat a[i...j]]
-              h[i...j] = type: 'X'
+              h[i...j] = NOUN
             else
               i++
           # Apply conjunctions
           i = a.length - 2
           while --i >= 0
-            if h[i + 1].isConjunction and (h[i].type is 'F' or h[i + 2].type is 'F')
+            if h[i + 1] is CONJUNCTION and (h[i] isnt NOUN or h[i + 2] isnt NOUN)
               a[i...i+3] = [['conjunction'].concat a[i...i+3]]
-              h[i...i+3] = type: 'F'
+              h[i...i+3] = VERB
               i--
           # Apply postfix adverbs
           i = 0
           while i < a.length - 1
-            if h[i].type is 'F' and h[i + 1].isAdverb
+            if h[i] isnt NOUN and h[i + 1] is ADVERB
               a[i...i+2] = [['adverb'].concat a[i...i+2]]
-              h[i...i+2] = type: 'F'
+              h[i...i+2] = VERB
             else
               i++
           # Hooks
-          if h.length is 2 and h[0].type is h[1].type is 'F'
+          if h.length is 2 and h[0] isnt NOUN and h[1] isnt NOUN
             a = [['hook'].concat a]
-            h = [type: 'F']
+            h = [VERB]
           # Forks
-          if h.length >= 3 and h.length % 2 is 1 and all(for x in h then x.type is 'F')
+          if h.length >= 3 and h.length % 2 is 1 and all(for x in h then x isnt NOUN)
             a = [['fork'].concat a]
-            h = [type: 'F']
-          if h[h.length - 1].type is 'F'
+            h = [VERB]
+          if h[h.length - 1] isnt NOUN
             if h.length > 1 then err a[h.length - 1], 'Trailing function in expression'
           else
             # Apply monadic and dyadic functions
             while h.length > 1
-              if h.length is 2 or h[h.length - 3].type is 'F'
+              if h.length is 2 or h[h.length - 3] isnt NOUN
                 a[-2..] = [['monadic'].concat a[-2..]]
-                h[-2..] = type: 'X'
+                h[-2..] = NOUN
               else
                 a[-3..] = [['dyadic'].concat a[-3..]]
-                h[-3..] = type: 'X'
+                h[-3..] = NOUN
           # Replace `"expr"` node with `a[0]` in the AST
           node[..] = a[0]
           extend node, a[0]
@@ -142,27 +147,27 @@ compileAST = (ast, opts = {}) ->
         else
           assert 0
 
-    visitLHS = (node, rhsInfo) ->
+    visitLHS = (node, rhsType) ->
       node.scopeNode = scopeNode
       switch node[0]
         when 'symbol'
           name = node[1]
           if name is '∇' then err node, 'Assignment to ∇ is not allowed.'
           if vars[name]
-            if vars[name].type isnt rhsInfo.type
+            if vars[name].category isnt rhsType
               err node, "Inconsistent usage of symbol '#{name}', it is assigned both nouns and verbs."
           else
-            vars[name] = extend {scopeDepth: scopeNode.scopeDepth, slot: scopeNode.nSlots++}, rhsInfo
+            vars[name] = scopeDepth: scopeNode.scopeDepth, slot: scopeNode.nSlots++, category: rhsType
         when 'expr'
-          rhsInfo.type is 'X' or err node, 'Strand assignment can be used only for nouns.'
-          for i in [1...node.length] by 1 then visitLHS node[i], rhsInfo
+          rhsType is NOUN or err node, 'Strand assignment can be used only for nouns.'
+          for i in [1...node.length] by 1 then visitLHS node[i], rhsType
         when 'index'
-          rhsInfo.type is 'X' or err node, 'Index assignment can be used only for nouns.'
-          visitLHS node[1], rhsInfo
+          rhsType is NOUN or err node, 'Index assignment can be used only for nouns.'
+          visitLHS node[1], rhsType
           for i in [2...node.length] by 1 when c = node[i] then visit c
         else
           err node, "Invalid LHS node type: #{JSON.stringify node[0]}"
-      rhsInfo
+      rhsType
 
     for i in [1...scopeNode.length] by 1 then visit scopeNode[i]
 
@@ -193,7 +198,7 @@ compileAST = (ast, opts = {}) ->
         # ... before after <=> (3 18.84 28.27)(4 25.13 50.26)
         name = node[1]
         {vars} = node.scopeNode
-        if (v = vars["get_#{name}"])?.type is 'F'
+        if (v = vars["get_#{name}"])?.category is VERB
           [LDC, APLArray.zero, GET, v.scopeDepth, v.slot, MON]
         else
           v = vars[name]
@@ -209,11 +214,24 @@ compileAST = (ast, opts = {}) ->
         # +{⍵⍶⍵}10 20 30               <=> 20 40 60
         # f←{⍵⍶⍵} ⋄ +f 10 20 30        <=> 20 40 60
         # twice←{⍶⍶⍵} ⋄ *twice 2       <=> 1618.1779919126539
-        code = render node[1]
-        if node.isAdverb or node.isConjunction
-          [LAM, code.length + 3, LAM, code.length].concat code, RET
-        else
-          [LAM, code.length].concat code
+        # f←{-⍵;⍺×⍵} ⋄ (f 5)(3 f 5)    <=> ¯5 15
+        # f←{;} ⋄ (f 5)(3 f 5)         <=> ⍬⍬
+        # ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ *²2          <=> 1618.1779919126539
+        # ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ 3*²2         <=> 19683
+        # H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ +H÷ 2        <=> 2.5
+        # H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ 7 +H÷ 2      <=> 7.5
+        # {;;}                         !!!
+        x = render node[1]
+        lx = [LAM, x.length].concat x
+        f = switch node.length
+          when 2 then lx
+          when 3
+            y = render node[2]
+            ly = [LAM, y.length].concat y
+            v = node.scopeNode.vars['⍠']
+            ly.concat GET, v.scopeDepth, v.slot, lx, DYA
+          else err node
+        if node.isAdverb or node.isConjunction then [LAM, f.length + 1].concat f, RET else f
       when 'string'
         # Strings of length one are scalars, all other strings are vectors:
         #   ⍴⍴''   <=> ,1
@@ -281,7 +299,7 @@ compileAST = (ast, opts = {}) ->
       when 'symbol'
         name = node[1]
         {vars} = node.scopeNode
-        if (v = vars["set_#{name}"])?.type is 'F'
+        if (v = vars["set_#{name}"])?.category is VERB
           [GET, v.scopeDepth, v.slot, MON]
         else
           v = vars[name]
