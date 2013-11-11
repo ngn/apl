@@ -90,13 +90,14 @@ take = (omega, alpha) ->
 # ↑3            <=> 3
 # ↑(1 2)(3 4)   <=> 2 2⍴1 2 3 4
 # ↑(1 2)(3 4 5) <=> 2 3⍴1 2 0 3 4 5
+# ↑1 2          <=> 1 2
 mix = (omega) ->
   if omega.shape.length is 0
     x = omega.data[omega.offset]
     if x instanceof APLArray then x else APLArray.scalar x
   else
     shapes = []
-    omega.each (x) -> shapes.push x.shape
+    omega.each (x) -> shapes.push(if x instanceof APLArray then x.shape else [])
     if shapes.length is 0
       nonceError 'Mix of empty array not implemented'
     shape = shapes.reduce (a, b) ->
@@ -106,5 +107,7 @@ mix = (omega) ->
         Math.max a[i], b[i]
     s = new APLArray shape
     data = []
-    omega.each (x) -> data = data.concat (take x, s).toArray()
+    omega.each (x) ->
+      x = if x instanceof APLArray then x else APLArray.scalar x
+      data.push (take x, s).toArray()...
     new APLArray data, omega.shape.concat shape
