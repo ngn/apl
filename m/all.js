@@ -1755,23 +1755,6 @@ var __slice = [].slice,
     }
   });
   addVocabulary({
-    '⍨': adverb(function(f, g) {
-      if (!(typeof f === 'function')) {
-        throw Error("\"assert typeof f is 'function'\" at src/vocabulary/commute.coffee:14");
-      }
-      if (!(g == null)) {
-        throw Error("\"assert not g?\" at src/vocabulary/commute.coffee:15");
-      }
-      return function(omega, alpha, axis) {
-        if (alpha) {
-          return f(alpha, omega, axis);
-        } else {
-          return f(omega, omega, axis);
-        }
-      };
-    })
-  });
-  addVocabulary({
     '=': withIdentity(1, pervasive({
       dyad: eq = function(y, x) {
         if (x instanceof Complex && y instanceof Complex) {
@@ -2524,10 +2507,10 @@ var __slice = [].slice,
   addVocabulary({
     _hook: function(g, f) {
       if (!(typeof f === 'function')) {
-        throw Error("\"assert typeof f is 'function'\" at src/vocabulary/forkhook.coffee:21");
+        throw Error("\"assert typeof f is 'function'\" at src/vocabulary/forkhook.coffee:17");
       }
       if (!(typeof g === 'function')) {
-        throw Error("\"assert typeof g is 'function'\" at src/vocabulary/forkhook.coffee:22");
+        throw Error("\"assert typeof g is 'function'\" at src/vocabulary/forkhook.coffee:18");
       }
       return function(b, a) {
         return f(g(b), a != null ? a : b);
@@ -2535,10 +2518,10 @@ var __slice = [].slice,
     },
     _fork1: function(h, g) {
       if (!(typeof h === 'function')) {
-        throw Error("\"assert typeof h is 'function'\" at src/vocabulary/forkhook.coffee:40");
+        throw Error("\"assert typeof h is 'function'\" at src/vocabulary/forkhook.coffee:36");
       }
       if (!(typeof g === 'function')) {
-        throw Error("\"assert typeof g is 'function'\" at src/vocabulary/forkhook.coffee:41");
+        throw Error("\"assert typeof g is 'function'\" at src/vocabulary/forkhook.coffee:37");
       }
       return [h, g];
     },
@@ -2546,7 +2529,7 @@ var __slice = [].slice,
       var g, h;
       h = _arg[0], g = _arg[1];
       if (!(typeof h === 'function')) {
-        throw Error("\"assert typeof h is 'function'\" at src/vocabulary/forkhook.coffee:45");
+        throw Error("\"assert typeof h is 'function'\" at src/vocabulary/forkhook.coffee:41");
       }
       return function(b, a) {
         return g(h(b, a), f(b, a));
@@ -3734,7 +3717,7 @@ var __slice = [].slice,
     return compileAST(parse(aplCode, opts), opts);
   };
   compileAST = function(ast, opts) {
-    var err, i, markOperators, queue, render, renderLHS, scopeNode, vars, visit, visitLHS, _i, _ref1;
+    var categorizeLambdas, err, i, queue, render, renderLHS, scopeNode, vars, visit, visitLHS, _i, _ref1;
     if (opts == null) {
       opts = {};
     }
@@ -3781,7 +3764,10 @@ var __slice = [].slice,
         aplCode: opts.aplCode
       });
     };
-    (markOperators = function(node) {
+    if (!((2 < 3 && 3 < 4))) {
+      throw Error("\"assert VERB < ADVERB < CONJUNCTION # we are relying on this ordering below\" at src/compiler.coffee:39");
+    }
+    (categorizeLambdas = function(node) {
       var i, r, _i, _ref1;
       switch (node[0]) {
         case 'body':
@@ -3790,20 +3776,15 @@ var __slice = [].slice,
         case 'index':
         case 'lambda':
         case 'expr':
-          r = 0;
+          r = 2;
           for (i = _i = 1, _ref1 = node.length; _i < _ref1; i = _i += 1) {
             if (node[i]) {
-              r |= markOperators(node[i]);
+              r = Math.max(r, categorizeLambdas(node[i]));
             }
           }
-          if (r && node[0] === 'lambda') {
-            if (r & 1) {
-              node.isAdverb = true;
-            }
-            if (r & 2) {
-              node.isConjunction = true;
-            }
-            return 0;
+          if (node[0] === 'lambda') {
+            node.category = r;
+            return 2;
           } else {
             return r;
           }
@@ -3817,17 +3798,17 @@ var __slice = [].slice,
             case '⍺⍺':
             case '⍶':
             case '∇∇':
-              return 1;
+              return 3;
             case '⍵⍵':
             case '⍹':
-              return 3;
+              return 4;
             default:
-              return 0;
+              return 2;
           }
           break;
         default:
           if (!(0)) {
-            throw Error("\"else assert 0\" at src/compiler.coffee:55");
+            throw Error("\"else assert 0\" at src/compiler.coffee:52");
           }
       }
     })(ast);
@@ -3835,7 +3816,7 @@ var __slice = [].slice,
     while (queue.length) {
       vars = (scopeNode = queue.shift()).vars;
       visit = function(node) {
-        var a, body, d, h, i, j, name, r, v, x, _i, _j, _k, _ref1, _ref10, _ref11, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+        var a, body, d, h, i, j, name, r, v, x, _i, _j, _k, _ref1, _ref10, _ref11, _ref12, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
         node.scopeNode = scopeNode;
         switch (node[0]) {
           case 'guard':
@@ -3856,7 +3837,7 @@ var __slice = [].slice,
             for (i = _i = 1, _ref2 = node.length; 1 <= _ref2 ? _i < _ref2 : _i > _ref2; i = 1 <= _ref2 ? ++_i : --_i) {
               queue.push(extend((body = node[i]), {
                 scopeNode: scopeNode,
-                scopeDepth: (d = scopeNode.scopeDepth + 1 + !!(node.isAdverb || node.isConjunction)),
+                scopeDepth: d = scopeNode.scopeDepth + 1 + (node.category !== 2),
                 nSlots: 3,
                 vars: v = extend(Object.create(vars), {
                   '⍵': {
@@ -3876,7 +3857,7 @@ var __slice = [].slice,
                   }
                 })
               }));
-              if (node.isConjunction) {
+              if (node.category === 4) {
                 v['⍵⍵'] = v['⍹'] = {
                   slot: 0,
                   scopeDepth: d - 1,
@@ -3892,7 +3873,7 @@ var __slice = [].slice,
                   scopeDepth: d - 1,
                   category: 2
                 };
-              } else if (node.isAdverb) {
+              } else if (node.category === 3) {
                 v['⍺⍺'] = v['⍶'] = {
                   slot: 0,
                   scopeDepth: d - 1,
@@ -3905,20 +3886,13 @@ var __slice = [].slice,
                 };
               }
             }
-            if (node.isConjunction) {
-              return 4;
-            } else if (node.isAdverb) {
-              return 3;
-            } else {
-              return 2;
-            }
-            break;
+            return (_ref3 = node.category) != null ? _ref3 : 2;
           case 'string':
           case 'number':
           case 'embedded':
             return 1;
           case 'index':
-            for (i = _j = 2, _ref3 = node.length; _j < _ref3; i = _j += 1) {
+            for (i = _j = 2, _ref4 = node.length; _j < _ref4; i = _j += 1) {
               if (node[i] && visit(node[i]) !== 1) {
                 err(node, 'Indices must be nouns.');
               }
@@ -3927,17 +3901,17 @@ var __slice = [].slice,
           case 'expr':
             a = node.slice(1);
             h = Array(a.length);
-            for (i = _k = _ref4 = a.length - 1; _k >= 0; i = _k += -1) {
+            for (i = _k = _ref5 = a.length - 1; _k >= 0; i = _k += -1) {
               h[i] = visit(a[i]);
             }
             i = 0;
             while (i < a.length - 1) {
-              if ((h[i] === (_ref5 = h[i + 1]) && _ref5 === 1)) {
+              if ((h[i] === (_ref6 = h[i + 1]) && _ref6 === 1)) {
                 j = i + 2;
                 while (j < a.length && h[j] === 1) {
                   j++;
                 }
-                [].splice.apply(a, [i, j - i].concat(_ref6 = [['vector'].concat(a.slice(i, j))])), _ref6;
+                [].splice.apply(a, [i, j - i].concat(_ref7 = [['vector'].concat(a.slice(i, j))])), _ref7;
                 [].splice.apply(h, [i, j - i].concat(1)), 1;
               } else {
                 i++;
@@ -3946,7 +3920,7 @@ var __slice = [].slice,
             i = a.length - 2;
             while (--i >= 0) {
               if (h[i + 1] === 4 && (h[i] !== 1 || h[i + 2] !== 1)) {
-                [].splice.apply(a, [i, (i + 3) - i].concat(_ref7 = [['conjunction'].concat(a.slice(i, i + 3))])), _ref7;
+                [].splice.apply(a, [i, (i + 3) - i].concat(_ref8 = [['conjunction'].concat(a.slice(i, i + 3))])), _ref8;
                 [].splice.apply(h, [i, (i + 3) - i].concat(2)), 2;
                 i--;
               }
@@ -3954,7 +3928,7 @@ var __slice = [].slice,
             i = 0;
             while (i < a.length - 1) {
               if (h[i] !== 1 && h[i + 1] === 3) {
-                [].splice.apply(a, [i, (i + 2) - i].concat(_ref8 = [['adverb'].concat(a.slice(i, i + 2))])), _ref8;
+                [].splice.apply(a, [i, (i + 2) - i].concat(_ref9 = [['adverb'].concat(a.slice(i, i + 2))])), _ref9;
                 [].splice.apply(h, [i, (i + 2) - i].concat(2)), 2;
               } else {
                 i++;
@@ -3983,20 +3957,20 @@ var __slice = [].slice,
             } else {
               while (h.length > 1) {
                 if (h.length === 2 || h[h.length - 3] !== 1) {
-                  [].splice.apply(a, [-2, 9e9].concat(_ref9 = [['monadic'].concat(a.slice(-2))])), _ref9;
+                  [].splice.apply(a, [-2, 9e9].concat(_ref10 = [['monadic'].concat(a.slice(-2))])), _ref10;
                   [].splice.apply(h, [-2, 9e9].concat(1)), 1;
                 } else {
-                  [].splice.apply(a, [-3, 9e9].concat(_ref10 = [['dyadic'].concat(a.slice(-3))])), _ref10;
+                  [].splice.apply(a, [-3, 9e9].concat(_ref11 = [['dyadic'].concat(a.slice(-3))])), _ref11;
                   [].splice.apply(h, [-3, 9e9].concat(1)), 1;
                 }
               }
             }
-            [].splice.apply(node, [0, 9e9].concat(_ref11 = a[0])), _ref11;
+            [].splice.apply(node, [0, 9e9].concat(_ref12 = a[0])), _ref12;
             extend(node, a[0]);
             return h[0];
           default:
             if (!(0)) {
-              throw Error("\"assert 0\" at src/compiler.coffee:148");
+              throw Error("\"assert 0\" at src/compiler.coffee:145");
             }
         }
       };
@@ -4093,7 +4067,7 @@ var __slice = [].slice,
                 return err(node);
             }
           })();
-          if (node.isAdverb || node.isConjunction) {
+          if (node.category !== 2) {
             return [LAM, f.length + 1].concat(f, RET);
           } else {
             return f;
@@ -4207,7 +4181,7 @@ var __slice = [].slice,
           break;
         default:
           if (!(0)) {
-            throw Error("\"else assert 0\" at src/compiler.coffee:295");
+            throw Error("\"else assert 0\" at src/compiler.coffee:292");
           }
       }
     };
@@ -4250,13 +4224,13 @@ var __slice = [].slice,
           return a;
         default:
           if (!(0)) {
-            throw Error("\"assert 0\" at src/compiler.coffee:330");
+            throw Error("\"assert 0\" at src/compiler.coffee:327");
           }
       }
     };
     return render(ast);
   };
-  prelude = execInternal("⍬←0⍴0\n⍝ ⍬     <=> 0⍴0\n⍝ ⍴⍬    <=> ,0\n⍝# ⍬←5   !!!\n⍝ ⍳0    <=> ⍬\n⍝ ⍴0    <=> ⍬\n⍝ ⍬     <=> ⍬\n⍝ ⍬⍬    <=> ⍬ ⍬\n⍝ 1⍬2⍬3 <=> 1 ⍬ 2 ⍬ 3\n\n⊃←⊃⍠{\n  1<⍴⍴⍺:↗'RANK ERROR'\n  x←⍵\n  {\n    1<⍴⍴⍵:↗'RANK ERROR'\n    ⍵←,⍵\n    (⍴⍵)≠⍴⍴x:↗'RANK ERROR'\n    ∨/⍵≥⍴x:↗'INDEX ERROR'\n    x←⊃⍵⌷x\n  }¨⍺\n  x\n  ⍝ ⍬⊃3               <=> 3\n  ⍝ 2⊃'PICK'          <=> 'C'\n  ⍝ (⊂1 0)⊃2 2⍴'ABCD' <=> 'C'\n  ⍝ 1⊃'foo' 'bar'     <=> 'bar'\n  ⍝ 1 2⊃'foo' 'bar'   <=> 'r'\n  ⍝ (2 2⍴0)⊃1 2       !!! RANK ERROR\n  ⍝ (⊂2 1⍴0)⊃2 2⍴0    !!! RANK ERROR\n  ⍝ (⊂2 2⍴0)⊃1 2      !!! RANK ERROR\n  ⍝ (⊂2 2)⊃1 2        !!! RANK ERROR\n  ⍝ (⊂0 2)⊃2 2⍴'ABCD' !!! INDEX ERROR\n}\n\n⍪←{(≢⍵)(×/1↓⍴⍵)⍴⍵}⍠{⍺,[0]⍵}\n⍝ ⍪2 3 4 <=> 3 1⍴2 3 4\n⍝ ⍪0 <=> 1 1⍴0\n⍝ ⍪2 2⍴2 3 4 5 <=> 2 2⍴2 3 4 5\n⍝ ⍴⍪2 3⍴⍳6 <=> 2 3\n⍝ ⍴⍪2 3 4⍴⍳24 <=> 2 12\n⍝ (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2 3 4 5 9 9 9)\n\n⊢←{⍵}\n⍝ 123⊢456 <=> 456\n⍝ ⊢456 <=> 456\n\n⊣←{}⍠{⍺}\n⍝ 123⊣456 <=> 123\n⍝ ⊣456 <=> ⍬\n\n≢←{⍬⍴(⍴⍵),1}⍠{~⍺≡⍵}\n⍝ ≢0 <=> 1\n⍝ ≢0 0 0 <=> 3\n⍝ ≢⍬ <=> 0\n⍝ ≢2 3⍴⍳6 <=> 2\n⍝ 3≢3 <=> 0\n\n⌹←{\n  norm←{(⍵+.×+⍵)*0.5}\n\n  QR←{ ⍝ QR decomposition\n    n←(⍴⍵)[1]\n    1≥n:{t←norm,⍵ ⋄ (⍵÷t)(⍪t)}⍵\n    m←⌈n÷2\n    a0←((1↑⍴⍵),m)↑⍵\n    a1←(0,m)↓⍵\n    (q0 r0)←∇a0\n    c←(+⍉q0)+.×a1\n    (q1 r1)←∇a1-q0+.×c\n    (q0,q1)((r0,c)⍪((⌊n÷2),-n)↑r1)\n  }\n\n  Rinv←{ ⍝ Inverse of an upper triangular matrix\n    1=n←1↑⍴⍵:÷⍵\n    m←⌈n÷2\n    ai←∇(m,m)↑⍵\n    di←∇(m,m)↓⍵\n    b←(m,m-n)↑⍵\n    bx←-ai+.×b+.×di\n    (ai,bx)⍪((⌊n÷2),-n)↑di\n  }\n\n  0=⍴⍴⍵:÷⍵\n  1=⍴⍴⍵:,∇⍪⍵\n  2≠⍴⍴⍵:↗'ASSERTION ERROR'\n  0∊≥/⍴⍵:↗'ASSERTION ERROR'\n  (Q R)←QR ⍵\n  (Rinv R)+.×+⍉Q\n}⍠{\n  (⌹⍵)+.×⍺\n}\n⍝ ⌹2 <=> .5\n⍝ ⌹2 2⍴4 3 3 2 <=> 2 2⍴¯2 3 3 ¯4\n⍝ (4 4⍴12 1 4 10 ¯6 ¯5 4 7 ¯4 9 3 4 ¯2 ¯6 7 7)⌹93 81 93.5 120.5 <=>\n⍝ ... .0003898888816687221 ¯.005029566573526544 .04730651764247189 .0705568912859835\n", {
+  prelude = execInternal("⍬←0⍴0\n⍝ ⍬     <=> 0⍴0\n⍝ ⍴⍬    <=> ,0\n⍝# ⍬←5   !!!\n⍝ ⍳0    <=> ⍬\n⍝ ⍴0    <=> ⍬\n⍝ ⍬     <=> ⍬\n⍝ ⍬⍬    <=> ⍬ ⍬\n⍝ 1⍬2⍬3 <=> 1 ⍬ 2 ⍬ 3\n\n⊃←⊃⍠{\n  1<⍴⍴⍺:↗'RANK ERROR'\n  x←⍵\n  {\n    1<⍴⍴⍵:↗'RANK ERROR'\n    ⍵←,⍵\n    (⍴⍵)≠⍴⍴x:↗'RANK ERROR'\n    ∨/⍵≥⍴x:↗'INDEX ERROR'\n    x←⊃⍵⌷x\n  }¨⍺\n  x\n  ⍝ ⍬⊃3               <=> 3\n  ⍝ 2⊃'PICK'          <=> 'C'\n  ⍝ (⊂1 0)⊃2 2⍴'ABCD' <=> 'C'\n  ⍝ 1⊃'foo' 'bar'     <=> 'bar'\n  ⍝ 1 2⊃'foo' 'bar'   <=> 'r'\n  ⍝ (2 2⍴0)⊃1 2       !!! RANK ERROR\n  ⍝ (⊂2 1⍴0)⊃2 2⍴0    !!! RANK ERROR\n  ⍝ (⊂2 2⍴0)⊃1 2      !!! RANK ERROR\n  ⍝ (⊂2 2)⊃1 2        !!! RANK ERROR\n  ⍝ (⊂0 2)⊃2 2⍴'ABCD' !!! INDEX ERROR\n}\n\n⍪←{(≢⍵)(×/1↓⍴⍵)⍴⍵; ⍺,[0]⍵}\n⍝ ⍪2 3 4 <=> 3 1⍴2 3 4\n⍝ ⍪0 <=> 1 1⍴0\n⍝ ⍪2 2⍴2 3 4 5 <=> 2 2⍴2 3 4 5\n⍝ ⍴⍪2 3⍴⍳6 <=> 2 3\n⍝ ⍴⍪2 3 4⍴⍳24 <=> 2 12\n⍝ (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2 3 4 5 9 9 9)\n\n⊢←{⍵}\n⍝ 123⊢456 <=> 456\n⍝ ⊢456 <=> 456\n\n⊣←{;⍺}\n⍝ 123⊣456 <=> 123\n⍝ ⊣456 <=> ⍬\n\n≢←{⍬⍴(⍴⍵),1; ~⍺≡⍵}\n⍝ ≢0 <=> 1\n⍝ ≢0 0 0 <=> 3\n⍝ ≢⍬ <=> 0\n⍝ ≢2 3⍴⍳6 <=> 2\n⍝ 3≢3 <=> 0\n\n⌹←{\n  norm←{(⍵+.×+⍵)*0.5}\n\n  QR←{ ⍝ QR decomposition\n    n←(⍴⍵)[1]\n    1≥n:{t←norm,⍵ ⋄ (⍵÷t)(⍪t)}⍵\n    m←⌈n÷2\n    a0←((1↑⍴⍵),m)↑⍵\n    a1←(0,m)↓⍵\n    (q0 r0)←∇a0\n    c←(+⍉q0)+.×a1\n    (q1 r1)←∇a1-q0+.×c\n    (q0,q1)((r0,c)⍪((⌊n÷2),-n)↑r1)\n  }\n\n  Rinv←{ ⍝ Inverse of an upper triangular matrix\n    1=n←1↑⍴⍵:÷⍵\n    m←⌈n÷2\n    ai←∇(m,m)↑⍵\n    di←∇(m,m)↓⍵\n    b←(m,m-n)↑⍵\n    bx←-ai+.×b+.×di\n    (ai,bx)⍪((⌊n÷2),-n)↑di\n  }\n\n  0=⍴⍴⍵:÷⍵\n  1=⍴⍴⍵:,∇⍪⍵\n  2≠⍴⍴⍵:↗'ASSERTION ERROR'\n  0∊≥/⍴⍵:↗'ASSERTION ERROR'\n  (Q R)←QR ⍵\n  (Rinv R)+.×+⍉Q\n  ;\n  (⌹⍵)+.×⍺\n}\n⍝ ⌹2 <=> .5\n⍝ ⌹2 2⍴4 3 3 2 <=> 2 2⍴¯2 3 3 ¯4\n⍝ (4 4⍴12 1 4 10 ¯6 ¯5 4 7 ¯4 9 3 4 ¯2 ¯6 7 7)⌹93 81 93.5 120.5 <=>\n⍝ ... .0003898888816687221 ¯.005029566573526544 .04730651764247189 .0705568912859835\n\n⍨←{⍵⍶⍵;⍵⍶⍺}\n# 17-⍨23 <=> 6\n# 7⍴⍨2 3 <=> 2 3⍴7\n# +⍨2    <=> 4\n# -⍨123  <=> 0\n", {
     ctx: vocabulary
   });
   aplify = function(x) {
