@@ -4,7 +4,7 @@ var __slice = [].slice,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 (function() {
-  var APLArray, Beta, Complex, DYA, EMB, GET, JEQ, LAM, LDC, MON, POP, RET, SET, SPL, VEC, addVocabulary, adverb, aka, all, apl, aplError, aplify, approx, arrayEquals, bool, compile, compileAST, complexify, compressOrReplicate, conjunction, contains, cps, deal, depthOf, domainError, enlist, eq, exec, execInternal, exp, expand, extend, format, getAxisList, grade, indexError, innerProduct, lengthError, lnΓ, match, mix, negInt, negate, nonceError, numApprox, numeric, outerProduct, parse, pervasive, prelude, prepareForIndexing, prod, rankError, real, reduce, repeat, roll, rotate, scan, simplify, smallFactorials, squish, strideForShape, syntaxError, take, tokenDefs, tokenize, vm, vocabulary, withIdentity, Γ, λ, _ref;
+  var APLArray, Beta, Complex, DYA, EMB, GET, JEQ, LAM, LDC, MON, POP, RET, SET, SPL, VEC, addVocabulary, adverb, aka, all, apl, aplError, aplify, approx, arrayEquals, bool, compile, compileAST, complexify, compressOrReplicate, conjunction, contains, cps, deal, depthOf, disclose, domainError, enlist, eq, exec, execInternal, exp, expand, extend, format, getAxisList, grade, indexError, innerProduct, lengthError, lnΓ, match, negInt, negate, nonceError, numApprox, numeric, outerProduct, parse, pervasive, prelude, prepareForIndexing, prod, rankError, real, reduce, repeat, roll, rotate, scan, simplify, smallFactorials, squish, strideForShape, syntaxError, take, tokenDefs, tokenize, vm, vocabulary, withIdentity, Γ, λ, _ref;
 
   prod = function(xs) {
     var r, x, _i, _len;
@@ -1962,12 +1962,45 @@ var __slice = [].slice,
   });
   addVocabulary({
     '⊃': function(omega) {
-      var x;
-      x = omega.empty() ? omega.getPrototype() : omega.data[omega.offset];
-      if (x instanceof APLArray) {
-        return x;
+      var data, s, shape, shapes, x;
+      if (omega.shape.length === 0) {
+        x = omega.data[omega.offset];
+        if (x instanceof APLArray) {
+          return x;
+        } else {
+          return APLArray.scalar(x);
+        }
       } else {
-        return new APLArray([x], []);
+        shapes = [];
+        omega.each(function(x) {
+          return shapes.push(x instanceof APLArray ? x.shape : []);
+        });
+        if (shapes.length === 0) {
+          return APLArray.zilde;
+        }
+        shape = shapes.reduce(function(a, b) {
+          var i, _i, _ref, _results;
+          if (a.length === 0) {
+            return b;
+          } else if (b.length === 0) {
+            return a;
+          } else if (a.length !== b.length) {
+            return nonceError('Mix of different ranks not implemented');
+          } else {
+            _results = [];
+            for (i = _i = 0, _ref = a.length; _i < _ref; i = _i += 1) {
+              _results.push(Math.max(a[i], b[i]));
+            }
+            return _results;
+          }
+        });
+        s = new APLArray(shape);
+        data = [];
+        omega.each(function(x) {
+          x = x instanceof APLArray ? x : APLArray.scalar(x);
+          return data.push.apply(data, (take(x, s)).toArray());
+        });
+        return new APLArray(data, omega.shape.concat(shape));
       }
     }
   });
@@ -2505,23 +2538,12 @@ var __slice = [].slice,
     }))
   });
   addVocabulary({
-    _hook: function(g, f) {
-      if (!(typeof f === 'function')) {
-        throw Error("\"assert typeof f is 'function'\" at src/vocabulary/forkhook.coffee:17");
-      }
-      if (!(typeof g === 'function')) {
-        throw Error("\"assert typeof g is 'function'\" at src/vocabulary/forkhook.coffee:18");
-      }
-      return function(b, a) {
-        return f(g(b), a != null ? a : b);
-      };
-    },
     _fork1: function(h, g) {
       if (!(typeof h === 'function')) {
-        throw Error("\"assert typeof h is 'function'\" at src/vocabulary/forkhook.coffee:36");
+        throw Error("\"assert typeof h is 'function'\" at src/vocabulary/fork.coffee:20");
       }
       if (!(typeof g === 'function')) {
-        throw Error("\"assert typeof g is 'function'\" at src/vocabulary/forkhook.coffee:37");
+        throw Error("\"assert typeof g is 'function'\" at src/vocabulary/fork.coffee:21");
       }
       return [h, g];
     },
@@ -2529,7 +2551,7 @@ var __slice = [].slice,
       var g, h;
       h = _arg[0], g = _arg[1];
       if (!(typeof h === 'function')) {
-        throw Error("\"assert typeof h is 'function'\" at src/vocabulary/forkhook.coffee:41");
+        throw Error("\"assert typeof h is 'function'\" at src/vocabulary/fork.coffee:25");
       }
       return function(b, a) {
         return g(h(b, a), f(b, a));
@@ -3489,7 +3511,7 @@ var __slice = [].slice,
       if (alpha) {
         return take(omega, alpha);
       } else {
-        return mix(omega);
+        return disclose(omega);
       }
     }
   });
@@ -3571,46 +3593,13 @@ var __slice = [].slice,
       return new APLArray(omega.data, shape, omega.stride, offset);
     }
   };
-  mix = function(omega) {
-    var data, s, shape, shapes, x;
-    if (omega.shape.length === 0) {
-      x = omega.data[omega.offset];
-      if (x instanceof APLArray) {
-        return x;
-      } else {
-        return APLArray.scalar(x);
-      }
+  disclose = function(omega) {
+    var x;
+    x = omega.empty() ? omega.getPrototype() : omega.data[omega.offset];
+    if (x instanceof APLArray) {
+      return x;
     } else {
-      shapes = [];
-      omega.each(function(x) {
-        return shapes.push(x instanceof APLArray ? x.shape : []);
-      });
-      if (shapes.length === 0) {
-        return APLArray.zilde;
-      }
-      shape = shapes.reduce(function(a, b) {
-        var i, _i, _ref1, _results;
-        if (a.length === 0) {
-          return b;
-        } else if (b.length === 0) {
-          return a;
-        } else if (a.length !== b.length) {
-          return nonceError('Mix of different ranks not implemented');
-        } else {
-          _results = [];
-          for (i = _i = 0, _ref1 = a.length; _i < _ref1; i = _i += 1) {
-            _results.push(Math.max(a[i], b[i]));
-          }
-          return _results;
-        }
-      });
-      s = new APLArray(shape);
-      data = [];
-      omega.each(function(x) {
-        x = x instanceof APLArray ? x : APLArray.scalar(x);
-        return data.push.apply(data, (take(x, s)).toArray());
-      });
-      return new APLArray(data, omega.shape.concat(shape));
+      return new APLArray([x], []);
     }
   };
   addVocabulary({
@@ -3980,7 +3969,7 @@ var __slice = [].slice,
             }
         }
       };
-      visitLHS = function(node, rhsType) {
+      visitLHS = function(node, rhsCategory) {
         var c, i, name, _i, _j, _ref1, _ref2;
         node.scopeNode = scopeNode;
         switch (node[0]) {
@@ -3990,26 +3979,26 @@ var __slice = [].slice,
               err(node, 'Assignment to ∇ is not allowed.');
             }
             if (vars[name]) {
-              if (vars[name].category !== rhsType) {
+              if (vars[name].category !== rhsCategory) {
                 err(node, "Inconsistent usage of symbol '" + name + "', it is assigned both nouns and verbs.");
               }
             } else {
               vars[name] = {
                 scopeDepth: scopeNode.scopeDepth,
                 slot: scopeNode.nSlots++,
-                category: rhsType
+                category: rhsCategory
               };
             }
             break;
           case 'expr':
-            rhsType === 1 || err(node, 'Strand assignment can be used only for nouns.');
+            rhsCategory === 1 || err(node, 'Strand assignment can be used only for nouns.');
             for (i = _i = 1, _ref1 = node.length; _i < _ref1; i = _i += 1) {
-              visitLHS(node[i], rhsType);
+              visitLHS(node[i], rhsCategory);
             }
             break;
           case 'index':
-            rhsType === 1 || err(node, 'Index assignment can be used only for nouns.');
-            visitLHS(node[1], rhsType);
+            rhsCategory === 1 || err(node, 'Index assignment can be used only for nouns.');
+            visitLHS(node[1], rhsCategory);
             for (i = _j = 2, _ref2 = node.length; _j < _ref2; i = _j += 1) {
               if (c = node[i]) {
                 visit(c);
@@ -4019,7 +4008,7 @@ var __slice = [].slice,
           default:
             err(node, "Invalid LHS node type: " + (JSON.stringify(node[0])));
         }
-        return rhsType;
+        return rhsCategory;
       };
       for (i = _i = 1, _ref1 = scopeNode.length; _i < _ref1; i = _i += 1) {
         visit(scopeNode[i]);
@@ -4236,7 +4225,7 @@ var __slice = [].slice,
     };
     return render(ast);
   };
-  prelude = execInternal("⍬←0⍴0\n⍝ ⍬     <=> 0⍴0\n⍝ ⍴⍬    <=> ,0\n⍝# ⍬←5   !!!\n⍝ ⍳0    <=> ⍬\n⍝ ⍴0    <=> ⍬\n⍝ ⍬     <=> ⍬\n⍝ ⍬⍬    <=> ⍬ ⍬\n⍝ 1⍬2⍬3 <=> 1 ⍬ 2 ⍬ 3\n\n⊃←⊃⍠{\n  1<⍴⍴⍺:↗'RANK ERROR'\n  x←⍵\n  {\n    1<⍴⍴⍵:↗'RANK ERROR'\n    ⍵←,⍵\n    (⍴⍵)≠⍴⍴x:↗'RANK ERROR'\n    ∨/⍵≥⍴x:↗'INDEX ERROR'\n    x←⊃⍵⌷x\n  }¨⍺\n  x\n  ⍝ ⍬⊃3               <=> 3\n  ⍝ 2⊃'PICK'          <=> 'C'\n  ⍝ (⊂1 0)⊃2 2⍴'ABCD' <=> 'C'\n  ⍝ 1⊃'foo' 'bar'     <=> 'bar'\n  ⍝ 1 2⊃'foo' 'bar'   <=> 'r'\n  ⍝ (2 2⍴0)⊃1 2       !!! RANK ERROR\n  ⍝ (⊂2 1⍴0)⊃2 2⍴0    !!! RANK ERROR\n  ⍝ (⊂2 2⍴0)⊃1 2      !!! RANK ERROR\n  ⍝ (⊂2 2)⊃1 2        !!! RANK ERROR\n  ⍝ (⊂0 2)⊃2 2⍴'ABCD' !!! INDEX ERROR\n}\n\n⍪←{(≢⍵)(×/1↓⍴⍵)⍴⍵; ⍺,[0]⍵}\n⍝ ⍪2 3 4 <=> 3 1⍴2 3 4\n⍝ ⍪0 <=> 1 1⍴0\n⍝ ⍪2 2⍴2 3 4 5 <=> 2 2⍴2 3 4 5\n⍝ ⍴⍪2 3⍴⍳6 <=> 2 3\n⍝ ⍴⍪2 3 4⍴⍳24 <=> 2 12\n⍝ (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2 3 4 5 9 9 9)\n\n⊢←{⍵}\n⍝ 123⊢456 <=> 456\n⍝ ⊢456 <=> 456\n\n⊣←{;⍺}\n⍝ 123⊣456 <=> 123\n⍝ ⊣456 <=> ⍬\n\n≢←{⍬⍴(⍴⍵),1; ~⍺≡⍵}\n⍝ ≢0 <=> 1\n⍝ ≢0 0 0 <=> 3\n⍝ ≢⍬ <=> 0\n⍝ ≢2 3⍴⍳6 <=> 2\n⍝ 3≢3 <=> 0\n\n⌹←{\n  norm←{(⍵+.×+⍵)*0.5}\n\n  QR←{ ⍝ QR decomposition\n    n←(⍴⍵)[1]\n    1≥n:{t←norm,⍵ ⋄ (⍵÷t)(⍪t)}⍵\n    m←⌈n÷2\n    a0←((1↑⍴⍵),m)↑⍵\n    a1←(0,m)↓⍵\n    (q0 r0)←∇a0\n    c←(+⍉q0)+.×a1\n    (q1 r1)←∇a1-q0+.×c\n    (q0,q1)((r0,c)⍪((⌊n÷2),-n)↑r1)\n  }\n\n  Rinv←{ ⍝ Inverse of an upper triangular matrix\n    1=n←1↑⍴⍵:÷⍵\n    m←⌈n÷2\n    ai←∇(m,m)↑⍵\n    di←∇(m,m)↓⍵\n    b←(m,m-n)↑⍵\n    bx←-ai+.×b+.×di\n    (ai,bx)⍪((⌊n÷2),-n)↑di\n  }\n\n  0=⍴⍴⍵:÷⍵\n  1=⍴⍴⍵:,∇⍪⍵\n  2≠⍴⍴⍵:↗'ASSERTION ERROR'\n  0∊≥/⍴⍵:↗'ASSERTION ERROR'\n  (Q R)←QR ⍵\n  (Rinv R)+.×+⍉Q\n  ;\n  (⌹⍵)+.×⍺\n}\n⍝ ⌹2 <=> .5\n⍝ ⌹2 2⍴4 3 3 2 <=> 2 2⍴¯2 3 3 ¯4\n⍝ (4 4⍴12 1 4 10 ¯6 ¯5 4 7 ¯4 9 3 4 ¯2 ¯6 7 7)⌹93 81 93.5 120.5 <=>\n⍝ ... .0003898888816687221 ¯.005029566573526544 .04730651764247189 .0705568912859835\n\n⍨←{⍵⍶⍵;⍵⍶⍺}\n# 17-⍨23 <=> 6\n# 7⍴⍨2 3 <=> 2 3⍴7\n# +⍨2    <=> 4\n# -⍨123  <=> 0\n", {
+  prelude = execInternal("⍬←0⍴0\n⍝ ⍬     <=> 0⍴0\n⍝ ⍴⍬    <=> ,0\n⍝# ⍬←5   !!!\n⍝ ⍳0    <=> ⍬\n⍝ ⍴0    <=> ⍬\n⍝ ⍬     <=> ⍬\n⍝ ⍬⍬    <=> ⍬ ⍬\n⍝ 1⍬2⍬3 <=> 1 ⍬ 2 ⍬ 3\n\n_hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}\n# (+÷)\\3 7 16 ¯294 <=> (3 3.142857142857143 3.1415929203539825 3.141592653921421)\n# (=⌊)123 <=> 1\n# (=⌊)123.4 <=> 0\n# (÷⍟)1000 <=> 144.76482730108395\n\n⊃←⊃⍠{\n  1<⍴⍴⍺:↗'RANK ERROR'\n  x←⍵\n  {\n    1<⍴⍴⍵:↗'RANK ERROR'\n    ⍵←,⍵\n    (⍴⍵)≠⍴⍴x:↗'RANK ERROR'\n    ∨/⍵≥⍴x:↗'INDEX ERROR'\n    x←⊃⍵⌷x\n  }¨⍺\n  x\n  ⍝ ⍬⊃3               <=> 3\n  ⍝ 2⊃'PICK'          <=> 'C'\n  ⍝ (⊂1 0)⊃2 2⍴'ABCD' <=> 'C'\n  ⍝ 1⊃'foo' 'bar'     <=> 'bar'\n  ⍝ 1 2⊃'foo' 'bar'   <=> 'r'\n  ⍝ (2 2⍴0)⊃1 2       !!! RANK ERROR\n  ⍝ (⊂2 1⍴0)⊃2 2⍴0    !!! RANK ERROR\n  ⍝ (⊂2 2⍴0)⊃1 2      !!! RANK ERROR\n  ⍝ (⊂2 2)⊃1 2        !!! RANK ERROR\n  ⍝ (⊂0 2)⊃2 2⍴'ABCD' !!! INDEX ERROR\n}\n\n⍪←{(≢⍵)(×/1↓⍴⍵)⍴⍵; ⍺,[0]⍵}\n⍝ ⍪2 3 4 <=> 3 1⍴2 3 4\n⍝ ⍪0 <=> 1 1⍴0\n⍝ ⍪2 2⍴2 3 4 5 <=> 2 2⍴2 3 4 5\n⍝ ⍴⍪2 3⍴⍳6 <=> 2 3\n⍝ ⍴⍪2 3 4⍴⍳24 <=> 2 12\n⍝ (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2 3 4 5 9 9 9)\n\n⊢←{⍵}\n⍝ 123⊢456 <=> 456\n⍝ ⊢456 <=> 456\n\n⊣←{;⍺}\n⍝ 123⊣456 <=> 123\n⍝ ⊣456 <=> ⍬\n\n≢←{⍬⍴(⍴⍵),1; ~⍺≡⍵}\n⍝ ≢0 <=> 1\n⍝ ≢0 0 0 <=> 3\n⍝ ≢⍬ <=> 0\n⍝ ≢2 3⍴⍳6 <=> 2\n⍝ 3≢3 <=> 0\n\n⌹←{\n  norm←{(⍵+.×+⍵)*0.5}\n\n  QR←{ ⍝ QR decomposition\n    n←(⍴⍵)[1]\n    1≥n:{t←norm,⍵ ⋄ (⍵÷t)(⍪t)}⍵\n    m←⌈n÷2\n    a0←((1↑⍴⍵),m)↑⍵\n    a1←(0,m)↓⍵\n    (q0 r0)←∇a0\n    c←(+⍉q0)+.×a1\n    (q1 r1)←∇a1-q0+.×c\n    (q0,q1)((r0,c)⍪((⌊n÷2),-n)↑r1)\n  }\n\n  Rinv←{ ⍝ Inverse of an upper triangular matrix\n    1=n←1↑⍴⍵:÷⍵\n    m←⌈n÷2\n    ai←∇(m,m)↑⍵\n    di←∇(m,m)↓⍵\n    b←(m,m-n)↑⍵\n    bx←-ai+.×b+.×di\n    (ai,bx)⍪((⌊n÷2),-n)↑di\n  }\n\n  0=⍴⍴⍵:÷⍵\n  1=⍴⍴⍵:,∇⍪⍵\n  2≠⍴⍴⍵:↗'ASSERTION ERROR'\n  0∊≥/⍴⍵:↗'ASSERTION ERROR'\n  (Q R)←QR ⍵\n  (Rinv R)+.×+⍉Q\n  ;\n  (⌹⍵)+.×⍺\n}\n⍝ ⌹2 <=> .5\n⍝ ⌹2 2⍴4 3 3 2 <=> 2 2⍴¯2 3 3 ¯4\n⍝ (4 4⍴12 1 4 10 ¯6 ¯5 4 7 ¯4 9 3 4 ¯2 ¯6 7 7)⌹93 81 93.5 120.5 <=>\n⍝ ... .0003898888816687221 ¯.005029566573526544 .04730651764247189 .0705568912859835\n\n⍨←{⍵⍶⍵;⍵⍶⍺}\n# 17-⍨23 <=> 6\n# 7⍴⍨2 3 <=> 2 3⍴7\n# +⍨2    <=> 4\n# -⍨123  <=> 0\n", {
     ctx: vocabulary
   });
   aplify = function(x) {
@@ -4308,7 +4297,7 @@ var __slice = [].slice,
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2013-11-11\n");
+          process.stdout.write("ngn apl 2013-11-12\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ctx = Object.create(vocabulary);
