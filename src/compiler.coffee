@@ -144,27 +144,27 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
         else
           assert 0
 
-    visitLHS = (node, rhsType) ->
+    visitLHS = (node, rhsCategory) ->
       node.scopeNode = scopeNode
       switch node[0]
         when 'symbol'
           name = node[1]
           if name is '∇' then err node, 'Assignment to ∇ is not allowed.'
           if vars[name]
-            if vars[name].category isnt rhsType
+            if vars[name].category isnt rhsCategory
               err node, "Inconsistent usage of symbol '#{name}', it is assigned both nouns and verbs."
           else
-            vars[name] = scopeDepth: scopeNode.scopeDepth, slot: scopeNode.nSlots++, category: rhsType
+            vars[name] = scopeDepth: scopeNode.scopeDepth, slot: scopeNode.nSlots++, category: rhsCategory
         when 'expr'
-          rhsType is NOUN or err node, 'Strand assignment can be used only for nouns.'
-          for i in [1...node.length] by 1 then visitLHS node[i], rhsType
+          rhsCategory is NOUN or err node, 'Strand assignment can be used only for nouns.'
+          for i in [1...node.length] by 1 then visitLHS node[i], rhsCategory
         when 'index'
-          rhsType is NOUN or err node, 'Index assignment can be used only for nouns.'
-          visitLHS node[1], rhsType
+          rhsCategory is NOUN or err node, 'Index assignment can be used only for nouns.'
+          visitLHS node[1], rhsCategory
           for i in [2...node.length] by 1 when c = node[i] then visit c
         else
           err node, "Invalid LHS node type: #{JSON.stringify node[0]}"
-      rhsType
+      rhsCategory
 
     for i in [1...scopeNode.length] by 1 then visit scopeNode[i]
 

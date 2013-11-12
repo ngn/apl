@@ -2,22 +2,6 @@ addVocabulary
 
   # [Phrasal forms](http://www.jsoftware.com/papers/fork1.htm)
 
-  # Hook: `(fg)⍵ ←→ ⍵fg⍵` ; `⍺(fg)⍵ ←→ ⍺fg⍵`
-  #
-  # # Approximations of pi through continued fractions
-  # (+÷)\3 7 16 ¯294 <=> (3 3.142857142857143 3.1415929203539825 3.141592653921421)
-  #
-  # Test if a number is an integer
-  # (=⌊)123   <=> 1
-  # (=⌊)123.4 <=> 0
-  #
-  # Approximation of the number of primes below a certain limit
-  # (÷⍟)1000 <=> 144.76482730108395
-  _hook: (g, f) ->
-    assert typeof f is 'function'
-    assert typeof g is 'function'
-    (b, a) -> f g(b), (a ? b)
-
   # Fork: `(fgh)⍵ ←→ (f⍵)g(h⍵)` ; `⍺(fgh)⍵ ←→ (⍺f⍵)g(⍺h⍵)`
   #
   # Arithmetic mean
