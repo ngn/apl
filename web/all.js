@@ -4,7 +4,7 @@ var __slice = [].slice,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 (function() {
-  var APLArray, Beta, Complex, DYA, EMB, GET, JEQ, LAM, LDC, MON, POP, RET, SET, SPL, VEC, addVocabulary, adverb, aka, all, apl, aplError, aplify, approx, arrayEquals, bool, compile, compileAST, complexify, compressOrReplicate, conjunction, contains, cps, deal, depthOf, disclose, domainError, enlist, eq, exec, execInternal, exp, expand, extend, format, getAxisList, grade, indexError, innerProduct, lengthError, lnΓ, match, negInt, negate, nonceError, numApprox, numeric, outerProduct, parse, pervasive, prelude, prepareForIndexing, prod, rankError, real, reduce, repeat, roll, rotate, scan, simplify, smallFactorials, squish, strideForShape, syntaxError, take, tokenDefs, tokenize, vm, vocabulary, withIdentity, Γ, λ, _ref;
+  var APLArray, Beta, Complex, DYA, EMB, GET, JEQ, LAM, LDC, MON, POP, RET, SET, SPL, VEC, addVocabulary, adverb, aka, all, apl, aplError, aplify, approx, arrayEquals, bool, compile, compileAST, complexify, compressOrReplicate, conjunction, contains, cps, deal, depthOf, domainError, enlist, eq, exec, execInternal, exp, expand, extend, first, format, getAxisList, grade, indexError, innerProduct, lengthError, lnΓ, match, negInt, negate, nonceError, numApprox, numeric, outerProduct, parse, pervasive, prelude, prepareForIndexing, prod, rankError, real, reduce, repeat, roll, rotate, scan, simplify, smallFactorials, squish, strideForShape, syntaxError, take, tokenDefs, tokenize, vm, vocabulary, withIdentity, Γ, λ, _ref;
 
   prod = function(xs) {
     var r, x, _i, _len;
@@ -1961,50 +1961,6 @@ var __slice = [].slice,
     }
   });
   addVocabulary({
-    '⊃': function(omega) {
-      var data, s, shape, shapes, x;
-      if (omega.shape.length === 0) {
-        x = omega.data[omega.offset];
-        if (x instanceof APLArray) {
-          return x;
-        } else {
-          return APLArray.scalar(x);
-        }
-      } else {
-        shapes = [];
-        omega.each(function(x) {
-          return shapes.push(x instanceof APLArray ? x.shape : []);
-        });
-        if (shapes.length === 0) {
-          return APLArray.zilde;
-        }
-        shape = shapes.reduce(function(a, b) {
-          var i, _i, _ref, _results;
-          if (a.length === 0) {
-            return b;
-          } else if (b.length === 0) {
-            return a;
-          } else if (a.length !== b.length) {
-            return nonceError('Mix of different ranks not implemented');
-          } else {
-            _results = [];
-            for (i = _i = 0, _ref = a.length; _i < _ref; i = _i += 1) {
-              _results.push(Math.max(a[i], b[i]));
-            }
-            return _results;
-          }
-        });
-        s = new APLArray(shape);
-        data = [];
-        omega.each(function(x) {
-          x = x instanceof APLArray ? x : APLArray.scalar(x);
-          return data.push.apply(data, (take(x, s)).toArray());
-        });
-        return new APLArray(data, omega.shape.concat(shape));
-      }
-    }
-  });
-  addVocabulary({
     '.': conjunction(function(g, f) {
       if (f === vocabulary['∘']) {
         return outerProduct(g);
@@ -2219,86 +2175,6 @@ var __slice = [].slice,
     }
     return true;
   };
-  addVocabulary({
-    '⊂': function(omega, alpha, axes) {
-      var a, axis, data, indices, p, resultAxes, shape, stride, unitShape, unitStride, _i, _ref, _results;
-      if (alpha) {
-        return nonceError();
-      } else {
-        axes = axes != null ? getAxisList(axes, omega.shape.length) : (function() {
-          _results = [];
-          for (var _i = 0, _ref = omega.shape.length; 0 <= _ref ? _i < _ref : _i > _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
-          return _results;
-        }).apply(this);
-        if (omega.isSimple()) {
-          return omega;
-        }
-        unitShape = (function() {
-          var _j, _len, _results1;
-          _results1 = [];
-          for (_j = 0, _len = axes.length; _j < _len; _j++) {
-            axis = axes[_j];
-            _results1.push(omega.shape[axis]);
-          }
-          return _results1;
-        })();
-        unitStride = (function() {
-          var _j, _len, _results1;
-          _results1 = [];
-          for (_j = 0, _len = axes.length; _j < _len; _j++) {
-            axis = axes[_j];
-            _results1.push(omega.stride[axis]);
-          }
-          return _results1;
-        })();
-        resultAxes = (function() {
-          var _j, _ref1, _results1;
-          _results1 = [];
-          for (axis = _j = 0, _ref1 = omega.shape.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; axis = 0 <= _ref1 ? ++_j : --_j) {
-            if (__indexOf.call(axes, axis) < 0) {
-              _results1.push(axis);
-            }
-          }
-          return _results1;
-        })();
-        shape = (function() {
-          var _j, _len, _results1;
-          _results1 = [];
-          for (_j = 0, _len = resultAxes.length; _j < _len; _j++) {
-            axis = resultAxes[_j];
-            _results1.push(omega.shape[axis]);
-          }
-          return _results1;
-        })();
-        stride = (function() {
-          var _j, _len, _results1;
-          _results1 = [];
-          for (_j = 0, _len = resultAxes.length; _j < _len; _j++) {
-            axis = resultAxes[_j];
-            _results1.push(omega.stride[axis]);
-          }
-          return _results1;
-        })();
-        data = [];
-        p = omega.offset;
-        indices = repeat([0], shape.length);
-        while (true) {
-          data.push(new APLArray(omega.data, unitShape, unitStride, p));
-          a = indices.length - 1;
-          while (a >= 0 && indices[a] + 1 === shape[a]) {
-            p -= indices[a] * stride[a];
-            indices[a--] = 0;
-          }
-          if (a < 0) {
-            break;
-          }
-          p += stride[a];
-          indices[a]++;
-        }
-        return new APLArray(data, shape);
-      }
-    }
-  });
   addVocabulary({
     '⊤': function(omega, alpha) {
       var a, b, data, i, isNeg, j, k, m, n, shape, x, y, _i, _j, _k, _len, _ref;
@@ -2855,6 +2731,86 @@ var __slice = [].slice,
     }
   });
   addVocabulary({
+    '⊂': function(omega, alpha, axes) {
+      var a, axis, data, indices, p, resultAxes, shape, stride, unitShape, unitStride, _i, _ref1, _results;
+      if (alpha) {
+        return nonceError();
+      } else {
+        axes = axes != null ? getAxisList(axes, omega.shape.length) : (function() {
+          _results = [];
+          for (var _i = 0, _ref1 = omega.shape.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--){ _results.push(_i); }
+          return _results;
+        }).apply(this);
+        if (omega.isSimple()) {
+          return omega;
+        }
+        unitShape = (function() {
+          var _j, _len, _results1;
+          _results1 = [];
+          for (_j = 0, _len = axes.length; _j < _len; _j++) {
+            axis = axes[_j];
+            _results1.push(omega.shape[axis]);
+          }
+          return _results1;
+        })();
+        unitStride = (function() {
+          var _j, _len, _results1;
+          _results1 = [];
+          for (_j = 0, _len = axes.length; _j < _len; _j++) {
+            axis = axes[_j];
+            _results1.push(omega.stride[axis]);
+          }
+          return _results1;
+        })();
+        resultAxes = (function() {
+          var _j, _ref2, _results1;
+          _results1 = [];
+          for (axis = _j = 0, _ref2 = omega.shape.length; 0 <= _ref2 ? _j < _ref2 : _j > _ref2; axis = 0 <= _ref2 ? ++_j : --_j) {
+            if (__indexOf.call(axes, axis) < 0) {
+              _results1.push(axis);
+            }
+          }
+          return _results1;
+        })();
+        shape = (function() {
+          var _j, _len, _results1;
+          _results1 = [];
+          for (_j = 0, _len = resultAxes.length; _j < _len; _j++) {
+            axis = resultAxes[_j];
+            _results1.push(omega.shape[axis]);
+          }
+          return _results1;
+        })();
+        stride = (function() {
+          var _j, _len, _results1;
+          _results1 = [];
+          for (_j = 0, _len = resultAxes.length; _j < _len; _j++) {
+            axis = resultAxes[_j];
+            _results1.push(omega.stride[axis]);
+          }
+          return _results1;
+        })();
+        data = [];
+        p = omega.offset;
+        indices = repeat([0], shape.length);
+        while (true) {
+          data.push(new APLArray(omega.data, unitShape, unitStride, p));
+          a = indices.length - 1;
+          while (a >= 0 && indices[a] + 1 === shape[a]) {
+            p -= indices[a] * stride[a];
+            indices[a--] = 0;
+          }
+          if (a < 0) {
+            break;
+          }
+          p += stride[a];
+          indices[a]++;
+        }
+        return new APLArray(data, shape);
+      }
+    }
+  });
+  addVocabulary({
     '~': function(omega, alpha) {
       var data;
       if (alpha) {
@@ -3075,6 +3031,50 @@ var __slice = [].slice,
         return new APLArray(a, shape);
       } else {
         return new APLArray(omega.shape);
+      }
+    }
+  });
+  addVocabulary({
+    '⊃': function(omega) {
+      var data, s, shape, shapes, x;
+      if (omega.shape.length === 0) {
+        x = omega.data[omega.offset];
+        if (x instanceof APLArray) {
+          return x;
+        } else {
+          return APLArray.scalar(x);
+        }
+      } else {
+        shapes = [];
+        omega.each(function(x) {
+          return shapes.push(x instanceof APLArray ? x.shape : []);
+        });
+        if (shapes.length === 0) {
+          return APLArray.zilde;
+        }
+        shape = shapes.reduce(function(a, b) {
+          var i, _i, _ref1, _results;
+          if (a.length === 0) {
+            return b;
+          } else if (b.length === 0) {
+            return a;
+          } else if (a.length !== b.length) {
+            return nonceError('Mix of different ranks not implemented');
+          } else {
+            _results = [];
+            for (i = _i = 0, _ref1 = a.length; _i < _ref1; i = _i += 1) {
+              _results.push(Math.max(a[i], b[i]));
+            }
+            return _results;
+          }
+        });
+        s = new APLArray(shape);
+        data = [];
+        omega.each(function(x) {
+          x = x instanceof APLArray ? x : APLArray.scalar(x);
+          return data.push.apply(data, (take(x, s)).toArray());
+        });
+        return new APLArray(data, omega.shape.concat(shape));
       }
     }
   });
@@ -3511,7 +3511,7 @@ var __slice = [].slice,
       if (alpha) {
         return take(omega, alpha);
       } else {
-        return disclose(omega);
+        return first(omega);
       }
     }
   });
@@ -3593,7 +3593,7 @@ var __slice = [].slice,
       return new APLArray(omega.data, shape, omega.stride, offset);
     }
   };
-  disclose = function(omega) {
+  first = function(omega) {
     var x;
     x = omega.empty() ? omega.getPrototype() : omega.data[omega.offset];
     if (x instanceof APLArray) {
@@ -3811,7 +3811,7 @@ var __slice = [].slice,
     while (queue.length) {
       vars = (scopeNode = queue.shift()).vars;
       visit = function(node) {
-        var a, body, d, h, i, j, name, r, v, x, _i, _j, _k, _ref1, _ref10, _ref11, _ref12, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+        var a, body, d, h, i, j, name, r, v, x, _i, _j, _k, _ref1, _ref10, _ref11, _ref12, _ref13, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
         node.scopeNode = scopeNode;
         switch (node[0]) {
           case 'guard':
@@ -3825,11 +3825,11 @@ var __slice = [].slice,
             if (((_ref1 = (v = vars["get_" + name])) != null ? _ref1.category : void 0) === 2) {
               return 1;
             } else {
-              return vars[name].category || err(node, "Symbol '" + name + "' is referenced before assignment.");
+              return ((_ref2 = vars[name]) != null ? _ref2.category : void 0) || err(node, "Symbol '" + name + "' is referenced before assignment.");
             }
             break;
           case 'lambda':
-            for (i = _i = 1, _ref2 = node.length; 1 <= _ref2 ? _i < _ref2 : _i > _ref2; i = 1 <= _ref2 ? ++_i : --_i) {
+            for (i = _i = 1, _ref3 = node.length; 1 <= _ref3 ? _i < _ref3 : _i > _ref3; i = 1 <= _ref3 ? ++_i : --_i) {
               queue.push(extend((body = node[i]), {
                 scopeNode: scopeNode,
                 scopeDepth: d = scopeNode.scopeDepth + 1 + (node.category !== 2),
@@ -3881,13 +3881,13 @@ var __slice = [].slice,
                 };
               }
             }
-            return (_ref3 = node.category) != null ? _ref3 : 2;
+            return (_ref4 = node.category) != null ? _ref4 : 2;
           case 'string':
           case 'number':
           case 'embedded':
             return 1;
           case 'index':
-            for (i = _j = 2, _ref4 = node.length; _j < _ref4; i = _j += 1) {
+            for (i = _j = 2, _ref5 = node.length; _j < _ref5; i = _j += 1) {
               if (node[i] && visit(node[i]) !== 1) {
                 err(node, 'Indices must be nouns.');
               }
@@ -3896,17 +3896,17 @@ var __slice = [].slice,
           case 'expr':
             a = node.slice(1);
             h = Array(a.length);
-            for (i = _k = _ref5 = a.length - 1; _k >= 0; i = _k += -1) {
+            for (i = _k = _ref6 = a.length - 1; _k >= 0; i = _k += -1) {
               h[i] = visit(a[i]);
             }
             i = 0;
             while (i < a.length - 1) {
-              if ((h[i] === (_ref6 = h[i + 1]) && _ref6 === 1)) {
+              if ((h[i] === (_ref7 = h[i + 1]) && _ref7 === 1)) {
                 j = i + 2;
                 while (j < a.length && h[j] === 1) {
                   j++;
                 }
-                [].splice.apply(a, [i, j - i].concat(_ref7 = [['vector'].concat(a.slice(i, j))])), _ref7;
+                [].splice.apply(a, [i, j - i].concat(_ref8 = [['vector'].concat(a.slice(i, j))])), _ref8;
                 [].splice.apply(h, [i, j - i].concat(1)), 1;
               } else {
                 i++;
@@ -3915,7 +3915,7 @@ var __slice = [].slice,
             i = a.length - 2;
             while (--i >= 0) {
               if (h[i + 1] === 4 && (h[i] !== 1 || h[i + 2] !== 1)) {
-                [].splice.apply(a, [i, (i + 3) - i].concat(_ref8 = [['conjunction'].concat(a.slice(i, i + 3))])), _ref8;
+                [].splice.apply(a, [i, (i + 3) - i].concat(_ref9 = [['conjunction'].concat(a.slice(i, i + 3))])), _ref9;
                 [].splice.apply(h, [i, (i + 3) - i].concat(2)), 2;
                 i--;
               }
@@ -3923,7 +3923,7 @@ var __slice = [].slice,
             i = 0;
             while (i < a.length - 1) {
               if (h[i] !== 1 && h[i + 1] === 3) {
-                [].splice.apply(a, [i, (i + 2) - i].concat(_ref9 = [['adverb'].concat(a.slice(i, i + 2))])), _ref9;
+                [].splice.apply(a, [i, (i + 2) - i].concat(_ref10 = [['adverb'].concat(a.slice(i, i + 2))])), _ref10;
                 [].splice.apply(h, [i, (i + 2) - i].concat(2)), 2;
               } else {
                 i++;
@@ -3952,20 +3952,20 @@ var __slice = [].slice,
             } else {
               while (h.length > 1) {
                 if (h.length === 2 || h[h.length - 3] !== 1) {
-                  [].splice.apply(a, [-2, 9e9].concat(_ref10 = [['monadic'].concat(a.slice(-2))])), _ref10;
+                  [].splice.apply(a, [-2, 9e9].concat(_ref11 = [['monadic'].concat(a.slice(-2))])), _ref11;
                   [].splice.apply(h, [-2, 9e9].concat(1)), 1;
                 } else {
-                  [].splice.apply(a, [-3, 9e9].concat(_ref11 = [['dyadic'].concat(a.slice(-3))])), _ref11;
+                  [].splice.apply(a, [-3, 9e9].concat(_ref12 = [['dyadic'].concat(a.slice(-3))])), _ref12;
                   [].splice.apply(h, [-3, 9e9].concat(1)), 1;
                 }
               }
             }
-            [].splice.apply(node, [0, 9e9].concat(_ref12 = a[0])), _ref12;
+            [].splice.apply(node, [0, 9e9].concat(_ref13 = a[0])), _ref13;
             extend(node, a[0]);
             return h[0];
           default:
             if (!(0)) {
-              throw Error("\"assert 0\" at src/compiler.coffee:145");
+              throw Error("\"assert 0\" at src/compiler.coffee:146");
             }
         }
       };
@@ -4176,7 +4176,7 @@ var __slice = [].slice,
           break;
         default:
           if (!(0)) {
-            throw Error("\"else assert 0\" at src/compiler.coffee:292");
+            throw Error("\"else assert 0\" at src/compiler.coffee:293");
           }
       }
     };
@@ -4219,13 +4219,13 @@ var __slice = [].slice,
           return a;
         default:
           if (!(0)) {
-            throw Error("\"assert 0\" at src/compiler.coffee:327");
+            throw Error("\"assert 0\" at src/compiler.coffee:328");
           }
       }
     };
     return render(ast);
   };
-  prelude = execInternal("⍬←0⍴0\n⍝ ⍬     <=> 0⍴0\n⍝ ⍴⍬    <=> ,0\n⍝# ⍬←5   !!!\n⍝ ⍳0    <=> ⍬\n⍝ ⍴0    <=> ⍬\n⍝ ⍬     <=> ⍬\n⍝ ⍬⍬    <=> ⍬ ⍬\n⍝ 1⍬2⍬3 <=> 1 ⍬ 2 ⍬ 3\n\n_hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}\n# (+÷)\\3 7 16 ¯294 <=> (3 3.142857142857143 3.1415929203539825 3.141592653921421)\n# (=⌊)123 <=> 1\n# (=⌊)123.4 <=> 0\n# (÷⍟)1000 <=> 144.76482730108395\n\n⊃←⊃⍠{\n  1<⍴⍴⍺:↗'RANK ERROR'\n  x←⍵\n  {\n    1<⍴⍴⍵:↗'RANK ERROR'\n    ⍵←,⍵\n    (⍴⍵)≠⍴⍴x:↗'RANK ERROR'\n    ∨/⍵≥⍴x:↗'INDEX ERROR'\n    x←⊃⍵⌷x\n  }¨⍺\n  x\n  ⍝ ⍬⊃3               <=> 3\n  ⍝ 2⊃'PICK'          <=> 'C'\n  ⍝ (⊂1 0)⊃2 2⍴'ABCD' <=> 'C'\n  ⍝ 1⊃'foo' 'bar'     <=> 'bar'\n  ⍝ 1 2⊃'foo' 'bar'   <=> 'r'\n  ⍝ (2 2⍴0)⊃1 2       !!! RANK ERROR\n  ⍝ (⊂2 1⍴0)⊃2 2⍴0    !!! RANK ERROR\n  ⍝ (⊂2 2⍴0)⊃1 2      !!! RANK ERROR\n  ⍝ (⊂2 2)⊃1 2        !!! RANK ERROR\n  ⍝ (⊂0 2)⊃2 2⍴'ABCD' !!! INDEX ERROR\n}\n\n⍪←{(≢⍵)(×/1↓⍴⍵)⍴⍵; ⍺,[0]⍵}\n⍝ ⍪2 3 4 <=> 3 1⍴2 3 4\n⍝ ⍪0 <=> 1 1⍴0\n⍝ ⍪2 2⍴2 3 4 5 <=> 2 2⍴2 3 4 5\n⍝ ⍴⍪2 3⍴⍳6 <=> 2 3\n⍝ ⍴⍪2 3 4⍴⍳24 <=> 2 12\n⍝ (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2 3 4 5 9 9 9)\n\n⊢←{⍵}\n⍝ 123⊢456 <=> 456\n⍝ ⊢456 <=> 456\n\n⊣←{;⍺}\n⍝ 123⊣456 <=> 123\n⍝ ⊣456 <=> ⍬\n\n≢←{⍬⍴(⍴⍵),1; ~⍺≡⍵}\n⍝ ≢0 <=> 1\n⍝ ≢0 0 0 <=> 3\n⍝ ≢⍬ <=> 0\n⍝ ≢2 3⍴⍳6 <=> 2\n⍝ 3≢3 <=> 0\n\n⌹←{\n  norm←{(⍵+.×+⍵)*0.5}\n\n  QR←{ ⍝ QR decomposition\n    n←(⍴⍵)[1]\n    1≥n:{t←norm,⍵ ⋄ (⍵÷t)(⍪t)}⍵\n    m←⌈n÷2\n    a0←((1↑⍴⍵),m)↑⍵\n    a1←(0,m)↓⍵\n    (q0 r0)←∇a0\n    c←(+⍉q0)+.×a1\n    (q1 r1)←∇a1-q0+.×c\n    (q0,q1)((r0,c)⍪((⌊n÷2),-n)↑r1)\n  }\n\n  Rinv←{ ⍝ Inverse of an upper triangular matrix\n    1=n←1↑⍴⍵:÷⍵\n    m←⌈n÷2\n    ai←∇(m,m)↑⍵\n    di←∇(m,m)↓⍵\n    b←(m,m-n)↑⍵\n    bx←-ai+.×b+.×di\n    (ai,bx)⍪((⌊n÷2),-n)↑di\n  }\n\n  0=⍴⍴⍵:÷⍵\n  1=⍴⍴⍵:,∇⍪⍵\n  2≠⍴⍴⍵:↗'ASSERTION ERROR'\n  0∊≥/⍴⍵:↗'ASSERTION ERROR'\n  (Q R)←QR ⍵\n  (Rinv R)+.×+⍉Q\n  ;\n  (⌹⍵)+.×⍺\n}\n⍝ ⌹2 <=> .5\n⍝ ⌹2 2⍴4 3 3 2 <=> 2 2⍴¯2 3 3 ¯4\n⍝ (4 4⍴12 1 4 10 ¯6 ¯5 4 7 ¯4 9 3 4 ¯2 ¯6 7 7)⌹93 81 93.5 120.5 <=>\n⍝ ... .0003898888816687221 ¯.005029566573526544 .04730651764247189 .0705568912859835\n\n⍨←{⍵⍶⍵;⍵⍶⍺}\n# 17-⍨23 <=> 6\n# 7⍴⍨2 3 <=> 2 3⍴7\n# +⍨2    <=> 4\n# -⍨123  <=> 0\n", {
+  prelude = execInternal("⍬←0⍴0\n⍝ ⍬     <=> 0⍴0\n⍝ ⍴⍬    <=> ,0\n⍝# ⍬←5   !!!\n⍝ ⍳0    <=> ⍬\n⍝ ⍴0    <=> ⍬\n⍝ ⍬     <=> ⍬\n⍝ ⍬⍬    <=> ⍬ ⍬\n⍝ 1⍬2⍬3 <=> 1 ⍬ 2 ⍬ 3\n\n_hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}\n# (+÷)\\3 7 16 ¯294 <=> (3 3.142857142857143 3.1415929203539825 3.141592653921421)\n# (=⌊)123 <=> 1\n# (=⌊)123.4 <=> 0\n# (÷⍟)1000 <=> 144.76482730108395\n\n⊃←⊃⍠{\n  1<⍴⍴⍺:↗'RANK ERROR'\n  x←⍵\n  {\n    1<⍴⍴⍵:↗'RANK ERROR'\n    ⍵←,⍵\n    (⍴⍵)≠⍴⍴x:↗'RANK ERROR'\n    ∨/⍵≥⍴x:↗'INDEX ERROR'\n    x←⊃⍵⌷x\n  }¨⍺\n  x\n  ⍝ ⍬⊃3               <=> 3\n  ⍝ 2⊃'PICK'          <=> 'C'\n  ⍝ (⊂1 0)⊃2 2⍴'ABCD' <=> 'C'\n  ⍝ 1⊃'foo' 'bar'     <=> 'bar'\n  ⍝ 1 2⊃'foo' 'bar'   <=> 'r'\n  ⍝ (2 2⍴0)⊃1 2       !!! RANK ERROR\n  ⍝ (⊂2 1⍴0)⊃2 2⍴0    !!! RANK ERROR\n  ⍝ (⊂2 2⍴0)⊃1 2      !!! RANK ERROR\n  ⍝ (⊂2 2)⊃1 2        !!! RANK ERROR\n  ⍝ (⊂0 2)⊃2 2⍴'ABCD' !!! INDEX ERROR\n}\n\n⍪←{(≢⍵)(×/1↓⍴⍵)⍴⍵; ⍺,[0]⍵}\n⍝ ⍪2 3 4 <=> 3 1⍴2 3 4\n⍝ ⍪0 <=> 1 1⍴0\n⍝ ⍪2 2⍴2 3 4 5 <=> 2 2⍴2 3 4 5\n⍝ ⍴⍪2 3⍴⍳6 <=> 2 3\n⍝ ⍴⍪2 3 4⍴⍳24 <=> 2 12\n⍝ (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2 3 4 5 9 9 9)\n\n⊢←{⍵}\n⍝ 123⊢456 <=> 456\n⍝ ⊢456 <=> 456\n\n⊣←{;⍺}\n⍝ 123⊣456 <=> 123\n⍝ ⊣456 <=> ⍬\n\n≢←{⍬⍴(⍴⍵),1; ~⍺≡⍵}\n⍝ ≢0 <=> 1\n⍝ ≢0 0 0 <=> 3\n⍝ ≢⍬ <=> 0\n⍝ ≢2 3⍴⍳6 <=> 2\n⍝ 3≢3 <=> 0\n\n⌹←{\n  norm←{(⍵+.×+⍵)*0.5}\n\n  QR←{ ⍝ QR decomposition\n    n←(⍴⍵)[1]\n    1≥n:{t←norm,⍵ ⋄ (⍵÷t)(⍪t)}⍵\n    m←⌈n÷2\n    a0←((1↑⍴⍵),m)↑⍵\n    a1←(0,m)↓⍵\n    (q0 r0)←∇a0\n    c←(+⍉q0)+.×a1\n    (q1 r1)←∇a1-q0+.×c\n    (q0,q1)((r0,c)⍪((⌊n÷2),-n)↑r1)\n  }\n\n  Rinv←{ ⍝ Inverse of an upper triangular matrix\n    1=n←1↑⍴⍵:÷⍵\n    m←⌈n÷2\n    ai←∇(m,m)↑⍵\n    di←∇(m,m)↓⍵\n    b←(m,m-n)↑⍵\n    bx←-ai+.×b+.×di\n    (ai,bx)⍪((⌊n÷2),-n)↑di\n  }\n\n  0=⍴⍴⍵:÷⍵\n  1=⍴⍴⍵:,∇⍪⍵\n  2≠⍴⍴⍵:↗'ASSERTION ERROR'\n  0∊≥/⍴⍵:↗'ASSERTION ERROR'\n  (Q R)←QR ⍵\n  (Rinv R)+.×+⍉Q\n  ;\n  (⌹⍵)+.×⍺\n}\n⍝ ⌹2 <=> .5\n⍝ ⌹2 2⍴4 3 3 2 <=> 2 2⍴¯2 3 3 ¯4\n⍝ (4 4⍴12 1 4 10 ¯6 ¯5 4 7 ¯4 9 3 4 ¯2 ¯6 7 7)⌹93 81 93.5 120.5 <=>\n⍝ ... .0003898888816687221 ¯.005029566573526544 .04730651764247189 .0705568912859835\n\n⍨←{⍵⍶⍵;⍵⍶⍺}\n⍝ 17-⍨23 <=> 6\n⍝ 7⍴⍨2 3 <=> 2 3⍴7\n⍝ +⍨2    <=> 4\n⍝ -⍨123  <=> 0\n", {
     ctx: vocabulary
   });
   aplify = function(x) {
@@ -4297,7 +4297,7 @@ var __slice = [].slice,
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2013-11-12\n");
+          process.stdout.write("ngn apl 2013-11-13\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ctx = Object.create(vocabulary);
@@ -6452,7 +6452,7 @@ jQuery(function($) {
     '↑': 'First, Take',
     '↓': 'Drop',
     '⊂': 'Enclose, Partition',
-    '⊃': 'Disclose, Pick',
+    '⊃': 'Mix, Pick',
     '⌷': 'Index',
     '⍋': 'Grade up',
     '⍒': 'Grade down',
@@ -6635,6 +6635,7 @@ this.runDocTest = function(_arg, exec, approx) {
   };
 };
 var aplTests = [
+["x ⋄ x←0","!!!","SYNTAX ERROR"],
 ["{}0","<=>","⍬"],
 ["A←5","<=>","5"],
 ["A×A←2 5","<=>","4 25"],
@@ -6959,13 +6960,6 @@ var aplTests = [
 ["M ← (3 8 ⍴\n                   0 0 0 0 1 1 1 1\n                   0 0 1 1 0 0 1 1\n                   0 1 0 1 0 1 0 1)\n A ← (4 3 ⍴\n                   1 1 1\n                   2 2 2\n                   3 3 3\n                   4 4 4)\n A ⊥ M\n","<=>","(4 8⍴\n          0 1 1 2  1  2  2  3\n          0 1 2 3  4  5  6  7\n          0 1 3 4  9 10 12 13\n          0 1 4 5 16 17 20 21)"],
 ["M ← (3 8 ⍴\n          0 0 0 0 1 1 1 1\n          0 0 1 1 0 0 1 1\n          0 1 0 1 0 1 0 1)\n 2 ⊥ M\n","<=>","0 1 2 3 4 5 6 7"],
 ["M ← (3 8 ⍴\n          0 0 0 0 1 1 1 1\n          0 0 1 1 0 0 1 1\n          0 1 0 1 0 1 0 1)\n A ← 2 1 ⍴ 2 10\n A ⊥ M\n","<=>","(2 8⍴\n          0 1  2  3   4   5   6   7\n          0 1 10 11 100 101 110 111)"],
-["⊃3","<=>","3"],
-["⊃(1 2)(3 4)","<=>","2 2⍴1 2 3 4"],
-["⊃(1 2)(3 4 5)","<=>","2 3⍴1 2 0 3 4 5"],
-["⊃1 2","<=>","1 2"],
-["⊃(1 2)3","<=>","2 2⍴1 2 3 0"],
-["⊃1(2 3)","<=>","2 2⍴1 0 2 3"],
-["⊃⍬","<=>","⍬"],
 ["2 3 4 ∘.× 1 2 3 4\n","<=>","(3 4⍴\n         2 4  6  8\n         3 6  9 12\n         4 8 12 16)"],
 ["0 1 2 3 4 ∘.! 0 1 2 3 4\n","<=>","(5 5⍴\n         1 1 1 1 1\n         0 1 2 3 4\n         0 0 1 3 6\n         0 0 0 1 4\n         0 0 0 0 1)"],
 ["1 2 ∘., 1+⍳3\n","<=>","(2 3⍴\n         (1 1) (1 2) (1 3)\n         (2 1) (2 2) (2 3))"],
@@ -7008,15 +7002,6 @@ var aplTests = [
 ["2 3 ⍴¨ 1 2","<=>","(1 1) (2 2 2)"],
 ["4 5 ⍴¨ \"THE\" \"CAT\"","<=>","'THET' 'CATCA'"],
 ["{1+⍵*2}¨ 2 3 ⍴ ⍳ 6","<=>","2 3 ⍴ 1 2 5 10 17 26"],
-["⍴ ⊂ 2 3⍴⍳6","<=>","⍬"],
-["⍴⍴ ⊂ 2 3⍴⍳6","<=>",",0"],
-["⊂[0]2 3⍴⍳6","<=>","(0 3)(1 4)(2 5)"],
-["⍴⊂[0]2 3⍴⍳6","<=>",",3"],
-["⊂[1]2 3⍴⍳6","<=>","(0 1 2)(3 4 5)"],
-["⍴⊂[1]2 3⍴⍳6","<=>",",2"],
-["⊃⊂[1 0]2 3⍴⍳6","<=>","3 2⍴0 3 1 4 2 5"],
-["⍴⊂[1 0]2 3⍴⍳6","<=>","⍬"],
-["⍴⊃⊂⊂1 2 3","<=>","⍬"],
 ["1760 3 12⊤75","<=>","2 0 3"],
 ["3 12⊤75","<=>","0 3"],
 ["100000 12⊤75","<=>","6 3"],
@@ -7157,6 +7142,15 @@ var aplTests = [
 ["⍴⍳0","<=>",",0"],
 ["⍳2 3 4","<=>","(2 3 4 ⍴\n         (0 0 0)(0 0 1)(0 0 2)(0 0 3)\n         (0 1 0)(0 1 1)(0 1 2)(0 1 3)\n         (0 2 0)(0 2 1)(0 2 2)(0 2 3)\n         (1 0 0)(1 0 1)(1 0 2)(1 0 3)\n         (1 1 0)(1 1 1)(1 1 2)(1 1 3)\n         (1 2 0)(1 2 1)(1 2 2)(1 2 3))"],
 ["⍴⍳2 3 4","<=>","2 3 4"],
+["⍴ ⊂ 2 3⍴⍳6","<=>","⍬"],
+["⍴⍴ ⊂ 2 3⍴⍳6","<=>",",0"],
+["⊂[0]2 3⍴⍳6","<=>","(0 3)(1 4)(2 5)"],
+["⍴⊂[0]2 3⍴⍳6","<=>",",3"],
+["⊂[1]2 3⍴⍳6","<=>","(0 1 2)(3 4 5)"],
+["⍴⊂[1]2 3⍴⍳6","<=>",",2"],
+["⊃⊂[1 0]2 3⍴⍳6","<=>","3 2⍴0 3 1 4 2 5"],
+["⍴⊂[1 0]2 3⍴⍳6","<=>","⍬"],
+["⍴⊃⊂⊂1 2 3","<=>","⍬"],
 ["\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"~\"AEIOU\"","<=>","'BCDFGHJKLMNPQRSTVWXYZ'"],
 ["1 2 3 4 5 6 ~ 2 4 6","<=>","1 3 5"],
 ["\"THIS IS TEXT\" ~ \" \"","<=>","'THISISTEXT'"],
@@ -7256,6 +7250,13 @@ var aplTests = [
 ["⍴'a'","<=>","0⍴0"],
 ["⍴'ab'","<=>","1⍴2"],
 ["⍴2 3 4⍴0","<=>","2 3 4"],
+["⊃3","<=>","3"],
+["⊃(1 2)(3 4)","<=>","2 2⍴1 2 3 4"],
+["⊃(1 2)(3 4 5)","<=>","2 3⍴1 2 0 3 4 5"],
+["⊃1 2","<=>","1 2"],
+["⊃(1 2)3","<=>","2 2⍴1 2 3 0"],
+["⊃1(2 3)","<=>","2 2⍴1 0 2 3"],
+["⊃⍬","<=>","⍬"],
 ["1⌽1 2 3 4 5 6","<=>","2 3 4 5 6 1"],
 ["3⌽'ABCDEFGH'","<=>","'DEFGHABC'"],
 ["3⌽2 5⍴1 2 3 4 5 6 7 8 9 0","<=>","2 5⍴4 5 1 2 3 9 0 6 7 8"],
