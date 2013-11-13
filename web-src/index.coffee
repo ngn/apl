@@ -80,7 +80,7 @@ jQuery ($) ->
     '↑': 'First, Take'
     '↓': 'Drop'
     '⊂': 'Enclose, Partition'
-    '⊃': 'Disclose, Pick'
+    '⊃': 'Mix, Pick'
     '⌷': 'Index'
     '⍋': 'Grade up'
     '⍒': 'Grade down'

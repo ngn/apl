@@ -4,7 +4,7 @@ addVocabulary
     if alpha
       take omega, alpha
     else
-      disclose omega
+      first omega
 
 # Take (`↑`)
 #
@@ -85,7 +85,7 @@ take = (omega, alpha) ->
         offset += (omega.shape[i] + x) * omega.stride[i]
     new APLArray omega.data, shape, omega.stride, offset
 
-# Disclose (`↑`)
+# First (`↑`)
 #
 # ↑(1 2 3)(4 5 6)   <=> 1 2 3
 # ↑(1 2)(3 4 5)     <=> 1 2
@@ -93,6 +93,6 @@ take = (omega, alpha) ->
 # ↑123              <=> 123
 # ↑⍬                <=> 0
 #!    ↑''               <=> ' '
-disclose = (omega) ->
+first = (omega) ->
   x = if omega.empty() then omega.getPrototype() else omega.data[omega.offset]
   if x instanceof APLArray then x else new APLArray [x], []
