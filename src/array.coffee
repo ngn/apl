@@ -87,6 +87,18 @@ class APLArray
 
   toBool: -> @toInt 0, 2
 
+  toSimpleString: ->
+    if @shape.length > 1 then rankError()
+    if typeof @data is 'string'
+      if @shape.length is 0 then return @data[@offset]
+      if @shape[0] is 0 then return ''
+      if @stride[0] is 1 then return @data[@offset ... @offset + @shape[0]]
+      @toArray.join ''
+    else
+      a = @toArray()
+      for x in a when typeof x isnt 'string' then domainError()
+      a.join ''
+
   isSingleton: ->
     for n in @shape when n isnt 1 then return false
     true
