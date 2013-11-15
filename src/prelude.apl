@@ -26,12 +26,12 @@ _hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}
 ⍝ (÷⍟)1000 <=> 144.76482730108395
 
 ⊃←{
-  0=⍴⍴⍵: ↑⍵
-  shape← ⍴⍵ ⋄ ⍵← ,⍵
-  max← ⌈/≢¨ shapes← ⍴¨⍵ ⍝ maximum rank of all shapes
-  ones← max⍴ 1
-  max← ↑⌈/ shapes← {max= ⍴⍵ : ⍵ ⋄ (-max)↑ones, ⍵}¨ shapes ⍝ maximum shape of rank adjusted shapes
-  (shape, max)⍴ ↑⍪/ shapes{max↑ ⍺⍴ ⍵}¨ ⍵
+  0=⍴⍴⍵:↑⍵
+  0=×/⍴⍵:⍵
+  shape←⍴⍵ ⋄ ⍵←,⍵
+  r←⌈/≢¨shapes←⍴¨⍵ ⍝ maximum rank of all shapes
+  max←↑⌈/shapes←(⍴ ↓ (r⍴1)∘,)¨shapes ⍝ maximum shape of rank adjusted shapes
+  (shape,max)⍴↑⍪/shapes{max↑⍺⍴⍵}¨⍵
   ;
   1<⍴⍴⍺:↗'RANK ERROR'
   x←⍵
@@ -51,6 +51,8 @@ _hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}
 ⍝ ⊃(1 2)3       <=> 2 2⍴1 2 3 0
 ⍝ ⊃1(2 3)       <=> 2 2⍴1 0 2 3
 ⍝ ⊃2 2⍴1(1 1 2⍴3 4)(5 6)(2 0⍴0) <=> 2 2 1 2 2⍴1 0 0 0 3 4 0 0 5 6 0 0 0 0 0 0
+⍝ ⊃⍬            <=> ⍬
+⍝ ⊃2 3 0⍴0      <=> 2 3 0⍴0
 ⍝ ⍬⊃3               <=> 3
 ⍝ 2⊃'PICK'          <=> 'C'
 ⍝ (⊂1 0)⊃2 2⍴'ABCD' <=> 'C'
