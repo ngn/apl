@@ -26,12 +26,12 @@ _hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}
 ⍝ (÷⍟)1000 <=> 144.76482730108395
 
 ⊃←{
-  0=⍴⍴⍵:↑⍵
-  1<⍴⍴⍵:↗'RANK ERROR' ⍝ TODO: support ranks greater than 1
-  a←⍴¨⍵                   ⍝ shapes
-  b←(1⍴¨⍨(⌈/-+)⍴¨a),¨a    ⍝ shapes, aligned by prepending 1-s
-  s←↑⌈/b                  ⍝ a shape in which all shapes fit
-  ((⍴⍵),s)⍴↑⍪/(⊂s)↑¨b⍴¨⍵  ⍝ result
+  0=⍴⍴⍵: ↑⍵
+  shape← ⍴⍵ ⋄ ⍵← ,⍵
+  max← ⌈/≢¨ shapes← ⍴¨⍵ ⍝ maximum rank of all shapes
+  ones← max⍴ 1
+  max← ↑⌈/ shapes← {max= ⍴⍵ : ⍵ ⋄ (-max)↑ones, ⍵}¨ shapes ⍝ maximum shape of rank adjusted shapes
+  (shape, max)⍴ ↑⍪/ shapes{max↑ ⍺⍴ ⍵}¨ ⍵
   ;
   1<⍴⍴⍺:↗'RANK ERROR'
   x←⍵
