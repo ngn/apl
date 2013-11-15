@@ -331,6 +331,34 @@ var __slice = [].slice,
       return this.toInt(0, 2);
     };
 
+    APLArray.prototype.toSimpleString = function() {
+      var a, x, _i, _len;
+      if (this.shape.length > 1) {
+        rankError();
+      }
+      if (typeof this.data === 'string') {
+        if (this.shape.length === 0) {
+          return this.data[this.offset];
+        }
+        if (this.shape[0] === 0) {
+          return '';
+        }
+        if (this.stride[0] === 1) {
+          return this.data.slice(this.offset, this.offset + this.shape[0]);
+        }
+        return this.toArray.join('');
+      } else {
+        a = this.toArray();
+        for (_i = 0, _len = a.length; _i < _len; _i++) {
+          x = a[_i];
+          if (typeof x !== 'string') {
+            domainError();
+          }
+        }
+        return a.join('');
+      }
+    };
+
     APLArray.prototype.isSingleton = function() {
       var n, _i, _len, _ref;
       _ref = this.shape;
@@ -373,7 +401,7 @@ var __slice = [].slice,
   strideForShape = function(shape) {
     var i, r, tmp4, _i, _ref;
     if (!(shape instanceof Array)) {
-      throw Error("\"assert shape instanceof Array\" at src/array.coffee:100");
+      throw Error("\"assert shape instanceof Array\" at src/array.coffee:112");
     }
     if (shape.length === 0) {
       return [];
@@ -382,7 +410,7 @@ var __slice = [].slice,
     r[r.length - 1] = 1;
     for (i = _i = _ref = r.length - 2; _i >= 0; i = _i += -1) {
       if (!((tmp4 = shape[i]) === ~~tmp4 && (0) <= tmp4)) {
-        throw Error("\"assert isInt shape[i], 0\" at src/array.coffee:105");
+        throw Error("\"assert isInt shape[i], 0\" at src/array.coffee:117");
       }
       r[i] = r[i + 1] * shape[i + 1];
     }
@@ -2929,7 +2957,28 @@ var __slice = [].slice,
       setTimeout((function() {
         return callback(new APLArray([new Date - t0]));
       }), omega.unwrap());
-    })
+    }),
+    '⎕RE': function(omega, alpha) {
+      var e, m, r, re, u, x, y, _i, _len;
+      x = alpha.toSimpleString();
+      y = omega.toSimpleString();
+      try {
+        re = new RegExp(x);
+      } catch (_error) {
+        e = _error;
+        domainError(e.toString());
+      }
+      if (m = re.exec(y)) {
+        r = [m.index];
+        for (_i = 0, _len = m.length; _i < _len; _i++) {
+          u = m[_i];
+          r.push(new APLArray(u || ''));
+        }
+        return new APLArray(r);
+      } else {
+        return APLArray.zilde;
+      }
+    }
   });
   addVocabulary({
     '?': function(omega, alpha) {
@@ -4153,7 +4202,7 @@ var __slice = [].slice,
     };
     return render(ast);
   };
-  prelude = execInternal("⍬←0⍴0\n⍝ ⍬     <=> 0⍴0\n⍝ ⍴⍬    <=> ,0\n⍝# ⍬←5   !!!\n⍝ ⍳0    <=> ⍬\n⍝ ⍴0    <=> ⍬\n⍝ ⍬     <=> ⍬\n⍝ ⍬⍬    <=> ⍬ ⍬\n⍝ 1⍬2⍬3 <=> 1 ⍬ 2 ⍬ 3\n\n~←~⍠{(~⍺∊⍵)/⍺}\n⍝ \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"~\"AEIOU\" <=> 'BCDFGHJKLMNPQRSTVWXYZ'\n⍝ 1 2 3 4 5 6~2 4 6                    <=> 1 3 5\n⍝ \"THIS IS TEXT\"~\" \"                   <=> 'THISISTEXT'\n⍝ \"THIS\" \"AND\" \"THAT\"~\"T\"              <=> 'THIS' 'AND' 'THAT'\n⍝ \"THIS\" \"AND\" \"THAT\"~\"AND\"            <=> 'THIS' 'AND' 'THAT'\n⍝ \"THIS\" \"AND\" \"THAT\"~⊂\"AND\"           <=> 'THIS' 'THAT'\n⍝ \"THIS\" \"AND\" \"THAT\"~\"TH\" \"AND\"       <=> 'THIS' 'THAT'\n⍝ 11 12 13 14 15 16~2 3⍴1 2 3 14 5 6   <=> 11 12 13 15 16\n⍝ (2 2⍴⍳4)~2 !!! RANK ERROR\n\n_hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}\n⍝ (+÷)\\3 7 16 ¯294 <=> (3 3.142857142857143 3.1415929203539825 3.141592653921421)\n⍝ (=⌊)123 <=> 1\n⍝ (=⌊)123.4 <=> 0\n⍝ (÷⍟)1000 <=> 144.76482730108395\n\n⊃←{\n  0=⍴⍴⍵:↑⍵\n  1<⍴⍴⍵:↗'RANK ERROR' ⍝ TODO: support ranks greater than 1\n  a←⍴¨⍵                   ⍝ shapes\n  b←(1⍴¨⍨(⌈/-+)⍴¨a),¨a    ⍝ shapes, aligned by prepending 1-s\n  s←↑⌈/b                  ⍝ a shape in which all shapes fit\n  ((⍴⍵),s)⍴↑⍪/(⊂s)↑¨b⍴¨⍵  ⍝ result\n  ;\n  1<⍴⍴⍺:↗'RANK ERROR'\n  x←⍵\n  {\n    1<⍴⍴⍵:↗'RANK ERROR'\n    ⍵←,⍵\n    (⍴⍵)≠⍴⍴x:↗'RANK ERROR'\n    ∨/⍵≥⍴x:↗'INDEX ERROR'\n    x←⊃⍵⌷x\n  }¨⍺\n  x\n}\n⍝ ⊃3            <=> 3\n⍝ ⊃(1 2)(3 4)   <=> 2 2⍴1 2 3 4\n⍝ ⊃(1 2)(3 4 5) <=> 2 3⍴1 2 0 3 4 5\n⍝ ⊃1 2          <=> 1 2\n⍝ ⊃(1 2)3       <=> 2 2⍴1 2 3 0\n⍝ ⊃1(2 3)       <=> 2 2⍴1 0 2 3\n⍝ ⍬⊃3               <=> 3\n⍝ 2⊃'PICK'          <=> 'C'\n⍝ (⊂1 0)⊃2 2⍴'ABCD' <=> 'C'\n⍝ 1⊃'foo' 'bar'     <=> 'bar'\n⍝ 1 2⊃'foo' 'bar'   <=> 'r'\n⍝ (2 2⍴0)⊃1 2       !!! RANK ERROR\n⍝ (⊂2 1⍴0)⊃2 2⍴0    !!! RANK ERROR\n⍝ (⊂2 2⍴0)⊃1 2      !!! RANK ERROR\n⍝ (⊂2 2)⊃1 2        !!! RANK ERROR\n⍝ (⊂0 2)⊃2 2⍴'ABCD' !!! INDEX ERROR\n\n⍪←{(≢⍵)(×/1↓⍴⍵)⍴⍵; ⍺,[0]⍵}\n⍝ ⍪2 3 4 <=> 3 1⍴2 3 4\n⍝ ⍪0 <=> 1 1⍴0\n⍝ ⍪2 2⍴2 3 4 5 <=> 2 2⍴2 3 4 5\n⍝ ⍴⍪2 3⍴⍳6 <=> 2 3\n⍝ ⍴⍪2 3 4⍴⍳24 <=> 2 12\n⍝ (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2 3 4 5 9 9 9)\n⍝ 1⍪2 <=> 1 2\n\n⊢←{⍵}\n⍝ 123⊢456 <=> 456\n⍝ ⊢456 <=> 456\n\n⊣←{;⍺}\n⍝ 123⊣456 <=> 123\n⍝ ⊣456 <=> ⍬\n\n≢←{⍬⍴(⍴⍵),1; ~⍺≡⍵}\n⍝ ≢0 <=> 1\n⍝ ≢0 0 0 <=> 3\n⍝ ≢⍬ <=> 0\n⍝ ≢2 3⍴⍳6 <=> 2\n⍝ 3≢3 <=> 0\n\n⌹←{\n  norm←{(⍵+.×+⍵)*0.5}\n\n  QR←{ ⍝ QR decomposition\n    n←(⍴⍵)[1]\n    1≥n:{t←norm,⍵ ⋄ (⍵÷t)(⍪t)}⍵\n    m←⌈n÷2\n    a0←((1↑⍴⍵),m)↑⍵\n    a1←(0,m)↓⍵\n    (q0 r0)←∇a0\n    c←(+⍉q0)+.×a1\n    (q1 r1)←∇a1-q0+.×c\n    (q0,q1)((r0,c)⍪((⌊n÷2),-n)↑r1)\n  }\n\n  Rinv←{ ⍝ Inverse of an upper triangular matrix\n    1=n←1↑⍴⍵:÷⍵\n    m←⌈n÷2\n    ai←∇(m,m)↑⍵\n    di←∇(m,m)↓⍵\n    b←(m,m-n)↑⍵\n    bx←-ai+.×b+.×di\n    (ai,bx)⍪((⌊n÷2),-n)↑di\n  }\n\n  0=⍴⍴⍵:÷⍵\n  1=⍴⍴⍵:,∇⍪⍵\n  2≠⍴⍴⍵:↗'ASSERTION ERROR'\n  0∊≥/⍴⍵:↗'ASSERTION ERROR'\n  (Q R)←QR ⍵\n  (Rinv R)+.×+⍉Q\n  ;\n  (⌹⍵)+.×⍺\n}\n⍝ ⌹2 <=> .5\n⍝ ⌹2 2⍴4 3 3 2 <=> 2 2⍴¯2 3 3 ¯4\n⍝ (4 4⍴12 1 4 10 ¯6 ¯5 4 7 ¯4 9 3 4 ¯2 ¯6 7 7)⌹93 81 93.5 120.5 <=>\n⍝ ... .0003898888816687221 ¯.005029566573526544 .04730651764247189 .0705568912859835\n\n⍨←{⍵⍶⍵;⍵⍶⍺}\n⍝ 17-⍨23 <=> 6\n⍝ 7⍴⍨2 3 <=> 2 3⍴7\n⍝ +⍨2    <=> 4\n⍝ -⍨123  <=> 0\n", {
+  prelude = execInternal("⍬←0⍴0\n⍝ ⍬     <=> 0⍴0\n⍝ ⍴⍬    <=> ,0\n⍝# ⍬←5   !!!\n⍝ ⍳0    <=> ⍬\n⍝ ⍴0    <=> ⍬\n⍝ ⍬     <=> ⍬\n⍝ ⍬⍬    <=> ⍬ ⍬\n⍝ 1⍬2⍬3 <=> 1 ⍬ 2 ⍬ 3\n\n~←~⍠{(~⍺∊⍵)/⍺}\n⍝ \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"~\"AEIOU\" <=> 'BCDFGHJKLMNPQRSTVWXYZ'\n⍝ 1 2 3 4 5 6~2 4 6                    <=> 1 3 5\n⍝ \"THIS IS TEXT\"~\" \"                   <=> 'THISISTEXT'\n⍝ \"THIS\" \"AND\" \"THAT\"~\"T\"              <=> 'THIS' 'AND' 'THAT'\n⍝ \"THIS\" \"AND\" \"THAT\"~\"AND\"            <=> 'THIS' 'AND' 'THAT'\n⍝ \"THIS\" \"AND\" \"THAT\"~⊂\"AND\"           <=> 'THIS' 'THAT'\n⍝ \"THIS\" \"AND\" \"THAT\"~\"TH\" \"AND\"       <=> 'THIS' 'THAT'\n⍝ 11 12 13 14 15 16~2 3⍴1 2 3 14 5 6   <=> 11 12 13 15 16\n⍝ (2 2⍴⍳4)~2 !!! RANK ERROR\n\n_hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}\n⍝ (+÷)\\3 7 16 ¯294 <=> (3 3.142857142857143 3.1415929203539825 3.141592653921421)\n⍝ (=⌊)123 <=> 1\n⍝ (=⌊)123.4 <=> 0\n⍝ (÷⍟)1000 <=> 144.76482730108395\n\n⊃←{\n  0=⍴⍴⍵: ↑⍵\n  shape← ⍴⍵ ⋄ ⍵← ,⍵\n  max← ⌈/≢¨ shapes← ⍴¨⍵ ⍝ maximum rank of all shapes\n  ones← max⍴ 1\n  max← ↑⌈/ shapes← {max= ⍴⍵ : ⍵ ⋄ (-max)↑ones, ⍵}¨ shapes ⍝ maximum shape of rank adjusted shapes\n  (shape, max)⍴ ↑⍪/ shapes{max↑ ⍺⍴ ⍵}¨ ⍵\n  ;\n  1<⍴⍴⍺:↗'RANK ERROR'\n  x←⍵\n  {\n    1<⍴⍴⍵:↗'RANK ERROR'\n    ⍵←,⍵\n    (⍴⍵)≠⍴⍴x:↗'RANK ERROR'\n    ∨/⍵≥⍴x:↗'INDEX ERROR'\n    x←⊃⍵⌷x\n  }¨⍺\n  x\n}\n⍝ ⊃3            <=> 3\n⍝ ⊃(1 2)(3 4)   <=> 2 2⍴1 2 3 4\n⍝ ⊃(1 2)(3 4 5) <=> 2 3⍴1 2 0 3 4 5\n⍝ ⊃1 2          <=> 1 2\n⍝ ⊃(1 2)3       <=> 2 2⍴1 2 3 0\n⍝ ⊃1(2 3)       <=> 2 2⍴1 0 2 3\n⍝ ⊃2 2⍴1(1 1 2⍴3 4)(5 6)(2 0⍴0) <=> 2 2 1 2 2⍴1 0 0 0 3 4 0 0 5 6 0 0 0 0 0 0\n⍝ ⍬⊃3               <=> 3\n⍝ 2⊃'PICK'          <=> 'C'\n⍝ (⊂1 0)⊃2 2⍴'ABCD' <=> 'C'\n⍝ 1⊃'foo' 'bar'     <=> 'bar'\n⍝ 1 2⊃'foo' 'bar'   <=> 'r'\n⍝ (2 2⍴0)⊃1 2       !!! RANK ERROR\n⍝ (⊂2 1⍴0)⊃2 2⍴0    !!! RANK ERROR\n⍝ (⊂2 2⍴0)⊃1 2      !!! RANK ERROR\n⍝ (⊂2 2)⊃1 2        !!! RANK ERROR\n⍝ (⊂0 2)⊃2 2⍴'ABCD' !!! INDEX ERROR\n\n⍪←{(≢⍵)(×/1↓⍴⍵)⍴⍵; ⍺,[0]⍵}\n⍝ ⍪2 3 4 <=> 3 1⍴2 3 4\n⍝ ⍪0 <=> 1 1⍴0\n⍝ ⍪2 2⍴2 3 4 5 <=> 2 2⍴2 3 4 5\n⍝ ⍴⍪2 3⍴⍳6 <=> 2 3\n⍝ ⍴⍪2 3 4⍴⍳24 <=> 2 12\n⍝ (2 3⍴⍳6)⍪9 <=> 3 3⍴(0 1 2 3 4 5 9 9 9)\n⍝ 1⍪2 <=> 1 2\n\n⊢←{⍵}\n⍝ 123⊢456 <=> 456\n⍝ ⊢456 <=> 456\n\n⊣←{;⍺}\n⍝ 123⊣456 <=> 123\n⍝ ⊣456 <=> ⍬\n\n≢←{⍬⍴(⍴⍵),1; ~⍺≡⍵}\n⍝ ≢0 <=> 1\n⍝ ≢0 0 0 <=> 3\n⍝ ≢⍬ <=> 0\n⍝ ≢2 3⍴⍳6 <=> 2\n⍝ 3≢3 <=> 0\n\n⌹←{\n  norm←{(⍵+.×+⍵)*0.5}\n\n  QR←{ ⍝ QR decomposition\n    n←(⍴⍵)[1]\n    1≥n:{t←norm,⍵ ⋄ (⍵÷t)(⍪t)}⍵\n    m←⌈n÷2\n    a0←((1↑⍴⍵),m)↑⍵\n    a1←(0,m)↓⍵\n    (q0 r0)←∇a0\n    c←(+⍉q0)+.×a1\n    (q1 r1)←∇a1-q0+.×c\n    (q0,q1)((r0,c)⍪((⌊n÷2),-n)↑r1)\n  }\n\n  Rinv←{ ⍝ Inverse of an upper triangular matrix\n    1=n←1↑⍴⍵:÷⍵\n    m←⌈n÷2\n    ai←∇(m,m)↑⍵\n    di←∇(m,m)↓⍵\n    b←(m,m-n)↑⍵\n    bx←-ai+.×b+.×di\n    (ai,bx)⍪((⌊n÷2),-n)↑di\n  }\n\n  0=⍴⍴⍵:÷⍵\n  1=⍴⍴⍵:,∇⍪⍵\n  2≠⍴⍴⍵:↗'ASSERTION ERROR'\n  0∊≥/⍴⍵:↗'ASSERTION ERROR'\n  (Q R)←QR ⍵\n  (Rinv R)+.×+⍉Q\n  ;\n  (⌹⍵)+.×⍺\n}\n⍝ ⌹2 <=> .5\n⍝ ⌹2 2⍴4 3 3 2 <=> 2 2⍴¯2 3 3 ¯4\n⍝ (4 4⍴12 1 4 10 ¯6 ¯5 4 7 ¯4 9 3 4 ¯2 ¯6 7 7)⌹93 81 93.5 120.5 <=>\n⍝ ... .0003898888816687221 ¯.005029566573526544 .04730651764247189 .0705568912859835\n\n⍨←{⍵⍶⍵;⍵⍶⍺}\n⍝ 17-⍨23 <=> 6\n⍝ 7⍴⍨2 3 <=> 2 3⍴7\n⍝ +⍨2    <=> 4\n⍝ -⍨123  <=> 0\n", {
     ctx: vocabulary
   });
   aplify = function(x) {
@@ -4225,7 +4274,7 @@ var __slice = [].slice,
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2013-11-14\n");
+          process.stdout.write("ngn apl 2013-11-15\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ctx = Object.create(vocabulary);
@@ -6624,6 +6673,7 @@ var aplTests = [
 ["⊃1 2","<=>","1 2"],
 ["⊃(1 2)3","<=>","2 2⍴1 2 3 0"],
 ["⊃1(2 3)","<=>","2 2⍴1 0 2 3"],
+["⊃2 2⍴1(1 1 2⍴3 4)(5 6)(2 0⍴0)","<=>","2 2 1 2 2⍴1 0 0 0 3 4 0 0 5 6 0 0 0 0 0 0"],
 ["⍬⊃3","<=>","3"],
 ["2⊃'PICK'","<=>","'C'"],
 ["(⊂1 0)⊃2 2⍴'ABCD'","<=>","'C'"],
@@ -7160,6 +7210,9 @@ var aplTests = [
 ["c←0 ⋄ 5⍣{c←c+1}0 ⋄ c","<=>","5"],
 ["⎕IO","<=>","0"],
 ["⎕IO←0","<=>","0"],
+["'b(c+)d' ⎕RE 'abcd'","<=>","1 'bcd' (,'c')"],
+["'B(c+)d' ⎕RE 'abcd'","<=>","⍬"],
+["'a(b'    ⎕RE 'c'","!!!","DOMAIN ERROR"],
 ["n←6 ⋄ r←?n ⋄ (0≤r)∧(r<n)","<=>","1"],
 ["?0","<=>","0"],
 ["?1","<=>","0"],
