@@ -44,3 +44,19 @@ addVocabulary
     t0 = +new Date
     setTimeout (-> callback new APLArray [new Date - t0]), omega.unwrap()
     return
+
+  # Regular expression search
+  #
+  # 'b(c+)d' ⎕RE 'abcd' <=> 1 'bcd' (,'c')
+  # 'B(c+)d' ⎕RE 'abcd' <=> ⍬
+  # 'a(b'    ⎕RE 'c'           !!! DOMAIN ERROR
+  '⎕RE': (omega, alpha) ->
+    x = alpha.toSimpleString()
+    y = omega.toSimpleString()
+    try re = new RegExp x catch e then domainError e.toString()
+    if m = re.exec y
+      r = [m.index]
+      for u in m then r.push new APLArray(u or '')
+      new APLArray r
+    else
+      APLArray.zilde
