@@ -4047,9 +4047,8 @@ var __slice = [].slice,
           break;
         case 'string':
           d = node[1][0];
-          s = Function("return " + d + (node[1].slice(1, -1).replace(RegExp("" + (d + d), "g"), '\\' + d)) + d + ";")();
-          v = s.length === 1 ? new APLArray(s, []) : new APLArray(s);
-          return [LDC, v];
+          s = node[1].slice(1, -1).replace(RegExp("" + (d + d), "g"), d);
+          return [LDC, new APLArray(s, s.length === 1 ? [] : void 0)];
         case 'number':
           a = (function() {
             var _k, _len, _ref4, _results;
@@ -4153,7 +4152,7 @@ var __slice = [].slice,
           break;
         default:
           if (!(0)) {
-            throw Error("\"else assert 0\" at src/compiler.coffee:293");
+            throw Error("\"else assert 0\" at src/compiler.coffee:294");
           }
       }
     };
@@ -4196,7 +4195,7 @@ var __slice = [].slice,
           return a;
         default:
           if (!(0)) {
-            throw Error("\"assert 0\" at src/compiler.coffee:328");
+            throw Error("\"assert 0\" at src/compiler.coffee:329");
           }
       }
     };
@@ -6633,12 +6632,16 @@ var aplTests = [
 ["²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ 3*²2","<=>","19683"],
 ["H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ +H÷ 2","<=>","2.5"],
 ["H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ 7 +H÷ 2","<=>","7.5"],
-["⍴⍴''","<=>",",1"],
-["⍴⍴'x'","<=>",",0"],
-["⍴⍴'xx'","<=>",",1"],
-["'Let''s parse it!'","<=>","'Let\\'s parse it!'"],
-["\"0x22's the code for \"\".\"","<=>","'0x22\\'s the code for \".'"],
-["⍴\"\\f\\t\\n\\r\\u1234\\xff\"","<=>",",6"],
+["⍴''","<=>",",0"],
+["⍴'x'","<=>","⍬"],
+["⍴'xx'","<=>",",2"],
+["⍴'a''b'","<=>",",3"],
+["⍴\"a\"\"b\"","<=>",",3"],
+["⍴'a\"\"b'","<=>",",4"],
+["⍴'''a'","<=>",",2"],
+["⍴'a'''","<=>",",2"],
+["''''","<=>","\"'\""],
+["⍴\"\\f\\t\\n\\r\\u1234\\xff\"","<=>",",18"],
 ["123 + «456 + 789»","<=>","1368"],
 ["⍴ x[⍋x←6?40]","<=>",",6"],
 ["(a b) ← 1 2 ⋄ a","<=>","1"],
