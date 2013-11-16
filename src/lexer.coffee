@@ -20,7 +20,7 @@ tokenDefs = [
   ['S', /^(?:'[^']*')+|^(?:"[^"]*")+/]
   ['.', /^[\(\)\[\]\{\}:;←]/]
   ['J', /^«[^»]*»/]
-  ['X', ///^(?: ⎕?[a-z_][0-9a-z_]* | ⍺⍺ | ⍵⍵ | ∇∇ | [^¯'":«»] )///i]
+  ['X', /^(?:⎕?[a-z_]\w*|⍺⍺|⍵⍵|∇∇|[^¯'":«»])/i]
 ]
 
 # `stack` keeps track of bracket nesting and causes 'L' tokens to be dropped
@@ -39,12 +39,11 @@ tokenize = (s, opts = {}) ->
     for [t, re] in tokenDefs when m = s.match re
       type = if t is '.' then m[0] else t
       break
-    if not type
-      syntaxError 'Unrecognized token', {file: opts.file, line, col, s: opts.s}
+    type or syntaxError 'Unrecognized token', {file: opts.file, line, col, s: opts.s}
     a = m[0].split '\n'
     line += a.length - 1
     col = (if a.length is 1 then col else 1) + a[a.length - 1].length
-    s = s[m[0].length ...]
+    s = s[m[0].length..]
     if type isnt '-'
       if type in '([{' then stack.push type
       else if type in ')]}' then stack.pop()
