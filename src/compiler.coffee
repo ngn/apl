@@ -231,19 +231,20 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
           else err node
         if node.category isnt VERB then [LAM, f.length + 1].concat f, RET else f
       when 'string'
-        # Strings of length one are scalars, all other strings are vectors:
-        #   ⍴⍴''   <=> ,1
-        #   ⍴⍴'x'  <=> ,0
-        #   ⍴⍴'xx' <=> ,1
-        # Pairs of quotes inside strings:
-        #   'Let''s parse it!'        <=> 'Let\'s parse it!'
-        #   "0x22's the code for ""." <=> '0x22\'s the code for ".'
-        #   ⍴"\f\t\n\r\u1234\xff"     <=> ,6
-        # "unclosed string !!!
+        #   ⍴''     <=> ,0
+        #   ⍴'x'    <=> ⍬
+        #   ⍴'xx'   <=> ,2
+        #   ⍴'a''b' <=> ,3
+        #   ⍴"a""b" <=> ,3
+        #   ⍴'a""b' <=> ,4
+        #   ⍴'''a'  <=> ,2
+        #   ⍴'a'''  <=> ,2
+        #   ''''    <=> "'"
+        #   ⍴"\f\t\n\r\u1234\xff" <=> ,18
+        #   "a      !!!
         d = node[1][0] # the delimiter: '"' or "'"
-        s = do Function "return #{d}#{node[1][1...-1].replace ///#{d + d}///g, '\\' + d}#{d};"
-        v = if s.length is 1 then new APLArray s, [] else new APLArray s
-        [LDC, v]
+        s = node[1][1...-1].replace ///#{d + d}///g, d
+        [LDC, new APLArray s, if s.length is 1 then []]
       when 'number'
         a = for x in node[1].replace(/¯/g, '-').split /j/i
               if x is '-' then Infinity
