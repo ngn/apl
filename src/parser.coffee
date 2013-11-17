@@ -34,7 +34,7 @@ parse = (aplCode, opts = {}) ->
   # a set of token types.
   macro consume (tt) ->
     new macro.Parens macro.csToNode """
-      if token.type in #{JSON.stringify macro.nodeToVal(tt).split ' '}
+      if token.type in #{JSON.stringify macro.nodeToVal(tt).split ''}
         token = tokens[i++]
     """
 
@@ -52,9 +52,9 @@ parse = (aplCode, opts = {}) ->
   parseBody = ->
     body = ['body']
     loop
-      if token.type in ['eof', '}', ';'] then return body
-      while consume 'separator newline' then ;
-      if token.type in ['eof', '}', ';'] then return body
+      if token.type in 'E};' then return body
+      while consume 'DL' then ;
+      if token.type in 'E};' then return body
       expr = parseExpr()
       if consume ':' then expr = ['guard', expr, parseExpr()]
       body.push expr
@@ -63,7 +63,13 @@ parse = (aplCode, opts = {}) ->
     expr = ['expr']
     loop
       t = token
-      if consume 'number string symbol embedded' then item = [t.type, t.value]
+      if consume 'NSXJ'
+        item = switch t.type
+          when 'N' then ['number',   t.value]
+          when 'S' then ['string',   t.value]
+          when 'X' then ['symbol',   t.value]
+          when 'J' then ['embedded', t.value]
+          else assert 0
       else if consume '(' then item = parseExpr(); demand ')'
       else if consume '{'
         item = ['lambda', parseBody()]
@@ -79,11 +85,11 @@ parse = (aplCode, opts = {}) ->
         demand ']'
       if consume '←' then return expr.concat [['assign', item, parseExpr()]]
       expr.push item
-      if token.type in ') ] } : ; separator newline eof'.split ' ' then return expr
+      if token.type in ')]}:;DLE' then return expr
 
   result = parseBody()
   # 'hello'} !!! SYNTAX ERROR
-  demand 'eof'
+  demand 'E'
   result
 
   macro ->
