@@ -1,27 +1,14 @@
 exec = (aplCode, opts = {}) ->
-  execInternal(aplCode, opts).result
-
-execInternal = (aplCode, opts = {}) ->
   ast = parse aplCode, opts
   code = compileAST ast, opts
   env = if prelude then (for frame in prelude.env then frame[..]) else [[]]
   for k, v of ast.vars then env[0][v.slot] = opts.ctx[k]
   result = vm {code, env}
   for k, v of ast.vars then opts.ctx[k] = env[0][v.slot]
-  {ast, code, env, result}
+  result
 
-compile = (aplCode, opts = {}) ->
-  opts.aplCode = aplCode
-  compileAST parse(aplCode, opts), opts
-
-macro withLexicalCategoryConstants (f) ->
-  f.subst
-    NOUN:        macro.valToNode 1
-    VERB:        macro.valToNode 2
-    ADVERB:      macro.valToNode 3
-    CONJUNCTION: macro.valToNode 4
-
-compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
+compileAST = (ast, opts = {}) ->
+  [NOUN, VERB, ADVERB, CONJUNCTION] = [1..4]
   ast.scopeDepth = 0
   ast.nSlots = if prelude then prelude.ast.nSlots else 0
   ast.vars = if prelude then Object.create prelude.ast.vars else {}
@@ -330,10 +317,15 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
 
   render ast
 
-prelude = execInternal(
-  macro -> macro.valToNode macro.require('fs').readFileSync macro.file.replace(/[^\/]+$/, 'prelude.apl'), 'utf8'
-  ctx: vocabulary
-)
+prelude = do ->
+  aplCode = macro -> macro.valToNode macro.require('fs').readFileSync macro.file.replace(/[^\/]+$/, 'prelude.apl'), 'utf8'
+  ast = parse aplCode
+  code = compileAST ast
+  env = [[]]
+  for k, v of ast.vars then env[0][v.slot] = vocabulary[k]
+  vm {code, env}
+  for k, v of ast.vars then vocabulary[k] = env[0][v.slot]
+  {ast, env}
 
 aplify = (x) ->
   if typeof x is 'string' then (if x.length is 1 then APLArray.scalar x else new APLArray x)
