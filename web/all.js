@@ -909,7 +909,7 @@ var __slice = [].slice,
       }
     }
   };
-  tokenDefs = [['-', /^(?:[ \t]+|[⍝\#].*)+/], ['newline', /^[\n\r]+/], ['separator', /^[◇⋄]/], ['number', /^¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯)(?:j¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯))?/i], ['string', /^(?:'(?:[^\\']|\\.)*'|"(?:[^\\"]|\\.)*")+/], ['', /^[\(\)\[\]\{\}:;←]/], ['embedded', /^«[^»]*»/], ['symbol', /^(?:⎕?[a-z_][0-9a-z_]*|⍺⍺|⍵⍵|∇∇|[^¯'":«»])/i]];
+  tokenDefs = [['-', /^(?:[ \t]+|[⍝\#].*)+/], ['L', /^[\n\r]+/], ['D', /^[◇⋄]/], ['N', /^¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯)(?:j¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯))?/i], ['S', /^(?:'[^']*')+|^(?:"[^"]*")+/], ['.', /^[\(\)\[\]\{\}:;←]/], ['J', /^«[^»]*»/], ['X', /^(?:⎕?[a-z_]\w*|⍺⍺|⍵⍵|∇∇|[^¯'":«»])/i]];
   tokenize = function(s, opts) {
     var a, col, line, m, re, stack, startCol, startLine, t, tokens, type, _i, _len, _ref;
     if (opts == null) {
@@ -927,28 +927,26 @@ var __slice = [].slice,
         if (!(m = s.match(re))) {
           continue;
         }
-        type = t || m[0];
+        type = t === '.' ? m[0] : t;
         break;
       }
-      if (!type) {
-        syntaxError('Unrecognized token', {
-          file: opts.file,
-          line: line,
-          col: col,
-          s: opts.s
-        });
-      }
+      type || syntaxError('Unrecognized token', {
+        file: opts.file,
+        line: line,
+        col: col,
+        s: opts.s
+      });
       a = m[0].split('\n');
       line += a.length - 1;
       col = (a.length === 1 ? col : 1) + a[a.length - 1].length;
       s = s.slice(m[0].length);
       if (type !== '-') {
-        if (type === '(' || type === '[' || type === '{') {
+        if (__indexOf.call('([{', type) >= 0) {
           stack.push(type);
-        } else if (type === ')' || type === ']' || type === '}') {
+        } else if (__indexOf.call(')]}', type) >= 0) {
           stack.pop();
         }
-        if (type !== 'newline' || stack[stack.length - 1] === '{') {
+        if (type !== 'L' || stack[stack.length - 1] === '{') {
           tokens.push({
             type: type,
             startLine: startLine,
@@ -961,7 +959,7 @@ var __slice = [].slice,
       }
     }
     tokens.push({
-      type: 'eof',
+      type: 'E',
       value: '',
       startLine: line,
       startCol: col,
@@ -990,11 +988,11 @@ var __slice = [].slice,
       var body, expr, _ref, _ref1, _ref2, _ref3;
       body = ['body'];
       while (true) {
-        if ((_ref = token.type) === 'eof' || _ref === '}' || _ref === ';') {
+        if (_ref = token.type, __indexOf.call('E};', _ref) >= 0) {
           return body;
         }
-        while (((_ref1 = token.type) === "separator" || _ref1 === "newline" ? token = tokens[i++] : void 0)) {}
-        if ((_ref2 = token.type) === 'eof' || _ref2 === '}' || _ref2 === ';') {
+        while (((_ref1 = token.type) === "D" || _ref1 === "L" ? token = tokens[i++] : void 0)) {}
+        if (_ref2 = token.type, __indexOf.call('E};', _ref2) >= 0) {
           return body;
         }
         expr = parseExpr();
@@ -1009,8 +1007,23 @@ var __slice = [].slice,
       expr = ['expr'];
       while (true) {
         t = token;
-        if (((_ref = token.type) === "number" || _ref === "string" || _ref === "symbol" || _ref === "embedded" ? token = tokens[i++] : void 0)) {
-          item = [t.type, t.value];
+        if (((_ref = token.type) === "N" || _ref === "S" || _ref === "X" || _ref === "J" ? token = tokens[i++] : void 0)) {
+          item = (function() {
+            switch (t.type) {
+              case 'N':
+                return ['number', t.value];
+              case 'S':
+                return ['string', t.value];
+              case 'X':
+                return ['symbol', t.value];
+              case 'J':
+                return ['embedded', t.value];
+              default:
+                if (!(0)) {
+                  throw Error("\"else assert 0\" at src/parser.coffee:72");
+                }
+            }
+          })();
         } else if (((_ref1 = token.type) === "(" ? token = tokens[i++] : void 0)) {
           item = parseExpr();
           if (token.type === ')') {
@@ -1062,16 +1075,16 @@ var __slice = [].slice,
           return expr.concat([['assign', item, parseExpr()]]);
         }
         expr.push(item);
-        if (_ref7 = token.type, __indexOf.call(') ] } : ; separator newline eof'.split(' '), _ref7) >= 0) {
+        if (_ref7 = token.type, __indexOf.call(')]}:;DLE', _ref7) >= 0) {
           return expr;
         }
       }
     };
     result = parseBody();
-    if (token.type === 'eof') {
+    if (token.type === 'E') {
       token = tokens[i++];
     } else {
-      parserError("Expected token of type '" + 'eof' + "' but got '" + token.type + "'");
+      parserError("Expected token of type '" + 'E' + "' but got '" + token.type + "'");
     }
     return result;
   };
@@ -4273,7 +4286,7 @@ var __slice = [].slice,
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2013-11-16\n");
+          process.stdout.write("ngn apl 2013-11-17\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ctx = Object.create(vocabulary);
