@@ -1,27 +1,14 @@
 exec = (aplCode, opts = {}) ->
-  execInternal(aplCode, opts).result
-
-execInternal = (aplCode, opts = {}) ->
   ast = parse aplCode, opts
   code = compileAST ast, opts
   env = if prelude then (for frame in prelude.env then frame[..]) else [[]]
   for k, v of ast.vars then env[0][v.slot] = opts.ctx[k]
   result = vm {code, env}
   for k, v of ast.vars then opts.ctx[k] = env[0][v.slot]
-  {ast, code, env, result}
+  result
 
-compile = (aplCode, opts = {}) ->
-  opts.aplCode = aplCode
-  compileAST parse(aplCode, opts), opts
-
-macro withLexicalCategoryConstants (f) ->
-  f.subst
-    NOUN:        macro.valToNode 1
-    VERB:        macro.valToNode 2
-    ADVERB:      macro.valToNode 3
-    CONJUNCTION: macro.valToNode 4
-
-compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
+compileAST = (ast, opts = {}) ->
+  [NOUN, VERB, ADVERB, CONJUNCTION] = [1..4]
   ast.scopeDepth = 0
   ast.nSlots = if prelude then prelude.ast.nSlots else 0
   ast.vars = if prelude then Object.create prelude.ast.vars else {}
@@ -39,7 +26,7 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
   assert VERB < ADVERB < CONJUNCTION # we are relying on this ordering below
   (categorizeLambdas = (node) ->
     switch node[0]
-      when 'body', 'guard', 'assign', 'index', 'lambda', 'expr'
+      when 'body', 'guard', 'assign', 'index', 'lambda', 'expr', 'empty'
         r = VERB
         for i in [1...node.length] by 1 when node[i] then r = Math.max r, categorizeLambdas node[i]
         if node[0] is 'lambda' then (node.category = r; VERB) else r
@@ -86,7 +73,7 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
               v['⍺⍺'] = v['⍶'] = slot: 0, scopeDepth: d - 1, category: VERB
               v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: ADVERB
           node.category ? VERB
-        when 'string', 'number', 'embedded' then NOUN
+        when 'string', 'number', 'embedded', 'empty' then NOUN
         when 'index'
           for i in [2...node.length] by 1 when node[i] and visit(node[i]) isnt NOUN then err node, 'Indices must be nouns.'
           visit node[1]
@@ -273,6 +260,7 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
           [LDC, new APLArray(for f in fragments then (if (x = f[1]).isSimple() then x.unwrap() else x))]
         else
           [].concat fragments..., VEC, node.length - 1
+      when 'empty' then [LDC, APLArray.zilde]
       when 'monadic' then render(node[2]).concat render(node[1]), MON
       when 'adverb'  then render(node[1]).concat render(node[2]), MON
       when 'dyadic', 'conjunction' then render(node[3]).concat render(node[2]), render(node[1]), DYA
@@ -330,10 +318,15 @@ compileAST = withLexicalCategoryConstants (ast, opts = {}) ->
 
   render ast
 
-prelude = execInternal(
-  macro -> macro.valToNode macro.require('fs').readFileSync macro.file.replace(/[^\/]+$/, 'prelude.apl'), 'utf8'
-  ctx: vocabulary
-)
+prelude = do ->
+  aplCode = macro -> macro.valToNode macro.require('fs').readFileSync macro.file.replace(/[^\/]+$/, 'prelude.apl'), 'utf8'
+  ast = parse aplCode
+  code = compileAST ast
+  env = [[]]
+  for k, v of ast.vars then env[0][v.slot] = vocabulary[k]
+  vm {code, env}
+  for k, v of ast.vars then vocabulary[k] = env[0][v.slot]
+  {ast, env}
 
 aplify = (x) ->
   if typeof x is 'string' then (if x.length is 1 then APLArray.scalar x else new APLArray x)
