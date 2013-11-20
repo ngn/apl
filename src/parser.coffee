@@ -70,7 +70,9 @@ parse = (aplCode, opts = {}) ->
           when 'X' then ['symbol',   t.value]
           when 'J' then ['embedded', t.value]
           else assert 0
-      else if consume '(' then item = parseExpr(); demand ')'
+      else if consume '('
+        if consume ')' then item = ['empty']
+        else item = parseExpr(); demand ')'
       else if consume '{'
         item = ['lambda', parseBody()]
         while consume ';' then item.push parseBody()

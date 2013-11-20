@@ -26,7 +26,7 @@ compileAST = (ast, opts = {}) ->
   assert VERB < ADVERB < CONJUNCTION # we are relying on this ordering below
   (categorizeLambdas = (node) ->
     switch node[0]
-      when 'body', 'guard', 'assign', 'index', 'lambda', 'expr'
+      when 'body', 'guard', 'assign', 'index', 'lambda', 'expr', 'empty'
         r = VERB
         for i in [1...node.length] by 1 when node[i] then r = Math.max r, categorizeLambdas node[i]
         if node[0] is 'lambda' then (node.category = r; VERB) else r
@@ -73,7 +73,7 @@ compileAST = (ast, opts = {}) ->
               v['⍺⍺'] = v['⍶'] = slot: 0, scopeDepth: d - 1, category: VERB
               v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: ADVERB
           node.category ? VERB
-        when 'string', 'number', 'embedded' then NOUN
+        when 'string', 'number', 'embedded', 'empty' then NOUN
         when 'index'
           for i in [2...node.length] by 1 when node[i] and visit(node[i]) isnt NOUN then err node, 'Indices must be nouns.'
           visit node[1]
@@ -260,6 +260,7 @@ compileAST = (ast, opts = {}) ->
           [LDC, new APLArray(for f in fragments then (if (x = f[1]).isSimple() then x.unwrap() else x))]
         else
           [].concat fragments..., VEC, node.length - 1
+      when 'empty' then [LDC, APLArray.zilde]
       when 'monadic' then render(node[2]).concat render(node[1]), MON
       when 'adverb'  then render(node[1]).concat render(node[2]), MON
       when 'dyadic', 'conjunction' then render(node[3]).concat render(node[2]), render(node[1]), DYA
