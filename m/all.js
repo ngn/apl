@@ -4299,7 +4299,7 @@ var __slice = [].slice,
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2013-11-20\n");
+          process.stdout.write("ngn apl 2013-11-21\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ctx = Object.create(vocabulary);
