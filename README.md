@@ -23,7 +23,7 @@ Supports: most primitives, dfns (`{⍺ ⍵}`), nested arrays, complex numbers
 assignment (`a[b]←c`), user-defined operators (`{⍺⍺ ⍵⍵}`)
 
 Doesn't support: traditional functions (`∇R←X f Y`), non-zero index origin
-(`⎕IO`), comparison tolerance (`⎕CT`), prototypes, NaN-s, function assignment
+(`⎕IO`), comparison tolerance (`⎕CT`), prototypes, NaN-s, modified assignment
 (`x+←1`), control structures (`:If`), object-oriented features, namespaces
 
 [More info](https://github.com/ngn/vector-article/#readme)
