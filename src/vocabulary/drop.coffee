@@ -14,12 +14,16 @@ addVocabulary
       # ⍬↓3 3⍴⍳9                 <=> 3 3⍴⍳9
       # 1 1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ"   <=> 1 2 4 ⍴ 'QRSTUVWX'
       # ¯1 ¯1↓ 2 3 4⍴"ABCDEFGHIJKLMNOPQRSTUVWXYZ" <=> 1 2 4 ⍴ 'ABCDEFGH'
+      # 1↓0                      <=> ⍬
+      # 0 1↓2                    <=> 1 0⍴0
+      # 1 2↓3                    <=> 0 0⍴0
+      # ⍬↓0                      <=> 0
       if alpha.shape.length > 1
         rankError()
       a = alpha.toArray()
       for x in a when not isInt x then domainError()
       if omega.shape.length is 0
-        omega = new APLArray omega.data, repeat([1], a.length), omega.stride, omega.offset
+        omega = new APLArray omega.data, repeat([1], a.length), repeat([0], a.length), omega.offset
       else
         if a.length > omega.shape.length
           rankError()
