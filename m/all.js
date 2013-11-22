@@ -2077,7 +2077,7 @@ var __slice = [].slice,
           }
         }
         if (omega.shape.length === 0) {
-          omega = new APLArray(omega.data, repeat([1], a.length), omega.stride, omega.offset);
+          omega = new APLArray(omega.data, repeat([1], a.length), repeat([0], a.length), omega.offset);
         } else {
           if (a.length > omega.shape.length) {
             rankError();

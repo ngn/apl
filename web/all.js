@@ -2077,7 +2077,7 @@ var __slice = [].slice,
           }
         }
         if (omega.shape.length === 0) {
-          omega = new APLArray(omega.data, repeat([1], a.length), omega.stride, omega.offset);
+          omega = new APLArray(omega.data, repeat([1], a.length), repeat([0], a.length), omega.offset);
         } else {
           if (a.length > omega.shape.length) {
             rankError();
@@ -7018,6 +7018,10 @@ var aplTests = [
 ["⍬↓3 3⍴⍳9","<=>","3 3⍴⍳9"],
 ["1 1↓ 2 3 4⍴\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"","<=>","1 2 4 ⍴ 'QRSTUVWX'"],
 ["¯1 ¯1↓ 2 3 4⍴\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"","<=>","1 2 4 ⍴ 'ABCDEFGH'"],
+["1↓0","<=>","⍬"],
+["0 1↓2","<=>","1 0⍴0"],
+["1 2↓3","<=>","0 0⍴0"],
+["⍬↓0","<=>","0"],
 ["↓1 2 3","<=>","⊂1 2 3"],
 ["↓(1 2)(3 4)","<=>","⊂(1 2)(3 4)"],
 ["↓2 2⍴⍳4","<=>","(0 1)(2 3)"],
