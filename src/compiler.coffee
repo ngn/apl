@@ -233,7 +233,12 @@ compileAST = (ast, opts = {}) ->
         s = node[1][1...-1].replace ///#{d + d}///g, d
         [LDC, new APLArray s, if s.length is 1 then []]
       when 'number'
-        a = for x in node[1].replace(/¯/g, '-').split /j/i
+        # ∞ <=> ¯
+        # ¯∞ <=> ¯¯
+        # ¯∞j¯∞ <=> ¯¯j¯¯
+        # ∞∞ <=> ¯ ¯
+        # ∞¯ <=> ¯ ¯
+        a = for x in node[1].replace(/[¯∞]/g, '-').split /j/i
               if x is '-' then Infinity
               else if x is '--' then -Infinity
               else if x.match /^-?0x/i then parseInt x, 16
