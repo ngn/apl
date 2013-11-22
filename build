@@ -13,7 +13,7 @@ xcat() { [ -e $2 ] && [ -z "$(find $1 -newer $2)" ] || ( echo "$1 -> $2" && cat 
 
 # xcoffee COFFEEFILE OUTPUTDIR
 # Compiles COFFEEFILE only if newer than the corresponding .js file in OUTPUTDIR
-xcoffee() { if [ $1 -nt $2/`basename $1 .coffee`.js ]; then echo "Compiling $1"; $coffee -o $2 -abc $1; fi; }
+xcoffee() { if [ $1 -nt $2/`basename $1 .coffee`.js ]; then echo "Compiling $1"; $coffee -o $2 -bc $1; fi; }
 
 # Build lib/apl.js
 f=lib/apl.js
@@ -21,7 +21,7 @@ if [ ! -e $f ] || [ -n "$(find src \( -name '*.coffee' -o -name '*.apl' \) -newe
     echo "Building $f"
     mkdir -p lib
     echo '//usr/bin/env node "$0" $@ ; exit $?' >$f
-    $coffee -acp src/apl.coffee >>$f
+    $coffee -cp src/apl.coffee >>$f
     chmod +x $f
 fi
 
