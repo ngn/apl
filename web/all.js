@@ -909,7 +909,7 @@ var __slice = [].slice,
       }
     }
   };
-  tokenDefs = [['-', /^(?:[ \t]+|[⍝\#].*)+/], ['L', /^[\n\r]+/], ['D', /^[◇⋄]/], ['N', /^¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯)(?:j¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯))?/i], ['S', /^(?:'[^']*')+|^(?:"[^"]*")+/], ['.', /^[\(\)\[\]\{\}:;←]/], ['J', /^«[^»]*»/], ['X', /^(?:⎕?[a-z_]\w*|⍺⍺|⍵⍵|∇∇|[^¯'":«»])/i]];
+  tokenDefs = [['-', /^(?:[ \t]+|[⍝\#].*)+/], ['L', /^[\n\r]+/], ['D', /^[◇⋄]/], ['N', /^¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯|∞)(?:j¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯|∞))?/i], ['S', /^(?:'[^']*')+|^(?:"[^"]*")+/], ['.', /^[\(\)\[\]\{\}:;←]/], ['J', /^«[^»]*»/], ['X', /^(?:⎕?[a-z_]\w*|⍺⍺|⍵⍵|∇∇|[^¯'":«»])/i]];
   tokenize = function(s, opts) {
     var a, col, line, m, re, stack, startCol, startLine, t, tokens, type, _i, _len, _ref;
     if (opts == null) {
@@ -4054,7 +4054,7 @@ var __slice = [].slice,
         case 'number':
           a = (function() {
             var _k, _len, _ref5, _results;
-            _ref5 = node[1].replace(/¯/g, '-').split(/j/i);
+            _ref5 = node[1].replace(/[¯∞]/g, '-').split(/j/i);
             _results = [];
             for (_k = 0, _len = _ref5.length; _k < _len; _k++) {
               x = _ref5[_k];
@@ -4156,7 +4156,7 @@ var __slice = [].slice,
           break;
         default:
           if (!(0)) {
-            throw Error("\"else assert 0\" at src/compiler.coffee:282");
+            throw Error("\"else assert 0\" at src/compiler.coffee:287");
           }
       }
     };
@@ -4199,7 +4199,7 @@ var __slice = [].slice,
           return a;
         default:
           if (!(0)) {
-            throw Error("\"assert 0\" at src/compiler.coffee:317");
+            throw Error("\"assert 0\" at src/compiler.coffee:322");
           }
       }
     };
@@ -4299,7 +4299,7 @@ var __slice = [].slice,
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2013-11-21\n");
+          process.stdout.write("ngn apl 2013-11-22\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ctx = Object.create(vocabulary);
@@ -6668,6 +6668,11 @@ var aplTests = [
 ["⍴'a'''","<=>",",2"],
 ["''''","<=>","\"'\""],
 ["⍴\"\\f\\t\\n\\r\\u1234\\xff\"","<=>",",18"],
+["∞","<=>","¯"],
+["¯∞","<=>","¯¯"],
+["¯∞j¯∞","<=>","¯¯j¯¯"],
+["∞∞","<=>","¯ ¯"],
+["∞¯","<=>","¯ ¯"],
 ["123 + «456 + 789»","<=>","1368"],
 ["⍴ x[⍋x←6?40]","<=>",",6"],
 ["(a b) ← 1 2 ⋄ a","<=>","1"],
