@@ -85,7 +85,7 @@ depthOf = (x) ->
     if x.shape.length is 0 and not (x.data[0] instanceof APLArray)
       return 0
     r = 0
-    x.each (y) -> r = Math.max r, depthOf y
+    each x, (y) -> r = Math.max r, depthOf y
     r + 1
   else
     0

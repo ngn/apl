@@ -123,5 +123,5 @@ addVocabulary
       # ,2 3 4⍴'abcdefghijklmnopqrstuvwx' <=> 'abcdefghijklmnopqrstuvwx'
       # ,123 <=> 1⍴123
       data = []
-      omega.each (x) -> data.push x
+      each omega, (x) -> data.push x
       new APLArray data

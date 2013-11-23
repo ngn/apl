@@ -23,7 +23,7 @@ addVocabulary
       for a in [alpha, omega]
         if a.shape.length > 1
           rankError()
-        a.each (x) -> if not contains data, x then data.push x
+        each a, (x) -> if not contains data, x then data.push x
       new APLArray data
 
     else
@@ -35,7 +35,7 @@ addVocabulary
       # ∪17                 <=> ,17
       # ∪⍬                  <=> ⍬
       data = []
-      omega.each (x) -> if not contains data, x then data.push x
+      each omega, (x) -> if not contains data, x then data.push x
       new APLArray data
 
   '∩': (omega, alpha) ->

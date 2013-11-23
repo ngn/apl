@@ -23,7 +23,7 @@ addVocabulary
       omega.map (x) ->
         try
           r = alpha.shape
-          alpha.each (y, indices) ->
+          each alpha, (y, indices) ->
             if match x, y
               r = indices
               throw 'break'

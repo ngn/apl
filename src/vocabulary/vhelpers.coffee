@@ -68,7 +68,7 @@ match = (x, y) ->
       for axis in [0...x.shape.length] by 1
         if x.shape[axis] isnt y.shape[axis] then return false
       r = true
-      x.each2 y, (xi, yi) -> if not match xi, yi then r = false
+      each2 x, y, (xi, yi) -> if not match xi, yi then r = false
       r
   else
     if y instanceof APLArray then false
@@ -91,7 +91,7 @@ approx = (x, y) ->
       for axis in [0...x.shape.length] by 1
         if x.shape[axis] isnt y.shape[axis] then return false
       r = true
-      x.each2 y, (xi, yi) -> if not approx xi, yi then r = false
+      each2 x, y, (xi, yi) -> if not approx xi, yi then r = false
       r
   else
     if y instanceof APLArray then false

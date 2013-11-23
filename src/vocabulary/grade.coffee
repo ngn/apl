@@ -54,7 +54,7 @@ grade = (omega, alpha, direction) ->
     if not alpha.shape.length
       rankError()
     h = {}
-    alpha.each (x, indices) ->
+    each alpha, (x, indices) ->
       if typeof x isnt 'string' then domainError()
       h[x] = indices[indices.length - 1]
 

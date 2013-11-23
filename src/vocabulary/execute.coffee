@@ -13,7 +13,7 @@ addVocabulary
       nonceError()
     else
       s = ''
-      omega.each (c) ->
+      each omega, (c) ->
         if typeof c isnt 'string' then domainError()
         s += c
       exec s

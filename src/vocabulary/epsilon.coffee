@@ -23,6 +23,6 @@ addVocabulary
 
 enlist = (x, r) ->
   if x instanceof APLArray
-    x.each (y) -> enlist y, r
+    each x, (y) -> enlist y, r
   else
     r.push x

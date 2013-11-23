@@ -68,14 +68,12 @@ outerProduct = (f) ->
 # 7 +.= 7               <=> 1
 # (3 2⍴5 ¯3 ¯2 4 ¯1 0) +.× 2 2⍴6 ¯3 5 7  <=> 3 2⍴15 ¯36 8 34 ¯6 3
 innerProduct = (g, f) ->
-  each = vocabulary['¨']
-  enclose = vocabulary['⊂']
-  F = each reduce f
+  F = vocabulary['¨'] reduce f
   G = outerProduct g
   (omega, alpha) ->
     if alpha.shape.length is 0 then alpha = new APLArray [alpha.unwrap()]
     if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
     F G(
-      enclose(omega, undefined, new APLArray [0])
-      enclose(alpha, undefined, new APLArray [alpha.shape.length - 1])
+      vocabulary['⊂'](omega, undefined, new APLArray [0])
+      vocabulary['⊂'](alpha, undefined, new APLArray [alpha.shape.length - 1])
     )
