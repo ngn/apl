@@ -30,6 +30,10 @@ addVocabulary
       # ...                       '   4     5     6 ',
       # ...                       ' 100   200   300 ')
       # ⍕1 ⍬ 2 '' 3     <=> 1 11⍴'1    2    3'
+      # ⍕∞              <=> 1 1⍴'∞'
+      # ⍕¯∞             <=> 1 2⍴'¯∞'
+      # ⍕¯1             <=> 1 2⍴'¯1'
+      # ⍕¯1e¯100J¯2e¯99 <=> 1 14⍴'¯1e¯100J¯2e¯99'
       t = format ⍵
       new APLArray t.join(''), [t.length, t[0].length]
 
@@ -38,8 +42,7 @@ format = (a) ->
   if typeof a is 'undefined' then ['undefined']
   else if a is null then ['null']
   else if typeof a is 'string' then [a]
-  else if typeof a is 'number'
-    r = [('' + a).replace /-|Infinity/g, '¯']; r.align = 'right'; r
+  else if typeof a is 'number' then r = [formatNumber a]; r.align = 'right'; r
   else if typeof a is 'function' then ['λ']
   else if not (a instanceof APLArray) then ['' + a]
   else if prod(⍴ a) is 0 then ['']
