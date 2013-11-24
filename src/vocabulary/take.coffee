@@ -51,7 +51,7 @@ take = (⍵, ⍺) ->
     for i in [stride.length - 2 .. 0] by -1
       stride[i] = stride[i + 1] * shape[i + 1]
     data = repeat [⍵.getPrototype()], prod shape
-    copyShape = shape[...]
+    copyShape = shape[..]
     p = ⍵.offset
     q = 0
     for x, i in a

@@ -105,7 +105,7 @@ jQuery ($) ->
         code = extractTextFromDOM(document.getElementById 'editor')
                 .replace /\xa0/g, ' '
         result = apl code
-        $('#result').removeClass('error').text result + '\n'
+        $('#result').removeClass('error').text "#{apl.format(result).join '\n'}\n"
       catch err
         console?.error?(err)
         $('#result').addClass('error').text err

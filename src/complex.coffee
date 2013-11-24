@@ -22,7 +22,7 @@ class Complex
     if isNaN(@re) or isNaN(@im) then domainError 'NaN'
 
   toString: ->
-    "#{@re}J#{@im}".replace /-|Infinity/g, '¯'
+    "#{formatNumber @re}J#{formatNumber @im}"
 
   @exp = exp = (x) ->
     x = complexify x

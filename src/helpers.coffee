@@ -27,3 +27,6 @@ repeat = (a, n) ->
 extend = (x, y) ->
   for k of y then x[k] = y[k]
   x
+
+macro formatNumber (x) ->
+  macro.codeToNode(-> ('' + x).replace('Infinity', '∞').replace(/-/g, '¯')).subst {x}

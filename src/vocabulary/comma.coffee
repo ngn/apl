@@ -75,7 +75,7 @@ addVocabulary
       if isInt axis
         rStride = stride
       else
-        rStride = stride[...]
+        rStride = stride[..]
         rStride.splice Math.ceil(axis), 1
 
       if not ⍺.empty()

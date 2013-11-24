@@ -30,7 +30,6 @@ macro each (a0, f) ->
     a0:       a0
     body:     f.body
     a:        macro.csToNode "t#{macro.tmpCounter++}"
-    p:        macro.csToNode "t#{macro.tmpCounter++}"
     axis:     macro.csToNode "t#{macro.tmpCounter++}"
     data:     macro.csToNode "t#{macro.tmpCounter++}"
     shape:    macro.csToNode "t#{macro.tmpCounter++}"
@@ -38,6 +37,7 @@ macro each (a0, f) ->
     lastAxis: macro.csToNode "t#{macro.tmpCounter++}"
     x:        macro.csToNode f.params[0].name.value
     indices:  macro.csToNode f.params[1]?.name?.value ? "t#{macro.tmpCounter++}"
+    p:        macro.csToNode f.params[2]?.name?.value ? "t#{macro.tmpCounter++}"
 
 # each2() is like each() but it iterates over two APLArray-s in parallel
 macro each2 (a0, b0, f) ->
@@ -100,8 +100,6 @@ class APLArray
     for x in @shape then assert isInt x, 0
     if @data.length
       for x, i in @stride then assert isInt x, -@data.length, @data.length + 1
-    else
-      assert prod(@shape) is 0
 
   empty: ->
     for d in @shape when not d then return true

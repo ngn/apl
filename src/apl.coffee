@@ -62,13 +62,13 @@ withAlphaAndOmega ->
   include 'compiler'
 
 @apl = apl = (aplCode) -> exec aplCode
-apl.approx = approx
+extend apl, {format, approx}
 if module?
   module.exports = apl
   if module is require?.main then do ->
     usage = 'Usage: apl.js filename.apl\n'
     file = null
-    for arg in process.argv[2...]
+    for arg in process.argv[2..]
       if arg in ['-h', '--help'] then (process.stderr.write usage; process.exit 0)
       else if /^-/.test arg then (process.stderr.write "unrecognized option: #{arg}\n#{usage}"; process.exit 1)
       else if file? then (process.stderr.write usage; process.exit 1)

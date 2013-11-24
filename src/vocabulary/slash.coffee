@@ -58,7 +58,7 @@ reduce = @reduce = (f, g, axis0) ->
       if shape[axis] is 0 then return new APLArray [], rShape
       if shape[axis] < 0 then lengthError()
     else
-      rShape = rShape[...]
+      rShape = rShape[..]
       rShape.splice axis, 1
 
     if ⍵.empty()

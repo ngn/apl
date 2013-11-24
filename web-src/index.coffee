@@ -24,7 +24,7 @@ jQuery ($) ->
         setTimeout runDocTests, 1
       else
         result = apl s
-        $('#result').removeClass('error').text result + '\n'
+        $('#result').removeClass('error').text "#{apl.format(result).join '\n'}\n"
     catch err
       console?.error?(err.stack)
       $('#result').addClass('error').text err
