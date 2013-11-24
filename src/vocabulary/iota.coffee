@@ -54,7 +54,7 @@ addVocabulary
         else
           indices = repeat [0], a.length
           loop
-            data.push new APLArray indices[...]
+            data.push new APLArray indices[..]
             axis = a.length - 1
             while axis >= 0 and indices[axis] + 1 is a[axis]
               indices[axis--] = 0

@@ -52,7 +52,7 @@ addVocabulary
       else
         axis = [⍴⍴(⍵) - 1]
       if ⍴⍴(⍵) is 0 then return ⍵
-      stride = ⍵.stride[...]
+      stride = ⍵.stride[..]
       stride[axis] = -stride[axis]
       offset = ⍵.offset + (⍴(⍵)[axis] - 1) * ⍵.stride[axis]
       new APLArray ⍵.data, ⍴(⍵), stride, offset

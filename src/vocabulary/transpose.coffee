@@ -49,6 +49,6 @@ addVocabulary
       new APLArray(
         ⍵.data
         ⍴(⍵)[..].reverse()
-        ⍵.stride[...].reverse()
+        ⍵.stride[..].reverse()
         ⍵.offset
       )
