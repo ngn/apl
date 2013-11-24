@@ -164,10 +164,6 @@
             throw Error("\"for x, i in @stride then assert isInt x, -@data.length, @data.length + 1\" at src/array.coffee:102");
           }
         }
-      } else {
-        if (!(prod(this.shape) === 0)) {
-          throw Error("\"assert prod(@shape) is 0\" at src/array.coffee:104");
-        }
       }
     }
 
@@ -186,33 +182,33 @@
     APLArray.prototype.map = function(f) {
       var axis, data, indices, t10, t4, t5, t6, t7, t8, t9, x, _i, _ref;
       if (!(typeof f === 'function')) {
-        throw Error("\"assert typeof f is 'function'\" at src/array.coffee:111");
+        throw Error("\"assert typeof f is 'function'\" at src/array.coffee:109");
       }
       data = [];
       t4 = this;
       if (!t4.empty()) {
-        t7 = t4.data;
-        t8 = t4.shape;
-        t9 = t4.stride;
-        t10 = t8.length - 1;
-        t5 = t4.offset;
+        t6 = t4.data;
+        t7 = t4.shape;
+        t8 = t4.stride;
+        t9 = t7.length - 1;
+        t10 = t4.offset;
         indices = [];
-        for (axis = _i = 0, _ref = t8.length; _i < _ref; axis = _i += 1) {
+        for (axis = _i = 0, _ref = t7.length; _i < _ref; axis = _i += 1) {
           indices.push(0);
         }
         while (true) {
-          x = t7[t5];
+          x = t6[t10];
           data.push(f(x, indices));
-          t6 = t10;
-          while (t6 >= 0 && indices[t6] + 1 === t8[t6]) {
-            t5 -= indices[t6] * t9[t6];
-            indices[t6--] = 0;
+          t5 = t9;
+          while (t5 >= 0 && indices[t5] + 1 === t7[t5]) {
+            t10 -= indices[t5] * t8[t5];
+            indices[t5--] = 0;
           }
-          if (t6 < 0) {
+          if (t5 < 0) {
             break;
           }
-          indices[t6]++;
-          t5 += t9[t6];
+          indices[t5]++;
+          t10 += t8[t5];
         }
       }
       return new APLArray(data, this.shape);
@@ -221,10 +217,10 @@
     APLArray.prototype.map2 = function(a, f) {
       var axis, data, indices, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, x, y, _i, _j, _ref, _ref1;
       if (!(a instanceof APLArray)) {
-        throw Error("\"assert a instanceof APLArray\" at src/array.coffee:117");
+        throw Error("\"assert a instanceof APLArray\" at src/array.coffee:115");
       }
       if (!(typeof f === 'function')) {
-        throw Error("\"assert typeof f is 'function'\" at src/array.coffee:118");
+        throw Error("\"assert typeof f is 'function'\" at src/array.coffee:116");
       }
       data = [];
       t11 = this;
@@ -277,28 +273,28 @@
       r = [];
       t23 = this;
       if (!t23.empty()) {
-        t26 = t23.data;
-        t27 = t23.shape;
-        t28 = t23.stride;
-        t29 = t27.length - 1;
-        t24 = t23.offset;
-        t30 = [];
-        for (axis = _i = 0, _ref = t27.length; _i < _ref; axis = _i += 1) {
-          t30.push(0);
+        t25 = t23.data;
+        t26 = t23.shape;
+        t27 = t23.stride;
+        t28 = t26.length - 1;
+        t30 = t23.offset;
+        t29 = [];
+        for (axis = _i = 0, _ref = t26.length; _i < _ref; axis = _i += 1) {
+          t29.push(0);
         }
         while (true) {
-          x = t26[t24];
+          x = t25[t30];
           r.push(x);
-          t25 = t29;
-          while (t25 >= 0 && t30[t25] + 1 === t27[t25]) {
-            t24 -= t30[t25] * t28[t25];
-            t30[t25--] = 0;
+          t24 = t28;
+          while (t24 >= 0 && t29[t24] + 1 === t26[t24]) {
+            t30 -= t29[t24] * t27[t24];
+            t29[t24--] = 0;
           }
-          if (t25 < 0) {
+          if (t24 < 0) {
             break;
           }
-          t30[t25]++;
-          t24 += t28[t25];
+          t29[t24]++;
+          t30 += t27[t24];
         }
       }
       return r;
@@ -394,7 +390,7 @@
   strideForShape = function(shape) {
     var i, r, tmp31, _i, _ref;
     if (!(shape instanceof Array)) {
-      throw Error("\"assert shape instanceof Array\" at src/array.coffee:156");
+      throw Error("\"assert shape instanceof Array\" at src/array.coffee:154");
     }
     if (shape.length === 0) {
       return [];
@@ -403,7 +399,7 @@
     r[r.length - 1] = 1;
     for (i = _i = _ref = r.length - 2; _i >= 0; i = _i += -1) {
       if (!((tmp31 = shape[i]) === ~~tmp31 && (0) <= tmp31)) {
-        throw Error("\"assert isInt shape[i], 0\" at src/array.coffee:161");
+        throw Error("\"assert isInt shape[i], 0\" at src/array.coffee:159");
       }
       r[i] = r[i + 1] * shape[i + 1];
     }
@@ -451,7 +447,7 @@
     }
 
     Complex.prototype.toString = function() {
-      return ("" + this.re + "J" + this.im).replace(/-|Infinity/g, '¯');
+      return "" + (('' + this.re).replace('Infinity', '∞').replace(/-/g, '¯')) + "J" + (('' + this.im).replace('Infinity', '∞').replace(/-/g, '¯'));
     };
 
     Complex.exp = exp = function(x) {
@@ -1871,28 +1867,28 @@
         data = [];
         t69 = omega;
         if (!t69.empty()) {
-          t72 = t69.data;
-          t73 = t69.shape;
-          t74 = t69.stride;
-          t75 = t73.length - 1;
-          t70 = t69.offset;
-          t76 = [];
-          for (axis = _k = 0, _ref3 = t73.length; _k < _ref3; axis = _k += 1) {
-            t76.push(0);
+          t71 = t69.data;
+          t72 = t69.shape;
+          t73 = t69.stride;
+          t74 = t72.length - 1;
+          t76 = t69.offset;
+          t75 = [];
+          for (axis = _k = 0, _ref3 = t72.length; _k < _ref3; axis = _k += 1) {
+            t75.push(0);
           }
           while (true) {
-            x = t72[t70];
+            x = t71[t76];
             data.push(x);
-            t71 = t75;
-            while (t71 >= 0 && t76[t71] + 1 === t73[t71]) {
-              t70 -= t76[t71] * t74[t71];
-              t76[t71--] = 0;
+            t70 = t74;
+            while (t70 >= 0 && t75[t70] + 1 === t72[t70]) {
+              t76 -= t75[t70] * t73[t70];
+              t75[t70--] = 0;
             }
-            if (t71 < 0) {
+            if (t70 < 0) {
               break;
             }
-            t76[t71]++;
-            t70 += t74[t71];
+            t75[t70]++;
+            t76 += t73[t70];
           }
         }
         return new APLArray(data);
@@ -1951,28 +1947,28 @@
       r = 0;
       t77 = x;
       if (!t77.empty()) {
-        t80 = t77.data;
-        t81 = t77.shape;
-        t82 = t77.stride;
-        t83 = t81.length - 1;
-        t78 = t77.offset;
-        t84 = [];
-        for (axis = _i = 0, _ref = t81.length; _i < _ref; axis = _i += 1) {
-          t84.push(0);
+        t79 = t77.data;
+        t80 = t77.shape;
+        t81 = t77.stride;
+        t82 = t80.length - 1;
+        t84 = t77.offset;
+        t83 = [];
+        for (axis = _i = 0, _ref = t80.length; _i < _ref; axis = _i += 1) {
+          t83.push(0);
         }
         while (true) {
-          y = t80[t78];
+          y = t79[t84];
           r = Math.max(r, depthOf(y));
-          t79 = t83;
-          while (t79 >= 0 && t84[t79] + 1 === t81[t79]) {
-            t78 -= t84[t79] * t82[t79];
-            t84[t79--] = 0;
+          t78 = t82;
+          while (t78 >= 0 && t83[t78] + 1 === t80[t78]) {
+            t84 -= t83[t78] * t81[t78];
+            t83[t78--] = 0;
           }
-          if (t79 < 0) {
+          if (t78 < 0) {
             break;
           }
-          t84[t79]++;
-          t78 += t82[t79];
+          t83[t78]++;
+          t84 += t81[t78];
         }
       }
       return r + 1;
@@ -2021,30 +2017,30 @@
           }
           t85 = a;
           if (!t85.empty()) {
-            t88 = t85.data;
-            t89 = t85.shape;
-            t90 = t85.stride;
-            t91 = t89.length - 1;
-            t86 = t85.offset;
-            t92 = [];
-            for (axis = _j = 0, _ref1 = t89.length; _j < _ref1; axis = _j += 1) {
-              t92.push(0);
+            t87 = t85.data;
+            t88 = t85.shape;
+            t89 = t85.stride;
+            t90 = t88.length - 1;
+            t92 = t85.offset;
+            t91 = [];
+            for (axis = _j = 0, _ref1 = t88.length; _j < _ref1; axis = _j += 1) {
+              t91.push(0);
             }
             while (true) {
-              x = t88[t86];
+              x = t87[t92];
               if (!contains(data, x)) {
                 data.push(x);
               }
-              t87 = t91;
-              while (t87 >= 0 && t92[t87] + 1 === t89[t87]) {
-                t86 -= t92[t87] * t90[t87];
-                t92[t87--] = 0;
+              t86 = t90;
+              while (t86 >= 0 && t91[t86] + 1 === t88[t86]) {
+                t92 -= t91[t86] * t89[t86];
+                t91[t86--] = 0;
               }
-              if (t87 < 0) {
+              if (t86 < 0) {
                 break;
               }
-              t92[t87]++;
-              t86 += t90[t87];
+              t91[t86]++;
+              t92 += t89[t86];
             }
           }
         }
@@ -2053,30 +2049,30 @@
         data = [];
         t93 = omega;
         if (!t93.empty()) {
-          t96 = t93.data;
-          t97 = t93.shape;
-          t98 = t93.stride;
-          t99 = t97.length - 1;
-          t94 = t93.offset;
-          t100 = [];
-          for (axis = _k = 0, _ref2 = t97.length; _k < _ref2; axis = _k += 1) {
-            t100.push(0);
+          t95 = t93.data;
+          t96 = t93.shape;
+          t97 = t93.stride;
+          t98 = t96.length - 1;
+          t100 = t93.offset;
+          t99 = [];
+          for (axis = _k = 0, _ref2 = t96.length; _k < _ref2; axis = _k += 1) {
+            t99.push(0);
           }
           while (true) {
-            x = t96[t94];
+            x = t95[t100];
             if (!contains(data, x)) {
               data.push(x);
             }
-            t95 = t99;
-            while (t95 >= 0 && t100[t95] + 1 === t97[t95]) {
-              t94 -= t100[t95] * t98[t95];
-              t100[t95--] = 0;
+            t94 = t98;
+            while (t94 >= 0 && t99[t94] + 1 === t96[t94]) {
+              t100 -= t99[t94] * t97[t94];
+              t99[t94--] = 0;
             }
-            if (t95 < 0) {
+            if (t94 < 0) {
               break;
             }
-            t100[t95]++;
-            t94 += t98[t95];
+            t99[t94]++;
+            t100 += t97[t94];
           }
         }
         return new APLArray(data);
@@ -2447,29 +2443,29 @@
     if (x instanceof APLArray) {
       t102 = x;
       if (!t102.empty()) {
-        t105 = t102.data;
-        t106 = t102.shape;
-        t107 = t102.stride;
-        t108 = t106.length - 1;
-        t103 = t102.offset;
-        t109 = [];
-        for (axis = _i = 0, _ref = t106.length; _i < _ref; axis = _i += 1) {
-          t109.push(0);
+        t104 = t102.data;
+        t105 = t102.shape;
+        t106 = t102.stride;
+        t107 = t105.length - 1;
+        t109 = t102.offset;
+        t108 = [];
+        for (axis = _i = 0, _ref = t105.length; _i < _ref; axis = _i += 1) {
+          t108.push(0);
         }
         _results = [];
         while (true) {
-          y = t105[t103];
+          y = t104[t109];
           enlist(y, r);
-          t104 = t108;
-          while (t104 >= 0 && t109[t104] + 1 === t106[t104]) {
-            t103 -= t109[t104] * t107[t104];
-            t109[t104--] = 0;
+          t103 = t107;
+          while (t103 >= 0 && t108[t103] + 1 === t105[t103]) {
+            t109 -= t108[t103] * t106[t103];
+            t108[t103--] = 0;
           }
-          if (t104 < 0) {
+          if (t103 < 0) {
             break;
           }
-          t109[t104]++;
-          _results.push(t103 += t107[t104]);
+          t108[t103]++;
+          _results.push(t109 += t106[t103]);
         }
         return _results;
       }
@@ -2582,31 +2578,31 @@
         s = '';
         t114 = omega;
         if (!t114.empty()) {
-          t117 = t114.data;
-          t118 = t114.shape;
-          t119 = t114.stride;
-          t120 = t118.length - 1;
-          t115 = t114.offset;
-          t121 = [];
-          for (axis = _i = 0, _ref1 = t118.length; _i < _ref1; axis = _i += 1) {
-            t121.push(0);
+          t116 = t114.data;
+          t117 = t114.shape;
+          t118 = t114.stride;
+          t119 = t117.length - 1;
+          t121 = t114.offset;
+          t120 = [];
+          for (axis = _i = 0, _ref1 = t117.length; _i < _ref1; axis = _i += 1) {
+            t120.push(0);
           }
           while (true) {
-            c = t117[t115];
+            c = t116[t121];
             if (typeof c !== 'string') {
               domainError();
             }
             s += c;
-            t116 = t120;
-            while (t116 >= 0 && t121[t116] + 1 === t118[t116]) {
-              t115 -= t121[t116] * t119[t116];
-              t121[t116--] = 0;
+            t115 = t119;
+            while (t115 >= 0 && t120[t115] + 1 === t117[t115]) {
+              t121 -= t120[t115] * t118[t115];
+              t120[t115--] = 0;
             }
-            if (t116 < 0) {
+            if (t115 < 0) {
               break;
             }
-            t121[t116]++;
-            t115 += t119[t116];
+            t120[t115]++;
+            t121 += t118[t115];
           }
         }
         return exec(s);
@@ -2715,7 +2711,7 @@
     } else if (typeof a === 'string') {
       return [a];
     } else if (typeof a === 'number') {
-      r = [('' + a).replace(/-|Infinity/g, '¯')];
+      r = [('' + a).replace('Infinity', '∞').replace(/-/g, '¯')];
       r.align = 'right';
       return r;
     } else if (typeof a === 'function') {
@@ -2848,31 +2844,31 @@
       h = {};
       t122 = alpha;
       if (!t122.empty()) {
-        t125 = t122.data;
-        t126 = t122.shape;
-        t127 = t122.stride;
-        t128 = t126.length - 1;
-        t123 = t122.offset;
+        t124 = t122.data;
+        t125 = t122.shape;
+        t126 = t122.stride;
+        t127 = t125.length - 1;
+        t128 = t122.offset;
         indices = [];
-        for (axis = _i = 0, _ref1 = t126.length; _i < _ref1; axis = _i += 1) {
+        for (axis = _i = 0, _ref1 = t125.length; _i < _ref1; axis = _i += 1) {
           indices.push(0);
         }
         while (true) {
-          x = t125[t123];
+          x = t124[t128];
           if (typeof x !== 'string') {
             domainError();
           }
           h[x] = indices[indices.length - 1];
-          t124 = t128;
-          while (t124 >= 0 && indices[t124] + 1 === t126[t124]) {
-            t123 -= indices[t124] * t127[t124];
-            indices[t124--] = 0;
+          t123 = t127;
+          while (t123 >= 0 && indices[t123] + 1 === t125[t123]) {
+            t128 -= indices[t123] * t126[t123];
+            indices[t123--] = 0;
           }
-          if (t124 < 0) {
+          if (t123 < 0) {
             break;
           }
-          indices[t124]++;
-          t123 += t127[t124];
+          indices[t123]++;
+          t128 += t126[t123];
         }
       }
     }
@@ -2960,31 +2956,31 @@
             r = alpha.shape;
             t129 = alpha;
             if (!t129.empty()) {
-              t132 = t129.data;
-              t133 = t129.shape;
-              t134 = t129.stride;
-              t135 = t133.length - 1;
-              t130 = t129.offset;
+              t131 = t129.data;
+              t132 = t129.shape;
+              t133 = t129.stride;
+              t134 = t132.length - 1;
+              t135 = t129.offset;
               indices = [];
-              for (axis = _i = 0, _ref1 = t133.length; _i < _ref1; axis = _i += 1) {
+              for (axis = _i = 0, _ref1 = t132.length; _i < _ref1; axis = _i += 1) {
                 indices.push(0);
               }
               while (true) {
-                y = t132[t130];
+                y = t131[t135];
                 if (match(x, y)) {
                   r = indices;
                   throw 'break';
                 }
-                t131 = t135;
-                while (t131 >= 0 && indices[t131] + 1 === t133[t131]) {
-                  t130 -= indices[t131] * t134[t131];
-                  indices[t131--] = 0;
+                t130 = t134;
+                while (t130 >= 0 && indices[t130] + 1 === t132[t130]) {
+                  t135 -= indices[t130] * t133[t130];
+                  indices[t130--] = 0;
                 }
-                if (t131 < 0) {
+                if (t130 < 0) {
                   break;
                 }
-                indices[t131]++;
-                t130 += t134[t131];
+                indices[t130]++;
+                t135 += t133[t130];
               }
             }
           } catch (_error) {
@@ -3039,82 +3035,92 @@
   });
   addVocabulary({
     '⊂': function(omega, alpha, axes) {
-      var a, axis, data, indices, p, resultAxes, shape, stride, unitShape, unitStride, _i, _ref1, _results;
-      if (alpha) {
-        return nonceError();
-      } else {
-        axes = axes != null ? getAxisList(axes, omega.shape.length) : (function() {
-          _results = [];
-          for (var _i = 0, _ref1 = omega.shape.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--){ _results.push(_i); }
-          return _results;
-        }).apply(this);
-        if (omega.isSimple()) {
-          return omega;
+      var axis, data, i, indices, p, resultAxes, shape, stride, t137, t138, t139, t140, t141, t142, unitShape, unitStride, x, _i, _j, _ref1, _ref2, _results;
+      if (!(!alpha)) {
+        throw Error("\"assert not ⍺\" at src/vocabulary/leftshoe.coffee:13");
+      }
+      axes = axes != null ? getAxisList(axes, omega.shape.length) : (function() {
+        _results = [];
+        for (var _i = 0, _ref1 = omega.shape.length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; 0 <= _ref1 ? _i++ : _i--){ _results.push(_i); }
+        return _results;
+      }).apply(this);
+      if (omega.isSimple()) {
+        return omega;
+      }
+      unitShape = (function() {
+        var _j, _len, _results1;
+        _results1 = [];
+        for (_j = 0, _len = axes.length; _j < _len; _j++) {
+          i = axes[_j];
+          _results1.push(omega.shape[i]);
         }
-        unitShape = (function() {
-          var _j, _len, _results1;
-          _results1 = [];
-          for (_j = 0, _len = axes.length; _j < _len; _j++) {
-            axis = axes[_j];
-            _results1.push(omega.shape[axis]);
+        return _results1;
+      })();
+      unitStride = (function() {
+        var _j, _len, _results1;
+        _results1 = [];
+        for (_j = 0, _len = axes.length; _j < _len; _j++) {
+          i = axes[_j];
+          _results1.push(omega.stride[i]);
+        }
+        return _results1;
+      })();
+      resultAxes = (function() {
+        var _j, _ref2, _results1;
+        _results1 = [];
+        for (i = _j = 0, _ref2 = omega.shape.length; 0 <= _ref2 ? _j < _ref2 : _j > _ref2; i = 0 <= _ref2 ? ++_j : --_j) {
+          if (__indexOf.call(axes, i) < 0) {
+            _results1.push(i);
           }
-          return _results1;
-        })();
-        unitStride = (function() {
-          var _j, _len, _results1;
-          _results1 = [];
-          for (_j = 0, _len = axes.length; _j < _len; _j++) {
-            axis = axes[_j];
-            _results1.push(omega.stride[axis]);
-          }
-          return _results1;
-        })();
-        resultAxes = (function() {
-          var _j, _ref2, _results1;
-          _results1 = [];
-          for (axis = _j = 0, _ref2 = omega.shape.length; 0 <= _ref2 ? _j < _ref2 : _j > _ref2; axis = 0 <= _ref2 ? ++_j : --_j) {
-            if (__indexOf.call(axes, axis) < 0) {
-              _results1.push(axis);
-            }
-          }
-          return _results1;
-        })();
-        shape = (function() {
-          var _j, _len, _results1;
-          _results1 = [];
-          for (_j = 0, _len = resultAxes.length; _j < _len; _j++) {
-            axis = resultAxes[_j];
-            _results1.push(omega.shape[axis]);
-          }
-          return _results1;
-        })();
-        stride = (function() {
-          var _j, _len, _results1;
-          _results1 = [];
-          for (_j = 0, _len = resultAxes.length; _j < _len; _j++) {
-            axis = resultAxes[_j];
-            _results1.push(omega.stride[axis]);
-          }
-          return _results1;
-        })();
-        data = [];
-        p = omega.offset;
-        indices = repeat([0], shape.length);
+        }
+        return _results1;
+      })();
+      shape = (function() {
+        var _j, _len, _results1;
+        _results1 = [];
+        for (_j = 0, _len = resultAxes.length; _j < _len; _j++) {
+          i = resultAxes[_j];
+          _results1.push(omega.shape[i]);
+        }
+        return _results1;
+      })();
+      stride = (function() {
+        var _j, _len, _results1;
+        _results1 = [];
+        for (_j = 0, _len = resultAxes.length; _j < _len; _j++) {
+          i = resultAxes[_j];
+          _results1.push(omega.stride[i]);
+        }
+        return _results1;
+      })();
+      data = [];
+      t137 = new APLArray(omega.data, shape, stride, omega.offset);
+      if (!t137.empty()) {
+        t139 = t137.data;
+        t140 = t137.shape;
+        t141 = t137.stride;
+        t142 = t140.length - 1;
+        p = t137.offset;
+        indices = [];
+        for (axis = _j = 0, _ref2 = t140.length; _j < _ref2; axis = _j += 1) {
+          indices.push(0);
+        }
         while (true) {
+          x = t139[p];
           data.push(new APLArray(omega.data, unitShape, unitStride, p));
-          a = indices.length - 1;
-          while (a >= 0 && indices[a] + 1 === shape[a]) {
-            p -= indices[a] * stride[a];
-            indices[a--] = 0;
+          t138 = t142;
+          while (t138 >= 0 && indices[t138] + 1 === t140[t138]) {
+            p -= indices[t138] * t141[t138];
+            indices[t138--] = 0;
           }
-          if (a < 0) {
+          if (t138 < 0) {
             break;
           }
-          p += stride[a];
-          indices[a]++;
+          indices[t138]++;
+          p += t141[t138];
         }
-        return new APLArray(data, shape);
       }
+      return new APLArray(data, shape);
     }
   });
   addVocabulary({
@@ -3269,30 +3275,33 @@
     }
   });
   roll = pervasive({
-    monad: real(function(x) {
-      return Math.floor(Math.random() * x);
-    })
+    monad: function(omega) {
+      var tmp143;
+      if (!((tmp143 = (omega)) === ~~tmp143 && (1) <= tmp143)) {
+        domainError();
+      }
+      return Math.floor(Math.random() * omega);
+    }
   });
   deal = function(omega, alpha) {
-    var available, x, y, _i, _results;
-    y = omega.unwrap();
-    x = alpha.unwrap();
-    if (x > y) {
+    var h, i, j, r, tmp144, tmp145, _i, _j, _ref1, _ref2, _ref3, _results;
+    alpha = alpha.unwrap();
+    omega = omega.unwrap();
+    if (!(((tmp144 = (omega)) === ~~tmp144 && (0) <= tmp144) && ((tmp145 = (alpha)) === ~~tmp145 && ((0) <= (_ref1 = tmp145) && _ref1 < (omega + 1))))) {
       domainError();
     }
-    available = (function() {
+    r = (function() {
       _results = [];
-      for (var _i = 0; 0 <= y ? _i < y : _i > y; 0 <= y ? _i++ : _i--){ _results.push(_i); }
+      for (var _i = 0, _ref2 = omega; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; 0 <= _ref2 ? _i++ : _i--){ _results.push(_i); }
       return _results;
     }).apply(this);
-    return new APLArray((function() {
-      var _j, _results1;
-      _results1 = [];
-      for (_j = 0; 0 <= x ? _j < x : _j > x; 0 <= x ? _j++ : _j--) {
-        _results1.push(available.splice(Math.floor(available.length * Math.random()), 1)[0]);
-      }
-      return _results1;
-    })());
+    for (i = _j = 0, _ref3 = alpha; _j < _ref3; i = _j += 1) {
+      j = i + Math.floor(Math.random() * (omega - i));
+      h = r[i];
+      r[i] = r[j];
+      r[j] = h;
+    }
+    return new APLArray(r.slice(0, alpha));
   };
   addVocabulary({
     '↗': function(omega) {
@@ -3301,7 +3310,7 @@
   });
   addVocabulary({
     '⍴': function(omega, alpha) {
-      var a, axis, d, e, n, shape, t138, t139, t140, t141, t142, t143, t144, t145, tmp137, x, _i, _j, _len, _ref1;
+      var a, axis, d, e, n, shape, t147, t148, t149, t150, t151, t152, t153, t154, tmp146, x, _i, _j, _len, _ref1;
       if (alpha) {
         if (alpha.shape.length > 1) {
           rankError();
@@ -3309,40 +3318,40 @@
         shape = alpha.toArray();
         for (_i = 0, _len = shape.length; _i < _len; _i++) {
           d = shape[_i];
-          if (!((tmp137 = (d)) === ~~tmp137 && (0) <= tmp137)) {
+          if (!((tmp146 = (d)) === ~~tmp146 && (0) <= tmp146)) {
             domainError();
           }
         }
         n = prod(shape);
         a = [];
         try {
-          t138 = omega;
-          if (!t138.empty()) {
-            t141 = t138.data;
-            t142 = t138.shape;
-            t143 = t138.stride;
-            t144 = t142.length - 1;
-            t139 = t138.offset;
-            t145 = [];
-            for (axis = _j = 0, _ref1 = t142.length; _j < _ref1; axis = _j += 1) {
-              t145.push(0);
+          t147 = omega;
+          if (!t147.empty()) {
+            t149 = t147.data;
+            t150 = t147.shape;
+            t151 = t147.stride;
+            t152 = t150.length - 1;
+            t154 = t147.offset;
+            t153 = [];
+            for (axis = _j = 0, _ref1 = t150.length; _j < _ref1; axis = _j += 1) {
+              t153.push(0);
             }
             while (true) {
-              x = t141[t139];
+              x = t149[t154];
               if (a.length >= n) {
                 throw 'break';
               }
               a.push(x);
-              t140 = t144;
-              while (t140 >= 0 && t145[t140] + 1 === t142[t140]) {
-                t139 -= t145[t140] * t143[t140];
-                t145[t140--] = 0;
+              t148 = t152;
+              while (t148 >= 0 && t153[t148] + 1 === t150[t148]) {
+                t154 -= t153[t148] * t151[t148];
+                t153[t148--] = 0;
               }
-              if (t140 < 0) {
+              if (t148 < 0) {
                 break;
               }
-              t145[t140]++;
-              t139 += t143[t140];
+              t153[t148]++;
+              t154 += t151[t148];
             }
           }
         } catch (_error) {
@@ -3369,20 +3378,20 @@
   });
   addVocabulary({
     '⌽': rotate = function(omega, alpha, axis) {
-      var a, data, indices, n, offset, p, shape, step, stride, tmp146, tmp147, tmp148;
+      var a, data, indices, n, offset, p, shape, step, stride, tmp155, tmp156, tmp157;
       if (!(typeof axis === 'undefined' || axis instanceof APLArray)) {
         throw Error("\"assert typeof axis is 'undefined' or axis instanceof APLArray\" at src/vocabulary/rotate.coffee:4");
       }
       if (alpha) {
         axis = !axis ? omega.shape.length - 1 : axis.unwrap();
-        if (!((tmp146 = (axis)) === ~~tmp146)) {
+        if (!((tmp155 = (axis)) === ~~tmp155)) {
           domainError();
         }
         if (omega.shape.length && !((0 <= axis && axis < omega.shape.length))) {
           indexError();
         }
         step = alpha.unwrap();
-        if (!((tmp147 = (step)) === ~~tmp147)) {
+        if (!((tmp156 = (step)) === ~~tmp156)) {
           domainError();
         }
         if (!step) {
@@ -3417,7 +3426,7 @@
             lengthError();
           }
           axis = axis.unwrap();
-          if (!((tmp148 = (axis)) === ~~tmp148)) {
+          if (!((tmp157 = (axis)) === ~~tmp157)) {
             domainError();
           }
           if (!((0 <= axis && axis < omega.shape.length))) {
@@ -3555,7 +3564,7 @@
     };
   };
   compressOrReplicate = function(omega, alpha, axis) {
-    var a, b, data, filler, i, indices, n, p, shape, tmp149, x, _i, _j, _len, _ref1;
+    var a, b, data, filler, i, indices, n, p, shape, tmp158, x, _i, _j, _len, _ref1;
     if (!omega.shape.length) {
       omega = new APLArray([omega.unwrap()]);
     }
@@ -3576,7 +3585,7 @@
     b = [];
     for (i = _i = 0, _len = a.length; _i < _len; i = ++_i) {
       x = a[i];
-      if (!((tmp149 = (x)) === ~~tmp149)) {
+      if (!((tmp158 = (x)) === ~~tmp158)) {
         domainError();
       }
       shape[axis] += Math.abs(x);
@@ -3730,7 +3739,7 @@
     }
   });
   prepareForIndexing = function(omega, alpha, axes) {
-    var alphaItems, axis, d, i, subscriptShapes, subscripts, tmp150, tmp151, x, _i, _j, _k, _l, _len, _len1, _m, _ref1, _ref2, _ref3, _ref4, _results, _results1;
+    var alphaItems, axis, d, i, subscriptShapes, subscripts, tmp159, tmp160, x, _i, _j, _k, _l, _len, _len1, _m, _ref1, _ref2, _ref3, _ref4, _results, _results1;
     if (!(alpha instanceof APLArray)) {
       throw Error("\"assert ⍺ instanceof APLArray\" at src/vocabulary/squish.coffee:123");
     }
@@ -3759,7 +3768,7 @@
     subscriptShapes = Array(omega.shape.length);
     for (i = _j = 0, _len = axes.length; _j < _len; i = ++_j) {
       axis = axes[i];
-      if (!((tmp150 = (axis)) === ~~tmp150)) {
+      if (!((tmp159 = (axis)) === ~~tmp159)) {
         domainError();
       }
       if (!((0 <= axis && axis < omega.shape.length))) {
@@ -3774,7 +3783,7 @@
       _ref2 = subscripts[axis];
       for (_k = 0, _len1 = _ref2.length; _k < _len1; _k++) {
         x = _ref2[_k];
-        if (!((tmp151 = (x)) === ~~tmp151)) {
+        if (!((tmp160 = (x)) === ~~tmp160)) {
           domainError();
         }
         if (!((0 <= x && x < omega.shape[axis]))) {
@@ -3893,7 +3902,7 @@
   };
   addVocabulary({
     '⍉': function(omega, alpha) {
-      var i, n, shape, stride, tmp152, u, x, _i, _j, _len, _len1, _ref1;
+      var i, n, shape, stride, tmp161, u, x, _i, _j, _len, _len1, _ref1;
       if (alpha) {
         if (alpha.shape.length > 1) {
           rankError();
@@ -3910,7 +3919,7 @@
         _ref1 = alpha.toArray();
         for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
           x = _ref1[i];
-          if (!((tmp152 = (x)) === ~~tmp152 && (0) <= tmp152)) {
+          if (!((tmp161 = (x)) === ~~tmp161 && (0) <= tmp161)) {
             domainError();
           }
           if (x >= n) {
@@ -4556,7 +4565,10 @@
     return exec(aplCode);
   };
 
-  apl.approx = approx;
+  extend(apl, {
+    format: format,
+    approx: approx
+  });
 
   if (typeof module !== "undefined" && module !== null) {
     module.exports = apl;
@@ -4753,7 +4765,7 @@ jQuery(function($) {
       try {
         code = extractTextFromDOM(document.getElementById('editor')).replace(/\xa0/g, ' ');
         result = apl(code);
-        $('#result').removeClass('error').text(result + '\n');
+        $('#result').removeClass('error').text("" + (apl.format(result).join('\n')) + "\n");
       } catch (_error) {
         err = _error;
         if (typeof console !== "undefined" && console !== null) {
