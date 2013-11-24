@@ -62,7 +62,7 @@ withAlphaAndOmega ->
   include 'compiler'
 
 @apl = apl = (aplCode) -> exec aplCode
-apl.approx = approx
+extend apl, {format, approx}
 if module?
   module.exports = apl
   if module is require?.main then do ->
