@@ -1,7 +1,7 @@
 addVocabulary
 
-  '⍕': (omega, alpha) ->
-    if alpha
+  '⍕': (⍵, ⍺) ->
+    if ⍺
 
       # Format by example or specification (`⍕`)
       nonceError()
@@ -30,7 +30,7 @@ addVocabulary
       # ...                       '   4     5     6 ',
       # ...                       ' 100   200   300 ')
       # ⍕1 ⍬ 2 '' 3     <=> 1 11⍴'1    2    3'
-      t = format omega
+      t = format ⍵
       new APLArray t.join(''), [t.length, t[0].length]
 
 # Format an APL object as an array of strings

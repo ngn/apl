@@ -15,13 +15,13 @@ addVocabulary
       assert typeof f is 'function'
 
     if typeof g is 'function'
-      (omega, alpha) -> # "power limit" operator
+      (⍵, ⍺) -> # "power limit" operator
         loop
-          omega1 = f omega, alpha
-          if g(omega, omega1).toBool() then return omega
-          omega = omega1
+          omega1 = f ⍵, ⍺
+          if g(⍵, omega1).toBool() then return ⍵
+          ⍵ = omega1
     else
       n = g.toInt 0
-      (omega, alpha) ->
-        for [0...n] then omega = f omega, alpha
-        omega
+      (⍵, ⍺) ->
+        for [0...n] then ⍵ = f ⍵, ⍺
+        ⍵

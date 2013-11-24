@@ -14,4 +14,4 @@ addVocabulary
     assert x instanceof APLArray
     if not x.isSingleton() then rankError()
     if x.shape.length then x = APLArray.scalar x.unwrap()
-    withIdentity x, (omega, alpha, axis) -> f omega, alpha, axis
+    withIdentity x, (⍵, ⍺, axis) -> f ⍵, ⍺, axis

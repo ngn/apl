@@ -40,10 +40,10 @@ pervasive = ({monad, dyad}) ->
           else assert 0
     else
       nonceError
-  (omega, alpha) ->
-    assert omega instanceof APLArray
-    assert alpha instanceof APLArray or not alpha?
-    (if alpha? then pervadeDyadic else pervadeMonadic) omega, alpha
+  (⍵, ⍺) ->
+    assert ⍵ instanceof APLArray
+    assert ⍺ instanceof APLArray or not ⍺?
+    (if ⍺? then pervadeDyadic else pervadeMonadic) ⍵, ⍺
 
 real = (f) -> (x, y, axis) ->
   if typeof x is 'number' and (not y? or typeof y is 'number')

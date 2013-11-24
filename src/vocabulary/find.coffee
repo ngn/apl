@@ -1,7 +1,7 @@
 addVocabulary
 
-  '⍷': (omega, alpha) ->
-    if alpha
+  '⍷': (⍵, ⍺) ->
+    if ⍺
 
       # Find (`⍷`)
       #
@@ -43,39 +43,39 @@ addVocabulary
       # (2 3 0⍴0)⍷(3 4 5⍴0) <=> 3 4 5⍴1
       # (2 3 4⍴0)⍷(3 4 0⍴0) <=> 3 4 0⍴0
       # (2 3 0⍴0)⍷(3 4 0⍴0) <=> 3 4 0⍴0
-      if alpha.shape.length > omega.shape.length
-        return new APLArray [0], omega.shape, repeat [0], omega.shape.length
-      if alpha.shape.length < omega.shape.length
-        alpha = new APLArray( # prepend ones to the shape of alpha
-          alpha.data
-          repeat([1], omega.shape.length - alpha.shape.length).concat(alpha.shape)
-          repeat([0], omega.shape.length - alpha.shape.length).concat(alpha.stride)
-          alpha.offset
+      if ⍺.shape.length > ⍵.shape.length
+        return new APLArray [0], ⍵.shape, repeat [0], ⍵.shape.length
+      if ⍺.shape.length < ⍵.shape.length
+        ⍺ = new APLArray( # prepend ones to the shape of ⍺
+          ⍺.data
+          repeat([1], ⍵.shape.length - ⍺.shape.length).concat(⍺.shape)
+          repeat([0], ⍵.shape.length - ⍺.shape.length).concat(⍺.stride)
+          ⍺.offset
         )
-      if prod(alpha.shape) is 0
-        return new APLArray [1], omega.shape, repeat [0], omega.shape.length
+      if prod(⍺.shape) is 0
+        return new APLArray [1], ⍵.shape, repeat [0], ⍵.shape.length
       findShape = []
-      for i in [0...omega.shape.length]
-        d = omega.shape[i] - alpha.shape[i] + 1
-        if d <= 0 then return new APLArray [0], omega.shape, repeat [0], omega.shape.length
+      for i in [0...⍵.shape.length]
+        d = ⍵.shape[i] - ⍺.shape[i] + 1
+        if d <= 0 then return new APLArray [0], ⍵.shape, repeat [0], ⍵.shape.length
         findShape.push d
-      stride = strideForShape omega.shape
-      data = repeat [0], prod omega.shape
-      p = omega.offset
+      stride = strideForShape ⍵.shape
+      data = repeat [0], prod ⍵.shape
+      p = ⍵.offset
       q = 0
       indices = repeat [0], findShape.length
       loop
-        data[q] = +match alpha, new APLArray omega.data, alpha.shape, omega.stride, p
+        data[q] = +match ⍺, new APLArray ⍵.data, ⍺.shape, ⍵.stride, p
         a = findShape.length - 1
         while a >= 0 and indices[a] + 1 is findShape[a]
-          p -= indices[a] * omega.stride[a]
+          p -= indices[a] * ⍵.stride[a]
           q -= indices[a] * stride[a]
           indices[a--] = 0
         if a < 0 then break
-        p += omega.stride[a]
+        p += ⍵.stride[a]
         q += stride[a]
         indices[a]++
-      new APLArray data, omega.shape
+      new APLArray data, ⍵.shape
 
     else
       nonceError()

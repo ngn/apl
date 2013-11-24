@@ -8,12 +8,12 @@ addVocabulary
   # ⍎'undefinedVariable' !!!
   # ⍎'1 2 (3'            !!!
   # ⍎123                 !!!
-  '⍎': (omega, alpha) ->
-    if alpha
+  '⍎': (⍵, ⍺) ->
+    if ⍺
       nonceError()
     else
       s = ''
-      each omega, (c) ->
+      each ⍵, (c) ->
         if typeof c isnt 'string' then domainError()
         s += c
       exec s

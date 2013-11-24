@@ -40,34 +40,34 @@ addVocabulary
   # ... coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
   # ... data[coll1⍋data;]
   # ...   <=> 6 4 ⍴ 'ABELABLEACESACREaBELaBLE'
-  '⍋': (omega, alpha) -> grade omega, alpha, 1
+  '⍋': (⍵, ⍺) -> grade ⍵, ⍺, 1
 
   # Grade down (`⍒`)
   #
   # ⍒3 1 8 <=> 2 0 1
-  '⍒': (omega, alpha) -> grade omega, alpha, -1
+  '⍒': (⍵, ⍺) -> grade ⍵, ⍺, -1
 
 # Helper for `⍋` and `⍒`
-grade = (omega, alpha, direction) ->
+grade = (⍵, ⍺, direction) ->
   h = {} # maps a character to its index in the collation
-  if alpha
-    if not alpha.shape.length
+  if ⍺
+    if not ⍺.shape.length
       rankError()
     h = {}
-    each alpha, (x, indices) ->
+    each ⍺, (x, indices) ->
       if typeof x isnt 'string' then domainError()
       h[x] = indices[indices.length - 1]
 
-  if not omega.shape.length
+  if not ⍵.shape.length
     rankError()
 
-  new APLArray [0...omega.shape[0]]
+  new APLArray [0...⍵.shape[0]]
     .sort (i, j) ->
-      p = omega.offset
-      indices = repeat [0], omega.shape.length
+      p = ⍵.offset
+      indices = repeat [0], ⍵.shape.length
       loop
-        x = omega.data[p + i * omega.stride[0]]
-        y = omega.data[p + j * omega.stride[0]]
+        x = ⍵.data[p + i * ⍵.stride[0]]
+        y = ⍵.data[p + j * ⍵.stride[0]]
         tx = typeof x
         ty = typeof y
         if tx < ty then return -direction
@@ -77,10 +77,10 @@ grade = (omega, alpha, direction) ->
         if x < y then return -direction
         if x > y then return direction
         a = indices.length - 1
-        while a > 0 and indices[a] + 1 is omega.shape[a]
-          p -= omega.stride[a] * indices[a]
+        while a > 0 and indices[a] + 1 is ⍵.shape[a]
+          p -= ⍵.stride[a] * indices[a]
           indices[a--] = 0
         if a <= 0 then break
-        p += omega.stride[a]
+        p += ⍵.stride[a]
         indices[a]++
       0

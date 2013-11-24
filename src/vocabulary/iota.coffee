@@ -1,7 +1,7 @@
 addVocabulary
 
-  '⍳': (omega, alpha) ->
-    if alpha
+  '⍳': (⍵, ⍺) ->
+    if ⍺
       # Index of (`⍳`)
       #
       #     2 5 9 14 20 ⍳ 9                           <=> 2
@@ -18,12 +18,12 @@ addVocabulary
       #     123 123 ⍳ 123                             <=> 0
       #     ⍬ ⍳ 123 234                               <=> 0 0
       #     123 234 ⍳ ⍬                               <=> ⍬
-      if alpha.shape.length isnt 1
+      if ⍺.shape.length isnt 1
         rankError()
-      omega.map (x) ->
+      ⍵.map (x) ->
         try
-          r = alpha.shape
-          each alpha, (y, indices) ->
+          r = ⍺.shape
+          each ⍺, (y, indices) ->
             if match x, y
               r = indices
               throw 'break'
@@ -45,8 +45,8 @@ addVocabulary
       # ...         (1 1 0)(1 1 1)(1 1 2)(1 1 3)
       # ...         (1 2 0)(1 2 1)(1 2 2)(1 2 3))
       # ⍴⍳2 3 4 <=> 2 3 4
-      if omega.shape.length > 1 then rankError()
-      a = omega.toArray()
+      if ⍵.shape.length > 1 then rankError()
+      a = ⍵.toArray()
       for d in a when not isInt d, 0 then domainError()
       data = []
       if prod a

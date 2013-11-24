@@ -1,7 +1,7 @@
 addVocabulary
 
-  '?': (omega, alpha) ->
-    if alpha then deal omega, alpha else roll omega
+  '?': (⍵, ⍺) ->
+    if ⍺ then deal ⍵, ⍺ else roll ⍵
 
 # Roll (`?`)
 #
@@ -20,9 +20,9 @@ roll = pervasive monad: real (x) -> Math.floor Math.random() * x
 # 0 ? 0   <=> ⍬
 # 1 ? 1   <=> ,0
 # 5 ? 3   !!! DOMAIN ERROR
-deal = (omega, alpha) ->
-  y = omega.unwrap()
-  x = alpha.unwrap()
+deal = (⍵, ⍺) ->
+  y = ⍵.unwrap()
+  x = ⍺.unwrap()
   if x > y then domainError()
   available = [0...y]
   new APLArray(for [0...x] then available.splice(Math.floor(available.length * Math.random()), 1)[0])
