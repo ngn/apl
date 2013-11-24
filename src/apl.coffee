@@ -1,5 +1,6 @@
+macro -> macro.fileToNode 'node_modules/macronym/assert.coffee'
+
 macro include (f) -> macro.fileToNode "src/#{macro.nodeToVal f}.coffee"
-include 'macros'
 include 'helpers'
 include 'errors'
 include 'array'

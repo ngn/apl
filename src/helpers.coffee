@@ -1,3 +1,17 @@
+macro isInt (x, start, end) ->
+  macro.tmpCounter ?= 0
+  new macro.Parens(
+    (
+      if end then        macro.codeToNode -> (tmp = x) is ~~tmp and start <= tmp < end
+      else if start then macro.codeToNode -> (tmp = x) is ~~tmp and start <= tmp
+      else               macro.codeToNode -> (tmp = x) is ~~tmp
+    ).subst
+      tmp:   macro.csToNode "tmp#{macro.tmpCounter++}"
+      x:     new macro.Parens x
+      start: new macro.Parens start
+      end:   new macro.Parens end
+  )
+
 prod = (xs) -> r = 1; (for x in xs then r *= x); r
 all = (xs) -> (for x in xs when not x then return false); true
 
