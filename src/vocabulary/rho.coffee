@@ -16,8 +16,13 @@ addVocabulary
       shape = alpha.toArray()
       for d in shape when not isInt d, 0 then domainError()
       n = prod shape
-      a = omega.toArray n
-      assert a.length <= n
+      a = []
+      try
+        each omega, (x) ->
+          if a.length >= n then throw 'break'
+          a.push x
+      catch e
+        if e isnt 'break' then throw e
       if a.length
         while 2 * a.length < n then a = a.concat a
         if a.length isnt n then a = a.concat a[... n - a.length]

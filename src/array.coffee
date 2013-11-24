@@ -116,14 +116,9 @@ class APLArray
     each2 @, a, (x, y, indices) -> data.push f x, y, indices
     new APLArray data, @shape
 
-  toArray: (limit = Infinity) ->
+  toArray: ->
     r = []
-    try
-      each @, (x) ->
-        if r.length >= limit then throw 'break'
-        r.push x
-    catch e
-      if e isnt 'break' then throw e
+    each @, (x) -> r.push x
     r
 
   toInt: (start = -Infinity, end = Infinity) ->
