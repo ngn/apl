@@ -37,19 +37,19 @@ addVocabulary
 # 2 3 ∘.{⍺×⍵} 4 5   <=> 2 2⍴ 8 10 12 15
 outerProduct = (f) ->
   assert typeof f is 'function'
-  (omega, alpha) ->
-    if not alpha
+  (⍵, ⍺) ->
+    if not ⍺
       syntaxError 'Adverb ∘. (Outer product) can be applied to dyadic verbs only'
-    a = alpha.toArray()
-    b = omega.toArray()
+    a = ⍺.toArray()
+    b = ⍵.toArray()
     data = []
     for x in a then for y in b
       if not (x instanceof APLArray) then x = APLArray.scalar x
       if not (y instanceof APLArray) then y = APLArray.scalar y
       z = f y, x
-      if z.shape.length is 0 then z = z.unwrap()
+      if !⍴⍴ z then z = z.unwrap()
       data.push z
-    new APLArray data, alpha.shape.concat(omega.shape)
+    new APLArray data, ⍴(⍺).concat ⍴ ⍵
 
 
 # Inner product (`.`)
@@ -68,14 +68,12 @@ outerProduct = (f) ->
 # 7 +.= 7               <=> 1
 # (3 2⍴5 ¯3 ¯2 4 ¯1 0) +.× 2 2⍴6 ¯3 5 7  <=> 3 2⍴15 ¯36 8 34 ¯6 3
 innerProduct = (g, f) ->
-  each = vocabulary['¨']
-  enclose = vocabulary['⊂']
-  F = each reduce f
+  F = vocabulary['¨'] reduce f
   G = outerProduct g
-  (omega, alpha) ->
-    if alpha.shape.length is 0 then alpha = new APLArray [alpha.unwrap()]
-    if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
+  (⍵, ⍺) ->
+    if !⍴⍴ ⍺ then ⍺ = new APLArray [⍺.unwrap()]
+    if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
     F G(
-      enclose(omega, undefined, new APLArray [0])
-      enclose(alpha, undefined, new APLArray [alpha.shape.length - 1])
+      vocabulary['⊂'](⍵, undefined, new APLArray [0])
+      vocabulary['⊂'](⍺, undefined, new APLArray [⍴⍴(⍺) - 1])
     )

@@ -1,7 +1,7 @@
 addVocabulary
 
-  '∪': (omega, alpha) ->
-    if alpha
+  '∪': (⍵, ⍺) ->
+    if ⍺
 
       # Union (`∪`)
       #
@@ -20,10 +20,9 @@ addVocabulary
       # 'lentils' 'bulghur' (3 4 5) ∪ 'lentils' 'rice'
       # ... <=> 'lentils' 'bulghur' (3 4 5) 'rice'
       data = []
-      for a in [alpha, omega]
-        if a.shape.length > 1
-          rankError()
-        a.each (x) -> if not contains data, x then data.push x
+      for a in [⍺, ⍵]
+        if ⍴⍴(a) > 1 then rankError()
+        each a, (x) -> if not contains data, x then data.push x
       new APLArray data
 
     else
@@ -35,19 +34,19 @@ addVocabulary
       # ∪17                 <=> ,17
       # ∪⍬                  <=> ⍬
       data = []
-      omega.each (x) -> if not contains data, x then data.push x
+      each ⍵, (x) -> if not contains data, x then data.push x
       new APLArray data
 
-  '∩': (omega, alpha) ->
-    if alpha
+  '∩': (⍵, ⍺) ->
+    if ⍺
 
       # Intersection (`∩`)
       #
       # 'ABRA'∩'CAR'    <=> 'ARA'
       # 1 'PLUS' 2 ∩ ⍳5 <=> 1 2
       data = []
-      b = omega.toArray()
-      for x in alpha.toArray() when contains b, x then data.push x
+      b = ⍵.toArray()
+      for x in ⍺.toArray() when contains b, x then data.push x
       new APLArray data
 
     else

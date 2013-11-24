@@ -337,6 +337,6 @@ aplify = (x) ->
   if typeof x is 'string' then (if x.length is 1 then APLArray.scalar x else new APLArray x)
   else if typeof x is 'number' then APLArray.scalar x
   else if x instanceof Array
-    new APLArray(for y in x then (y = aplify y; if not y.shape.length then y.unwrap() else y))
+    new APLArray(for y in x then (y = aplify y; if ⍴⍴ y then y else y.unwrap()))
   else if x instanceof APLArray then x
   else aplError 'Cannot aplify object ' + x

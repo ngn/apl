@@ -1,10 +1,10 @@
 addVocabulary
 
-  '↑': (omega, alpha) ->
-    if alpha
-      take omega, alpha
+  '↑': (⍵, ⍺) ->
+    if ⍺
+      take ⍵, ⍺
     else
-      first omega
+      first ⍵
 
 # Take (`↑`)
 #
@@ -31,21 +31,18 @@ addVocabulary
 # ¯2↑3 3⍴⍳9        <=> 2 3⍴3+⍳6
 # 4↑3 3⍴⍳9         <=> 4 3⍴(⍳9),0 0 0
 # ⍬↑3 3⍴⍳9         <=> 3 3⍴⍳9
-take = (omega, alpha) ->
-  if alpha.shape.length > 1
-    rankError()
-  if omega.shape.length is 0
-    omega = new APLArray [omega.unwrap()], (if alpha.shape.length is 0 then [1] else repeat [1], alpha.shape[0])
-  a = alpha.toArray()
-  if a.length > omega.shape.length
-    rankError()
+take = (⍵, ⍺) ->
+  if ⍴⍴(⍺) > 1 then rankError()
+  if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()], (if !⍴⍴ ⍺ then [1] else repeat [1], ⍴(⍺)[0])
+  a = ⍺.toArray()
+  if a.length > ⍴⍴ ⍵ then rankError()
   for x in a when typeof x isnt 'number' or x isnt Math.floor x then domainError()
 
   mustCopy = false
-  shape = omega.shape[...]
+  shape = ⍴(⍵)[..]
   for x, i in a
     shape[i] = Math.abs x
-    if shape[i] > omega.shape[i]
+    if shape[i] > ⍴(⍵)[i]
       mustCopy = true
 
   if mustCopy
@@ -53,37 +50,37 @@ take = (omega, alpha) ->
     stride[stride.length - 1] = 1
     for i in [stride.length - 2 .. 0] by -1
       stride[i] = stride[i + 1] * shape[i + 1]
-    data = repeat [omega.getPrototype()], prod shape
+    data = repeat [⍵.getPrototype()], prod shape
     copyShape = shape[...]
-    p = omega.offset
+    p = ⍵.offset
     q = 0
     for x, i in a
-      copyShape[i] = Math.min omega.shape[i], Math.abs x
+      copyShape[i] = Math.min ⍴(⍵)[i], Math.abs x
       if x < 0
-        if x < -omega.shape[i]
-          q -= (x + omega.shape[i]) * stride[i]
+        if x < -⍴(⍵)[i]
+          q -= (x + ⍴(⍵)[i]) * stride[i]
         else
-          p += (x + omega.shape[i]) * omega.stride[i]
+          p += (x + ⍴(⍵)[i]) * ⍵.stride[i]
     if prod copyShape
       copyIndices = repeat [0], copyShape.length
       loop
-        data[q] = omega.data[p]
+        data[q] = ⍵.data[p]
         axis = copyShape.length - 1
         while axis >= 0 and copyIndices[axis] + 1 is copyShape[axis]
-          p -= copyIndices[axis] * omega.stride[axis]
+          p -= copyIndices[axis] * ⍵.stride[axis]
           q -= copyIndices[axis] * stride[axis]
           copyIndices[axis--] = 0
         if axis < 0 then break
-        p += omega.stride[axis]
+        p += ⍵.stride[axis]
         q += stride[axis]
         copyIndices[axis]++
     new APLArray data, shape, stride
   else
-    offset = omega.offset
+    offset = ⍵.offset
     for x, i in a
       if x < 0
-        offset += (omega.shape[i] + x) * omega.stride[i]
-    new APLArray omega.data, shape, omega.stride, offset
+        offset += (⍴(⍵)[i] + x) * ⍵.stride[i]
+    new APLArray ⍵.data, shape, ⍵.stride, offset
 
 # First (`↑`)
 #
@@ -93,6 +90,6 @@ take = (omega, alpha) ->
 # ↑123              <=> 123
 # ↑⍬                <=> 0
 #!    ↑''               <=> ' '
-first = (omega) ->
-  x = if omega.empty() then omega.getPrototype() else omega.data[omega.offset]
+first = (⍵) ->
+  x = if ⍵.empty() then ⍵.getPrototype() else ⍵.data[⍵.offset]
   if x instanceof APLArray then x else new APLArray [x], []

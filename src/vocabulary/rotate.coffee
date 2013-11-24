@@ -1,8 +1,8 @@
 addVocabulary
 
-  '⌽': rotate = (omega, alpha, axis) ->
+  '⌽': rotate = (⍵, ⍺, axis) ->
     assert typeof axis is 'undefined' or axis instanceof APLArray
-    if alpha
+    if ⍺
       # Rotate (`⌽`)
       #
       # 1⌽1 2 3 4 5 6             <=> 2 3 4 5 6 1
@@ -13,22 +13,21 @@ addVocabulary
       # 0⌽1 2 3 4                 <=> 1 2 3 4
       # 0⌽1234                    <=> 1234
       # 5⌽⍬                       <=> ⍬
-      axis = if not axis then omega.shape.length - 1 else axis.unwrap()
+      axis = if not axis then ⍴⍴(⍵) - 1 else axis.unwrap()
       if not isInt axis then domainError()
-      if omega.shape.length and not (0 <= axis < omega.shape.length)
-        indexError()
-      step = alpha.unwrap()
+      if ⍴⍴(⍵) and not (0 <= axis < ⍴⍴ ⍵) then indexError()
+      step = ⍺.unwrap()
       if not isInt step then domainError()
-      if not step then return omega
-      n = omega.shape[axis]
+      if not step then return ⍵
+      n = ⍴(⍵)[axis]
       step = (n + (step % n)) % n # force % to handle negatives properly
-      if omega.empty() or step is 0 then return omega
+      if ⍵.empty() or step is 0 then return ⍵
       data = []
-      {shape, stride} = omega
-      p = omega.offset
+      {shape, stride} = ⍵
+      p = ⍵.offset
       indices = repeat [0], shape.length
       loop
-        data.push omega.data[p + ((indices[axis] + step) % shape[axis] - indices[axis]) * stride[axis]]
+        data.push ⍵.data[p + ((indices[axis] + step) % shape[axis] - indices[axis]) * stride[axis]]
         a = shape.length - 1
         while a >= 0 and indices[a] + 1 is shape[a]
           p -= indices[a] * stride[a]
@@ -49,14 +48,14 @@ addVocabulary
         if not axis.isSingleton() then lengthError()
         axis = axis.unwrap()
         if not isInt axis then domainError()
-        if not (0 <= axis < omega.shape.length) then indexError()
+        if not (0 <= axis < ⍴⍴ ⍵) then indexError()
       else
-        axis = [omega.shape.length - 1]
-      if omega.shape.length is 0 then return omega
-      stride = omega.stride[...]
+        axis = [⍴⍴(⍵) - 1]
+      if ⍴⍴(⍵) is 0 then return ⍵
+      stride = ⍵.stride[...]
       stride[axis] = -stride[axis]
-      offset = omega.offset + (omega.shape[axis] - 1) * omega.stride[axis]
-      new APLArray omega.data, omega.shape, stride, offset
+      offset = ⍵.offset + (⍴(⍵)[axis] - 1) * ⍵.stride[axis]
+      new APLArray ⍵.data, ⍴(⍵), stride, offset
 
   # 1st axis reverse (`⊖`)
   #
@@ -69,5 +68,5 @@ addVocabulary
   # 1st axis rotate (`⊖`)
   #
   # 1⊖3 3⍴⍳9 <=> 3 3⍴3 4 5 6 7 8 0 1 2
-  '⊖': (omega, alpha, axis = APLArray.zero) ->
-    rotate omega, alpha, axis
+  '⊖': (⍵, ⍺, axis = APLArray.zero) ->
+    rotate ⍵, ⍺, axis

@@ -1,7 +1,7 @@
 addVocabulary
 
-  '⍕': (omega, alpha) ->
-    if alpha
+  '⍕': (⍵, ⍺) ->
+    if ⍺
 
       # Format by example or specification (`⍕`)
       nonceError()
@@ -30,7 +30,7 @@ addVocabulary
       # ...                       '   4     5     6 ',
       # ...                       ' 100   200   300 ')
       # ⍕1 ⍬ 2 '' 3     <=> 1 11⍴'1    2    3'
-      t = format omega
+      t = format ⍵
       new APLArray t.join(''), [t.length, t[0].length]
 
 # Format an APL object as an array of strings
@@ -42,9 +42,9 @@ format = (a) ->
     r = [('' + a).replace /-|Infinity/g, '¯']; r.align = 'right'; r
   else if typeof a is 'function' then ['λ']
   else if not (a instanceof APLArray) then ['' + a]
-  else if prod(a.shape) is 0 then ['']
+  else if prod(⍴ a) is 0 then ['']
   else
-    sa = a.shape
+    sa = ⍴ a
     a = a.toArray()
     if not sa.length then return format a[0]
     nRows = prod sa[...sa.length - 1]

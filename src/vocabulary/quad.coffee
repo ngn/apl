@@ -40,9 +40,9 @@ addVocabulary
   'set_⎕IO': (x) -> if match x, APLArray.zero then x else domainError 'The index origin (⎕IO) is fixed at 0'
 
   # Delay (`⎕DL`)
-  '⎕DL': cps (omega, alpha, _, callback) ->
+  '⎕DL': cps (⍵, ⍺, _, callback) ->
     t0 = +new Date
-    setTimeout (-> callback new APLArray [new Date - t0]), omega.unwrap()
+    setTimeout (-> callback new APLArray [new Date - t0]), ⍵.unwrap()
     return
 
   # Regular expression search
@@ -50,9 +50,9 @@ addVocabulary
   # 'b(c+)d' ⎕RE 'abcd' <=> 1 'bcd' (,'c')
   # 'B(c+)d' ⎕RE 'abcd' <=> ⍬
   # 'a(b'    ⎕RE 'c'           !!! DOMAIN ERROR
-  '⎕RE': (omega, alpha) ->
-    x = alpha.toSimpleString()
-    y = omega.toSimpleString()
+  '⎕RE': (⍵, ⍺) ->
+    x = ⍺.toSimpleString()
+    y = ⍵.toSimpleString()
     try re = new RegExp x catch e then domainError e.toString()
     if m = re.exec y
       r = [m.index]

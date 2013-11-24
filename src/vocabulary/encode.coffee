@@ -36,13 +36,13 @@ addVocabulary
   # ...            0 1 0
   # ...            1 1 4
   # ...            1 3 11)
-  '⊤': (omega, alpha) ->
-    assert alpha
-    a = alpha.toArray()
-    b = omega.toArray()
-    shape = alpha.shape.concat omega.shape
+  '⊤': (⍵, ⍺) ->
+    assert ⍺
+    a = ⍺.toArray()
+    b = ⍵.toArray()
+    shape = ⍴(⍺).concat ⍴ ⍵
     data = Array prod shape
-    n = if alpha.shape.length then alpha.shape[0] else 1
+    n = if ⍴⍴ ⍺ then ⍴(⍺)[0] else 1
     m = a.length / n
     for i in [0...m]
       for y, j in b

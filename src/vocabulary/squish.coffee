@@ -17,26 +17,26 @@ addVocabulary
   # 1     ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34 <=> 21 22 23 24
   # 2(1 0)⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34 <=> 32 31
   # (1 2)0⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34 <=> 21 31
-  '⌷': squish = (omega, alpha, axes) ->
-    if typeof omega is 'function' then return (x, y) -> omega x, y, alpha
-    if not alpha then nonceError()
+  '⌷': squish = (⍵, ⍺, axes) ->
+    if typeof ⍵ is 'function' then return (x, y) -> ⍵ x, y, ⍺
+    if not ⍺ then nonceError()
 
-    [subscripts, subscriptShapes] = prepareForIndexing omega, alpha, axes
+    [subscripts, subscriptShapes] = prepareForIndexing ⍵, ⍺, axes
 
     data = []
     if all(for x in subscripts then x.length)
       u = repeat [0], subscripts.length
-      p = omega.offset
+      p = ⍵.offset
       for a in [0...subscripts.length] by 1
-        p += subscripts[a][0] * omega.stride[a]
+        p += subscripts[a][0] * ⍵.stride[a]
       loop
-        data.push omega.data[p]
+        data.push ⍵.data[p]
         a = subscripts.length - 1
         while a >= 0 and u[a] + 1 is subscripts[a].length
-          p += (subscripts[a][0] - subscripts[a][u[a]]) * omega.stride[a]
+          p += (subscripts[a][0] - subscripts[a][u[a]]) * ⍵.stride[a]
           u[a--] = 0
         if a < 0 then break
-        p += (subscripts[a][u[a] + 1] - subscripts[a][u[a]]) * omega.stride[a]
+        p += (subscripts[a][u[a] + 1] - subscripts[a][u[a]]) * ⍵.stride[a]
         u[a]++
 
     new APLArray data, [].concat subscriptShapes...
@@ -63,9 +63,9 @@ addVocabulary
   # " X"[(3 3⍴⍳9)∊1 3 6 7 8] <=> 3 3⍴(' X ',
   # ...                               'X  ',
   # ...                               'XXX')
-  _index: (alphaAndAxes, omega) ->
-    [alpha, axes] = alphaAndAxes.toArray()
-    squish omega, alpha, axes
+  _index: (alphaAndAxes, ⍵) ->
+    [⍺, axes] = alphaAndAxes.toArray()
+    squish ⍵, ⍺, axes
 
   # a←⍳5 ⋄ a[1 3]←7 8 ⋄ a <=> 0 7 2 8 4
   # a←⍳5 ⋄ a[1 3]←7   ⋄ a <=> 0 7 2 7 4
@@ -84,22 +84,22 @@ addVocabulary
   # a←3 3⍴⍳9 ⋄ a[⍬;1 2]←789 ⋄ a <=> 3 3⍴⍳9
   # a←1 2 3 ⋄ a[]←4 5 6 ⋄ a <=> 4 5 6
   _substitute: (args) ->
-    [value, alpha, omega, axes] =
+    [value, ⍺, ⍵, axes] =
       for x in args.toArray()
         if x instanceof APLArray then x else new APLArray [x], []
-    [subscripts, subscriptShapes] = prepareForIndexing omega, alpha, axes
+    [subscripts, subscriptShapes] = prepareForIndexing ⍵, ⍺, axes
     indexShape = [].concat subscriptShapes...
     if value.isSingleton()
       value = new APLArray [value.unwrap()], indexShape, repeat([0], indexShape.length)
     else
-      if value.shape.length isnt indexShape.length
+      if indexShape.length isnt ⍴⍴ value
         rankError()
       else
         for n, i in indexShape
-          if value.shape[i] isnt n
+          if ⍴(value)[i] isnt n
             lengthError()
 
-    r = new APLArray omega.toArray(), omega.shape
+    r = new APLArray ⍵.toArray(), ⍴ ⍵
     p = 0 # pointer in r
     for a in [0...subscripts.length] by 1
       if subscripts[a].length is 0 then return r
@@ -119,33 +119,33 @@ addVocabulary
       u[a]++
     r
 
-prepareForIndexing = (omega, alpha, axes) ->
-  assert alpha instanceof APLArray
-  assert omega instanceof APLArray
+prepareForIndexing = (⍵, ⍺, axes) ->
+  assert ⍺ instanceof APLArray
+  assert ⍵ instanceof APLArray
   assert (not axes?) or axes instanceof APLArray
 
-  if alpha.shape.length > 1 then rankError()
-  alphaItems = alpha.toArray()
-  if alphaItems.length > omega.shape.length then lengthError()
+  if ⍴⍴(⍺) > 1 then rankError()
+  alphaItems = ⍺.toArray()
+  if alphaItems.length > ⍴⍴ ⍵ then lengthError()
 
   axes = if axes then axes.toArray() else [0...alphaItems.length]
   if alphaItems.length isnt axes.length then lengthError()
 
-  subscripts = Array omega.shape.length
-  subscriptShapes = Array omega.shape.length
+  subscripts = Array ⍴⍴ ⍵
+  subscriptShapes = Array ⍴⍴ ⍵
   for axis, i in axes
     if not isInt axis then domainError()
-    if not (0 <= axis < omega.shape.length) then rankError()
+    if not (0 <= axis < ⍴⍴ ⍵) then rankError()
     if typeof subscripts[axis] isnt 'undefined' then rankError 'Duplicate axis'
     d = alphaItems[i]
     subscripts[axis] = if d instanceof APLArray then d.toArray() else [d]
-    subscriptShapes[axis] = if d instanceof APLArray then d.shape else []
+    subscriptShapes[axis] = if d instanceof APLArray then ⍴ d else []
     for x in subscripts[axis]
       if not isInt x then domainError()
-      if not (0 <= x < omega.shape[axis]) then indexError()
+      if not (0 <= x < ⍴(⍵)[axis]) then indexError()
 
   for i in [0...subscripts.length] by 1 when typeof subscripts[i] is 'undefined'
-    subscripts[i] = [0...omega.shape[i]]
-    subscriptShapes[i] = [omega.shape[i]]
+    subscripts[i] = [0...⍴(⍵)[i]]
+    subscriptShapes[i] = [⍴(⍵)[i]]
 
   [subscripts, subscriptShapes]

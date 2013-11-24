@@ -1,7 +1,7 @@
 addVocabulary
 
-  '↓': (omega, alpha, axis) ->
-    if alpha
+  '↓': (⍵, ⍺, axis) ->
+    if ⍺
 
       # Drop (`↓`)
       #
@@ -18,27 +18,26 @@ addVocabulary
       # 0 1↓2                    <=> 1 0⍴0
       # 1 2↓3                    <=> 0 0⍴0
       # ⍬↓0                      <=> 0
-      if alpha.shape.length > 1
-        rankError()
-      a = alpha.toArray()
+      if ⍴⍴(⍺) > 1 then rankError()
+      a = ⍺.toArray()
       for x in a when not isInt x then domainError()
-      if omega.shape.length is 0
-        omega = new APLArray omega.data, repeat([1], a.length), repeat([0], a.length), omega.offset
+      if !⍴⍴ ⍵
+        ⍵ = new APLArray ⍵.data, repeat([1], a.length), repeat([0], a.length), ⍵.offset
       else
-        if a.length > omega.shape.length
+        if a.length > ⍴⍴ ⍵
           rankError()
 
-      shape = omega.shape[...]
-      offset = omega.offset
+      shape = ⍴(⍵)[..]
+      offset = ⍵.offset
       for x, i in a
-        shape[i] = Math.max 0, omega.shape[i] - Math.abs x
+        shape[i] = Math.max 0, ⍴(⍵)[i] - Math.abs x
         if x > 0
-          offset += x * omega.stride[i]
+          offset += x * ⍵.stride[i]
 
       if prod(shape) is 0
         new APLArray [], shape
       else
-        new APLArray omega.data, shape, omega.stride, offset
+        new APLArray ⍵.data, shape, ⍵.stride, offset
 
     else
 
@@ -48,12 +47,11 @@ addVocabulary
       # ↓(1 2)(3 4) <=> ⊂(1 2)(3 4)
       # ↓2 2⍴⍳4 <=> (0 1)(2 3)
       # ↓2 3 4⍴⍳24 <=> 2 3⍴(0 1 2 3)(4 5 6 7)(8 9 10 11)(12 13 14 15)(16 17 18 19)(20 21 22 23)
-      if omega.shape.length is 0
-        nonceError 'Split of scalar not implemented'
-      oshape = omega.shape[...omega.shape.length - 1]
+      if !⍴⍴ ⍵ then nonceError 'Split of scalar not implemented'
+      oshape = ⍴(⍵)[...⍴⍴(⍵) - 1]
       obound = oshape.reduce ((a, b) -> a * b), 1
-      ishape = omega.shape[omega.shape.length - 1]
-      array = omega.toArray()
+      ishape = ⍴(⍵)[⍴⍴(⍵) - 1]
+      array = ⍵.toArray()
       data = []
       for i in [0...obound]
         offset = i * ishape

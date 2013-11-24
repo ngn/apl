@@ -1,7 +1,7 @@
 addVocabulary
 
-  '⍉': (omega, alpha) ->
-    if alpha
+  '⍉': (⍵, ⍺) ->
+    if ⍺
       # Transpose (`⍉`)
       #
       # (2 2⍴⍳4)⍉2 2 2 2⍴⍳16 !!! RANK ERROR
@@ -16,23 +16,23 @@ addVocabulary
       # 0 0⍉2 3⍴⍳9 <=> 0 4
       # 0 0 0⍉3 3 3⍴⍳27 <=> 0 13 26
       # 0 1 0⍉3 3 3⍴⍳27 <=> 3 3⍴0 3 6 10 13 16 20 23 26
-      if alpha.shape.length > 1 then rankError()
-      if alpha.shape.length is 0 then alpha = new APLArray [alpha.unwrap()]
-      n = omega.shape.length
-      if alpha.shape[0] isnt n then lengthError()
+      if ⍴⍴(⍺) > 1 then rankError()
+      if !⍴⍴ ⍺ then ⍺ = new APLArray [⍺.unwrap()]
+      n = ⍴⍴ ⍵
+      if ⍴(⍺)[0] isnt n then lengthError()
       shape = []
       stride = []
-      for x, i in alpha.toArray()
+      for x, i in ⍺.toArray()
         if not isInt x, 0 then domainError()
         if x >= n then rankError()
         if shape[x]?
-          shape[x] = Math.min shape[x], omega.shape[i]
-          stride[x] += omega.stride[i]
+          shape[x] = Math.min shape[x], ⍴(⍵)[i]
+          stride[x] += ⍵.stride[i]
         else
-          shape[x] = omega.shape[i]
-          stride[x] = omega.stride[i]
+          shape[x] = ⍴(⍵)[i]
+          stride[x] = ⍵.stride[i]
       for u in shape when not u? then rankError()
-      new APLArray omega.data, shape, stride, omega.offset
+      new APLArray ⍵.data, shape, stride, ⍵.offset
     else
       # Transpose (`⍉`)
       #
@@ -47,8 +47,8 @@ addVocabulary
       # ⍉⍬                <=> ⍬
       # ⍉''               <=> ''
       new APLArray(
-        omega.data
-        omega.shape[...].reverse()
-        omega.stride[...].reverse()
-        omega.offset
+        ⍵.data
+        ⍴(⍵)[..].reverse()
+        ⍵.stride[...].reverse()
+        ⍵.offset
       )

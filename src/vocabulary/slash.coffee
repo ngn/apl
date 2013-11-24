@@ -1,16 +1,16 @@
 addVocabulary
 
-  '/': adverb (omega, alpha, axis) ->
-    if typeof omega is 'function'
-      reduce omega, alpha, axis
+  '/': adverb (⍵, ⍺, axis) ->
+    if typeof ⍵ is 'function'
+      reduce ⍵, ⍺, axis
     else
-      compressOrReplicate omega, alpha, axis
+      compressOrReplicate ⍵, ⍺, axis
 
-  '⌿': adverb (omega, alpha, axis = APLArray.zero) ->
-    if typeof omega is 'function'
-      reduce omega, alpha, axis
+  '⌿': adverb (⍵, ⍺, axis = APLArray.zero) ->
+    if typeof ⍵ is 'function'
+      reduce ⍵, ⍺, axis
     else
-      compressOrReplicate omega, alpha, axis
+      compressOrReplicate ⍵, ⍺, axis
 
 # Reduce (`/`)
 #
@@ -36,23 +36,23 @@ reduce = @reduce = (f, g, axis0) ->
   assert typeof f is 'function'
   assert typeof g is 'undefined'
   assert((typeof axis0 is 'undefined') or (axis0 instanceof APLArray))
-  (omega, alpha) ->
-    if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
-    axis = if axis0? then axis0.toInt() else omega.shape.length - 1
-    if not (0 <= axis < omega.shape.length) then rankError()
+  (⍵, ⍺) ->
+    if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
+    axis = if axis0? then axis0.toInt() else ⍴⍴(⍵) - 1
+    if not (0 <= axis < ⍴⍴ ⍵) then rankError()
 
-    if alpha
+    if ⍺
       isNWise = true
-      n = alpha.toInt()
+      n = ⍺.toInt()
       if n < 0
         isBackwards = true
         n = -n
     else
-      n = omega.shape[axis]
+      n = ⍴(⍵)[axis]
       isMonadic = true
 
-    shape = omega.shape[...]
-    shape[axis] = omega.shape[axis] - n + 1
+    shape = ⍴(⍵)[..]
+    shape[axis] = ⍴(⍵)[axis] - n + 1
     rShape = shape
     if isNWise
       if shape[axis] is 0 then return new APLArray [], rShape
@@ -61,39 +61,39 @@ reduce = @reduce = (f, g, axis0) ->
       rShape = rShape[...]
       rShape.splice axis, 1
 
-    if omega.empty()
+    if ⍵.empty()
       if (z = f.identity)?
-        assert z.shape.length is 0
+        assert !⍴⍴ z
         return new APLArray z.data, rShape, repeat([0], rShape.length), z.offset
       else
         domainError()
 
     data = []
     indices = repeat [0], shape.length
-    p = omega.offset
+    p = ⍵.offset
     loop
       if isBackwards
-        x = omega.data[p]
+        x = ⍵.data[p]
         x = if x instanceof APLArray then x else APLArray.scalar x
         for i in [1...n] by 1
-          y = omega.data[p + i * omega.stride[axis]]
+          y = ⍵.data[p + i * ⍵.stride[axis]]
           y = if y instanceof APLArray then y else APLArray.scalar y
           x = f x, y
       else
-        x = omega.data[p + (n - 1) * omega.stride[axis]]
+        x = ⍵.data[p + (n - 1) * ⍵.stride[axis]]
         x = if x instanceof APLArray then x else APLArray.scalar x
         for i in [n - 2 .. 0] by -1
-          y = omega.data[p + i * omega.stride[axis]]
+          y = ⍵.data[p + i * ⍵.stride[axis]]
           y = if y instanceof APLArray then y else APLArray.scalar y
           x = f x, y
-      if x.shape.length is 0 then x = x.unwrap()
+      if !⍴⍴ x then x = x.unwrap()
       data.push x
       a = indices.length - 1
       while a >= 0 and indices[a] + 1 is shape[a]
-        p -= indices[a] * omega.stride[a]
+        p -= indices[a] * ⍵.stride[a]
         indices[a--] = 0
       if a < 0 then break
-      p += omega.stride[a]
+      p += ⍵.stride[a]
       indices[a]++
 
     new APLArray data, rShape
@@ -122,16 +122,16 @@ reduce = @reduce = (f, g, axis0) ->
 # 2 ¯1 2 /[1] 3 1⍴(7 8 9) <=> 3 5⍴7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
 # 2 ¯1 2 /[1] 3 1⍴"ABC"   <=> 3 5⍴'AA AABB BBCC CC'
 # 2 ¯2 2 / 7              <=> 7 7 0 0 7 7
-compressOrReplicate = (omega, alpha, axis) ->
-  if omega.shape.length is 0 then omega = new APLArray [omega.unwrap()]
-  axis = if axis then axis.toInt 0, omega.shape.length else omega.shape.length - 1
-  if alpha.shape.length > 1 then rankError()
-  a = alpha.toArray()
-  n = omega.shape[axis]
+compressOrReplicate = (⍵, ⍺, axis) ->
+  if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
+  axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
+  if ⍴⍴(⍺) > 1 then rankError()
+  a = ⍺.toArray()
+  n = ⍴(⍵)[axis]
   if a.length is 1 then a = repeat a, n
   if n not in [1, a.length] then lengthError()
 
-  shape = omega.shape[...]
+  shape = ⍴(⍵)[..]
   shape[axis] = 0
   b = []
   for x, i in a
@@ -142,24 +142,24 @@ compressOrReplicate = (omega, alpha, axis) ->
     b = (for x in b then (if x? then 0 else x))
 
   data = []
-  if shape[axis] isnt 0 and not omega.empty()
-    filler = omega.getPrototype()
-    p = omega.offset
+  if shape[axis] isnt 0 and not ⍵.empty()
+    filler = ⍵.getPrototype()
+    p = ⍵.offset
     indices = repeat [0], shape.length
     loop
       x =
         if b[indices[axis]]?
-          omega.data[p + b[indices[axis]] * omega.stride[axis]]
+          ⍵.data[p + b[indices[axis]] * ⍵.stride[axis]]
         else
           filler
       data.push x
 
       i = shape.length - 1
       while i >= 0 and indices[i] + 1 is shape[i]
-        if i isnt axis then p -= omega.stride[i] * indices[i]
+        if i isnt axis then p -= ⍵.stride[i] * indices[i]
         indices[i--] = 0
       if i < 0 then break
-      if i isnt axis then p += omega.stride[i]
+      if i isnt axis then p += ⍵.stride[i]
       indices[i]++
 
   new APLArray data, shape

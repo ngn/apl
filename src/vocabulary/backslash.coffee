@@ -27,72 +27,72 @@ addVocabulary
   # 1 0 1⍀2 2⍴'ABCD'    <=> 3 2⍴'AB  CD'
   # 1 0 1\[0]2 2⍴'ABCD' <=> 3 2⍴'AB  CD'
   # 1 0 1\[1]2 2⍴'ABCD' <=> 2 3⍴'A BC D'
-  '\\': adverb (omega, alpha, axis) ->
-    if typeof omega is 'function'
-      scan omega, undefined, axis
+  '\\': adverb (⍵, ⍺, axis) ->
+    if typeof ⍵ is 'function'
+      scan ⍵, undefined, axis
     else
-      expand omega, alpha, axis
+      expand ⍵, ⍺, axis
 
-  '⍀': adverb (omega, alpha, axis = APLArray.zero) ->
-    if typeof omega is 'function'
-      scan omega, undefined, axis
+  '⍀': adverb (⍵, ⍺, axis = APLArray.zero) ->
+    if typeof ⍵ is 'function'
+      scan ⍵, undefined, axis
     else
-      expand omega, alpha, axis
+      expand ⍵, ⍺, axis
 
 # Helper for `\` and `⍀` in their adverbial sense
 scan = (f, g, axis) ->
   assert typeof g is 'undefined'
-  (omega, alpha) ->
-    assert not alpha?
-    if omega.shape.length is 0 then return omega
-    axis = if axis then axis.toInt 0, omega.shape.length else omega.shape.length - 1
-    omega.map (x, indices) ->
-      p = omega.offset
-      for index, a in indices then p += index * omega.stride[a]
+  (⍵, ⍺) ->
+    assert not ⍺?
+    if !⍴⍴ ⍵ then return ⍵
+    axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
+    ⍵.map (x, indices) ->
+      p = ⍵.offset
+      for index, a in indices then p += index * ⍵.stride[a]
       if not (x instanceof APLArray) then x = APLArray.scalar x
       for j in [0...indices[axis]] by 1
-        p -= omega.stride[axis]
-        y = omega.data[p]
+        p -= ⍵.stride[axis]
+        y = ⍵.data[p]
         if not (y instanceof APLArray) then y = APLArray.scalar y
         x = f x, y
-      if x.shape.length is 0 then x = x.unwrap()
+      if !⍴⍴ x then x = x.unwrap()
       x
 
 # Helper for `\` and `⍀` in their verbal sense
-expand = (omega, alpha, axis) ->
-  if omega.shape.length is 0 then nonceError 'Expand of scalar not implemented'
-  axis = if axis then axis.toInt 0, omega.shape.length else omega.shape.length - 1
-  if alpha.shape.length > 1 then rankError()
-  a = alpha.toArray()
+expand = (⍵, ⍺, axis) ->
+  if !⍴⍴ ⍵ then nonceError 'Expand of scalar not implemented'
+  axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
+  if ⍴⍴(⍺) > 1 then rankError()
+  a = ⍺.toArray()
 
-  shape = omega.shape[...]
+  shape = ⍴(⍵)[..]
   shape[axis] = a.length
   b = []
   i = 0
   for x in a
     if not isInt x, 0, 2 then domainError()
     b.push(if x > 0 then i++ else null)
-  if i isnt omega.shape[axis] then lengthError()
+  if i isnt ⍴(⍵)[axis] then lengthError()
 
   data = []
-  if shape[axis] isnt 0 and not omega.empty()
-    filler = omega.getPrototype()
-    p = omega.offset
+  if shape[axis] isnt 0 and not ⍵.empty()
+    filler = ⍵.getPrototype()
+    p = ⍵.offset
     indices = repeat [0], shape.length
     loop
       x =
         if b[indices[axis]]?
-          omega.data[p + b[indices[axis]] * omega.stride[axis]]
+          ⍵.data[p + b[indices[axis]] * ⍵.stride[axis]]
         else
           filler
       data.push x
 
       i = shape.length - 1
       while i >= 0 and indices[i] + 1 is shape[i]
-        if i isnt axis then p -= omega.stride[i] * indices[i]
+        if i isnt axis then p -= ⍵.stride[i] * indices[i]
         indices[i--] = 0
       if i < 0 then break
-      if i isnt axis then p += omega.stride[i]
+      if i isnt axis then p += ⍵.stride[i]
       indices[i]++
 
   new APLArray data, shape

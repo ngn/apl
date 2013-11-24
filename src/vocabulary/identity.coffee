@@ -13,5 +13,5 @@ addVocabulary
     assert typeof f is 'function'
     assert x instanceof APLArray
     if not x.isSingleton() then rankError()
-    if x.shape.length then x = APLArray.scalar x.unwrap()
-    withIdentity x, (omega, alpha, axis) -> f omega, alpha, axis
+    if ⍴⍴ x then x = APLArray.scalar x.unwrap()
+    withIdentity x, (⍵, ⍺, axis) -> f ⍵, ⍺, axis

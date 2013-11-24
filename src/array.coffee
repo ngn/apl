@@ -1,3 +1,92 @@
+macro ⍴ (a) -> macro.codeToNode(-> (a).shape).subst {a}
+macro ⍴⍴ (a) -> macro.codeToNode(-> (a).shape.length).subst {a}
+
+# each() is a hygienic macro that efficiently iterates the elements of an
+# APLArray in ravel order.  No function calls are made during iteration as
+# those are relatively expensive in JavaScript.
+macro each (a0, f) ->
+  macro.tmpCounter ?= 0
+  (macro.codeToNode ->
+    a = a0
+    if not a.empty()
+      data = a.data
+      shape = ⍴ a
+      stride = a.stride
+      lastAxis = shape.length - 1
+      p = a.offset
+      indices = []
+      for axis in [0...shape.length] by 1 then indices.push 0
+      loop
+        x = data[p]
+        body
+        axis = lastAxis
+        while axis >= 0 and indices[axis] + 1 is shape[axis]
+          p -= indices[axis] * stride[axis]
+          indices[axis--] = 0
+        if axis < 0 then break
+        indices[axis]++
+        p += stride[axis]
+  ).subst
+    a0:       a0
+    body:     f.body
+    a:        macro.csToNode "t#{macro.tmpCounter++}"
+    p:        macro.csToNode "t#{macro.tmpCounter++}"
+    axis:     macro.csToNode "t#{macro.tmpCounter++}"
+    data:     macro.csToNode "t#{macro.tmpCounter++}"
+    shape:    macro.csToNode "t#{macro.tmpCounter++}"
+    stride:   macro.csToNode "t#{macro.tmpCounter++}"
+    lastAxis: macro.csToNode "t#{macro.tmpCounter++}"
+    x:        macro.csToNode f.params[0].name.value
+    indices:  macro.csToNode f.params[1]?.name?.value ? "t#{macro.tmpCounter++}"
+
+# each2() is like each() but it iterates over two APLArray-s in parallel
+macro each2 (a0, b0, f) ->
+  macro.tmpCounter ?= 0
+  (macro.codeToNode ->
+    a = a0; data  = a.data; shape  = a.shape; stride  = a.stride
+    b = b0; data1 = b.data; shape1 = b.shape; stride1 = b.stride
+    assert shape.length is shape1.length
+    for axis in [0...shape.length] then assert shape[axis] is shape1[axis]
+    if not a.empty()
+      lastAxis = shape.length - 1
+      p = a.offset
+      q = b.offset
+      indices = []
+      for axis in [0..lastAxis] by 1 then indices.push 0
+      loop
+        x = data[p]
+        y = data1[q]
+        body
+        axis = lastAxis
+        while axis >= 0 and indices[axis] + 1 is shape[axis]
+          p -= indices[axis] * stride[axis]
+          q -= indices[axis] * stride1[axis]
+          indices[axis--] = 0
+        if axis < 0 then break
+        indices[axis]++
+        p += stride[axis]
+        q += stride1[axis]
+  ).subst
+    a0:       a0
+    b0:       b0
+    body:     f.body
+    a:        macro.csToNode "t#{macro.tmpCounter++}"
+    b:        macro.csToNode "t#{macro.tmpCounter++}"
+    p:        macro.csToNode "t#{macro.tmpCounter++}"
+    q:        macro.csToNode "t#{macro.tmpCounter++}"
+    axis:     macro.csToNode "t#{macro.tmpCounter++}"
+    data:     macro.csToNode "t#{macro.tmpCounter++}"
+    data1:    macro.csToNode "t#{macro.tmpCounter++}"
+    shape:    macro.csToNode "t#{macro.tmpCounter++}"
+    shape1:   macro.csToNode "t#{macro.tmpCounter++}"
+    stride:   macro.csToNode "t#{macro.tmpCounter++}"
+    stride1:  macro.csToNode "t#{macro.tmpCounter++}"
+    lastAxis: macro.csToNode "t#{macro.tmpCounter++}"
+    x:        macro.csToNode f.params[0].name.value
+    y:        macro.csToNode f.params[1].name.value
+    indices:  macro.csToNode f.params[2]?.name?.value ? "t#{macro.tmpCounter++}"
+
+
 class APLArray
 
   constructor: (@data, @shape, @stride, @offset = 0) ->
@@ -7,7 +96,7 @@ class APLArray
     assert @shape instanceof Array
     assert @stride instanceof Array
     assert @data.length is 0 or isInt @offset, 0, @data.length
-    assert @shape.length is @stride.length
+    assert @stride.length is ⍴⍴ @
     for x in @shape then assert isInt x, 0
     if @data.length
       for x, i in @stride then assert isInt x, -@data.length, @data.length + 1
@@ -18,67 +107,22 @@ class APLArray
     for d in @shape when not d then return true
     false
 
-  each: (f) ->
-    assert typeof f is 'function'
-    if @empty() then return
-    p = @offset
-    indices = for axis in @shape then 0
-    loop
-      f @data[p], indices
-      axis = @shape.length - 1
-      while axis >= 0 and indices[axis] + 1 is @shape[axis]
-        p -= indices[axis] * @stride[axis]
-        indices[axis--] = 0
-      if axis < 0 then break
-      indices[axis]++
-      p += @stride[axis]
-    return
-
-  each2: (a, f) ->
-    assert a instanceof APLArray
-    assert typeof f is 'function'
-    assert @shape.length is a.shape.length
-    for axis in [0...@shape.length]
-      assert @shape[axis] is a.shape[axis]
-    if @empty() then return
-    p = @offset
-    q = a.offset
-    indices = for axis in @shape then 0
-    loop
-      f @data[p], a.data[q], indices
-      axis = @shape.length - 1
-      while axis >= 0 and indices[axis] + 1 is @shape[axis]
-        p -= indices[axis] * @stride[axis]
-        q -= indices[axis] * a.stride[axis]
-        indices[axis--] = 0
-      if axis < 0 then break
-      indices[axis]++
-      p += @stride[axis]
-      q += a.stride[axis]
-    return
-
   map: (f) ->
     assert typeof f is 'function'
     data = []
-    @each (x, indices) -> data.push f x, indices
+    each @, (x, indices) -> data.push f x, indices
     new APLArray data, @shape
 
   map2: (a, f) ->
     assert a instanceof APLArray
     assert typeof f is 'function'
     data = []
-    @each2 a, (x, y, indices) -> data.push f x, y, indices
+    each2 @, a, (x, y, indices) -> data.push f x, y, indices
     new APLArray data, @shape
 
-  toArray: (limit = Infinity) ->
+  toArray: ->
     r = []
-    try
-      @each (x) ->
-        if r.length >= limit then throw 'break'
-        r.push x
-        return
-    catch e
-      if e isnt 'break' then throw e
+    each @, (x) -> r.push x
     r
 
   toInt: (start = -Infinity, end = Infinity) ->
@@ -88,10 +132,10 @@ class APLArray
   toBool: -> @toInt 0, 2
 
   toSimpleString: ->
-    if @shape.length > 1 then rankError()
+    if ⍴⍴(@) > 1 then rankError()
     if typeof @data is 'string'
-      if @shape.length is 0 then return @data[@offset]
-      if @shape[0] is 0 then return ''
+      if !⍴⍴ @ then return @data[@offset]
+      if ⍴(@)[0] is 0 then return ''
       if @stride[0] is 1 then return @data[@offset ... @offset + @shape[0]]
       @toArray.join ''
     else
@@ -103,8 +147,8 @@ class APLArray
     for n in @shape when n isnt 1 then return false
     true
 
-  isSimple: -> @shape.length is 0 and @data[@offset] not instanceof APLArray
-  unwrap: -> if prod(@shape) is 1 then @data[@offset] else lengthError()
+  isSimple: -> ⍴⍴(@) is 0 and @data[@offset] not instanceof APLArray
+  unwrap: -> if prod(⍴ @) is 1 then @data[@offset] else lengthError()
   getPrototype: -> if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' ' # todo
   toString: -> format(@).join '\n'
 

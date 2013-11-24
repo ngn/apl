@@ -13,14 +13,14 @@ addVocabulary
   '∘': conjunction (g, f) ->
     if typeof f is 'function'
       if typeof g is 'function'
-        (omega, alpha) -> # f∘g
-          f (g omega), alpha
+        (⍵, ⍺) -> # f∘g
+          f (g ⍵), ⍺
       else
-        (omega, alpha) -> # f∘B
-          assert not alpha?
-          f g, omega
+        (⍵, ⍺) -> # f∘B
+          assert not ⍺?
+          f g, ⍵
     else
       assert typeof g is 'function'
-      (omega, alpha) -> # A∘g
-        assert not alpha?
-        g omega, f
+      (⍵, ⍺) -> # A∘g
+        assert not ⍺?
+        g ⍵, f
