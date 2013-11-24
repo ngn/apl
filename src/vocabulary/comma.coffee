@@ -21,7 +21,7 @@ addVocabulary
       # ⍬,⍬                 <=> ⍬
       # ⍬,1                 <=> ,1
       # 1,⍬                 <=> ,1
-      nAxes = Math.max ⍺.shape.length, ⍵.shape.length
+      nAxes = Math.max ⍴⍴(⍺), ⍴⍴(⍵)
       if axis
         axis = axis.unwrap()
         if typeof axis isnt 'number' then domainError()
@@ -29,41 +29,41 @@ addVocabulary
       else
         axis = nAxes - 1
 
-      if ⍺.shape.length is 0 and ⍵.shape.length is 0
+      if ⍴⍴(⍺) is ⍴⍴(⍵) is 0
         return new APLArray [⍺.unwrap(), ⍵.unwrap()]
-      else if ⍺.shape.length is 0
-        s = ⍵.shape[...]
+      else if !⍴⍴ ⍺
+        s = ⍴(⍵)[..]
         if isInt axis then s[axis] = 1
-        ⍺ = new APLArray [⍺.unwrap()], s, repeat([0], ⍵.shape.length)
-      else if ⍵.shape.length is 0
-        s = ⍺.shape[...]
+        ⍺ = new APLArray [⍺.unwrap()], s, repeat([0], ⍴⍴ ⍵)
+      else if !⍴⍴ ⍵
+        s = ⍴(⍺)[..]
         if isInt axis then s[axis] = 1
-        ⍵ = new APLArray [⍵.unwrap()], s, repeat([0], ⍺.shape.length)
-      else if ⍺.shape.length + 1 is ⍵.shape.length
+        ⍵ = new APLArray [⍵.unwrap()], s, repeat([0], ⍴⍴ ⍺)
+      else if ⍴⍴(⍺) + 1 is ⍴⍴ ⍵
         if not isInt axis then rankError()
-        shape = ⍺.shape[...]
+        shape = ⍴(⍺)[..]
         shape.splice axis, 0, 1
-        stride = ⍺.stride[...]
+        stride = ⍺.stride[..]
         stride.splice axis, 0, 0
         ⍺ = new APLArray ⍺.data, shape, stride, ⍺.offset
-      else if ⍺.shape.length is ⍵.shape.length + 1
+      else if ⍴⍴(⍺) is ⍴⍴(⍵) + 1
         if not isInt axis then rankError()
-        shape = ⍵.shape[...]
+        shape = ⍴(⍵)[..]
         shape.splice axis, 0, 1
-        stride = ⍵.stride[...]
+        stride = ⍵.stride[..]
         stride.splice axis, 0, 0
         ⍵ = new APLArray ⍵.data, shape, stride, ⍵.offset
-      else if ⍺.shape.length isnt ⍵.shape.length
+      else if ⍴⍴(⍺) isnt ⍴⍴(⍵)
         rankError()
 
-      assert ⍺.shape.length is ⍵.shape.length
-      for i in [0...⍺.shape.length]
-        if i isnt axis and ⍺.shape[i] isnt ⍵.shape[i]
+      assert ⍴⍴(⍺) is ⍴⍴(⍵)
+      for i in [0...⍴⍴ ⍺]
+        if i isnt axis and ⍴(⍺)[i] isnt ⍴(⍵)[i]
           lengthError()
 
-      shape = ⍺.shape[...]
+      shape = ⍴(⍺)[..]
       if isInt axis
-        shape[axis] += ⍵.shape[axis]
+        shape[axis] += ⍴(⍵)[axis]
       else
         shape.splice Math.ceil(axis), 0, 2
       data = Array prod shape
@@ -81,11 +81,11 @@ addVocabulary
       if not ⍺.empty()
         r = 0 # pointer in data (the result)
         p = ⍺.offset # pointer in ⍺.data
-        pIndices = repeat [0], ⍺.shape.length
+        pIndices = repeat [0], ⍴⍴ ⍺
         loop
           data[r] = ⍺.data[p]
           a = pIndices.length - 1
-          while a >= 0 and pIndices[a] + 1 is ⍺.shape[a]
+          while a >= 0 and pIndices[a] + 1 is ⍴(⍺)[a]
             p -= pIndices[a] * ⍺.stride[a]
             r -= pIndices[a] * rStride[a]
             pIndices[a--] = 0
@@ -97,15 +97,15 @@ addVocabulary
       if not ⍵.empty()
         r = # pointer in data (the result)
           if isInt axis
-            stride[axis] * ⍺.shape[axis]
+            stride[axis] * ⍴(⍺)[axis]
           else
             stride[Math.ceil axis]
         q = ⍵.offset # pointer in ⍵.data
-        pIndices = repeat [0], ⍵.shape.length
+        pIndices = repeat [0], ⍴⍴ ⍵
         loop
           data[r] = ⍵.data[q]
           a = pIndices.length - 1
-          while a >= 0 and pIndices[a] + 1 is ⍵.shape[a]
+          while a >= 0 and pIndices[a] + 1 is ⍴(⍵)[a]
             q -= pIndices[a] * ⍵.stride[a]
             r -= pIndices[a] * rStride[a]
             pIndices[a--] = 0

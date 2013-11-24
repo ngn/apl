@@ -12,7 +12,7 @@ addVocabulary
       # ⍬⍴⍬       <=> 0
       # 2 3⍴⍬     <=> 2 3⍴0
       # 2 3⍴⍳7    <=> 2 3⍴0 1 2 3 4 5
-      if ⍺.shape.length > 1 then rankError()
+      if ⍴⍴(⍺) > 1 then rankError()
       shape = ⍺.toArray()
       for d in shape when not isInt d, 0 then domainError()
       n = prod shape
@@ -40,4 +40,4 @@ addVocabulary
       # ⍴'a'     <=> 0⍴0
       # ⍴'ab'    <=> 1⍴2
       # ⍴2 3 4⍴0 <=> 2 3 4
-      new APLArray ⍵.shape
+      new APLArray ⍴ ⍵

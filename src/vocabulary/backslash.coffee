@@ -44,8 +44,8 @@ scan = (f, g, axis) ->
   assert typeof g is 'undefined'
   (⍵, ⍺) ->
     assert not ⍺?
-    if ⍵.shape.length is 0 then return ⍵
-    axis = if axis then axis.toInt 0, ⍵.shape.length else ⍵.shape.length - 1
+    if !⍴⍴ ⍵ then return ⍵
+    axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
     ⍵.map (x, indices) ->
       p = ⍵.offset
       for index, a in indices then p += index * ⍵.stride[a]
@@ -55,24 +55,24 @@ scan = (f, g, axis) ->
         y = ⍵.data[p]
         if not (y instanceof APLArray) then y = APLArray.scalar y
         x = f x, y
-      if x.shape.length is 0 then x = x.unwrap()
+      if !⍴⍴ x then x = x.unwrap()
       x
 
 # Helper for `\` and `⍀` in their verbal sense
 expand = (⍵, ⍺, axis) ->
-  if ⍵.shape.length is 0 then nonceError 'Expand of scalar not implemented'
-  axis = if axis then axis.toInt 0, ⍵.shape.length else ⍵.shape.length - 1
-  if ⍺.shape.length > 1 then rankError()
+  if !⍴⍴ ⍵ then nonceError 'Expand of scalar not implemented'
+  axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
+  if ⍴⍴(⍺) > 1 then rankError()
   a = ⍺.toArray()
 
-  shape = ⍵.shape[...]
+  shape = ⍴(⍵)[..]
   shape[axis] = a.length
   b = []
   i = 0
   for x in a
     if not isInt x, 0, 2 then domainError()
     b.push(if x > 0 then i++ else null)
-  if i isnt ⍵.shape[axis] then lengthError()
+  if i isnt ⍴(⍵)[axis] then lengthError()
 
   data = []
   if shape[axis] isnt 0 and not ⍵.empty()

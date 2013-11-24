@@ -32,20 +32,17 @@ addVocabulary
 # 4↑3 3⍴⍳9         <=> 4 3⍴(⍳9),0 0 0
 # ⍬↑3 3⍴⍳9         <=> 3 3⍴⍳9
 take = (⍵, ⍺) ->
-  if ⍺.shape.length > 1
-    rankError()
-  if ⍵.shape.length is 0
-    ⍵ = new APLArray [⍵.unwrap()], (if ⍺.shape.length is 0 then [1] else repeat [1], ⍺.shape[0])
+  if ⍴⍴(⍺) > 1 then rankError()
+  if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()], (if !⍴⍴ ⍺ then [1] else repeat [1], ⍴(⍺)[0])
   a = ⍺.toArray()
-  if a.length > ⍵.shape.length
-    rankError()
+  if a.length > ⍴⍴ ⍵ then rankError()
   for x in a when typeof x isnt 'number' or x isnt Math.floor x then domainError()
 
   mustCopy = false
-  shape = ⍵.shape[...]
+  shape = ⍴(⍵)[..]
   for x, i in a
     shape[i] = Math.abs x
-    if shape[i] > ⍵.shape[i]
+    if shape[i] > ⍴(⍵)[i]
       mustCopy = true
 
   if mustCopy
@@ -58,12 +55,12 @@ take = (⍵, ⍺) ->
     p = ⍵.offset
     q = 0
     for x, i in a
-      copyShape[i] = Math.min ⍵.shape[i], Math.abs x
+      copyShape[i] = Math.min ⍴(⍵)[i], Math.abs x
       if x < 0
-        if x < -⍵.shape[i]
-          q -= (x + ⍵.shape[i]) * stride[i]
+        if x < -⍴(⍵)[i]
+          q -= (x + ⍴(⍵)[i]) * stride[i]
         else
-          p += (x + ⍵.shape[i]) * ⍵.stride[i]
+          p += (x + ⍴(⍵)[i]) * ⍵.stride[i]
     if prod copyShape
       copyIndices = repeat [0], copyShape.length
       loop
@@ -82,7 +79,7 @@ take = (⍵, ⍺) ->
     offset = ⍵.offset
     for x, i in a
       if x < 0
-        offset += (⍵.shape[i] + x) * ⍵.stride[i]
+        offset += (⍴(⍵)[i] + x) * ⍵.stride[i]
     new APLArray ⍵.data, shape, ⍵.stride, offset
 
 # First (`↑`)

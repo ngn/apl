@@ -34,8 +34,8 @@ pervasive = ({monad, dyad}) ->
           when 0x12       then xi = x.data[x.offset]; y.map (yi) -> pervadeDyadic xi, yi
           when 0x21, 0x11 then yi = y.data[y.offset]; x.map (xi) -> pervadeDyadic xi, yi # todo: use the larger shape for '11'
           when 0x22
-            if x.shape.length isnt y.shape.length then rankError()
-            for axis in [0...x.shape.length] by 1 when x.shape[axis] isnt y.shape[axis] then lengthError()
+            if ⍴⍴(x) isnt ⍴⍴(y) then rankError()
+            for axis in [0...⍴⍴ x] by 1 when ⍴(x)[axis] isnt ⍴(y)[axis] then lengthError()
             x.map2 y, pervadeDyadic
           else assert 0
     else
@@ -64,9 +64,9 @@ match = (x, y) ->
   if x instanceof APLArray
     if y not instanceof APLArray then false
     else
-      if x.shape.length isnt y.shape.length then return false
-      for axis in [0...x.shape.length] by 1
-        if x.shape[axis] isnt y.shape[axis] then return false
+      if ⍴⍴(x) isnt ⍴⍴(y) then return false
+      for axis in [0...⍴⍴ x] by 1
+        if ⍴(x)[axis] isnt ⍴(y)[axis] then return false
       r = true
       each2 x, y, (xi, yi) -> if not match xi, yi then r = false
       r
@@ -87,9 +87,9 @@ approx = (x, y) ->
   if x instanceof APLArray
     if not (y instanceof APLArray) then false
     else
-      if x.shape.length isnt y.shape.length then return false
-      for axis in [0...x.shape.length] by 1
-        if x.shape[axis] isnt y.shape[axis] then return false
+      if ⍴⍴(x) isnt ⍴⍴(y) then return false
+      for axis in [0...⍴⍴ x] by 1
+        if ⍴(x)[axis] isnt ⍴(y)[axis] then return false
       r = true
       each2 x, y, (xi, yi) -> if not approx xi, yi then r = false
       r
@@ -111,7 +111,7 @@ getAxisList = (axes, rank) ->
   assert isInt rank, 0
   if not axes? then return []
   assert axes instanceof APLArray
-  if axes.shape.length isnt 1 or axes.shape[0] isnt 1 then syntaxError() # [sic]
+  if ⍴⍴(axes) isnt 1 or ⍴(axes)[0] isnt 1 then syntaxError() # [sic]
   a = axes.unwrap()
   if a instanceof APLArray
     a = a.toArray()

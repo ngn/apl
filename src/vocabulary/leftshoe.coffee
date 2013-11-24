@@ -16,12 +16,12 @@ addVocabulary
       # ⊃⊂[1 0]2 3⍴⍳6 <=> 3 2⍴0 3 1 4 2 5
       # ⍴⊂[1 0]2 3⍴⍳6 <=> ⍬
       # ⍴⊃⊂⊂1 2 3     <=> ⍬
-      axes = if axes? then getAxisList axes, ⍵.shape.length else [0...⍵.shape.length]
+      axes = if axes? then getAxisList axes, ⍴⍴ ⍵ else [0...⍴⍴ ⍵]
       if ⍵.isSimple() then return ⍵
-      unitShape = for axis in axes then ⍵.shape[axis]
+      unitShape = for axis in axes then ⍴(⍵)[axis]
       unitStride = for axis in axes then ⍵.stride[axis]
-      resultAxes = for axis in [0...⍵.shape.length] when axis not in axes then axis
-      shape = for axis in resultAxes then ⍵.shape[axis]
+      resultAxes = for axis in [0...⍴⍴ ⍵] when axis not in axes then axis
+      shape = for axis in resultAxes then ⍴(⍵)[axis]
       stride = for axis in resultAxes then ⍵.stride[axis]
       data = []
       p = ⍵.offset

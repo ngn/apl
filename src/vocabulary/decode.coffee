@@ -51,10 +51,10 @@ addVocabulary
   # ...          0 1 10 11 100 101 110 111)
   '⊥': (⍵, ⍺) ->
     assert ⍺
-    if ⍺.shape.length is 0 then ⍺ = new APLArray [⍺.unwrap()]
-    if ⍵.shape.length is 0 then ⍵ = new APLArray [⍵.unwrap()]
-    lastDimA = ⍺.shape[⍺.shape.length - 1]
-    firstDimB = ⍵.shape[0]
+    if !⍴⍴ ⍺ then ⍺ = new APLArray [⍺.unwrap()]
+    if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
+    lastDimA = ⍴(⍺)[⍴⍴(⍺) - 1]
+    firstDimB = ⍴(⍵)[0]
     if lastDimA isnt 1 and firstDimB isnt 1 and lastDimA isnt firstDimB
       lengthError()
 
@@ -72,4 +72,4 @@ addVocabulary
           z = z * x[k] + y[k]
         data.push z
 
-    new APLArray data, ⍺.shape[...-1].concat ⍵.shape[1...]
+    new APLArray data, ⍴(⍺)[...-1].concat ⍴(⍵)[1..]

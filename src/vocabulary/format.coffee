@@ -42,9 +42,9 @@ format = (a) ->
     r = [('' + a).replace /-|Infinity/g, '¯']; r.align = 'right'; r
   else if typeof a is 'function' then ['λ']
   else if not (a instanceof APLArray) then ['' + a]
-  else if prod(a.shape) is 0 then ['']
+  else if prod(⍴ a) is 0 then ['']
   else
-    sa = a.shape
+    sa = ⍴ a
     a = a.toArray()
     if not sa.length then return format a[0]
     nRows = prod sa[...sa.length - 1]

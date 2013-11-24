@@ -21,8 +21,7 @@ addVocabulary
       # ... <=> 'lentils' 'bulghur' (3 4 5) 'rice'
       data = []
       for a in [⍺, ⍵]
-        if a.shape.length > 1
-          rankError()
+        if ⍴⍴(a) > 1 then rankError()
         each a, (x) -> if not contains data, x then data.push x
       new APLArray data
 

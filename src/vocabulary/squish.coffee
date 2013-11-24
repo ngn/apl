@@ -92,14 +92,14 @@ addVocabulary
     if value.isSingleton()
       value = new APLArray [value.unwrap()], indexShape, repeat([0], indexShape.length)
     else
-      if value.shape.length isnt indexShape.length
+      if indexShape.length isnt ⍴⍴ value
         rankError()
       else
         for n, i in indexShape
-          if value.shape[i] isnt n
+          if ⍴(value)[i] isnt n
             lengthError()
 
-    r = new APLArray ⍵.toArray(), ⍵.shape
+    r = new APLArray ⍵.toArray(), ⍴ ⍵
     p = 0 # pointer in r
     for a in [0...subscripts.length] by 1
       if subscripts[a].length is 0 then return r
@@ -124,28 +124,28 @@ prepareForIndexing = (⍵, ⍺, axes) ->
   assert ⍵ instanceof APLArray
   assert (not axes?) or axes instanceof APLArray
 
-  if ⍺.shape.length > 1 then rankError()
+  if ⍴⍴(⍺) > 1 then rankError()
   alphaItems = ⍺.toArray()
-  if alphaItems.length > ⍵.shape.length then lengthError()
+  if alphaItems.length > ⍴⍴ ⍵ then lengthError()
 
   axes = if axes then axes.toArray() else [0...alphaItems.length]
   if alphaItems.length isnt axes.length then lengthError()
 
-  subscripts = Array ⍵.shape.length
-  subscriptShapes = Array ⍵.shape.length
+  subscripts = Array ⍴⍴ ⍵
+  subscriptShapes = Array ⍴⍴ ⍵
   for axis, i in axes
     if not isInt axis then domainError()
-    if not (0 <= axis < ⍵.shape.length) then rankError()
+    if not (0 <= axis < ⍴⍴ ⍵) then rankError()
     if typeof subscripts[axis] isnt 'undefined' then rankError 'Duplicate axis'
     d = alphaItems[i]
     subscripts[axis] = if d instanceof APLArray then d.toArray() else [d]
-    subscriptShapes[axis] = if d instanceof APLArray then d.shape else []
+    subscriptShapes[axis] = if d instanceof APLArray then ⍴ d else []
     for x in subscripts[axis]
       if not isInt x then domainError()
-      if not (0 <= x < ⍵.shape[axis]) then indexError()
+      if not (0 <= x < ⍴(⍵)[axis]) then indexError()
 
   for i in [0...subscripts.length] by 1 when typeof subscripts[i] is 'undefined'
-    subscripts[i] = [0...⍵.shape[i]]
-    subscriptShapes[i] = [⍵.shape[i]]
+    subscripts[i] = [0...⍴(⍵)[i]]
+    subscriptShapes[i] = [⍴(⍵)[i]]
 
   [subscripts, subscriptShapes]

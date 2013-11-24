@@ -18,11 +18,10 @@ addVocabulary
       #     123 123 ⍳ 123                             <=> 0
       #     ⍬ ⍳ 123 234                               <=> 0 0
       #     123 234 ⍳ ⍬                               <=> ⍬
-      if ⍺.shape.length isnt 1
-        rankError()
+      if ⍴⍴(⍺) isnt 1 then rankError()
       ⍵.map (x) ->
         try
-          r = ⍺.shape
+          r = ⍴ ⍺
           each ⍺, (y, indices) ->
             if match x, y
               r = indices
@@ -45,7 +44,7 @@ addVocabulary
       # ...         (1 1 0)(1 1 1)(1 1 2)(1 1 3)
       # ...         (1 2 0)(1 2 1)(1 2 2)(1 2 3))
       # ⍴⍳2 3 4 <=> 2 3 4
-      if ⍵.shape.length > 1 then rankError()
+      if ⍴⍴(⍵) > 1 then rankError()
       a = ⍵.toArray()
       for d in a when not isInt d, 0 then domainError()
       data = []

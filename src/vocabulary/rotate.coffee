@@ -13,14 +13,13 @@ addVocabulary
       # 0⌽1 2 3 4                 <=> 1 2 3 4
       # 0⌽1234                    <=> 1234
       # 5⌽⍬                       <=> ⍬
-      axis = if not axis then ⍵.shape.length - 1 else axis.unwrap()
+      axis = if not axis then ⍴⍴(⍵) - 1 else axis.unwrap()
       if not isInt axis then domainError()
-      if ⍵.shape.length and not (0 <= axis < ⍵.shape.length)
-        indexError()
+      if ⍴⍴(⍵) and not (0 <= axis < ⍴⍴ ⍵) then indexError()
       step = ⍺.unwrap()
       if not isInt step then domainError()
       if not step then return ⍵
-      n = ⍵.shape[axis]
+      n = ⍴(⍵)[axis]
       step = (n + (step % n)) % n # force % to handle negatives properly
       if ⍵.empty() or step is 0 then return ⍵
       data = []
@@ -49,14 +48,14 @@ addVocabulary
         if not axis.isSingleton() then lengthError()
         axis = axis.unwrap()
         if not isInt axis then domainError()
-        if not (0 <= axis < ⍵.shape.length) then indexError()
+        if not (0 <= axis < ⍴⍴ ⍵) then indexError()
       else
-        axis = [⍵.shape.length - 1]
-      if ⍵.shape.length is 0 then return ⍵
+        axis = [⍴⍴(⍵) - 1]
+      if ⍴⍴(⍵) is 0 then return ⍵
       stride = ⍵.stride[...]
       stride[axis] = -stride[axis]
-      offset = ⍵.offset + (⍵.shape[axis] - 1) * ⍵.stride[axis]
-      new APLArray ⍵.data, ⍵.shape, stride, offset
+      offset = ⍵.offset + (⍴(⍵)[axis] - 1) * ⍵.stride[axis]
+      new APLArray ⍵.data, ⍴(⍵), stride, offset
 
   # 1st axis reverse (`⊖`)
   #

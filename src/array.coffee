@@ -1,3 +1,6 @@
+macro ⍴ (a) -> macro.codeToNode(-> (a).shape).subst {a}
+macro ⍴⍴ (a) -> macro.codeToNode(-> (a).shape.length).subst {a}
+
 # each() is a hygienic macro that efficiently iterates the elements of an
 # APLArray in ravel order.  No function calls are made during iteration as
 # those are relatively expensive in JavaScript.
@@ -7,7 +10,7 @@ macro each (a0, f) ->
     a = a0
     if not a.empty()
       data = a.data
-      shape = a.shape
+      shape = ⍴ a
       stride = a.stride
       lastAxis = shape.length - 1
       p = a.offset
@@ -83,6 +86,7 @@ macro each2 (a0, b0, f) ->
     y:        macro.csToNode f.params[1].name.value
     indices:  macro.csToNode f.params[2]?.name?.value ? "t#{macro.tmpCounter++}"
 
+
 class APLArray
 
   constructor: (@data, @shape, @stride, @offset = 0) ->
@@ -92,7 +96,7 @@ class APLArray
     assert @shape instanceof Array
     assert @stride instanceof Array
     assert @data.length is 0 or isInt @offset, 0, @data.length
-    assert @shape.length is @stride.length
+    assert @stride.length is ⍴⍴ @
     for x in @shape then assert isInt x, 0
     if @data.length
       for x, i in @stride then assert isInt x, -@data.length, @data.length + 1
@@ -128,10 +132,10 @@ class APLArray
   toBool: -> @toInt 0, 2
 
   toSimpleString: ->
-    if @shape.length > 1 then rankError()
+    if ⍴⍴(@) > 1 then rankError()
     if typeof @data is 'string'
-      if @shape.length is 0 then return @data[@offset]
-      if @shape[0] is 0 then return ''
+      if !⍴⍴ @ then return @data[@offset]
+      if ⍴(@)[0] is 0 then return ''
       if @stride[0] is 1 then return @data[@offset ... @offset + @shape[0]]
       @toArray.join ''
     else
@@ -143,8 +147,8 @@ class APLArray
     for n in @shape when n isnt 1 then return false
     true
 
-  isSimple: -> @shape.length is 0 and @data[@offset] not instanceof APLArray
-  unwrap: -> if prod(@shape) is 1 then @data[@offset] else lengthError()
+  isSimple: -> ⍴⍴(@) is 0 and @data[@offset] not instanceof APLArray
+  unwrap: -> if prod(⍴ @) is 1 then @data[@offset] else lengthError()
   getPrototype: -> if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' ' # todo
   toString: -> format(@).join '\n'
 

@@ -16,20 +16,20 @@ addVocabulary
       # 0 0⍉2 3⍴⍳9 <=> 0 4
       # 0 0 0⍉3 3 3⍴⍳27 <=> 0 13 26
       # 0 1 0⍉3 3 3⍴⍳27 <=> 3 3⍴0 3 6 10 13 16 20 23 26
-      if ⍺.shape.length > 1 then rankError()
-      if ⍺.shape.length is 0 then ⍺ = new APLArray [⍺.unwrap()]
-      n = ⍵.shape.length
-      if ⍺.shape[0] isnt n then lengthError()
+      if ⍴⍴(⍺) > 1 then rankError()
+      if !⍴⍴ ⍺ then ⍺ = new APLArray [⍺.unwrap()]
+      n = ⍴⍴ ⍵
+      if ⍴(⍺)[0] isnt n then lengthError()
       shape = []
       stride = []
       for x, i in ⍺.toArray()
         if not isInt x, 0 then domainError()
         if x >= n then rankError()
         if shape[x]?
-          shape[x] = Math.min shape[x], ⍵.shape[i]
+          shape[x] = Math.min shape[x], ⍴(⍵)[i]
           stride[x] += ⍵.stride[i]
         else
-          shape[x] = ⍵.shape[i]
+          shape[x] = ⍴(⍵)[i]
           stride[x] = ⍵.stride[i]
       for u in shape when not u? then rankError()
       new APLArray ⍵.data, shape, stride, ⍵.offset
@@ -48,7 +48,7 @@ addVocabulary
       # ⍉''               <=> ''
       new APLArray(
         ⍵.data
-        ⍵.shape[...].reverse()
+        ⍴(⍵)[..].reverse()
         ⍵.stride[...].reverse()
         ⍵.offset
       )

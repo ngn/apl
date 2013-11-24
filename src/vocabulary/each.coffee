@@ -23,28 +23,28 @@ addVocabulary
           if not (x instanceof APLArray) then x = new APLArray [x], []
           r = f x
           assert r instanceof APLArray
-          if r.shape.length is 0 then r.unwrap() else r
-      else if arrayEquals ⍺.shape, ⍵.shape
+          if ⍴⍴ r then r else r.unwrap()
+      else if arrayEquals ⍴(⍺), ⍴(⍵)
         ⍵.map2 ⍺, (x, y) ->
           if not (x instanceof APLArray) then x = new APLArray [x], []
           if not (y instanceof APLArray) then y = new APLArray [y], []
           r = f x, y
           assert r instanceof APLArray
-          if r.shape.length is 0 then r.unwrap() else r
+          if ⍴⍴ r then r else r.unwrap()
       else if ⍺.isSingleton()
         y = if ⍺.data[0] instanceof APLArray then ⍺.unwrap() else ⍺
         ⍵.map (x) ->
           if not (x instanceof APLArray) then x = new APLArray [x], []
           r = f x, y
           assert r instanceof APLArray
-          if r.shape.length is 0 then r.unwrap() else r
+          if ⍴⍴ r then r else r.unwrap()
       else if ⍵.isSingleton()
         x = if ⍵.data[0] instanceof APLArray then ⍵.unwrap() else ⍵
         ⍺.map (y) ->
           if not (y instanceof APLArray) then y = new APLArray [y], []
           r = f x, y
           assert r instanceof APLArray
-          if r.shape.length is 0 then r.unwrap() else r
+          if ⍴⍴ r then r else r.unwrap()
       else
         lengthError()
 

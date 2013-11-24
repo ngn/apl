@@ -37,9 +37,9 @@ reduce = @reduce = (f, g, axis0) ->
   assert typeof g is 'undefined'
   assert((typeof axis0 is 'undefined') or (axis0 instanceof APLArray))
   (⍵, ⍺) ->
-    if ⍵.shape.length is 0 then ⍵ = new APLArray [⍵.unwrap()]
-    axis = if axis0? then axis0.toInt() else ⍵.shape.length - 1
-    if not (0 <= axis < ⍵.shape.length) then rankError()
+    if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
+    axis = if axis0? then axis0.toInt() else ⍴⍴(⍵) - 1
+    if not (0 <= axis < ⍴⍴ ⍵) then rankError()
 
     if ⍺
       isNWise = true
@@ -48,11 +48,11 @@ reduce = @reduce = (f, g, axis0) ->
         isBackwards = true
         n = -n
     else
-      n = ⍵.shape[axis]
+      n = ⍴(⍵)[axis]
       isMonadic = true
 
-    shape = ⍵.shape[...]
-    shape[axis] = ⍵.shape[axis] - n + 1
+    shape = ⍴(⍵)[..]
+    shape[axis] = ⍴(⍵)[axis] - n + 1
     rShape = shape
     if isNWise
       if shape[axis] is 0 then return new APLArray [], rShape
@@ -63,7 +63,7 @@ reduce = @reduce = (f, g, axis0) ->
 
     if ⍵.empty()
       if (z = f.identity)?
-        assert z.shape.length is 0
+        assert !⍴⍴ z
         return new APLArray z.data, rShape, repeat([0], rShape.length), z.offset
       else
         domainError()
@@ -86,7 +86,7 @@ reduce = @reduce = (f, g, axis0) ->
           y = ⍵.data[p + i * ⍵.stride[axis]]
           y = if y instanceof APLArray then y else APLArray.scalar y
           x = f x, y
-      if x.shape.length is 0 then x = x.unwrap()
+      if !⍴⍴ x then x = x.unwrap()
       data.push x
       a = indices.length - 1
       while a >= 0 and indices[a] + 1 is shape[a]
@@ -123,15 +123,15 @@ reduce = @reduce = (f, g, axis0) ->
 # 2 ¯1 2 /[1] 3 1⍴"ABC"   <=> 3 5⍴'AA AABB BBCC CC'
 # 2 ¯2 2 / 7              <=> 7 7 0 0 7 7
 compressOrReplicate = (⍵, ⍺, axis) ->
-  if ⍵.shape.length is 0 then ⍵ = new APLArray [⍵.unwrap()]
-  axis = if axis then axis.toInt 0, ⍵.shape.length else ⍵.shape.length - 1
-  if ⍺.shape.length > 1 then rankError()
+  if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
+  axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
+  if ⍴⍴(⍺) > 1 then rankError()
   a = ⍺.toArray()
-  n = ⍵.shape[axis]
+  n = ⍴(⍵)[axis]
   if a.length is 1 then a = repeat a, n
   if n not in [1, a.length] then lengthError()
 
-  shape = ⍵.shape[...]
+  shape = ⍴(⍵)[..]
   shape[axis] = 0
   b = []
   for x, i in a

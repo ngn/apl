@@ -47,9 +47,9 @@ outerProduct = (f) ->
       if not (x instanceof APLArray) then x = APLArray.scalar x
       if not (y instanceof APLArray) then y = APLArray.scalar y
       z = f y, x
-      if z.shape.length is 0 then z = z.unwrap()
+      if !⍴⍴ z then z = z.unwrap()
       data.push z
-    new APLArray data, ⍺.shape.concat(⍵.shape)
+    new APLArray data, ⍴(⍺).concat ⍴ ⍵
 
 
 # Inner product (`.`)
@@ -71,9 +71,9 @@ innerProduct = (g, f) ->
   F = vocabulary['¨'] reduce f
   G = outerProduct g
   (⍵, ⍺) ->
-    if ⍺.shape.length is 0 then ⍺ = new APLArray [⍺.unwrap()]
-    if ⍵.shape.length is 0 then ⍵ = new APLArray [⍵.unwrap()]
+    if !⍴⍴ ⍺ then ⍺ = new APLArray [⍺.unwrap()]
+    if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
     F G(
       vocabulary['⊂'](⍵, undefined, new APLArray [0])
-      vocabulary['⊂'](⍺, undefined, new APLArray [⍺.shape.length - 1])
+      vocabulary['⊂'](⍺, undefined, new APLArray [⍴⍴(⍺) - 1])
     )
