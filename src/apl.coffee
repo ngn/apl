@@ -1,14 +1,7 @@
 macro -> macro.fileToNode 'node_modules/macronym/assert.coffee'
 
-# This hack makes it possible to use ⍺ and ⍵ as identifiers in CoffeeScript code
+# Make it possible to use ⍺ and ⍵ as identifiers in CoffeeScript code
 macro withAlphaAndOmega (f) ->
-  macro.walk f.body, (node) -> # .subst() doesn't modify parameter lists, so we need to intervene manually
-    if node instanceof macro.Code
-      for p in node.params
-        switch p.name.value
-          when '⍺' then p.name.value = 'alpha'
-          when '⍵' then p.name.value = 'omega'
-    return
   f.body.subst
     '⍺': macro.codeToNode -> alpha
     '⍵': macro.codeToNode -> omega
