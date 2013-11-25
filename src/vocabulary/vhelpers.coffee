@@ -45,11 +45,18 @@ pervasive = ({monad, dyad}) ->
     assert ⍺ instanceof APLArray or not ⍺?
     (if ⍺? then pervadeDyadic else pervadeMonadic) ⍵, ⍺
 
-real = (f) -> (x, y, axis) ->
-  if typeof x is 'number' and (not y? or typeof y is 'number')
-    f x, y, axis
-  else
-    domainError()
+macro real (f) ->
+  (macro.codeToNode ->
+    (x, y, axis) ->
+      if typeof x is 'number' and (not y? or typeof y is 'number')
+        fBody
+      else
+        domainError()
+  ).subst
+    x:     macro.csToNode(f.params[0]?.name?.value ? "t#{macro.tmpCounter++}").expressions[0]
+    y:     macro.csToNode(f.params[1]?.name?.value ? "t#{macro.tmpCounter++}").expressions[0]
+    axis:  macro.csToNode(f.params[2]?.name?.value ? "t#{macro.tmpCounter++}").expressions[0]
+    fBody: f.body
 
 numeric = (f, g) -> (x, y, axis) ->
   if typeof x is 'number' and (not y? or typeof y is 'number')
