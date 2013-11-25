@@ -101,6 +101,7 @@ jQuery ($) ->
     '⍣': 'Power operator'
     '⍨': 'Commute'
     '¯': 'Negative number sign'
+    '∞': 'Infinity'
     '⍝': 'Comment'
     '←': 'Assignment'
     '⍬': 'Zilde'
@@ -135,7 +136,7 @@ jQuery ($) ->
       '{alt} {space} {exec!!}'
     ]
     'alt-shift': [
-      '⍨ {empty} ⍁ ⍂ ⍠ ≈ ⌸ ⍯ ⍣ ⍱ ⍲ ≢ ≡'
+      '⍨ ∞ ⍁ ⍂ ⍠ ≈ ⌸ ⍯ ⍣ ⍱ ⍲ ≢ ≡'
       '⌹ ⍹ ⍷ ⍤ {empty} {empty} ⊖ ⍸ ⍬ ⌽ ⊣ ⊢ ⍉'
       '⍶ {empty} {empty} {empty} ⍒ ⍋ ⍝ {empty} ⍞ {empty} {empty} {enter}'
       '{shift} ⊆ ⊇ ⋔ ⍦ ⍎ ⍕ ⌷ « » ↗ {bksp}'
