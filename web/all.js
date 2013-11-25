@@ -4609,7 +4609,7 @@
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2013-11-24\n");
+          process.stdout.write("ngn apl 2013-11-25\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ctx = Object.create(vocabulary);
@@ -6786,6 +6786,7 @@ jQuery(function($) {
     '⍣': 'Power operator',
     '⍨': 'Commute',
     '¯': 'Negative number sign',
+    '∞': 'Infinity',
     '⍝': 'Comment',
     '←': 'Assignment',
     '⍬': 'Zilde',
@@ -6798,7 +6799,7 @@ jQuery(function($) {
     "default": ['` 1 2 3 4 5 6 7 8 9 0 - =', 'q w e r t y u i o p [ ] \\', 'a s d f g h j k l ; \' {enter}', '{shift} z x c v b n m , . / {bksp}', '{alt} {space} {exec!!}'],
     shift: ['~ ! @ # $ % ^ & * ( ) _ +', 'Q W E R T Y U I O P { } |', 'A S D F G H J K L : " {enter}', '{shift} Z X C V B N M < > ? {bksp}', '{alt} {space} {exec!!}'],
     alt: ['{empty} ¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ ÷ ×', '{empty} ⍵ ∊ ⍴ ~ ↑ ↓ ⍳ ○ ⍟ ← → ⍀', '⍺ ⌈ ⌊ {empty} ∇ ∆ ∘ {empty} ⎕ ⋄ {empty} {enter}', '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ {empty} ⌿ {bksp}', '{alt} {space} {exec!!}'],
-    'alt-shift': ['⍨ {empty} ⍁ ⍂ ⍠ ≈ ⌸ ⍯ ⍣ ⍱ ⍲ ≢ ≡', '⌹ ⍹ ⍷ ⍤ {empty} {empty} ⊖ ⍸ ⍬ ⌽ ⊣ ⊢ ⍉', '⍶ {empty} {empty} {empty} ⍒ ⍋ ⍝ {empty} ⍞ {empty} {empty} {enter}', '{shift} ⊆ ⊇ ⋔ ⍦ ⍎ ⍕ ⌷ « » ↗ {bksp}', '{alt} {space} {exec!!}']
+    'alt-shift': ['⍨ ∞ ⍁ ⍂ ⍠ ≈ ⌸ ⍯ ⍣ ⍱ ⍲ ≢ ≡', '⌹ ⍹ ⍷ ⍤ {empty} {empty} ⊖ ⍸ ⍬ ⌽ ⊣ ⊢ ⍉', '⍶ {empty} {empty} {empty} ⍒ ⍋ ⍝ {empty} ⍞ {empty} {empty} {enter}', '{shift} ⊆ ⊇ ⋔ ⍦ ⍎ ⍕ ⌷ « » ↗ {bksp}', '{alt} {space} {exec!!}']
   };
   combos = {
     '`': {}
