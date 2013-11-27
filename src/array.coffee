@@ -92,7 +92,7 @@ class APLArray
   constructor: (@data, @shape, @stride, @offset = 0) ->
     @shape ?= [@data.length]
     @stride ?= strideForShape @shape
-    assert @data instanceof Array or typeof @data is 'string'
+    assert @data.length?
     assert @shape instanceof Array
     assert @stride instanceof Array
     assert @data.length is 0 or isInt @offset, 0, @data.length
