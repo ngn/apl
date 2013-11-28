@@ -47,10 +47,3 @@ addVocabulary
           if ⍴⍴ r then r else r.unwrap()
       else
         lengthError()
-
-arrayEquals = (a, b) ->
-  assert a instanceof Array
-  assert b instanceof Array
-  if a.length isnt b.length then return false
-  for x, i in a when x isnt b[i] then return false
-  true
