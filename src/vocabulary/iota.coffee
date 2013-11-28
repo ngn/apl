@@ -21,14 +21,14 @@ addVocabulary
       if ⍴⍴(⍺) isnt 1 then rankError()
       ⍵.map (x) ->
         try
-          r = ⍴ ⍺
+          rank = ⍴ ⍺
           each ⍺, (y, indices) ->
             if match x, y
-              r = indices
+              rank = indices
               throw 'break'
         catch e
           if e isnt 'break' then throw e
-        if r.length is 1 then r[0] else new APLArray r
+        if rank.length is 1 then rank[0] else new APLArray rank
     else
       # Index generate (`⍳`)
       #
@@ -44,20 +44,38 @@ addVocabulary
       # ...         (1 1 0)(1 1 1)(1 1 2)(1 1 3)
       # ...         (1 2 0)(1 2 1)(1 2 2)(1 2 3))
       # ⍴⍳2 3 4 <=> 2 3 4
+      # ⍳¯1 !!! DOMAIN ERROR
       if ⍴⍴(⍵) > 1 then rankError()
       a = ⍵.toArray()
       for d in a when not isInt d, 0 then domainError()
-      data = []
-      if prod a
-        if a.length is 1
-          data = [0...a[0]]
-        else
-          indices = repeat [0], a.length
-          loop
-            data.push new APLArray indices[..]
-            axis = a.length - 1
-            while axis >= 0 and indices[axis] + 1 is a[axis]
-              indices[axis--] = 0
-            if axis < 0 then break
-            indices[axis]++
+      n = prod a
+      if !n
+        data = []
+      else if a.length is 1
+        data = if n <=       0x100 then new Uint8Array  n else
+               if n <=     0x10000 then new Uint16Array n else
+               if n <= 0x100000000 then new Uint32Array n else
+                 domainError()
+        for i in [0...n] by 1 then data[i] = i
+      else
+        m = Math.max a...
+        A = if m <=       0x100 then Uint8Array  else
+            if m <=     0x10000 then Uint16Array else
+            if m <= 0x100000000 then Uint32Array else
+              domainError()
+        itemData = new A n * a.length
+        u = n
+        for i in [0...a.length] by 1
+          u /= a[i]
+          p = n * i
+          for j in [0...a[i]] by 1
+            itemData[p] = j
+            spread itemData, p, 1, u
+            p += u
+          spread itemData, n * i, a[i] * u, n
+        data = []
+        itemShape = [a.length]
+        itemStride = [n]
+        for i in [0...n] by 1
+          data.push new APLArray itemData, itemShape, itemStride, i
       new APLArray data, a

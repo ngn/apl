@@ -30,3 +30,26 @@ extend = (x, y) ->
 
 macro formatNumber (x) ->
   macro.codeToNode(-> ('' + x).replace('Infinity', '∞').replace(/-/g, '¯')).subst {x}
+
+@Uint8Array  ?= Array
+@Uint16Array ?= Array
+@Uint32Array ?= Array
+@Int8Array   ?= Array
+@Int16Array  ?= Array
+@Int32Array  ?= Array
+
+Array::set ?= (a, offset) ->
+  for i in [0...a.length] by 1 then @[offset + i] = a[i]
+  return
+
+spread = (a, i, m, n) -> # repeat the pattern a[i...i+m] so that it covers a[i...i+n]
+  if a instanceof Array
+    for j in [m...n] by 1
+      a[i + j] = a[i + j % m]
+  else
+    a = a.subarray i, i + n
+    while 2 * m < n
+      a.set a.subarray(0, m), m
+      m *= 2
+    a.set a.subarray(0, n - m), m
+  return
