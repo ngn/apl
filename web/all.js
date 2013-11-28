@@ -91,6 +91,25 @@
       a.set(a.subarray(0, n - m), m);
     }
   };
+  arrayEquals = function(a, b) {
+    var i, x, _i, _len;
+    if (!(a instanceof Array)) {
+      throw Error("\"assert a instanceof Array\" at src/helpers.coffee:58");
+    }
+    if (!(b instanceof Array)) {
+      throw Error("\"assert b instanceof Array\" at src/helpers.coffee:59");
+    }
+    if (a.length !== b.length) {
+      return false;
+    }
+    for (i = _i = 0, _len = a.length; _i < _len; i = ++_i) {
+      x = a[i];
+      if (x !== b[i]) {
+        return false;
+      }
+    }
+    return true;
+  };
 
   aplError = function(name, message, opts) {
     var e, k, v, _ref;
@@ -2412,25 +2431,6 @@
       };
     })
   });
-  arrayEquals = function(a, b) {
-    var i, x, _i, _len;
-    if (!(a instanceof Array)) {
-      throw Error("\"assert a instanceof Array\" at src/vocabulary/each.coffee:52");
-    }
-    if (!(b instanceof Array)) {
-      throw Error("\"assert b instanceof Array\" at src/vocabulary/each.coffee:53");
-    }
-    if (a.length !== b.length) {
-      return false;
-    }
-    for (i = _i = 0, _len = a.length; _i < _len; i = ++_i) {
-      x = a[i];
-      if (x !== b[i]) {
-        return false;
-      }
-    }
-    return true;
-  };
   addVocabulary({
     '⊤': function(omega, alpha) {
       var a, b, data, i, isNeg, j, k, m, n, shape, x, y, _i, _j, _k, _len, _ref;
@@ -3389,67 +3389,73 @@
   });
   addVocabulary({
     '⍴': function(omega, alpha) {
-      var a, axis, d, e, n, shape, t158, t159, t160, t161, t162, t163, t164, t165, tmp157, x, _i, _j, _len, _ref1;
+      var a, axis, data, e, n, t158, t159, t160, t161, t162, t163, t164, t165, tmp157, x, _i, _j, _len, _ref1;
       if (alpha) {
         if (alpha.shape.length > 1) {
           rankError();
         }
-        shape = alpha.toArray();
-        for (_i = 0, _len = shape.length; _i < _len; _i++) {
-          d = shape[_i];
-          if (!((tmp157 = (d)) === ~~tmp157 && (0) <= tmp157)) {
+        a = alpha.toArray();
+        for (_i = 0, _len = a.length; _i < _len; _i++) {
+          x = a[_i];
+          if (!((tmp157 = (x)) === ~~tmp157 && (0) <= tmp157)) {
             domainError();
           }
         }
-        n = prod(shape);
-        a = [];
-        try {
-          t158 = omega;
-          if (!t158.empty()) {
-            t160 = t158.data;
-            t161 = t158.shape;
-            t162 = t158.stride;
-            t163 = t161.length - 1;
-            t165 = t158.offset;
-            t164 = [];
-            for (axis = _j = 0, _ref1 = t161.length; _j < _ref1; axis = _j += 1) {
-              t164.push(0);
-            }
-            while (true) {
-              x = t160[t165];
-              if (a.length >= n) {
-                throw 'break';
-              }
-              a.push(x);
-              t159 = t163;
-              while (t159 >= 0 && t164[t159] + 1 === t161[t159]) {
-                t165 -= t164[t159] * t162[t159];
-                t164[t159--] = 0;
-              }
-              if (t159 < 0) {
-                break;
-              }
-              t164[t159]++;
-              t165 += t162[t159];
-            }
-          }
-        } catch (_error) {
-          e = _error;
-          if (e !== 'break') {
-            throw e;
-          }
-        }
-        if (a.length) {
-          while (2 * a.length < n) {
-            a = a.concat(a);
-          }
-          if (a.length !== n) {
-            a = a.concat(a.slice(0, n - a.length));
-          }
+        n = prod(a);
+        if (!n) {
+          return new APLArray([], a);
+        } else if ((a.length >= omega.shape.length) && arrayEquals(omega.shape, a.slice(a.length - omega.shape.length))) {
+          return new APLArray(omega.data, a, repeat([0], a.length - omega.shape.length).concat(omega.stride), omega.offset);
         } else {
-          a = repeat([omega.getPrototype()], n);
+          data = [];
+          try {
+            t158 = omega;
+            if (!t158.empty()) {
+              t160 = t158.data;
+              t161 = t158.shape;
+              t162 = t158.stride;
+              t163 = t161.length - 1;
+              t165 = t158.offset;
+              t164 = [];
+              for (axis = _j = 0, _ref1 = t161.length; _j < _ref1; axis = _j += 1) {
+                t164.push(0);
+              }
+              while (true) {
+                x = t160[t165];
+                if (data.length >= n) {
+                  throw 'break';
+                }
+                data.push(x);
+                t159 = t163;
+                while (t159 >= 0 && t164[t159] + 1 === t161[t159]) {
+                  t165 -= t164[t159] * t162[t159];
+                  t164[t159--] = 0;
+                }
+                if (t159 < 0) {
+                  break;
+                }
+                t164[t159]++;
+                t165 += t162[t159];
+              }
+            }
+          } catch (_error) {
+            e = _error;
+            if (e !== 'break') {
+              throw e;
+            }
+          }
+          if (data.length) {
+            while (2 * data.length < n) {
+              data = data.concat(data);
+            }
+            if (data.length !== n) {
+              data = data.concat(data.slice(0, n - data.length));
+            }
+          } else {
+            data = repeat([omega.getPrototype()], n);
+          }
+          return new APLArray(data, a);
         }
-        return new APLArray(a, shape);
       } else {
         return new APLArray(omega.shape);
       }
@@ -7675,6 +7681,7 @@ var aplTests = [
 ["⍬⍴⍬","<=>","0"],
 ["2 3⍴⍬","<=>","2 3⍴0"],
 ["2 3⍴⍳7","<=>","2 3⍴0 1 2 3 4 5"],
+["⍴1e9⍴0","<=>",",1e9"],
 ["⍴0","<=>","0⍴0"],
 ["⍴0 0","<=>","1⍴2"],
 ["⍴⍴0","<=>","1⍴0"],
