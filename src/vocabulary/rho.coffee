@@ -12,23 +12,30 @@ addVocabulary
       # ⍬⍴⍬       <=> 0
       # 2 3⍴⍬     <=> 2 3⍴0
       # 2 3⍴⍳7    <=> 2 3⍴0 1 2 3 4 5
+      # ⍴1e9⍴0    <=> ,1e9
       if ⍴⍴(⍺) > 1 then rankError()
-      shape = ⍺.toArray()
-      for d in shape when not isInt d, 0 then domainError()
-      n = prod shape
-      a = []
-      try
-        each ⍵, (x) ->
-          if a.length >= n then throw 'break'
-          a.push x
-      catch e
-        if e isnt 'break' then throw e
-      if a.length
-        while 2 * a.length < n then a = a.concat a
-        if a.length isnt n then a = a.concat a[... n - a.length]
+      a = ⍺.toArray()
+      for x in a when !isInt x, 0 then domainError()
+      n = prod a
+      if !n
+        new APLArray [], a
+      else if (a.length >= ⍴⍴ ⍵) and arrayEquals ⍴(⍵), a[a.length - (⍴⍴ ⍵)...]
+        # If ⍺ is only prepending axes to ⍴⍵, we can reuse the .data array
+        new APLArray ⍵.data, a, repeat([0], a.length - ⍴⍴ ⍵).concat(⍵.stride), ⍵.offset
       else
-        a = repeat [⍵.getPrototype()], n
-      new APLArray a, shape
+        data = []
+        try
+          each ⍵, (x) ->
+            if data.length >= n then throw 'break'
+            data.push x
+        catch e
+          if e isnt 'break' then throw e
+        if data.length
+          while 2 * data.length < n then data = data.concat data
+          if data.length isnt n then data = data.concat data[... n - data.length]
+        else
+          data = repeat [⍵.getPrototype()], n
+        new APLArray data, a
     else
       # Shape of (`⍴`)
       #

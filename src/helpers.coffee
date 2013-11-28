@@ -53,3 +53,10 @@ spread = (a, i, m, n) -> # repeat the pattern a[i...i+m] so that it covers a[i..
       m *= 2
     a.set a.subarray(0, n - m), m
   return
+
+arrayEquals = (a, b) ->
+  assert a instanceof Array
+  assert b instanceof Array
+  if a.length isnt b.length then return false
+  for x, i in a when x isnt b[i] then return false
+  true
