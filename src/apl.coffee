@@ -56,6 +56,11 @@ withAlphaAndOmega ->
 
 @apl = apl = (aplCode) -> exec aplCode
 extend apl, {format, approx}
+
+apl.createWorkspace = ->
+  ctx = Object.create vocabulary
+  (aplCode) -> exec aplCode, ctx
+
 if module?
   module.exports = apl
   if module is require?.main then do ->
@@ -78,14 +83,13 @@ if module?
       process.stdout.write macro -> macro.valToNode "ngn apl #{(new Date).toISOString().replace /T.*/, ''}\n"
       rl = require('readline').createInterface process.stdin, process.stdout
       rl.setPrompt '      '
-      ctx = Object.create vocabulary
+      ws = apl.createWorkspace()
       rl.on 'line', (line) ->
         try
           if not line.match /^[\ \t\f\r\n]*$/
-            result = exec line, ctx: ctx
-            process.stdout.write format(result).join('\n') + '\n'
+            process.stdout.write format(ws line).join('\n') + '\n'
         catch e
-          process.stdout.write e.toString() + '\n'
+          process.stdout.write e + '\n'
         rl.prompt()
         return
       rl.on 'close', -> process.stdout.write '\n'; process.exit 0
