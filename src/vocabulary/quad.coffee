@@ -60,3 +60,16 @@ addVocabulary
       new APLArray r
     else
       APLArray.zilde
+
+  # Unicode convert
+  # (monadic only; tolerant to mixed-type arrays)
+  #
+  # ⎕UCS 'a' <=> 97
+  # ⎕UCS 'ab' <=> 97 98
+  # ⎕UCS 2 2⍴97+⍳4 <=> 2 2⍴'abcd'
+  '⎕UCS': (⍵, ⍺) ->
+    if ⍺? then nonceError()
+    ⍵.map (x) ->
+      if isInt x, 0, 0x10000 then y = String.fromCharCode x
+      else if typeof x is 'string' then y = x.charCodeAt 0
+      else domainError()
