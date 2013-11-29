@@ -54,8 +54,14 @@ withAlphaAndOmega ->
   include 'vocabulary/variant'
   include 'compiler'
 
-@apl = apl = (aplCode) -> exec aplCode
+@apl = apl = (aplCode, opts) -> (apl.ws opts) aplCode
 extend apl, {format, approx}
+apl.ws = (opts = {}) ->
+  ctx = Object.create vocabulary
+  if opts.in then ctx['get_⎕'] = ctx['get_⍞'] = -> s = opts.in(); assert typeof s is 'string'; new APLArray s
+  if opts.out then ctx['set_⎕'] = ctx['set_⍞'] = (x) -> opts.out format(x).join('\n') + '\n'
+  (aplCode) -> exec aplCode, {ctx}
+
 if module?
   module.exports = apl
   if module is require?.main then do ->
@@ -75,18 +81,16 @@ if module?
         b.slice 0, k
       ).toString 'utf8'
     else
-      macro greeting -> macro.valToNode "ngn apl #{(new Date).toISOString().replace /T.*/, ''}\n"
-      process.stdout.write greeting()
+      process.stdout.write macro -> macro.valToNode "ngn apl #{(new Date).toISOString().replace /T.*/, ''}\n"
       rl = require('readline').createInterface process.stdin, process.stdout
       rl.setPrompt '      '
-      ctx = Object.create vocabulary
+      ws = apl.ws()
       rl.on 'line', (line) ->
         try
           if not line.match /^[\ \t\f\r\n]*$/
-            result = exec line, ctx: ctx
-            process.stdout.write format(result).join('\n') + '\n'
+            process.stdout.write format(ws line).join('\n') + '\n'
         catch e
-          process.stdout.write e.toString() + '\n'
+          process.stdout.write e + '\n'
         rl.prompt()
         return
       rl.on 'close', -> process.stdout.write '\n'; process.exit 0
