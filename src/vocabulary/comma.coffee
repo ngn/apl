@@ -122,6 +122,4 @@ addVocabulary
       #
       # ,2 3 4⍴'abcdefghijklmnopqrstuvwx' <=> 'abcdefghijklmnopqrstuvwx'
       # ,123 <=> 1⍴123
-      data = []
-      each ⍵, (x) -> data.push x
-      new APLArray data
+      new APLArray ⍵.toArray()

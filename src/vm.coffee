@@ -30,7 +30,7 @@ vm = ({code, env, stack, pc}) ->
         for x in stack.splice stack.length - code[pc++]
           a.push(if x.isSimple() then x.unwrap() else x)
         stack.push new APLArray a
-      when GET then stack.push env[code[pc++]][code[pc++]]
+      when GET then stack.push(env[code[pc++]][code[pc++]] ? valueError())
       when SET then env[code[pc++]][code[pc++]] = stack[stack.length - 1]
       when MON
         [w, f] = stack.splice -2
