@@ -52,17 +52,19 @@ addVocabulary
       if !n
         data = []
       else if a.length is 1
-        data = if n <=       0x100 then new Uint8Array  n else
-               if n <=     0x10000 then new Uint16Array n else
-               if n <= 0x100000000 then new Uint32Array n else
-                 domainError()
+        data =
+          if      n <=       0x100 then new Uint8Array  n
+          else if n <=     0x10000 then new Uint16Array n
+          else if n <= 0x100000000 then new Uint32Array n
+          else domainError()
         for i in [0...n] by 1 then data[i] = i
       else
         m = Math.max a...
-        A = if m <=       0x100 then Uint8Array  else
-            if m <=     0x10000 then Uint16Array else
-            if m <= 0x100000000 then Uint32Array else
-              domainError()
+        A =
+          if      m <=       0x100 then Uint8Array
+          else if m <=     0x10000 then Uint16Array
+          else if m <= 0x100000000 then Uint32Array
+          else domainError()
         itemData = new A n * a.length
         u = n
         for i in [0...a.length] by 1
