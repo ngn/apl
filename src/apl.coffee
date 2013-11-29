@@ -75,8 +75,7 @@ if module?
         b.slice 0, k
       ).toString 'utf8'
     else
-      macro greeting -> macro.valToNode "ngn apl #{(new Date).toISOString().replace /T.*/, ''}\n"
-      process.stdout.write greeting()
+      process.stdout.write macro -> macro.valToNode "ngn apl #{(new Date).toISOString().replace /T.*/, ''}\n"
       rl = require('readline').createInterface process.stdin, process.stdout
       rl.setPrompt '      '
       ctx = Object.create vocabulary
