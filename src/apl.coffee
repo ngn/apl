@@ -54,12 +54,13 @@ withAlphaAndOmega ->
   include 'vocabulary/variant'
   include 'compiler'
 
-@apl = apl = (aplCode) -> exec aplCode
+@apl = apl = (aplCode, opts) -> (apl.ws opts) aplCode
 extend apl, {format, approx}
-
-apl.createWorkspace = ->
+apl.ws = (opts = {}) ->
   ctx = Object.create vocabulary
-  (aplCode) -> exec aplCode, ctx
+  if opts.in then ctx['get_⎕'] = ctx['get_⍞'] = -> s = opts.in(); assert typeof s is 'string'; new APLArray s
+  if opts.out then ctx['set_⎕'] = ctx['set_⍞'] = (x) -> opts.out format(x).join('\n') + '\n'
+  (aplCode) -> exec aplCode, {ctx}
 
 if module?
   module.exports = apl
@@ -83,7 +84,7 @@ if module?
       process.stdout.write macro -> macro.valToNode "ngn apl #{(new Date).toISOString().replace /T.*/, ''}\n"
       rl = require('readline').createInterface process.stdin, process.stdout
       rl.setPrompt '      '
-      ws = apl.createWorkspace()
+      ws = apl.ws()
       rl.on 'line', (line) ->
         try
           if not line.match /^[\ \t\f\r\n]*$/
