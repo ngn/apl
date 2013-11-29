@@ -181,6 +181,8 @@ compileAST = (ast, opts = {}) ->
         # ... r←r+1
         # ... after←.01×⌊100×r c S
         # ... before after <=> (3 18.84 28.27)(4 25.13 50.26)
+        # {⍺}0 !!! VALUE ERROR
+        # {x}0 ⋄ x←0 !!! VALUE ERROR
         name = node[1]
         {vars} = node.scopeNode
         if (v = vars["get_#{name}"])?.category is VERB
