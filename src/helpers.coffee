@@ -42,17 +42,31 @@ Array::set ?= (a, offset) ->
   for i in [0...a.length] by 1 then @[offset + i] = a[i]
   return
 
-spread = (a, i, m, n) -> # repeat the pattern a[i...i+m] so that it covers a[i...i+n]
-  if a instanceof Array
-    for j in [m...n] by 1
-      a[i + j] = a[i + j % m]
-  else
-    a = a.subarray i, i + n
-    while 2 * m < n
-      a.set a.subarray(0, m), m
-      m *= 2
-    a.set a.subarray(0, n - m), m
-  return
+macro spread (a, i, m, n) -> # repeat the pattern a[i...i+m] so that it covers a[i...i+n]
+  macro.tmpCounter ?= 0
+  (macro.codeToNode ->
+    a = a0
+    i = i0
+    m = m0
+    n = n0
+    if a instanceof Array
+      for j in [m...n] by 1
+        a[i + j] = a[i + j % m]
+    else
+      a = a.subarray i, i + n
+      while 2 * m < n
+        a.set a.subarray(0, m), m
+        m *= 2
+      a.set a.subarray(0, n - m), m
+  ).subst
+    a: macro.csToNode "t#{macro.tmpCounter++}"
+    i: macro.csToNode "t#{macro.tmpCounter++}"
+    m: macro.csToNode "t#{macro.tmpCounter++}"
+    n: macro.csToNode "t#{macro.tmpCounter++}"
+    a0: a
+    i0: i
+    m0: m
+    n0: n
 
 arrayEquals = (a, b) ->
   assert a instanceof Array
