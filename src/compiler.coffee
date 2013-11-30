@@ -1,14 +1,18 @@
+[NOUN, VERB, ADVERB, CONJUNCTION] = [1..4]
+
 exec = (aplCode, opts = {}) ->
   ast = parse aplCode, opts
   code = compileAST ast, opts
   env = if prelude then (for frame in prelude.env then frame[..]) else [[]]
   for k, v of ast.vars then env[0][v.slot] = opts.ctx[k]
   result = vm {code, env}
-  for k, v of ast.vars then opts.ctx[k] = env[0][v.slot]
+  for k, v of ast.vars
+    x = opts.ctx[k] = env[0][v.slot]
+    if v.category is ADVERB then x.isAdverb = true
+    if v.category is CONJUNCTION then x.isConjunction = true
   result
 
 compileAST = (ast, opts = {}) ->
-  [NOUN, VERB, ADVERB, CONJUNCTION] = [1..4]
   ast.scopeDepth = 0
   ast.nSlots = if prelude then prelude.ast.nSlots else 0
   ast.vars = if prelude then Object.create prelude.ast.vars else {}
@@ -53,8 +57,10 @@ compileAST = (ast, opts = {}) ->
           if (v = vars["get_#{name}"])?.category is VERB
             NOUN
           else
-            # x ⋄ x←0 !!! SYNTAX ERROR
-            vars[name]?.category or err node, "Symbol '#{name}' is referenced before assignment."
+            # x ⋄ x←0 !!! VALUE ERROR
+            vars[name]?.category or
+              valueError "Symbol '#{name}' is referenced before assignment.",
+                file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
         when 'lambda'
           for i in [1...node.length]
             queue.push extend (body = node[i]),
