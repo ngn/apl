@@ -57,8 +57,10 @@ compileAST = (ast, opts = {}) ->
           if (v = vars["get_#{name}"])?.category is VERB
             NOUN
           else
-            # x ⋄ x←0 !!! SYNTAX ERROR
-            vars[name]?.category or err node, "Symbol '#{name}' is referenced before assignment."
+            # x ⋄ x←0 !!! VALUE ERROR
+            vars[name]?.category or
+              valueError "Symbol '#{name}' is referenced before assignment.",
+                file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
         when 'lambda'
           for i in [1...node.length]
             queue.push extend (body = node[i]),
