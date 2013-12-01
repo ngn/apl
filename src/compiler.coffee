@@ -3,7 +3,7 @@
 exec = (aplCode, opts = {}) ->
   ast = parse aplCode, opts
   code = compileAST ast, opts
-  env = if prelude then (for frame in prelude.env then frame[..]) else [[]]
+  env = [prelude.env[0][..]]
   for k, v of ast.vars then env[0][v.slot] = opts.ctx[k]
   result = vm {code, env}
   for k, v of ast.vars
@@ -12,10 +12,16 @@ exec = (aplCode, opts = {}) ->
     if v.category is CONJUNCTION then x.isConjunction = true
   result
 
+repr = (x) ->
+  if x is null or typeof x in ['string', 'number', 'boolean'] then JSON.stringify x
+  else if x instanceof Array then "[#{(for y in x then repr y).join ','}]"
+  else if x.repr then x.repr()
+  else "{#{(for k, v of x then "#{repr k}:#{repr v}").join ','}}"
+
 compileAST = (ast, opts = {}) ->
   ast.scopeDepth = 0
-  ast.nSlots = if prelude then prelude.ast.nSlots else 0
-  ast.vars = if prelude then Object.create prelude.ast.vars else {}
+  ast.nSlots = prelude.nSlots
+  ast.vars = Object.create prelude.vars
   do ->
     opts.ctx ?= Object.create vocabulary
     for k, v of opts.ctx when not ast.vars[k]
@@ -332,14 +338,17 @@ compileAST = (ast, opts = {}) ->
   render ast
 
 prelude = do ->
-  aplCode = macro -> macro.valToNode macro.require('fs').readFileSync macro.file.replace(/[^\/]+$/, 'prelude.apl'), 'utf8'
-  ast = parse aplCode
-  code = compileAST ast
+  {code, nSlots, vars} = macro ->
+    fs = macro.require 'fs'
+    {parse, compileAST, repr} = macro.require "#{process.cwd()}/old-apl"
+    ast = parse fs.readFileSync "#{process.cwd()}/src/prelude.apl", 'utf8'
+    code = compileAST ast
+    macro.jsToNode repr code: code, nSlots: ast.nSlots, vars: ast.vars
   env = [[]]
-  for k, v of ast.vars then env[0][v.slot] = vocabulary[k]
+  for k, v of vars then env[0][v.slot] = vocabulary[k]
   vm {code, env}
-  for k, v of ast.vars then vocabulary[k] = env[0][v.slot]
-  {ast, env}
+  for k, v of vars then vocabulary[k] = env[0][v.slot]
+  {nSlots, vars, env}
 
 aplify = (x) ->
   if typeof x is 'string' then (if x.length is 1 then APLArray.scalar x else new APLArray x)

@@ -55,7 +55,7 @@ withAlphaAndOmega ->
   include 'compiler'
 
 @apl = apl = (aplCode, opts) -> (apl.ws opts) aplCode
-extend apl, {format, approx}
+extend apl, {format, approx, parse, compileAST, repr}
 apl.ws = (opts = {}) ->
   ctx = Object.create vocabulary
   if opts.in then ctx['get_⎕'] = ctx['get_⍞'] = -> s = opts.in(); assert typeof s is 'string'; new APLArray s

@@ -149,6 +149,7 @@ class APLArray
   unwrap: -> if prod(⍴ @) is 1 then @data[@offset] else lengthError()
   getPrototype: -> if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' ' # todo
   toString: -> format(@).join '\n'
+  repr: -> "new APLArray(#{repr @data},#{repr @shape},#{repr @stride},#{repr @offset})"
 
 strideForShape = (shape) ->
   assert shape instanceof Array
