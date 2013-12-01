@@ -1,3 +1,12 @@
+⍝ Token types:
+⍝   'W' whitespace
+⍝   'L' newline
+⍝   'D' diamond (⋄)
+⍝   'N' number
+⍝   'S' string
+⍝   '()[]{}:;←' self (toke type is token value)
+⍝   'J' JavaScript literal («»)
+⍝   'X' symbol
 tds←⊃( ⍝ token definitions
   ('W' '^([ \t]+|[⍝\#].*)+')
   ('L' '^[\n\r]+')
