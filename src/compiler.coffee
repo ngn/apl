@@ -36,12 +36,12 @@ compileAST = (ast, opts = {}) ->
   assert VERB < ADVERB < CONJUNCTION # we are relying on this ordering below
   (categorizeLambdas = (node) ->
     switch node[0]
-      when 'body', 'guard', 'assign', 'index', 'lambda', 'expr', 'empty'
+      when 'B', ':', '←', '[', '{', '.', '⍬'
         r = VERB
         for i in [1...node.length] by 1 when node[i] then r = Math.max r, categorizeLambdas node[i]
-        if node[0] is 'lambda' then (node.category = r; VERB) else r
-      when 'string', 'number', 'embedded' then 0
-      when 'symbol'
+        if node[0] is '{' then (node.category = r; VERB) else r
+      when 'S', 'N', 'J' then 0
+      when 'X'
         switch node[1]
           when '⍺⍺', '⍶', '∇∇' then ADVERB
           when '⍵⍵', '⍹' then CONJUNCTION
@@ -56,9 +56,9 @@ compileAST = (ast, opts = {}) ->
     visit = (node) ->
       node.scopeNode = scopeNode
       switch node[0]
-        when 'guard' then r = visit node[1]; visit node[2]; r
-        when 'assign' then visitLHS node[1], visit node[2]
-        when 'symbol'
+        when ':' then r = visit node[1]; visit node[2]; r
+        when '←' then visitLHS node[1], visit node[2]
+        when 'X'
           name = node[1]
           if (v = vars["get_#{name}"])?.category is VERB
             NOUN
@@ -67,7 +67,7 @@ compileAST = (ast, opts = {}) ->
             vars[name]?.category or
               valueError "Symbol '#{name}' is referenced before assignment.",
                 file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
-        when 'lambda'
+        when '{'
           for i in [1...node.length]
             queue.push extend (body = node[i]),
               scopeNode: scopeNode
@@ -85,11 +85,11 @@ compileAST = (ast, opts = {}) ->
               v['⍺⍺'] = v['⍶'] = slot: 0, scopeDepth: d - 1, category: VERB
               v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: ADVERB
           node.category ? VERB
-        when 'string', 'number', 'embedded', 'empty' then NOUN
-        when 'index'
+        when 'S', 'N', 'J', '⍬' then NOUN
+        when '['
           for i in [2...node.length] by 1 when node[i] and visit(node[i]) isnt NOUN then err node, 'Indices must be nouns.'
           visit node[1]
-        when 'expr'
+        when '.'
           a = node[1..]
           h = Array a.length
           for i in [a.length - 1..0] by -1 then h[i] = visit a[i]
@@ -99,7 +99,7 @@ compileAST = (ast, opts = {}) ->
             if h[i] is h[i + 1] is NOUN
               j = i + 2
               while j < a.length and h[j] is NOUN then j++
-              a[i...j] = [['vector'].concat a[i...j]]
+              a[i...j] = [['V'].concat a[i...j]]
               h[i...j] = NOUN
             else
               i++
@@ -107,24 +107,24 @@ compileAST = (ast, opts = {}) ->
           i = a.length - 2
           while --i >= 0
             if h[i + 1] is CONJUNCTION and (h[i] isnt NOUN or h[i + 2] isnt NOUN)
-              a[i...i+3] = [['conjunction'].concat a[i...i+3]]
+              a[i...i+3] = [['C'].concat a[i...i+3]]
               h[i...i+3] = VERB
               i--
           # Apply postfix adverbs
           i = 0
           while i < a.length - 1
             if h[i] isnt NOUN and h[i + 1] is ADVERB
-              a[i...i+2] = [['adverb'].concat a[i...i+2]]
+              a[i...i+2] = [['A'].concat a[i...i+2]]
               h[i...i+2] = VERB
             else
               i++
           # Hooks
           if h.length is 2 and h[0] isnt NOUN and h[1] isnt NOUN
-            a = [['hook'].concat a]
+            a = [['H'].concat a]
             h = [VERB]
           # Forks
           if h.length >= 3 and h.length % 2 is 1 and all(for x in h then x isnt NOUN)
-            a = [['fork'].concat a]
+            a = [['F'].concat a]
             h = [VERB]
           if h[h.length - 1] isnt NOUN
             if h.length > 1 then err a[h.length - 1], 'Trailing function in expression'
@@ -132,12 +132,11 @@ compileAST = (ast, opts = {}) ->
             # Apply monadic and dyadic functions
             while h.length > 1
               if h.length is 2 or h[h.length - 3] isnt NOUN
-                a[-2..] = [['monadic'].concat a[-2..]]
+                a[-2..] = [['M'].concat a[-2..]]
                 h[-2..] = NOUN
               else
-                a[-3..] = [['dyadic'].concat a[-3..]]
+                a[-3..] = [['D'].concat a[-3..]]
                 h[-3..] = NOUN
-          # Replace `"expr"` node with `a[0]` in the AST
           node[..] = a[0]
           extend node, a[0]
           h[0]
@@ -147,7 +146,7 @@ compileAST = (ast, opts = {}) ->
     visitLHS = (node, rhsCategory) ->
       node.scopeNode = scopeNode
       switch node[0]
-        when 'symbol'
+        when 'X'
           name = node[1]
           if name is '∇' then err node, 'Assignment to ∇ is not allowed.'
           if vars[name]
@@ -155,10 +154,10 @@ compileAST = (ast, opts = {}) ->
               err node, "Inconsistent usage of symbol '#{name}', it is assigned both nouns and verbs."
           else
             vars[name] = scopeDepth: scopeNode.scopeDepth, slot: scopeNode.nSlots++, category: rhsCategory
-        when 'expr'
+        when '.'
           rhsCategory is NOUN or err node, 'Strand assignment can be used only for nouns.'
           for i in [1...node.length] by 1 then visitLHS node[i], rhsCategory
-        when 'index'
+        when '['
           rhsCategory is NOUN or err node, 'Index assignment can be used only for nouns.'
           visitLHS node[1], rhsCategory
           for i in [2...node.length] by 1 when c = node[i] then visit c
@@ -170,7 +169,7 @@ compileAST = (ast, opts = {}) ->
 
   render = (node) ->
     switch node[0]
-      when 'body'
+      when 'B'
         if node.length is 1
           # {}0   <=>   ⍬
           [LDC, APLArray.zilde, RET]
@@ -179,15 +178,15 @@ compileAST = (ast, opts = {}) ->
           for i in [1...node.length] by 1 then a.push render(node[i])...; a.push POP
           a[a.length - 1] = RET
           a
-      when 'guard'
+      when ':'
         x = render node[1]
         y = render node[2]
         x.concat JEQ, y.length + 2, POP, y, RET
-      when 'assign'
+      when '←'
         # A←5     <=> 5
         # A×A←2 5 <=> 4 25
         render(node[2]).concat renderLHS node[1]
-      when 'symbol'
+      when 'X'
         # r←3 ⋄ get_c←{2×○r} ⋄ get_S←{○r*2}
         # ... before←.01×⌊100×r c S
         # ... r←r+1
@@ -202,7 +201,7 @@ compileAST = (ast, opts = {}) ->
         else
           v = vars[name]
           [GET, v.scopeDepth, v.slot]
-      when 'lambda'
+      when '{'
         # {1 + 1} 1                    <=> 2
         # {⍵=0:1 ⋄ 2×∇⍵-1} 5           <=> 32 # two to the power of
         # {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8 <=> 34 # Fibonacci sequence
@@ -231,7 +230,7 @@ compileAST = (ast, opts = {}) ->
             ly.concat GET, v.scopeDepth, v.slot, lx, DYA
           else err node
         if node.category isnt VERB then [LAM, f.length + 1].concat f, RET else f
-      when 'string'
+      when 'S'
         #   ⍴''     <=> ,0
         #   ⍴'x'    <=> ⍬
         #   ⍴'xx'   <=> ,2
@@ -246,7 +245,7 @@ compileAST = (ast, opts = {}) ->
         d = node[1][0] # the delimiter: '"' or "'"
         s = node[1][1...-1].replace ///#{d + d}///g, d
         [LDC, new APLArray s, if s.length is 1 then []]
-      when 'number'
+      when 'N'
         # ∞ <=> ¯
         # ¯∞ <=> ¯¯
         # ¯∞j¯∞ <=> ¯¯j¯¯
@@ -259,11 +258,11 @@ compileAST = (ast, opts = {}) ->
               else parseFloat x
         v = if a[1] then new Complex(a[0], a[1]) else a[0]
         [LDC, new APLArray [v], []]
-      when 'embedded'
+      when 'J'
         # 123 + «456 + 789» <=> 1368
         f = do Function "return function(_w,_a){return(#{node[1].replace /^«|»$/g, ''})};"
         [EMB, (_w, _a) -> aplify f _w, _a]
-      when 'index'
+      when '['
         # ⍴ x[⍋x←6?40] <=> ,6
         v = node.scopeNode.vars._index
         axes = []
@@ -273,20 +272,20 @@ compileAST = (ast, opts = {}) ->
         a.push render(node[1])...
         a.push DYA
         a
-      when 'vector'
+      when 'V'
         fragments = for i in [1...node.length] by 1 then render node[i]
         if all(for f in fragments then f.length is 2 and f[0] is LDC)
           [LDC, new APLArray(for f in fragments then (if (x = f[1]).isSimple() then x.unwrap() else x))]
         else
           [].concat fragments..., VEC, node.length - 1
-      when 'empty' then [LDC, APLArray.zilde]
-      when 'monadic' then render(node[2]).concat render(node[1]), MON
-      when 'adverb'  then render(node[1]).concat render(node[2]), MON
-      when 'dyadic', 'conjunction' then render(node[3]).concat render(node[2]), render(node[1]), DYA
-      when 'hook'
+      when '⍬' then [LDC, APLArray.zilde]
+      when 'M' then render(node[2]).concat render(node[1]), MON
+      when 'A' then render(node[1]).concat render(node[2]), MON
+      when 'D', 'C' then render(node[3]).concat render(node[2]), render(node[1]), DYA
+      when 'H'
         v = node.scopeNode.vars._hook
         render(node[2]).concat GET, v.scopeDepth, v.slot, render(node[1]), DYA
-      when 'fork'
+      when 'F'
         u = node.scopeNode.vars._hook
         v = node.scopeNode.vars._fork1
         w = node.scopeNode.vars._fork2
@@ -302,7 +301,7 @@ compileAST = (ast, opts = {}) ->
 
   renderLHS = (node) ->
     switch node[0]
-      when 'symbol'
+      when 'X'
         name = node[1]
         {vars} = node.scopeNode
         if (v = vars["set_#{name}"])?.category is VERB
@@ -310,7 +309,7 @@ compileAST = (ast, opts = {}) ->
         else
           v = vars[name]
           [SET, v.scopeDepth, v.slot]
-      when 'expr' # strand assignment
+      when '.' # strand assignment
         # (a b) ← 1 2 ⋄ a           <=> 1
         # (a b) ← 1 2 ⋄ b           <=> 2
         # (a b) ← +                 !!!
@@ -322,7 +321,7 @@ compileAST = (ast, opts = {}) ->
         a = [SPL, n]
         for i in [1...node.length] by 1 then a.push renderLHS(node[i])...; a.push POP
         a
-      when 'index' # index assignment
+      when '[' # index assignment
         v = node.scopeNode.vars._substitute
         axes = []
         a = []
