@@ -1,16 +1,17 @@
 ⍝ Token types:
 ⍝   'W' whitespace
 ⍝   'L' newline
-⍝   'D' diamond (⋄)
+⍝   '⋄' diamond
 ⍝   'N' number
 ⍝   'S' string
 ⍝   '()[]{}:;←' self (toke type is token value)
 ⍝   'J' JavaScript literal («»)
 ⍝   'X' symbol
+⍝   '$' end of file
 tds←⊃( ⍝ token definitions
   ('W' '^([ \t]+|[⍝\#].*)+')
   ('L' '^[\n\r]+')
-  ('D' '^[◇⋄]')
+  ('⋄' '^[◇⋄]')
   ('N' '^(¯?(0x[0-9A-Fa-f]+|[0-9]*\.?[0-9]+([Ee][+¯]?[0-9]+)?|¯|∞)([Jj]¯?(0x[0-9A-Fa-f]+|[0-9]*\.?[0-9]+([Ee][+¯]?[0-9]+)?|¯|∞))?)')
   ('S' '^((''[^'']*'')+|("[^"]*"))+')
   ('.' '^[\(\)\[\]\{\}:;←]')
@@ -19,7 +20,7 @@ tds←⊃( ⍝ token definitions
 )
 
 tpairs←{             ⍝ returns a vector of (type,value) pairs
-  0=⍴⍵:⊂'E' ''       ⍝ empty input: only an "end of file" token
+  0=⍴⍵:⊂'$' ''       ⍝ empty input: only an "end of file" token
   m←tds[;1]⎕RE¨⊂⍵    ⍝ try to match the regexes against ⍵
   i←(×≢¨m)⍳1         ⍝ index of the first regex that matched
   t←tds[i;0]         ⍝ token type

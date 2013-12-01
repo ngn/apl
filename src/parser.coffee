@@ -73,9 +73,9 @@ parse = (aplCode, opts = {}) ->
   parseBody = ->
     body = ['B']
     loop
-      if token.type in 'E};' then return body
-      while consume 'DL' then ;
-      if token.type in 'E};' then return body
+      if token.type in '$};' then return body
+      while consume '⋄L' then ;
+      if token.type in '$};' then return body
       expr = parseExpr()
       if consume ':' then expr = [':', expr, parseExpr()]
       body.push expr
@@ -103,11 +103,11 @@ parse = (aplCode, opts = {}) ->
         demand ']'
       if consume '←' then return expr.concat [['←', item, parseExpr()]]
       expr.push item
-      if token.type in ')]}:;DLE' then return expr
+      if token.type in ')]}:;⋄L$' then return expr
 
   result = parseBody()
   # 'hello'} !!! SYNTAX ERROR
-  demand 'E'
+  demand '$'
   result
 
   macro ->
