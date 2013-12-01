@@ -1,4 +1,4 @@
-# The parser builds an AST from a stream of tokens.
+# The parser builds an AST from a list of tokens.
 #
 # A node in the AST is a JavaScript array whose first item is a string
 # indicating the type of node.  The rest of the items represent the content of
@@ -21,24 +21,42 @@
 # This parser is a hand-crafted recursive descent parser.  Various parseX()
 # functions roughly correspond to the set of non-terminals in an imaginary
 # grammar.
+#
+# Node types:
+#   'body'
+#   'guard'
+#   'number'
+#   'string'
+#   'symbol'
+#   'embedded'
+#   'empty'
+#   'lambda'
+#   'index'
+#   'assign'
+#   'expr'
+#
+# The compiler replaces 'expr' nodes with:
+#   'vector'
+#   'monadic'
+#   'dyadic'
+#   'adverb'
+#   'conjunction'
+#   'hook'
+#   'fork'
 parse = (aplCode, opts = {}) ->
   tokens = tokenize aplCode
   i = 0
+  token = tokens[i++] # single-token lookahead
 
-  # A single-token lookahead is used.  Variable `token` stores the upcoming
-  # token.
-  token = tokens[i++]
-
-  # `consume(tt)` consumes the upcoming token and returns a truthy value only
-  # if its type matches `tt`.  A space-separated value of `tt` matches any of
-  # a set of token types.
+  # consume(tt) consumes the upcoming token and returns a truthy value only
+  # if its type matches any character in tt.
   macro consume (tt) ->
     new macro.Parens macro.csToNode """
       if token.type in #{JSON.stringify macro.nodeToVal(tt).split ''}
         token = tokens[i++]
     """
 
-  # `demand(tt)` is like `consume(tt)` but intolerant to a mismatch.
+  # demand(tt) is like consume(tt) but intolerant to a mismatch.
   macro demand (tt) ->
     new macro.Parens macro.codeToNode(->
       if token.type is tt then token = tokens[i++]
