@@ -962,7 +962,7 @@
 
   tokenize = (function() {
     var code, f, nSlots, vars, _ref;
-    _ref = {"code":["LDC",new APLArray([new APLArray(["W",new APLArray("^([ \\t]+|[⍝\\#].*)+",[18],[1],0)],[2],[1],0),new APLArray(["L",new APLArray("^[\\n\\r]+",[8],[1],0)],[2],[1],0),new APLArray(["D",new APLArray("^[◇⋄]",[5],[1],0)],[2],[1],0),new APLArray(["N",new APLArray("^(¯?(0x[0-9A-Fa-f]+|[0-9]*\\.?[0-9]+([Ee][+¯]?[0-9]+)?|¯|∞)([Jj]¯?(0x[0-9A-Fa-f]+|[0-9]*\\.?[0-9]+([Ee][+¯]?[0-9]+)?|¯|∞))?)",[122],[1],0)],[2],[1],0),new APLArray(["S",new APLArray("^(('[^']*')+|(\"[^\"]*\"))+",[24],[1],0)],[2],[1],0),new APLArray([".",new APLArray("^[\\(\\)\\[\\]\\{\\}:;←]",[18],[1],0)],[2],[1],0),new APLArray(["J",new APLArray("^«[^»]*»",[8],[1],0)],[2],[1],0),new APLArray(["X",new APLArray("^(⎕?[A-Za-z_][0-9A-Za-z_]*|⍺⍺|⍵⍵|∇∇|[^¯'\":«»])",[46],[1],0)],[2],[1],0)],[8],[1],0),"GET",0,75,"MON","SET",0,82,"POP","LAM",209,"GET",1,0,"GET",0,62,"MON","GET",0,14,"LDC",new APLArray([0],[],[],0),"DYA","JEQ",8,"POP","LDC",new APLArray(["E",new APLArray("",[0],[1],0)],[2],[1],0),"GET",0,43,"MON","RET","POP","GET",1,0,"GET",0,43,"MON","GET",0,58,"GET",0,27,"MON","LDC",new APLArray([1],[],[],0),"VEC",1,"LDC",new APLArray([1],[1],[1],0),"VEC",2,"GET",0,68,"GET",0,82,"DYA","DYA","SET",1,3,"POP","LDC",new APLArray([1],[],[],0),"GET",0,42,"GET",1,3,"GET",0,79,"GET",0,27,"MON","MON","GET",0,3,"MON","DYA","SET",1,4,"POP","GET",1,4,"LDC",new APLArray([0],[],[],0),"VEC",2,"LDC",new APLArray([0,1],[2],[1],0),"VEC",2,"GET",0,68,"GET",0,82,"DYA","SET",1,5,"POP","LDC",new APLArray([1],[],[],0),"VEC",1,"LDC",new APLArray([0],[1],[1],0),"VEC",2,"GET",0,68,"GET",1,4,"VEC",1,"LDC",new APLArray([0],[1],[1],0),"VEC",2,"GET",0,68,"GET",1,3,"DYA","GET",0,70,"MON","DYA","GET",0,70,"MON","SET",1,6,"POP","GET",1,5,"GET",1,6,"GET",0,70,"MON","VEC",2,"GET",0,67,"LDC",new APLArray(".",[],[],0),"GET",0,14,"GET",1,5,"DYA","DYA","SET",1,5,"POP","GET",1,0,"GET",0,26,"GET",1,6,"GET",0,79,"MON","DYA","GET",1,1,"MON","GET",0,13,"GET",1,5,"GET",1,6,"VEC",2,"GET",0,43,"MON","DYA","RET","SET",0,83,"POP","LAM",255,"GET",1,0,"GET",0,83,"MON","GET",0,75,"MON","SET",1,3,"POP","LDC",new APLArray([1],[],[],0),"VEC",1,"LDC",new APLArray([1],[1],[1],0),"VEC",2,"GET",0,68,"GET",1,3,"DYA","GET",0,79,"GET",0,27,"MON","MON","GET",0,0,"GET",0,10,"MON","MON","SET",1,4,"POP","GET",1,4,"GET",0,13,"GET",1,4,"GET",0,13,"LDC",new APLArray([0],[],[],0),"DYA","GET",0,26,"LDC",new APLArray([-1],[],[],0),"DYA","GET",0,13,"GET",1,3,"DYA","DYA","SET",1,3,"POP","GET",1,3,"GET",0,66,"LDC",new APLArray("W",[],[],0),"GET",0,15,"LDC",new APLArray([0],[],[],0),"VEC",1,"LDC",new APLArray([1],[1],[1],0),"VEC",2,"GET",0,68,"GET",1,3,"DYA","DYA","DYA","SET",1,3,"POP","LDC",new APLArray("{",[],[],0),"SET",1,5,"POP","GET",1,3,"GET",0,66,"LDC",new APLArray([0],[],[],0),"VEC",1,"LDC",new APLArray([1],[1],[1],0),"VEC",2,"GET",0,68,"GET",1,3,"DYA","LAM",101,"LDC",new APLArray("([{",[3],[1],0),"GET",0,29,"GET",2,0,"DYA","JEQ",21,"POP","GET",2,0,"GET",0,13,"GET",1,5,"DYA","SET",1,5,"GET",0,78,"LDC",new APLArray([1],[],[],0),"DYA","RET","POP","LDC",new APLArray(")]}",[3],[1],0),"GET",0,29,"GET",2,0,"DYA","JEQ",20,"POP","GET",1,5,"GET",0,26,"LDC",new APLArray([-1],[],[],0),"DYA","SET",1,5,"GET",0,78,"LDC",new APLArray([1],[],[],0),"DYA","RET","POP","LDC",new APLArray("L",[],[],0),"GET",0,14,"GET",2,0,"DYA","JEQ",21,"POP","GET",1,5,"GET",0,70,"LDC",new APLArray([-1],[],[],0),"DYA","GET",0,70,"MON","GET",0,14,"LDC",new APLArray("{",[],[],0),"DYA","RET","POP","LDC",new APLArray([1],[],[],0),"RET","GET",0,27,"MON","MON","DYA","SET",1,3,"RET","SET",0,84,"RET"],"nSlots":85,"vars":{"tds":{"scopeDepth":0,"slot":82,"category":1},"tpairs":{"scopeDepth":0,"slot":83,"category":2},"tokenize":{"scopeDepth":0,"slot":84,"category":2},"+":{"category":2,"slot":0,"scopeDepth":0},"-":{"category":2,"slot":1,"scopeDepth":0},"−":{"category":2,"slot":2,"scopeDepth":0},"×":{"category":2,"slot":3,"scopeDepth":0},"÷":{"category":2,"slot":4,"scopeDepth":0},"*":{"category":2,"slot":5,"scopeDepth":0},"⋆":{"category":2,"slot":6,"scopeDepth":0},"⍟":{"category":2,"slot":7,"scopeDepth":0},"|":{"category":2,"slot":8,"scopeDepth":0},"∣":{"category":2,"slot":9,"scopeDepth":0},"\\":{"category":3,"slot":10,"scopeDepth":0},"⍀":{"category":3,"slot":11,"scopeDepth":0},"○":{"category":2,"slot":12,"scopeDepth":0},",":{"category":2,"slot":13,"scopeDepth":0},"=":{"category":2,"slot":14,"scopeDepth":0},"≠":{"category":2,"slot":15,"scopeDepth":0},"<":{"category":2,"slot":16,"scopeDepth":0},">":{"category":2,"slot":17,"scopeDepth":0},"≤":{"category":2,"slot":18,"scopeDepth":0},"≥":{"category":2,"slot":19,"scopeDepth":0},"≡":{"category":2,"slot":20,"scopeDepth":0},"∘":{"category":4,"slot":21,"scopeDepth":0},"∪":{"category":2,"slot":22,"scopeDepth":0},"∩":{"category":2,"slot":23,"scopeDepth":0},"⊥":{"category":2,"slot":24,"scopeDepth":0},".":{"category":4,"slot":25,"scopeDepth":0},"↓":{"category":2,"slot":26,"scopeDepth":0},"¨":{"category":3,"slot":27,"scopeDepth":0},"⊤":{"category":2,"slot":28,"scopeDepth":0},"∊":{"category":2,"slot":29,"scopeDepth":0},"∈":{"category":2,"slot":30,"scopeDepth":0},"!":{"category":2,"slot":31,"scopeDepth":0},"⍎":{"category":2,"slot":32,"scopeDepth":0},"⍷":{"category":2,"slot":33,"scopeDepth":0},"⌊":{"category":2,"slot":34,"scopeDepth":0},"⌈":{"category":2,"slot":35,"scopeDepth":0},"_fork1":{"category":2,"slot":36,"scopeDepth":0},"_fork2":{"category":2,"slot":37,"scopeDepth":0},"⍕":{"category":2,"slot":38,"scopeDepth":0},"⍋":{"category":2,"slot":39,"scopeDepth":0},"⍒":{"category":2,"slot":40,"scopeDepth":0},"⍁":{"category":4,"slot":41,"scopeDepth":0},"⍳":{"category":2,"slot":42,"scopeDepth":0},"⊂":{"category":2,"slot":43,"scopeDepth":0},"~":{"category":2,"slot":44,"scopeDepth":0},"∨":{"category":2,"slot":45,"scopeDepth":0},"∧":{"category":2,"slot":46,"scopeDepth":0},"^":{"category":2,"slot":47,"scopeDepth":0},"⍱":{"category":2,"slot":48,"scopeDepth":0},"⍲":{"category":2,"slot":49,"scopeDepth":0},"⍣":{"category":4,"slot":50,"scopeDepth":0},"get_⎕":{"category":2,"slot":51,"scopeDepth":0},"⎕":{"category":1},"set_⎕":{"category":2,"slot":52,"scopeDepth":0},"get_⍞":{"category":2,"slot":53,"scopeDepth":0},"⍞":{"category":1},"set_⍞":{"category":2,"slot":54,"scopeDepth":0},"get_⎕IO":{"category":2,"slot":55,"scopeDepth":0},"⎕IO":{"category":1},"set_⎕IO":{"category":2,"slot":56,"scopeDepth":0},"⎕DL":{"category":2,"slot":57,"scopeDepth":0},"⎕RE":{"category":2,"slot":58,"scopeDepth":0},"⎕UCS":{"category":2,"slot":59,"scopeDepth":0},"?":{"category":2,"slot":60,"scopeDepth":0},"↗":{"category":2,"slot":61,"scopeDepth":0},"⍴":{"category":2,"slot":62,"scopeDepth":0},"⌽":{"category":2,"slot":63,"scopeDepth":0},"⊖":{"category":2,"slot":64,"scopeDepth":0},"/":{"category":3,"slot":65,"scopeDepth":0},"⌿":{"category":3,"slot":66,"scopeDepth":0},"⌷":{"category":2,"slot":67,"scopeDepth":0},"_index":{"category":2,"slot":68,"scopeDepth":0},"_substitute":{"category":2,"slot":69,"scopeDepth":0},"↑":{"category":2,"slot":70,"scopeDepth":0},"⍉":{"category":2,"slot":71,"scopeDepth":0},"⍠":{"category":4,"slot":72,"scopeDepth":0},"⍬":{"scopeDepth":0,"slot":73,"category":1},"_hook":{"scopeDepth":0,"slot":74,"category":4},"⊃":{"scopeDepth":0,"slot":75,"category":2},"⍪":{"scopeDepth":0,"slot":76,"category":2},"⊢":{"scopeDepth":0,"slot":77,"category":2},"⊣":{"scopeDepth":0,"slot":78,"category":2},"≢":{"scopeDepth":0,"slot":79,"category":2},"⌹":{"scopeDepth":0,"slot":80,"category":2},"⍨":{"scopeDepth":0,"slot":81,"category":3}}}, code = _ref.code, vars = _ref.vars, nSlots = _ref.nSlots;
+    _ref = {"code":["LDC",new APLArray([new APLArray(["W",new APLArray("^([ \\t]+|[⍝\\#].*)+",[18],[1],0)],[2],[1],0),new APLArray(["L",new APLArray("^[\\n\\r]+",[8],[1],0)],[2],[1],0),new APLArray(["⋄",new APLArray("^[◇⋄]",[5],[1],0)],[2],[1],0),new APLArray(["N",new APLArray("^(¯?(0x[0-9A-Fa-f]+|[0-9]*\\.?[0-9]+([Ee][+¯]?[0-9]+)?|¯|∞)([Jj]¯?(0x[0-9A-Fa-f]+|[0-9]*\\.?[0-9]+([Ee][+¯]?[0-9]+)?|¯|∞))?)",[122],[1],0)],[2],[1],0),new APLArray(["S",new APLArray("^(('[^']*')+|(\"[^\"]*\"))+",[24],[1],0)],[2],[1],0),new APLArray([".",new APLArray("^[\\(\\)\\[\\]\\{\\}:;←]",[18],[1],0)],[2],[1],0),new APLArray(["J",new APLArray("^«[^»]*»",[8],[1],0)],[2],[1],0),new APLArray(["X",new APLArray("^(⎕?[A-Za-z_][0-9A-Za-z_]*|⍺⍺|⍵⍵|∇∇|[^¯'\":«»])",[46],[1],0)],[2],[1],0)],[8],[1],0),"GET",0,75,"MON","SET",0,82,"POP","LAM",209,"GET",1,0,"GET",0,62,"MON","GET",0,14,"LDC",new APLArray([0],[],[],0),"DYA","JEQ",8,"POP","LDC",new APLArray(["$",new APLArray("",[0],[1],0)],[2],[1],0),"GET",0,43,"MON","RET","POP","GET",1,0,"GET",0,43,"MON","GET",0,58,"GET",0,27,"MON","LDC",new APLArray([1],[],[],0),"VEC",1,"LDC",new APLArray([1],[1],[1],0),"VEC",2,"GET",0,68,"GET",0,82,"DYA","DYA","SET",1,3,"POP","LDC",new APLArray([1],[],[],0),"GET",0,42,"GET",1,3,"GET",0,79,"GET",0,27,"MON","MON","GET",0,3,"MON","DYA","SET",1,4,"POP","GET",1,4,"LDC",new APLArray([0],[],[],0),"VEC",2,"LDC",new APLArray([0,1],[2],[1],0),"VEC",2,"GET",0,68,"GET",0,82,"DYA","SET",1,5,"POP","LDC",new APLArray([1],[],[],0),"VEC",1,"LDC",new APLArray([0],[1],[1],0),"VEC",2,"GET",0,68,"GET",1,4,"VEC",1,"LDC",new APLArray([0],[1],[1],0),"VEC",2,"GET",0,68,"GET",1,3,"DYA","GET",0,70,"MON","DYA","GET",0,70,"MON","SET",1,6,"POP","GET",1,5,"GET",1,6,"GET",0,70,"MON","VEC",2,"GET",0,67,"LDC",new APLArray(".",[],[],0),"GET",0,14,"GET",1,5,"DYA","DYA","SET",1,5,"POP","GET",1,0,"GET",0,26,"GET",1,6,"GET",0,79,"MON","DYA","GET",1,1,"MON","GET",0,13,"GET",1,5,"GET",1,6,"VEC",2,"GET",0,43,"MON","DYA","RET","SET",0,83,"POP","LAM",255,"GET",1,0,"GET",0,83,"MON","GET",0,75,"MON","SET",1,3,"POP","LDC",new APLArray([1],[],[],0),"VEC",1,"LDC",new APLArray([1],[1],[1],0),"VEC",2,"GET",0,68,"GET",1,3,"DYA","GET",0,79,"GET",0,27,"MON","MON","GET",0,0,"GET",0,10,"MON","MON","SET",1,4,"POP","GET",1,4,"GET",0,13,"GET",1,4,"GET",0,13,"LDC",new APLArray([0],[],[],0),"DYA","GET",0,26,"LDC",new APLArray([-1],[],[],0),"DYA","GET",0,13,"GET",1,3,"DYA","DYA","SET",1,3,"POP","GET",1,3,"GET",0,66,"LDC",new APLArray("W",[],[],0),"GET",0,15,"LDC",new APLArray([0],[],[],0),"VEC",1,"LDC",new APLArray([1],[1],[1],0),"VEC",2,"GET",0,68,"GET",1,3,"DYA","DYA","DYA","SET",1,3,"POP","LDC",new APLArray("{",[],[],0),"SET",1,5,"POP","GET",1,3,"GET",0,66,"LDC",new APLArray([0],[],[],0),"VEC",1,"LDC",new APLArray([1],[1],[1],0),"VEC",2,"GET",0,68,"GET",1,3,"DYA","LAM",101,"LDC",new APLArray("([{",[3],[1],0),"GET",0,29,"GET",2,0,"DYA","JEQ",21,"POP","GET",2,0,"GET",0,13,"GET",1,5,"DYA","SET",1,5,"GET",0,78,"LDC",new APLArray([1],[],[],0),"DYA","RET","POP","LDC",new APLArray(")]}",[3],[1],0),"GET",0,29,"GET",2,0,"DYA","JEQ",20,"POP","GET",1,5,"GET",0,26,"LDC",new APLArray([-1],[],[],0),"DYA","SET",1,5,"GET",0,78,"LDC",new APLArray([1],[],[],0),"DYA","RET","POP","LDC",new APLArray("L",[],[],0),"GET",0,14,"GET",2,0,"DYA","JEQ",21,"POP","GET",1,5,"GET",0,70,"LDC",new APLArray([-1],[],[],0),"DYA","GET",0,70,"MON","GET",0,14,"LDC",new APLArray("{",[],[],0),"DYA","RET","POP","LDC",new APLArray([1],[],[],0),"RET","GET",0,27,"MON","MON","DYA","SET",1,3,"RET","SET",0,84,"RET"],"nSlots":85,"vars":{"tds":{"scopeDepth":0,"slot":82,"category":1},"tpairs":{"scopeDepth":0,"slot":83,"category":2},"tokenize":{"scopeDepth":0,"slot":84,"category":2},"+":{"category":2,"slot":0,"scopeDepth":0},"-":{"category":2,"slot":1,"scopeDepth":0},"−":{"category":2,"slot":2,"scopeDepth":0},"×":{"category":2,"slot":3,"scopeDepth":0},"÷":{"category":2,"slot":4,"scopeDepth":0},"*":{"category":2,"slot":5,"scopeDepth":0},"⋆":{"category":2,"slot":6,"scopeDepth":0},"⍟":{"category":2,"slot":7,"scopeDepth":0},"|":{"category":2,"slot":8,"scopeDepth":0},"∣":{"category":2,"slot":9,"scopeDepth":0},"\\":{"category":3,"slot":10,"scopeDepth":0},"⍀":{"category":3,"slot":11,"scopeDepth":0},"○":{"category":2,"slot":12,"scopeDepth":0},",":{"category":2,"slot":13,"scopeDepth":0},"=":{"category":2,"slot":14,"scopeDepth":0},"≠":{"category":2,"slot":15,"scopeDepth":0},"<":{"category":2,"slot":16,"scopeDepth":0},">":{"category":2,"slot":17,"scopeDepth":0},"≤":{"category":2,"slot":18,"scopeDepth":0},"≥":{"category":2,"slot":19,"scopeDepth":0},"≡":{"category":2,"slot":20,"scopeDepth":0},"∘":{"category":4,"slot":21,"scopeDepth":0},"∪":{"category":2,"slot":22,"scopeDepth":0},"∩":{"category":2,"slot":23,"scopeDepth":0},"⊥":{"category":2,"slot":24,"scopeDepth":0},".":{"category":4,"slot":25,"scopeDepth":0},"↓":{"category":2,"slot":26,"scopeDepth":0},"¨":{"category":3,"slot":27,"scopeDepth":0},"⊤":{"category":2,"slot":28,"scopeDepth":0},"∊":{"category":2,"slot":29,"scopeDepth":0},"∈":{"category":2,"slot":30,"scopeDepth":0},"!":{"category":2,"slot":31,"scopeDepth":0},"⍎":{"category":2,"slot":32,"scopeDepth":0},"⍷":{"category":2,"slot":33,"scopeDepth":0},"⌊":{"category":2,"slot":34,"scopeDepth":0},"⌈":{"category":2,"slot":35,"scopeDepth":0},"_fork1":{"category":2,"slot":36,"scopeDepth":0},"_fork2":{"category":2,"slot":37,"scopeDepth":0},"⍕":{"category":2,"slot":38,"scopeDepth":0},"⍋":{"category":2,"slot":39,"scopeDepth":0},"⍒":{"category":2,"slot":40,"scopeDepth":0},"⍁":{"category":4,"slot":41,"scopeDepth":0},"⍳":{"category":2,"slot":42,"scopeDepth":0},"⊂":{"category":2,"slot":43,"scopeDepth":0},"~":{"category":2,"slot":44,"scopeDepth":0},"∨":{"category":2,"slot":45,"scopeDepth":0},"∧":{"category":2,"slot":46,"scopeDepth":0},"^":{"category":2,"slot":47,"scopeDepth":0},"⍱":{"category":2,"slot":48,"scopeDepth":0},"⍲":{"category":2,"slot":49,"scopeDepth":0},"⍣":{"category":4,"slot":50,"scopeDepth":0},"get_⎕":{"category":2,"slot":51,"scopeDepth":0},"⎕":{"category":1},"set_⎕":{"category":2,"slot":52,"scopeDepth":0},"get_⍞":{"category":2,"slot":53,"scopeDepth":0},"⍞":{"category":1},"set_⍞":{"category":2,"slot":54,"scopeDepth":0},"get_⎕IO":{"category":2,"slot":55,"scopeDepth":0},"⎕IO":{"category":1},"set_⎕IO":{"category":2,"slot":56,"scopeDepth":0},"⎕DL":{"category":2,"slot":57,"scopeDepth":0},"⎕RE":{"category":2,"slot":58,"scopeDepth":0},"⎕UCS":{"category":2,"slot":59,"scopeDepth":0},"?":{"category":2,"slot":60,"scopeDepth":0},"↗":{"category":2,"slot":61,"scopeDepth":0},"⍴":{"category":2,"slot":62,"scopeDepth":0},"⌽":{"category":2,"slot":63,"scopeDepth":0},"⊖":{"category":2,"slot":64,"scopeDepth":0},"/":{"category":3,"slot":65,"scopeDepth":0},"⌿":{"category":3,"slot":66,"scopeDepth":0},"⌷":{"category":2,"slot":67,"scopeDepth":0},"_index":{"category":2,"slot":68,"scopeDepth":0},"_substitute":{"category":2,"slot":69,"scopeDepth":0},"↑":{"category":2,"slot":70,"scopeDepth":0},"⍉":{"category":2,"slot":71,"scopeDepth":0},"⍠":{"category":4,"slot":72,"scopeDepth":0},"⍬":{"scopeDepth":0,"slot":73,"category":1},"_hook":{"scopeDepth":0,"slot":74,"category":4},"⊃":{"scopeDepth":0,"slot":75,"category":2},"⍪":{"scopeDepth":0,"slot":76,"category":2},"⊢":{"scopeDepth":0,"slot":77,"category":2},"⊣":{"scopeDepth":0,"slot":78,"category":2},"≢":{"scopeDepth":0,"slot":79,"category":2},"⌹":{"scopeDepth":0,"slot":80,"category":2},"⍨":{"scopeDepth":0,"slot":81,"category":3}}}, code = _ref.code, vars = _ref.vars, nSlots = _ref.nSlots;
     f = null;
     return function(s) {
       var a, b, env, i, k, v, _i, _ref1, _ref2, _results;
@@ -1009,47 +1009,32 @@
     };
     parseBody = function() {
       var body, expr, _ref, _ref1, _ref2, _ref3;
-      body = ['body'];
+      body = ['B'];
       while (true) {
-        if (_ref = token.type, __indexOf.call('E};', _ref) >= 0) {
+        if (_ref = token.type, __indexOf.call('$};', _ref) >= 0) {
           return body;
         }
-        while (((_ref1 = token.type) === "D" || _ref1 === "L" ? token = tokens[i++] : void 0)) {}
-        if (_ref2 = token.type, __indexOf.call('E};', _ref2) >= 0) {
+        while (((_ref1 = token.type) === "⋄" || _ref1 === "L" ? token = tokens[i++] : void 0)) {}
+        if (_ref2 = token.type, __indexOf.call('$};', _ref2) >= 0) {
           return body;
         }
         expr = parseExpr();
         if (((_ref3 = token.type) === ":" ? token = tokens[i++] : void 0)) {
-          expr = ['guard', expr, parseExpr()];
+          expr = [':', expr, parseExpr()];
         }
         body.push(expr);
       }
     };
     parseExpr = function() {
       var expr, item, t, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
-      expr = ['expr'];
+      expr = ['.'];
       while (true) {
         t = token;
         if (((_ref = token.type) === "N" || _ref === "S" || _ref === "X" || _ref === "J" ? token = tokens[i++] : void 0)) {
-          item = (function() {
-            switch (t.type) {
-              case 'N':
-                return ['number', t.value];
-              case 'S':
-                return ['string', t.value];
-              case 'X':
-                return ['symbol', t.value];
-              case 'J':
-                return ['embedded', t.value];
-              default:
-                if (!(0)) {
-                  throw Error("\"else assert 0\" at src/parser.coffee:72");
-                }
-            }
-          })();
+          item = [t.type, t.value];
         } else if (((_ref1 = token.type) === "(" ? token = tokens[i++] : void 0)) {
           if (((_ref2 = token.type) === ")" ? token = tokens[i++] : void 0)) {
-            item = ['empty'];
+            item = ['⍬'];
           } else {
             item = parseExpr();
             if (token.type === ')') {
@@ -1059,7 +1044,7 @@
             }
           }
         } else if (((_ref3 = token.type) === "{" ? token = tokens[i++] : void 0)) {
-          item = ['lambda', parseBody()];
+          item = ['{', parseBody()];
           while (((_ref4 = token.type) === ";" ? token = tokens[i++] : void 0)) {
             item.push(parseBody());
           }
@@ -1072,7 +1057,7 @@
           parserError("Encountered unexpected token of type '" + token.type + "'");
         }
         if (((_ref5 = token.type) === "[" ? token = tokens[i++] : void 0)) {
-          item = ['index', item];
+          item = ['[', item];
           while (true) {
             if (((_ref6 = token.type) === ";" ? token = tokens[i++] : void 0)) {
               item.push(null);
@@ -1099,19 +1084,19 @@
           }
         }
         if (((_ref7 = token.type) === "←" ? token = tokens[i++] : void 0)) {
-          return expr.concat([['assign', item, parseExpr()]]);
+          return expr.concat([['←', item, parseExpr()]]);
         }
         expr.push(item);
-        if (_ref8 = token.type, __indexOf.call(')]}:;DLE', _ref8) >= 0) {
+        if (_ref8 = token.type, __indexOf.call(')]}:;⋄L$', _ref8) >= 0) {
           return expr;
         }
       }
     };
     result = parseBody();
-    if (token.type === 'E') {
+    if (token.type === '$') {
       token = tokens[i++];
     } else {
-      parserError("Expected token of type '" + 'E' + "' but got '" + token.type + "'");
+      parserError("Expected token of type '" + '$' + "' but got '" + token.type + "'");
     }
     return result;
   };
@@ -4143,31 +4128,31 @@
     (categorizeLambdas = function(node) {
       var i, r, _i, _ref2;
       switch (node[0]) {
-        case 'body':
-        case 'guard':
-        case 'assign':
-        case 'index':
-        case 'lambda':
-        case 'expr':
-        case 'empty':
+        case 'B':
+        case ':':
+        case '←':
+        case '[':
+        case '{':
+        case '.':
+        case '⍬':
           r = VERB;
           for (i = _i = 1, _ref2 = node.length; _i < _ref2; i = _i += 1) {
             if (node[i]) {
               r = Math.max(r, categorizeLambdas(node[i]));
             }
           }
-          if (node[0] === 'lambda') {
+          if (node[0] === '{') {
             node.category = r;
             return VERB;
           } else {
             return r;
           }
           break;
-        case 'string':
-        case 'number':
-        case 'embedded':
+        case 'S':
+        case 'N':
+        case 'J':
           return 0;
-        case 'symbol':
+        case 'X':
           switch (node[1]) {
             case '⍺⍺':
             case '⍶':
@@ -4193,13 +4178,13 @@
         var a, body, d, h, i, j, name, r, v, x, _i, _j, _k, _ref10, _ref11, _ref12, _ref13, _ref14, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
         node.scopeNode = scopeNode;
         switch (node[0]) {
-          case 'guard':
+          case ':':
             r = visit(node[1]);
             visit(node[2]);
             return r;
-          case 'assign':
+          case '←':
             return visitLHS(node[1], visit(node[2]));
-          case 'symbol':
+          case 'X':
             name = node[1];
             if (((_ref2 = (v = vars["get_" + name])) != null ? _ref2.category : void 0) === VERB) {
               return NOUN;
@@ -4212,7 +4197,7 @@
               });
             }
             break;
-          case 'lambda':
+          case '{':
             for (i = _i = 1, _ref4 = node.length; 1 <= _ref4 ? _i < _ref4 : _i > _ref4; i = 1 <= _ref4 ? ++_i : --_i) {
               queue.push(extend((body = node[i]), {
                 scopeNode: scopeNode,
@@ -4266,19 +4251,19 @@
               }
             }
             return (_ref5 = node.category) != null ? _ref5 : VERB;
-          case 'string':
-          case 'number':
-          case 'embedded':
-          case 'empty':
+          case 'S':
+          case 'N':
+          case 'J':
+          case '⍬':
             return NOUN;
-          case 'index':
+          case '[':
             for (i = _j = 2, _ref6 = node.length; _j < _ref6; i = _j += 1) {
               if (node[i] && visit(node[i]) !== NOUN) {
                 err(node, 'Indices must be nouns.');
               }
             }
             return visit(node[1]);
-          case 'expr':
+          case '.':
             a = node.slice(1);
             h = Array(a.length);
             for (i = _k = _ref7 = a.length - 1; _k >= 0; i = _k += -1) {
@@ -4291,7 +4276,7 @@
                 while (j < a.length && h[j] === NOUN) {
                   j++;
                 }
-                [].splice.apply(a, [i, j - i].concat(_ref9 = [['vector'].concat(a.slice(i, j))])), _ref9;
+                [].splice.apply(a, [i, j - i].concat(_ref9 = [['V'].concat(a.slice(i, j))])), _ref9;
                 [].splice.apply(h, [i, j - i].concat(NOUN)), NOUN;
               } else {
                 i++;
@@ -4300,7 +4285,7 @@
             i = a.length - 2;
             while (--i >= 0) {
               if (h[i + 1] === CONJUNCTION && (h[i] !== NOUN || h[i + 2] !== NOUN)) {
-                [].splice.apply(a, [i, (i + 3) - i].concat(_ref10 = [['conjunction'].concat(a.slice(i, i + 3))])), _ref10;
+                [].splice.apply(a, [i, (i + 3) - i].concat(_ref10 = [['C'].concat(a.slice(i, i + 3))])), _ref10;
                 [].splice.apply(h, [i, (i + 3) - i].concat(VERB)), VERB;
                 i--;
               }
@@ -4308,14 +4293,14 @@
             i = 0;
             while (i < a.length - 1) {
               if (h[i] !== NOUN && h[i + 1] === ADVERB) {
-                [].splice.apply(a, [i, (i + 2) - i].concat(_ref11 = [['adverb'].concat(a.slice(i, i + 2))])), _ref11;
+                [].splice.apply(a, [i, (i + 2) - i].concat(_ref11 = [['A'].concat(a.slice(i, i + 2))])), _ref11;
                 [].splice.apply(h, [i, (i + 2) - i].concat(VERB)), VERB;
               } else {
                 i++;
               }
             }
             if (h.length === 2 && h[0] !== NOUN && h[1] !== NOUN) {
-              a = [['hook'].concat(a)];
+              a = [['H'].concat(a)];
               h = [VERB];
             }
             if (h.length >= 3 && h.length % 2 === 1 && all((function() {
@@ -4327,7 +4312,7 @@
               }
               return _results;
             })())) {
-              a = [['fork'].concat(a)];
+              a = [['F'].concat(a)];
               h = [VERB];
             }
             if (h[h.length - 1] !== NOUN) {
@@ -4337,10 +4322,10 @@
             } else {
               while (h.length > 1) {
                 if (h.length === 2 || h[h.length - 3] !== NOUN) {
-                  [].splice.apply(a, [-2, 9e9].concat(_ref12 = [['monadic'].concat(a.slice(-2))])), _ref12;
+                  [].splice.apply(a, [-2, 9e9].concat(_ref12 = [['M'].concat(a.slice(-2))])), _ref12;
                   [].splice.apply(h, [-2, 9e9].concat(NOUN)), NOUN;
                 } else {
-                  [].splice.apply(a, [-3, 9e9].concat(_ref13 = [['dyadic'].concat(a.slice(-3))])), _ref13;
+                  [].splice.apply(a, [-3, 9e9].concat(_ref13 = [['D'].concat(a.slice(-3))])), _ref13;
                   [].splice.apply(h, [-3, 9e9].concat(NOUN)), NOUN;
                 }
               }
@@ -4350,7 +4335,7 @@
             return h[0];
           default:
             if (!(0)) {
-              throw Error("\"assert 0\" at src/compiler.coffee:145");
+              throw Error("\"assert 0\" at src/compiler.coffee:144");
             }
         }
       };
@@ -4358,7 +4343,7 @@
         var c, i, name, _i, _j, _ref2, _ref3;
         node.scopeNode = scopeNode;
         switch (node[0]) {
-          case 'symbol':
+          case 'X':
             name = node[1];
             if (name === '∇') {
               err(node, 'Assignment to ∇ is not allowed.');
@@ -4375,13 +4360,13 @@
               };
             }
             break;
-          case 'expr':
+          case '.':
             rhsCategory === NOUN || err(node, 'Strand assignment can be used only for nouns.');
             for (i = _i = 1, _ref2 = node.length; _i < _ref2; i = _i += 1) {
               visitLHS(node[i], rhsCategory);
             }
             break;
-          case 'index':
+          case '[':
             rhsCategory === NOUN || err(node, 'Index assignment can be used only for nouns.');
             visitLHS(node[1], rhsCategory);
             for (i = _j = 2, _ref3 = node.length; _j < _ref3; i = _j += 1) {
@@ -4402,7 +4387,7 @@
     render = function(node) {
       var a, axes, c, d, f, fragments, lx, ly, name, r, s, u, v, w, x, y, _j, _k, _ref3, _ref4, _ref5, _ref6;
       switch (node[0]) {
-        case 'body':
+        case 'B':
           if (node.length === 1) {
             return [LDC, APLArray.zilde, RET];
           } else {
@@ -4415,13 +4400,13 @@
             return a;
           }
           break;
-        case 'guard':
+        case ':':
           x = render(node[1]);
           y = render(node[2]);
           return x.concat(JEQ, y.length + 2, POP, y, RET);
-        case 'assign':
+        case '←':
           return render(node[2]).concat(renderLHS(node[1]));
-        case 'symbol':
+        case 'X':
           name = node[1];
           vars = node.scopeNode.vars;
           if (((_ref4 = (v = vars["get_" + name])) != null ? _ref4.category : void 0) === VERB) {
@@ -4431,7 +4416,7 @@
             return [GET, v.scopeDepth, v.slot];
           }
           break;
-        case 'lambda':
+        case '{':
           x = render(node[1]);
           lx = [LAM, x.length].concat(x);
           f = (function() {
@@ -4453,11 +4438,11 @@
             return f;
           }
           break;
-        case 'string':
+        case 'S':
           d = node[1][0];
           s = node[1].slice(1, -1).replace(RegExp("" + (d + d), "g"), d);
           return [LDC, new APLArray(s, s.length === 1 ? [] : void 0)];
-        case 'number':
+        case 'N':
           a = (function() {
             var _k, _len, _ref5, _results;
             _ref5 = node[1].replace(/[¯∞]/g, '-').split(/j/i);
@@ -4478,14 +4463,14 @@
           })();
           v = a[1] ? new Complex(a[0], a[1]) : a[0];
           return [LDC, new APLArray([v], [])];
-        case 'embedded':
+        case 'J':
           f = Function("return function(_w,_a){return(" + (node[1].replace(/^«|»$/g, '')) + ")};")();
           return [
             EMB, function(_w, _a) {
               return aplify(f(_w, _a));
             }
           ];
-        case 'index':
+        case '[':
           v = node.scopeNode.vars._index;
           axes = [];
           a = [];
@@ -4500,7 +4485,7 @@
           a.push.apply(a, render(node[1]));
           a.push(DYA);
           return a;
-        case 'vector':
+        case 'V':
           fragments = (function() {
             var _l, _ref6, _results;
             _results = [];
@@ -4533,19 +4518,19 @@
             return (_ref6 = []).concat.apply(_ref6, __slice.call(fragments).concat([VEC], [node.length - 1]));
           }
           break;
-        case 'empty':
+        case '⍬':
           return [LDC, APLArray.zilde];
-        case 'monadic':
+        case 'M':
           return render(node[2]).concat(render(node[1]), MON);
-        case 'adverb':
+        case 'A':
           return render(node[1]).concat(render(node[2]), MON);
-        case 'dyadic':
-        case 'conjunction':
+        case 'D':
+        case 'C':
           return render(node[3]).concat(render(node[2]), render(node[1]), DYA);
-        case 'hook':
+        case 'H':
           v = node.scopeNode.vars._hook;
           return render(node[2]).concat(GET, v.scopeDepth, v.slot, render(node[1]), DYA);
-        case 'fork':
+        case 'F':
           u = node.scopeNode.vars._hook;
           v = node.scopeNode.vars._fork1;
           w = node.scopeNode.vars._fork2;
@@ -4562,14 +4547,14 @@
           break;
         default:
           if (!(0)) {
-            throw Error("\"else assert 0\" at src/compiler.coffee:301");
+            throw Error("\"else assert 0\" at src/compiler.coffee:300");
           }
       }
     };
     renderLHS = function(node) {
       var a, axes, c, n, name, v, _j, _k, _ref3, _ref4, _ref5;
       switch (node[0]) {
-        case 'symbol':
+        case 'X':
           name = node[1];
           vars = node.scopeNode.vars;
           if (((_ref3 = (v = vars["set_" + name])) != null ? _ref3.category : void 0) === VERB) {
@@ -4579,7 +4564,7 @@
             return [SET, v.scopeDepth, v.slot];
           }
           break;
-        case 'expr':
+        case '.':
           n = node.length - 1;
           a = [SPL, n];
           for (i = _j = 1, _ref4 = node.length; _j < _ref4; i = _j += 1) {
@@ -4587,7 +4572,7 @@
             a.push(POP);
           }
           return a;
-        case 'index':
+        case '[':
           v = node.scopeNode.vars._substitute;
           axes = [];
           a = [];
@@ -4605,7 +4590,7 @@
           return a;
         default:
           if (!(0)) {
-            throw Error("\"assert 0\" at src/compiler.coffee:336");
+            throw Error("\"assert 0\" at src/compiler.coffee:335");
           }
       }
     };
