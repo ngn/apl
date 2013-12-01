@@ -21,8 +21,8 @@ class Complex
     assert typeof @im is 'number'
     if isNaN(@re) or isNaN(@im) then domainError 'NaN'
 
-  toString: ->
-    "#{formatNumber @re}J#{formatNumber @im}"
+  toString: -> "#{formatNumber @re}J#{formatNumber @im}"
+  repr: -> "new Complex(#{repr @re},#{repr @im})"
 
   @exp = exp = (x) ->
     x = complexify x
