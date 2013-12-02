@@ -135,7 +135,7 @@ class APLArray
       if !⍴⍴ @ then return @data[@offset]
       if ⍴(@)[0] is 0 then return ''
       if @stride[0] is 1 then return @data[@offset ... @offset + @shape[0]]
-      @toArray.join ''
+      @toArray().join ''
     else
       a = @toArray()
       for x in a when typeof x isnt 'string' then domainError()

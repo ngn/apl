@@ -1,15 +1,4 @@
-LDC = 'LDC'
-VEC = 'VEC'
-GET = 'GET'
-SET = 'SET'
-MON = 'MON'
-DYA = 'DYA'
-LAM = 'LAM'
-RET = 'RET'
-POP = 'POP'
-SPL = 'SPL'
-JEQ = 'JEQ'
-EMB = 'EMB'
+[LDC, VEC, GET, SET, MON, DYA, LAM, RET, POP, SPL, JEQ, EMB] = [1..12]
 
 class λ
   constructor: (@code, @addr, @env) ->
