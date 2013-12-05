@@ -4,7 +4,7 @@
 ⍝   '⋄' diamond
 ⍝   'N' number
 ⍝   'S' string
-⍝   '()[]{}:;←' self (toke type is token value)
+⍝   '()[]{}:;←' self (token type is token value)
 ⍝   'J' JavaScript literal («»)
 ⍝   'X' symbol
 ⍝   '$' end of file
