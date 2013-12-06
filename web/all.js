@@ -2897,7 +2897,7 @@
         p += omega.stride[a];
         indices[a]++;
       }
-      return 0;
+      return (i > j) - (i < j);
     }));
   };
   addVocabulary({
@@ -4713,7 +4713,7 @@
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2013-12-05\n");
+          process.stdout.write("ngn apl 2013-12-06\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ws = apl.ws();
@@ -7571,6 +7571,7 @@ var aplTests = [
 ["⎕A←\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\" ⋄ (⌽⎕A)⍋3 3⍴\"BOBALFZAK\"","<=>","2 0 1"],
 ["data←6 4⍴\"ABLEaBLEACREABELaBELACES\"\n coll←2 26⍴\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\"\n data[coll⍋data;]\n","<=>","6 4 ⍴ 'ABELaBELABLEaBLEACESACRE'"],
 ["data←6 4⍴\"ABLEaBLEACREABELaBELACES\"\n coll1←\"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz\"\n data[coll1⍋data;]\n","<=>","6 4 ⍴ 'ABELABLEACESACREaBELaBLE'"],
+["⍋0 1 2 3 4 3 6 6 4 9 1 11 12 13 14 15","<=>","0 1 10 2 3 5 4 8 6 7 9 11 12 13 14 15"],
 ["⍒3 1 8","<=>","2 0 1"],
 ["f←{⍺+2×⍵} ⋄ f/⍬","!!!","DOMAIN ERROR"],
 ["f←{⍺+2×⍵} ⋄ (f⍁123)/⍬","<=>","123"],
