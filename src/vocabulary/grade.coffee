@@ -40,6 +40,8 @@ addVocabulary
   # ... coll1←"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
   # ... data[coll1⍋data;]
   # ...   <=> 6 4 ⍴ 'ABELABLEACESACREaBELaBLE'
+  #
+  # ⍋0 1 2 3 4 3 6 6 4 9 1 11 12 13 14 15 <=> 0 1 10 2 3 5 4 8 6 7 9 11 12 13 14 15
   '⍋': (⍵, ⍺) -> grade ⍵, ⍺, 1
 
   # Grade down (`⍒`)
@@ -81,4 +83,4 @@ grade = (⍵, ⍺, direction) ->
         if a <= 0 then break
         p += ⍵.stride[a]
         indices[a]++
-      0
+      (i > j) - (i < j)
