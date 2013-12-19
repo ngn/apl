@@ -1,24 +1,53 @@
-tokenize = do ->
-  {code, vars, nSlots} = macro ->
-    fs = macro.require 'fs'
-    {parse, compileAST, repr} = macro.require "#{process.cwd()}/old-apl"
-    ast = parse fs.readFileSync "#{process.cwd()}/src/lexer.apl", 'utf8'
-    code = compileAST ast
-    macro.jsToNode repr code: code, nSlots: ast.nSlots, vars: ast.vars
+# Token types:
+#   '-' whitespace and comments
+#   'L' newline
+#   '⋄' diamond (⋄)
+#   'N' number
+#   'S' string
+#   '()[]{}:;←' self
+#   'J' JS literal
+#   'X' symbol
+#   '$' end of file
 
-  f = null
-  (s) ->
-    if !f?
-      env = [[]]
-      for k, v of vars then env[0][v.slot] = vocabulary[k]
-      vm {code, env}
-      f = env[0][vars.tokenize.slot].toFunction()
+tokenDefs = [
+  ['-', /^(?:[ \t]+|[⍝\#].*)+/]
+  ['L', /^[\n\r]+/]
+  ['⋄', /^[◇⋄]/]
+  ['N', ///^
+          ¯? (?: 0x[\da-f]+ | \d*\.?\d+(?:e[+¯]?\d+)? | ¯ | ∞ )
+    (?: j ¯? (?: 0x[\da-f]+ | \d*\.?\d+(?:e[+¯]?\d+)? | ¯ | ∞ ) ) ?
+  ///i]
+  ['S', /^(?:'[^']*')+|^(?:"[^"]*")+/]
+  ['.', /^[\(\)\[\]\{\}:;←]/]
+  ['J', /^«[^»]*»/]
+  ['X', /^(?:⎕?[a-z_]\w*|⍺⍺|⍵⍵|∇∇|[^¯'":«»])/i]
+]
 
-    a = f new APLArray s
-
-    # a is an APL matrix whose first two column are "type" and "value"
-    # Convert a to JavaScript object, as expected by tokenize()'s callers:
-    b = a.toArray()
-    for i in [0...b.length] by ⍴(a)[1]
-      type: b[i]
-      value: b[i + 1].toArray().join('')
+# `stack` keeps track of bracket nesting and causes 'L' tokens to be dropped
+# when the latest unclosed bracket is '(' or '['.  This allows for newlines
+# inside expressions without having them treated as statement separators.
+#
+# A sentry '$' token is generated at the end.
+tokenize = (s, opts = {}) ->
+  line = col = 1
+  stack = ['{'] # a stack of brackets
+  tokens = []
+  while s
+    startLine = line
+    startCol = col
+    type = null
+    for [t, re] in tokenDefs when m = s.match re
+      type = if t is '.' then m[0] else t
+      break
+    type or syntaxError 'Unrecognized token', {file: opts.file, line, col, s: opts.s}
+    a = m[0].split '\n'
+    line += a.length - 1
+    col = (if a.length is 1 then col else 1) + a[a.length - 1].length
+    s = s[m[0].length..]
+    if type isnt '-'
+      if type in '([{' then stack.push type
+      else if type in ')]}' then stack.pop()
+      if type isnt 'L' or stack[stack.length - 1] is '{'
+        tokens.push {type, startLine, startCol, value: m[0], endLine: line, endCol: col}
+  tokens.push type: '$', value: '', startLine: line, startCol: col, endLine: line, endCol: col
+  tokens
