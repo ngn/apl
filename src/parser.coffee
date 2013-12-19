@@ -1,18 +1,18 @@
 # The parser builds an AST from a list of tokens.
 #
-# A node in the AST is a JavaScript array whose first item is a string
+# A node in the AST is a JavaScript array whose first item is a character
 # indicating the type of node.  The rest of the items represent the content of
 # a node.  For instance, "(1 + 2) × 3 4" will produce the tree:
 #
-#     ['b',
+#   ['B',
+#     ['.',
 #       ['.',
-#         ['.',
-#           ['n', '1'],
-#           ['x', '+'],
-#           ['n', '2']],
-#         ['x', '×'],
-#         ['n', '3'],
-#         ['n', '4']]]
+#         ['N', '1'],
+#         ['X', '+'],
+#         ['N', '2']],
+#       ['X', '×'],
+#       ['N', '3'],
+#       ['N', '4']]]
 #
 # Note, that right after parsing stage we don't yet know which symbols
 # represent verbs and which represent nouns.  This will be resolved later in

@@ -134,3 +134,10 @@ _hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}
 ⍝ 7⍴⍨2 3 <=> 2 3⍴7
 ⍝ +⍨2    <=> 4
 ⍝ -⍨123  <=> 0
+
+⍝ Aliases:
+−←- ⍝ U+2212 MINUS SIGN        for U+002D HYPHEN-MINUS
+⋆←* ⍝ U+22C6 STAR OPERATOR     for U+002A ASTERISK
+∣←| ⍝ U+2223 DIVIDES           for U+007C VERTICAL LINE
+^←∧ ⍝ U+005E CIRCUMFLEX ACCENT for U+2227 LOGICAL AND
+∈←∊ ⍝ U+2208 ELEMENT OF        for U+220A SMALL ELEMENT OF
