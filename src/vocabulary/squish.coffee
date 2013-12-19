@@ -17,29 +17,32 @@ addVocabulary
   # 1     ⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34 <=> 21 22 23 24
   # 2(1 0)⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34 <=> 32 31
   # (1 2)0⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34 <=> 21 31
+  # a←2 2⍴0 ⋄ a[;0]←1 ⋄ a <=> 2 2⍴1 0 1 0
+  # a←2 3⍴0 ⋄ a[1;0 2]←1 ⋄ a <=> 2 3⍴0 0 0 1 0 1
   '⌷': squish = (⍵, ⍺, axes) ->
     if typeof ⍵ is 'function' then return (x, y) -> ⍵ x, y, ⍺
-    if not ⍺ then nonceError()
+    if !⍺ then nonceError()
+    if 1 < ⍴⍴ ⍺ then rankError()
+    a = ⍺.toArray()
+    if a.length > ⍴⍴ ⍵ then lengthError()
 
-    [subscripts, subscriptShapes] = prepareForIndexing ⍵, ⍺, axes
+    if axes
+      axes = axes.toArray()
+      if a.length isnt axes.length then lengthError()
+      h = Array ⍴⍴ ⍵
+      for axis in axes
+        if !isInt axis then domainError()
+        if !(0 <= axis < ⍴⍴ ⍵) then rankError()
+        if h[axis] then rankError 'Duplicate axis'
+        h[axis] = 1
+    else
+      axes = [0...a.length]
 
-    data = []
-    if all(for x in subscripts then x.length)
-      u = repeat [0], subscripts.length
-      p = ⍵.offset
-      for a in [0...subscripts.length] by 1
-        p += subscripts[a][0] * ⍵.stride[a]
-      loop
-        data.push ⍵.data[p]
-        a = subscripts.length - 1
-        while a >= 0 and u[a] + 1 is subscripts[a].length
-          p += (subscripts[a][0] - subscripts[a][u[a]]) * ⍵.stride[a]
-          u[a--] = 0
-        if a < 0 then break
-        p += (subscripts[a][u[a] + 1] - subscripts[a][u[a]]) * ⍵.stride[a]
-        u[a]++
-
-    new APLArray data, [].concat subscriptShapes...
+    r = ⍵
+    for i in [a.length - 1..0] by -1
+      u = if a[i] instanceof APLArray then a[i] else new APLArray [a[i]], []
+      r = indexAtSingleAxis r, u, axes[i]
+    r
 
   # (23 54 38)[0]                       <=> 23
   # (23 54 38)[1]                       <=> 54
@@ -87,65 +90,70 @@ addVocabulary
     [value, ⍺, ⍵, axes] =
       for x in args.toArray()
         if x instanceof APLArray then x else new APLArray [x], []
-    [subscripts, subscriptShapes] = prepareForIndexing ⍵, ⍺, axes
-    indexShape = [].concat subscriptShapes...
-    if value.isSingleton()
-      value = new APLArray [value.unwrap()], indexShape, repeat([0], indexShape.length)
+
+    if 1 < ⍴⍴ ⍺ then rankError()
+    a = ⍺.toArray()
+    if a.length > ⍴⍴ ⍵ then lengthError()
+
+    if axes
+      if 1 < ⍴⍴ axes then rankError()
+      axes = axes.toArray()
+      if a.length isnt axes.length then lengthError()
     else
-      if indexShape.length isnt ⍴⍴ value
-        rankError()
+      axes = [0...a.length]
+
+    subs = squish (vocabulary['⍳'] new APLArray ⍴ ⍵), ⍺, new APLArray axes
+    if value.isSingleton()
+      value = new APLArray [value], ⍴(subs), repeat [0], ⍴⍴(subs)
+    data = ⍵.toArray()
+    stride = strideForShape ⍴ ⍵
+    each2 subs, value, (u, v) ->
+      if v instanceof APLArray and !⍴⍴ v then v = v.unwrap()
+      if u instanceof APLArray
+        p = 0 # pointer in data
+        for x, i in u.toArray() then p += x * stride[i]
+        data[p] = v
       else
-        for n, i in indexShape
-          if ⍴(value)[i] isnt n
-            lengthError()
+        data[u] = v
 
-    r = new APLArray ⍵.toArray(), ⍴ ⍵
-    p = 0 # pointer in r
-    for a in [0...subscripts.length] by 1
-      if subscripts[a].length is 0 then return r
-      p += subscripts[a][0] * r.stride[a]
-    q = value.offset # pointer in value
-    u = repeat [0], subscripts.length
-    loop
-      r.data[p] = value.data[q]
-      a = subscripts.length - 1
-      while a >= 0 and u[a] + 1 is subscripts[a].length
-        p += (subscripts[a][0] - subscripts[a][u[a]]) * r.stride[a]
-        q -= u[a] * value.stride[a]
-        u[a--] = 0
-      if a < 0 then break
-      p += (subscripts[a][u[a] + 1] - subscripts[a][u[a]]) * r.stride[a]
-      q += value.stride[a]
-      u[a]++
-    r
+    new APLArray data, ⍴ ⍵
 
-prepareForIndexing = (⍵, ⍺, axes) ->
-  assert ⍺ instanceof APLArray
+indexAtSingleAxis = (⍵, sub, ax) ->
   assert ⍵ instanceof APLArray
-  assert (not axes?) or axes instanceof APLArray
-
-  if ⍴⍴(⍺) > 1 then rankError()
-  alphaItems = ⍺.toArray()
-  if alphaItems.length > ⍴⍴ ⍵ then lengthError()
-
-  axes = if axes then axes.toArray() else [0...alphaItems.length]
-  if alphaItems.length isnt axes.length then lengthError()
-
-  subscripts = Array ⍴⍴ ⍵
-  subscriptShapes = Array ⍴⍴ ⍵
-  for axis, i in axes
-    if not isInt axis then domainError()
-    if not (0 <= axis < ⍴⍴ ⍵) then rankError()
-    if typeof subscripts[axis] isnt 'undefined' then rankError 'Duplicate axis'
-    d = alphaItems[i]
-    subscripts[axis] = if d instanceof APLArray then d.toArray() else [d]
-    subscriptShapes[axis] = if d instanceof APLArray then ⍴ d else []
-    for x in subscripts[axis]
-      if not isInt x then domainError()
-      if not (0 <= x < ⍴(⍵)[axis]) then indexError()
-
-  for i in [0...subscripts.length] by 1 when typeof subscripts[i] is 'undefined'
-    subscripts[i] = [0...⍴(⍵)[i]]
-    subscriptShapes[i] = [⍴(⍵)[i]]
-
-  [subscripts, subscriptShapes]
+  assert sub instanceof APLArray
+  assert isInt ax
+  assert 0 <= ax < ⍴⍴ ⍵
+  u = sub.toArray()
+  n = ⍴(⍵)[ax]
+  for x in u
+    if !isInt x then domainError()
+    if !(0 <= x < n) then indexError()
+  isUniform = false
+  if u.length >= 2
+    isUniform = true
+    d = u[1] - u[0]
+    for i in [2...u.length] by 1 when u[i] - u[i - 1] isnt d then (isUniform = false; break)
+  if isUniform
+    shape = ⍴(⍵)[..]
+    shape.splice ax, 1, ⍴(sub)...
+    stride = ⍵.stride[..]
+    subStride = strideForShape ⍴ sub
+    for x, i in subStride then subStride[i] = x * d * ⍵.stride[ax]
+    stride.splice ax, 1, subStride...
+    offset = ⍵.offset + u[0] * ⍵.stride[ax]
+    new APLArray ⍵.data, shape, stride, offset
+  else
+    shape1 = ⍴(⍵)[..]; shape1.splice ax, 1
+    stride1 = ⍵.stride[..]; stride1.splice ax, 1
+    data = []
+    each sub, (x) ->
+      chunk = new APLArray ⍵.data, shape1, stride1, ⍵.offset + x * ⍵.stride[ax]
+      data.push chunk.toArray()...
+    shape = shape1[..]
+    stride = strideForShape shape
+    shape.splice ax, 0, ⍴(sub)...
+    subStride = strideForShape ⍴ sub
+    k = prod shape1
+    for i in [0...subStride.length] by 1 then subStride[i] *= k
+    stride.splice ax, 0, subStride...
+    new APLArray data, shape, stride

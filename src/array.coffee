@@ -8,14 +8,15 @@ macro each (a0, f) ->
   macro.tmpCounter ?= 0
   (macro.codeToNode ->
     a = a0
-    if not a.empty()
+    if !a.empty()
       data = a.data
       shape = ⍴ a
       stride = a.stride
       lastAxis = shape.length - 1
       p = a.offset
       indices = []
-      for axis in [0...shape.length] by 1 then indices.push 0
+      axis = shape.length
+      while --axis >= 0 then indices.push 0
       loop
         x = data[p]
         body
@@ -45,14 +46,15 @@ macro each2 (a0, b0, f) ->
   (macro.codeToNode ->
     a = a0; data  = a.data; shape  = a.shape; stride  = a.stride
     b = b0; data1 = b.data; shape1 = b.shape; stride1 = b.stride
-    assert shape.length is shape1.length
-    for axis in [0...shape.length] then assert shape[axis] is shape1[axis]
-    if not a.empty()
+    if shape.length isnt shape1.length then rankError()
+    axis = shape.length
+    while --axis >= 0 when shape[axis] isnt shape1[axis] then lengthError()
+    if !a.empty()
       lastAxis = shape.length - 1
       p = a.offset
       q = b.offset
-      indices = []
-      for axis in [0..lastAxis] by 1 then indices.push 0
+      indices = Array (axis = shape.length)
+      while --axis >= 0 then indices[axis] = 0
       loop
         x = data[p]
         y = data1[q]
