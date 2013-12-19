@@ -28,7 +28,7 @@ addVocabulary
     dyad: numeric ((y, x) -> x + y),
       (y, x) -> Complex.add x, y
 
-  '-': aka '−', withIdentity 0, pervasive
+  '-': withIdentity 0, pervasive
 
     # Negate (`-`)
     #
@@ -91,7 +91,7 @@ addVocabulary
     dyad: numeric ((y, x) -> x / y),
       (y, x) -> Complex.divide x, y
 
-  '*': aka '⋆', withIdentity 1, pervasive
+  '*': withIdentity 1, pervasive
 
     # *2   <=> 7.38905609893065
     # *2j3 <=> ¯7.315110094901103J1.0427436562359045
@@ -128,7 +128,7 @@ addVocabulary
       else
         Complex.divide (Complex.log y), (Complex.log x)
 
-  '|': aka '∣', withIdentity 0, pervasive
+  '|': withIdentity 0, pervasive
 
     # Absolute value (`∣`)
     #

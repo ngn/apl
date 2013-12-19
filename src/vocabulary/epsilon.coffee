@@ -1,6 +1,6 @@
 addVocabulary
 
-  '∊': aka '∈', (⍵, ⍺) ->
+  '∊': (⍵, ⍺) ->
     if ⍺
       # Membership (`∊`)
       #

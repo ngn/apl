@@ -37,7 +37,7 @@ addVocabulary
         domainError '∨ is implemented only for Gaussian integers' # todo
       Complex.gcd x, y
 
-  '∧': aka '^', withIdentity 1, pervasive
+  '∧': withIdentity 1, pervasive
 
     # And (LCM) (`∧`)
     #

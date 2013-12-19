@@ -138,11 +138,3 @@ withIdentity = (x, f) ->
 adverb      = (f) -> f.isAdverb      = true; f
 conjunction = (f) -> f.isConjunction = true; f
 cps         = (f) -> f.cps           = true; f
-
-aka = (aliases, f) -> # "also known as" decorator
-  if typeof aliases is 'string'
-    aliases = [aliases]
-  else
-    assert aliases instanceof Array
-  f.aliases = aliases
-  f
