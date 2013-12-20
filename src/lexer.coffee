@@ -29,25 +29,22 @@ tokenDefs = [
 #
 # A sentry '$' token is generated at the end.
 tokenize = (s, opts = {}) ->
-  line = col = 1
+  offset = 0
   stack = ['{'] # a stack of brackets
   tokens = []
-  while s
-    startLine = line
-    startCol = col
+  ns = s.length
+  while offset < ns
     type = null
-    for [t, re] in tokenDefs when m = s.match re
-      type = if t is '.' then m[0] else t
+    for [t, re] in tokenDefs when m = s[offset..].match re
+      value = m[0]
+      type = if t is '.' then value else t
       break
-    type or syntaxError 'Unrecognized token', {file: opts.file, line, col, s: opts.s}
-    a = m[0].split '\n'
-    line += a.length - 1
-    col = (if a.length is 1 then col else 1) + a[a.length - 1].length
-    s = s[m[0].length..]
+    if !type then syntaxError 'Unrecognized token', {file: opts.file, offset, s: opts.s}
     if type isnt '-'
       if type in '([{' then stack.push type
       else if type in ')]}' then stack.pop()
       if type isnt 'L' or stack[stack.length - 1] is '{'
-        tokens.push {type, startLine, startCol, value: m[0], endLine: line, endCol: col}
-  tokens.push type: '$', value: '', startLine: line, startCol: col, endLine: line, endCol: col
+        tokens.push {type, value, offset, aplCode: s}
+    offset += value.length
+  tokens.push {type: '$', value: '', offset, aplCode: s}
   tokens

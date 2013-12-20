@@ -2,16 +2,18 @@ aplError = (name, message = '', opts) ->
   assert typeof name is 'string'
   assert typeof message is 'string'
   if opts?
-    assert typeof opts is 'object'
-    if opts.aplCode? and opts.line? and opts.col?
-      assert typeof opts.aplCode is 'string'
-      assert typeof opts.line is 'number'
-      assert typeof opts.col is 'number'
-      assert typeof opts.file in ['string', 'undefined']
+    {aplCode, offset, file} = opts
+    if aplCode? and offset?
+      assert typeof aplCode is 'string'
+      assert typeof offset is 'number'
+      assert typeof file in ['string', 'undefined']
+      a = aplCode[...offset].split '\n'
+      line = a.length
+      col = 1 + (a[a.length - 1] or '').length
       message += """
-        \n#{opts.file or '-'}:##{opts.line}:#{opts.col}
-        #{opts.aplCode.split('\n')[opts.line - 1]}
-        #{repeat('_', opts.col - 1)}^
+        \n#{file or '-'}:#{line}:#{col}
+        #{aplCode.split('\n')[line - 1]}
+        #{repeat '_', col - 1}^
       """
   e = Error message
   e.name = name

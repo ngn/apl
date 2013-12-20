@@ -31,7 +31,7 @@ compileAST = (ast, opts = {}) ->
         if /^[gs]et_.*/.test k then ast.vars[k[4..]] = category: NOUN
 
   err = (node, message) ->
-    syntaxError message, file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
+    syntaxError message, file: opts.file, offset: node.offset, aplCode: opts.aplCode
 
   assert VERB < ADVERB < CONJUNCTION # we are relying on this ordering below
   (categorizeLambdas = (node) ->
@@ -66,7 +66,7 @@ compileAST = (ast, opts = {}) ->
             # x ⋄ x←0 !!! VALUE ERROR
             vars[name]?.category or
               valueError "Symbol '#{name}' is referenced before assignment.",
-                file: opts.file, line: node.startLine, col: node.startCol, aplCode: opts.aplCode
+                file: opts.file, offset: node.offset, aplCode: opts.aplCode
         when '{'
           for i in [1...node.length]
             queue.push extend (body = node[i]),
