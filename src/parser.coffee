@@ -68,7 +68,7 @@ parse = (aplCode, opts = {}) ->
 
   parserError = (message) ->
     syntaxError message,
-      file: opts.file, line: token.startLine, col: token.startCol, aplCode: aplCode
+      file: opts.file, offset: token.offset, aplCode: aplCode
 
   parseBody = ->
     body = ['B']
