@@ -97,7 +97,7 @@
   };
 
   aplError = function(name, message, opts) {
-    var e, k, v, _ref;
+    var a, aplCode, col, e, file, k, line, offset, v, _ref;
     if (message == null) {
       message = '';
     }
@@ -108,23 +108,21 @@
       throw Error("\"assert typeof message is 'string'\" at src/errors.coffee:3");
     }
     if (opts != null) {
-      if (!(typeof opts === 'object')) {
-        throw Error("\"assert typeof opts is 'object'\" at src/errors.coffee:5");
-      }
-      if ((opts.aplCode != null) && (opts.line != null) && (opts.col != null)) {
-        if (!(typeof opts.aplCode === 'string')) {
-          throw Error("\"assert typeof opts.aplCode is 'string'\" at src/errors.coffee:7");
+      aplCode = opts.aplCode, offset = opts.offset, file = opts.file;
+      if ((aplCode != null) && (offset != null)) {
+        if (!(typeof aplCode === 'string')) {
+          throw Error("\"assert typeof aplCode is 'string'\" at src/errors.coffee:7");
         }
-        if (!(typeof opts.line === 'number')) {
-          throw Error("\"assert typeof opts.line is 'number'\" at src/errors.coffee:8");
+        if (!(typeof offset === 'number')) {
+          throw Error("\"assert typeof offset is 'number'\" at src/errors.coffee:8");
         }
-        if (!(typeof opts.col === 'number')) {
-          throw Error("\"assert typeof opts.col is 'number'\" at src/errors.coffee:9");
+        if (!((_ref = typeof file) === 'string' || _ref === 'undefined')) {
+          throw Error("\"assert typeof file in ['string', 'undefined']\" at src/errors.coffee:9");
         }
-        if (!((_ref = typeof opts.file) === 'string' || _ref === 'undefined')) {
-          throw Error("\"assert typeof opts.file in ['string', 'undefined']\" at src/errors.coffee:10");
-        }
-        message += "\n" + (opts.file || '-') + ":#" + opts.line + ":" + opts.col + "\n" + (opts.aplCode.split('\n')[opts.line - 1]) + "\n" + (repeat('_', opts.col - 1)) + "^";
+        a = aplCode.slice(0, offset).split('\n');
+        line = a.length;
+        col = 1 + (a[a.length - 1] || '').length;
+        message += "\n" + (file || '-') + ":" + line + ":" + col + "\n" + (aplCode.split('\n')[line - 1]) + "\n" + (repeat('_', col - 1)) + "^";
       }
     }
     e = Error(message);
@@ -954,35 +952,32 @@
 
   tokenDefs = [['-', /^(?:[ \t]+|[⍝\#].*)+/], ['L', /^[\n\r]+/], ['⋄', /^[◇⋄]/], ['N', /^¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯|∞)(?:j¯?(?:0x[\da-f]+|\d*\.?\d+(?:e[+¯]?\d+)?|¯|∞))?/i], ['S', /^(?:'[^']*')+|^(?:"[^"]*")+/], ['.', /^[\(\)\[\]\{\}:;←]/], ['J', /^«[^»]*»/], ['X', /^(?:⎕?[a-z_]\w*|⍺⍺|⍵⍵|∇∇|[^¯'":«»])/i]];
   tokenize = function(s, opts) {
-    var a, col, line, m, re, stack, startCol, startLine, t, tokens, type, _i, _len, _ref1;
+    var m, ns, offset, re, stack, t, tokens, type, value, _i, _len, _ref1;
     if (opts == null) {
       opts = {};
     }
-    line = col = 1;
+    offset = 0;
     stack = ['{'];
     tokens = [];
-    while (s) {
-      startLine = line;
-      startCol = col;
+    ns = s.length;
+    while (offset < ns) {
       type = null;
       for (_i = 0, _len = tokenDefs.length; _i < _len; _i++) {
         _ref1 = tokenDefs[_i], t = _ref1[0], re = _ref1[1];
-        if (!(m = s.match(re))) {
+        if (!(m = s.slice(offset).match(re))) {
           continue;
         }
-        type = t === '.' ? m[0] : t;
+        value = m[0];
+        type = t === '.' ? value : t;
         break;
       }
-      type || syntaxError('Unrecognized token', {
-        file: opts.file,
-        line: line,
-        col: col,
-        s: opts.s
-      });
-      a = m[0].split('\n');
-      line += a.length - 1;
-      col = (a.length === 1 ? col : 1) + a[a.length - 1].length;
-      s = s.slice(m[0].length);
+      if (!type) {
+        syntaxError('Unrecognized token', {
+          file: opts.file,
+          offset: offset,
+          s: opts.s
+        });
+      }
       if (type !== '-') {
         if (__indexOf.call('([{', type) >= 0) {
           stack.push(type);
@@ -992,22 +987,19 @@
         if (type !== 'L' || stack[stack.length - 1] === '{') {
           tokens.push({
             type: type,
-            startLine: startLine,
-            startCol: startCol,
-            value: m[0],
-            endLine: line,
-            endCol: col
+            value: value,
+            offset: offset,
+            aplCode: s
           });
         }
       }
+      offset += value.length;
     }
     tokens.push({
       type: '$',
       value: '',
-      startLine: line,
-      startCol: col,
-      endLine: line,
-      endCol: col
+      offset: offset,
+      aplCode: s
     });
     return tokens;
   };
@@ -1023,8 +1015,7 @@
     parserError = function(message) {
       return syntaxError(message, {
         file: opts.file,
-        line: token.startLine,
-        col: token.startCol,
+        offset: token.offset,
         aplCode: aplCode
       });
     };
@@ -2231,7 +2222,7 @@
   };
   addVocabulary({
     '↓': function(omega, alpha, axis) {
-      var a, array, data, i, ishape, obound, offset, oshape, shape, tmp97, x, _i, _j, _k, _len, _len1;
+      var a, i, offset, shape, tmp97, x, _i, _j, _len, _len1;
       if (alpha) {
         if (alpha.shape.length > 1) {
           rankError();
@@ -2265,21 +2256,9 @@
           return new APLArray(omega.data, shape, omega.stride, offset);
         }
       } else {
-        if (!omega.shape.length) {
-          nonceError('Split of scalar not implemented');
+        if (!(0)) {
+          throw Error("\"assert 0\" at src/vocabulary/drop.coffee:43");
         }
-        oshape = omega.shape.slice(0, omega.shape.length - 1);
-        obound = oshape.reduce((function(a, b) {
-          return a * b;
-        }), 1);
-        ishape = omega.shape[omega.shape.length - 1];
-        array = omega.toArray();
-        data = [];
-        for (i = _k = 0; 0 <= obound ? _k < obound : _k > obound; i = 0 <= obound ? ++_k : --_k) {
-          offset = i * ishape;
-          data.push(new APLArray(array.slice(offset, offset + ishape)));
-        }
-        return new APLArray(data, oshape);
       }
     }
   });
@@ -4212,8 +4191,7 @@
     err = function(node, message) {
       return syntaxError(message, {
         file: opts.file,
-        line: node.startLine,
-        col: node.startCol,
+        offset: node.offset,
         aplCode: opts.aplCode
       });
     };
@@ -4286,8 +4264,7 @@
             } else {
               return ((_ref4 = vars[name]) != null ? _ref4.category : void 0) || valueError("Symbol '" + name + "' is referenced before assignment.", {
                 file: opts.file,
-                line: node.startLine,
-                col: node.startCol,
+                offset: node.offset,
                 aplCode: opts.aplCode
               });
             }
@@ -4693,7 +4670,7 @@
   };
   prelude = (function() {
     var code, env, k, nSlots, v, vars, _ref3;
-    _ref3 = {"code":[1,new APLArray([],[0],[1],0),4,0,73,9,7,22,3,1,2,3,0,65,3,1,0,3,0,29,3,1,2,6,3,0,44,5,6,8,3,0,72,3,0,44,6,4,0,44,9,7,39,7,15,3,2,0,3,1,0,5,3,1,2,3,2,2,6,8,3,0,72,7,15,3,2,0,3,1,0,5,3,1,2,3,2,0,6,8,6,8,4,0,74,9,7,173,3,1,2,3,0,62,5,3,0,62,5,3,0,16,1,new APLArray([1],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,0,4,1,3,9,3,1,2,7,123,3,2,0,3,0,62,5,3,0,62,5,3,0,16,1,new APLArray([1],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,2,0,3,0,13,5,4,2,0,9,3,1,3,3,0,62,5,3,0,62,5,3,0,15,3,2,0,3,0,62,5,6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,3,3,0,62,5,3,0,19,3,2,0,6,3,0,45,3,0,65,5,5,11,8,9,1,new APLArray("INDEX ERROR",[11],[1],0),3,0,61,5,8,9,3,1,3,3,0,67,3,2,0,6,3,0,75,5,4,1,3,8,3,0,27,5,5,9,3,1,3,8,3,0,72,7,229,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,9,9,3,1,0,3,0,70,5,8,9,3,1,0,3,0,62,5,3,0,3,3,0,65,5,5,3,0,14,1,new APLArray([0],[],[],0),6,11,5,9,3,1,0,8,9,3,1,0,3,0,62,5,4,1,3,9,3,1,0,3,0,13,5,4,1,0,9,3,1,0,3,0,62,3,0,27,5,5,4,1,4,3,0,79,3,0,27,5,5,3,0,35,3,0,65,5,5,4,1,5,9,3,1,4,3,0,13,3,0,21,1,new APLArray([1],[],[],0),3,0,62,3,1,5,6,6,3,0,36,3,0,26,6,3,0,37,3,0,62,6,3,0,27,5,5,4,1,4,3,0,35,3,0,65,5,5,3,0,70,5,4,1,6,9,3,1,0,7,18,3,2,0,3,0,62,3,2,2,6,3,0,70,3,1,6,6,8,3,0,27,5,3,1,4,6,3,0,76,3,0,65,5,5,3,0,70,5,3,0,62,3,1,6,3,0,13,3,1,3,6,6,8,6,4,0,75,9,7,23,3,1,0,1,new APLArray([0],[],[],0),2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,0,13,6,3,1,2,6,8,3,0,72,7,38,3,1,0,3,0,62,3,1,0,3,0,79,5,3,1,0,3,0,62,5,3,0,26,1,new APLArray([1],[],[],0),6,3,0,3,3,0,65,5,5,2,2,6,8,6,4,0,76,9,7,4,3,1,0,8,4,0,77,9,7,4,3,1,2,8,3,0,72,7,3,1,new APLArray([],[0],[1],0),8,6,4,0,78,9,7,15,3,1,0,3,0,20,3,1,2,6,3,0,44,5,8,3,0,72,7,21,1,new APLArray([1],[],[],0),3,0,13,3,1,0,3,0,62,5,6,3,0,62,3,0,73,6,8,6,4,0,79,9,7,22,3,1,2,3,0,3,3,0,25,3,0,0,6,3,1,0,3,0,80,5,6,8,3,0,72,7,724,7,28,1,new APLArray([0.5],[],[],0),3,0,5,3,2,0,3,0,0,5,3,0,3,3,0,25,3,0,0,6,3,2,0,6,6,8,4,1,3,9,7,290,1,new APLArray([1],[],[],0),2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,2,0,3,0,62,5,6,4,2,3,9,3,2,3,3,0,19,1,new APLArray([1],[],[],0),6,11,43,9,3,2,0,7,35,3,3,0,3,0,13,5,3,1,3,5,4,3,3,9,3,3,3,3,0,4,3,3,0,6,3,3,3,3,0,76,5,2,2,8,5,8,9,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,35,5,4,2,4,9,3,2,0,3,0,70,3,2,4,3,0,13,3,2,0,3,0,62,5,3,0,70,1,new APLArray([1],[],[],0),6,6,6,4,2,5,9,3,2,0,3,0,26,3,2,4,3,0,13,1,new APLArray([0],[],[],0),6,6,4,2,6,9,3,2,5,3,2,1,5,10,2,4,2,7,9,4,2,8,9,9,3,2,6,3,0,3,3,0,25,3,0,0,6,3,2,7,3,0,71,5,3,0,0,5,6,4,2,9,9,3,2,9,3,0,3,3,0,25,3,0,0,6,3,2,7,6,3,0,1,3,2,6,6,3,2,1,5,10,2,4,2,10,9,4,2,11,9,9,3,2,10,3,0,13,3,2,7,6,3,2,11,3,0,70,3,2,3,3,0,1,5,3,0,13,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,34,5,6,6,3,0,76,3,2,9,3,0,13,3,2,8,6,6,2,2,8,4,1,4,9,7,214,3,2,0,3,0,62,5,3,0,70,1,new APLArray([1],[],[],0),6,4,2,3,3,0,14,1,new APLArray([1],[],[],0),6,11,9,9,3,2,0,3,0,4,5,8,9,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,35,5,4,2,4,9,3,2,0,3,0,70,3,2,4,3,0,13,3,2,4,6,6,3,2,1,5,4,2,5,9,3,2,0,3,0,26,3,2,4,3,0,13,3,2,4,6,6,3,2,1,5,4,2,6,9,3,2,0,3,0,70,3,2,3,3,0,1,3,2,4,6,3,0,13,3,2,4,6,6,4,2,7,9,3,2,6,3,0,3,3,0,25,3,0,0,6,3,2,7,6,3,0,3,3,0,25,3,0,0,6,3,2,5,6,3,0,1,5,4,2,8,9,3,2,6,3,0,70,3,2,3,3,0,1,5,3,0,13,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,34,5,6,6,3,0,76,3,2,8,3,0,13,3,2,5,6,6,8,4,1,5,9,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,9,9,3,1,0,3,0,4,5,8,9,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([1],[],[],0),6,11,17,9,3,1,0,3,0,76,5,3,1,1,5,3,0,13,5,8,9,3,1,0,3,0,62,5,3,0,62,5,3,0,15,1,new APLArray([2],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,0,3,0,62,5,3,0,19,3,0,65,5,5,3,0,29,1,new APLArray([0],[],[],0),6,11,8,9,1,new APLArray("LENGTH ERROR",[12],[1],0),3,0,61,5,8,9,3,1,0,3,1,4,5,10,2,4,1,6,9,4,1,7,9,9,3,1,6,3,0,71,5,3,0,0,5,3,0,3,3,0,25,3,0,0,6,3,1,7,3,1,5,5,6,8,6,4,0,80,9,7,31,7,11,3,2,2,3,1,0,3,2,0,6,8,3,0,72,7,11,3,2,0,3,1,0,3,2,0,6,8,6,8,4,0,81,9,3,0,1,4,0,2,9,3,0,5,4,0,6,9,3,0,8,4,0,9,9,3,0,46,4,0,47,9,3,0,29,4,0,30,8],"nSlots":82,"vars":{"+":{"category":2,"slot":0,"scopeDepth":0},"-":{"category":2,"slot":1,"scopeDepth":0},"−":{"category":2,"slot":2,"scopeDepth":0},"×":{"category":2,"slot":3,"scopeDepth":0},"÷":{"category":2,"slot":4,"scopeDepth":0},"*":{"category":2,"slot":5,"scopeDepth":0},"⋆":{"category":2,"slot":6,"scopeDepth":0},"⍟":{"category":2,"slot":7,"scopeDepth":0},"|":{"category":2,"slot":8,"scopeDepth":0},"∣":{"category":2,"slot":9,"scopeDepth":0},"\\":{"category":3,"slot":10,"scopeDepth":0},"⍀":{"category":3,"slot":11,"scopeDepth":0},"○":{"category":2,"slot":12,"scopeDepth":0},",":{"category":2,"slot":13,"scopeDepth":0},"=":{"category":2,"slot":14,"scopeDepth":0},"≠":{"category":2,"slot":15,"scopeDepth":0},"<":{"category":2,"slot":16,"scopeDepth":0},">":{"category":2,"slot":17,"scopeDepth":0},"≤":{"category":2,"slot":18,"scopeDepth":0},"≥":{"category":2,"slot":19,"scopeDepth":0},"≡":{"category":2,"slot":20,"scopeDepth":0},"∘":{"category":4,"slot":21,"scopeDepth":0},"∪":{"category":2,"slot":22,"scopeDepth":0},"∩":{"category":2,"slot":23,"scopeDepth":0},"⊥":{"category":2,"slot":24,"scopeDepth":0},".":{"category":4,"slot":25,"scopeDepth":0},"↓":{"category":2,"slot":26,"scopeDepth":0},"¨":{"category":3,"slot":27,"scopeDepth":0},"⊤":{"category":2,"slot":28,"scopeDepth":0},"∊":{"category":2,"slot":29,"scopeDepth":0},"∈":{"category":2,"slot":30,"scopeDepth":0},"!":{"category":2,"slot":31,"scopeDepth":0},"⍎":{"category":2,"slot":32,"scopeDepth":0},"⍷":{"category":2,"slot":33,"scopeDepth":0},"⌊":{"category":2,"slot":34,"scopeDepth":0},"⌈":{"category":2,"slot":35,"scopeDepth":0},"_fork1":{"category":2,"slot":36,"scopeDepth":0},"_fork2":{"category":2,"slot":37,"scopeDepth":0},"⍕":{"category":2,"slot":38,"scopeDepth":0},"⍋":{"category":2,"slot":39,"scopeDepth":0},"⍒":{"category":2,"slot":40,"scopeDepth":0},"⍁":{"category":4,"slot":41,"scopeDepth":0},"⍳":{"category":2,"slot":42,"scopeDepth":0},"⊂":{"category":2,"slot":43,"scopeDepth":0},"~":{"category":2,"slot":44,"scopeDepth":0},"∨":{"category":2,"slot":45,"scopeDepth":0},"∧":{"category":2,"slot":46,"scopeDepth":0},"^":{"category":2,"slot":47,"scopeDepth":0},"⍱":{"category":2,"slot":48,"scopeDepth":0},"⍲":{"category":2,"slot":49,"scopeDepth":0},"⍣":{"category":4,"slot":50,"scopeDepth":0},"get_⎕":{"category":2,"slot":51,"scopeDepth":0},"⎕":{"category":1},"set_⎕":{"category":2,"slot":52,"scopeDepth":0},"get_⍞":{"category":2,"slot":53,"scopeDepth":0},"⍞":{"category":1},"set_⍞":{"category":2,"slot":54,"scopeDepth":0},"get_⎕IO":{"category":2,"slot":55,"scopeDepth":0},"⎕IO":{"category":1},"set_⎕IO":{"category":2,"slot":56,"scopeDepth":0},"⎕DL":{"category":2,"slot":57,"scopeDepth":0},"⎕RE":{"category":2,"slot":58,"scopeDepth":0},"⎕UCS":{"category":2,"slot":59,"scopeDepth":0},"?":{"category":2,"slot":60,"scopeDepth":0},"↗":{"category":2,"slot":61,"scopeDepth":0},"⍴":{"category":2,"slot":62,"scopeDepth":0},"⌽":{"category":2,"slot":63,"scopeDepth":0},"⊖":{"category":2,"slot":64,"scopeDepth":0},"/":{"category":3,"slot":65,"scopeDepth":0},"⌿":{"category":3,"slot":66,"scopeDepth":0},"⌷":{"category":2,"slot":67,"scopeDepth":0},"_index":{"category":2,"slot":68,"scopeDepth":0},"_substitute":{"category":2,"slot":69,"scopeDepth":0},"↑":{"category":2,"slot":70,"scopeDepth":0},"⍉":{"category":2,"slot":71,"scopeDepth":0},"⍠":{"category":4,"slot":72,"scopeDepth":0},"⍬":{"scopeDepth":0,"slot":73,"category":1},"_hook":{"scopeDepth":0,"slot":74,"category":4},"⊃":{"scopeDepth":0,"slot":75,"category":2},"⍪":{"scopeDepth":0,"slot":76,"category":2},"⊢":{"scopeDepth":0,"slot":77,"category":2},"⊣":{"scopeDepth":0,"slot":78,"category":2},"≢":{"scopeDepth":0,"slot":79,"category":2},"⌹":{"scopeDepth":0,"slot":80,"category":2},"⍨":{"scopeDepth":0,"slot":81,"category":3}}}, code = _ref3.code, nSlots = _ref3.nSlots, vars = _ref3.vars;
+    _ref3 = {"code":[1,new APLArray([],[0],[1],0),4,0,73,9,7,22,3,1,2,3,0,65,3,1,0,3,0,29,3,1,2,6,3,0,44,5,6,8,3,0,72,3,0,44,6,4,0,44,9,7,39,7,15,3,2,0,3,1,0,5,3,1,2,3,2,2,6,8,3,0,72,7,15,3,2,0,3,1,0,5,3,1,2,3,2,0,6,8,6,8,4,0,74,9,7,173,3,1,2,3,0,62,5,3,0,62,5,3,0,16,1,new APLArray([1],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,0,4,1,3,9,3,1,2,7,123,3,2,0,3,0,62,5,3,0,62,5,3,0,16,1,new APLArray([1],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,2,0,3,0,13,5,4,2,0,9,3,1,3,3,0,62,5,3,0,62,5,3,0,15,3,2,0,3,0,62,5,6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,3,3,0,62,5,3,0,19,3,2,0,6,3,0,45,3,0,65,5,5,11,8,9,1,new APLArray("INDEX ERROR",[11],[1],0),3,0,61,5,8,9,3,1,3,3,0,67,3,2,0,6,3,0,75,5,4,1,3,8,3,0,27,5,5,9,3,1,3,8,3,0,72,7,229,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,9,9,3,1,0,3,0,70,5,8,9,3,1,0,3,0,62,5,3,0,3,3,0,65,5,5,3,0,14,1,new APLArray([0],[],[],0),6,11,5,9,3,1,0,8,9,3,1,0,3,0,62,5,4,1,3,9,3,1,0,3,0,13,5,4,1,0,9,3,1,0,3,0,62,3,0,27,5,5,4,1,4,3,0,79,3,0,27,5,5,3,0,35,3,0,65,5,5,4,1,5,9,3,1,4,3,0,13,3,0,21,1,new APLArray([1],[],[],0),3,0,62,3,1,5,6,6,3,0,36,3,0,26,6,3,0,37,3,0,62,6,3,0,27,5,5,4,1,4,3,0,35,3,0,65,5,5,3,0,70,5,4,1,6,9,3,1,0,7,18,3,2,0,3,0,62,3,2,2,6,3,0,70,3,1,6,6,8,3,0,27,5,3,1,4,6,3,0,76,3,0,65,5,5,3,0,70,5,3,0,62,3,1,6,3,0,13,3,1,3,6,6,8,6,4,0,75,9,3,0,26,3,0,72,7,60,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,5,9,3,1,0,8,9,3,1,0,3,1,0,3,0,62,5,3,0,62,5,3,0,0,1,new APLArray([-1],[],[],0),6,2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,0,43,6,5,8,6,4,0,26,9,7,23,3,1,0,1,new APLArray([0],[],[],0),2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,0,13,6,3,1,2,6,8,3,0,72,7,38,3,1,0,3,0,62,3,1,0,3,0,79,5,3,1,0,3,0,62,5,3,0,26,1,new APLArray([1],[],[],0),6,3,0,3,3,0,65,5,5,2,2,6,8,6,4,0,76,9,7,4,3,1,0,8,4,0,77,9,7,4,3,1,2,8,3,0,72,7,3,1,new APLArray([],[0],[1],0),8,6,4,0,78,9,7,15,3,1,0,3,0,20,3,1,2,6,3,0,44,5,8,3,0,72,7,21,1,new APLArray([1],[],[],0),3,0,13,3,1,0,3,0,62,5,6,3,0,62,3,0,73,6,8,6,4,0,79,9,7,22,3,1,2,3,0,3,3,0,25,3,0,0,6,3,1,0,3,0,80,5,6,8,3,0,72,7,724,7,28,1,new APLArray([0.5],[],[],0),3,0,5,3,2,0,3,0,0,5,3,0,3,3,0,25,3,0,0,6,3,2,0,6,6,8,4,1,3,9,7,290,1,new APLArray([1],[],[],0),2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,2,0,3,0,62,5,6,4,2,3,9,3,2,3,3,0,19,1,new APLArray([1],[],[],0),6,11,43,9,3,2,0,7,35,3,3,0,3,0,13,5,3,1,3,5,4,3,3,9,3,3,3,3,0,4,3,3,0,6,3,3,3,3,0,76,5,2,2,8,5,8,9,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,35,5,4,2,4,9,3,2,0,3,0,70,3,2,4,3,0,13,3,2,0,3,0,62,5,3,0,70,1,new APLArray([1],[],[],0),6,6,6,4,2,5,9,3,2,0,3,0,26,3,2,4,3,0,13,1,new APLArray([0],[],[],0),6,6,4,2,6,9,3,2,5,3,2,1,5,10,2,4,2,7,9,4,2,8,9,9,3,2,6,3,0,3,3,0,25,3,0,0,6,3,2,7,3,0,71,5,3,0,0,5,6,4,2,9,9,3,2,9,3,0,3,3,0,25,3,0,0,6,3,2,7,6,3,0,1,3,2,6,6,3,2,1,5,10,2,4,2,10,9,4,2,11,9,9,3,2,10,3,0,13,3,2,7,6,3,2,11,3,0,70,3,2,3,3,0,1,5,3,0,13,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,34,5,6,6,3,0,76,3,2,9,3,0,13,3,2,8,6,6,2,2,8,4,1,4,9,7,214,3,2,0,3,0,62,5,3,0,70,1,new APLArray([1],[],[],0),6,4,2,3,3,0,14,1,new APLArray([1],[],[],0),6,11,9,9,3,2,0,3,0,4,5,8,9,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,35,5,4,2,4,9,3,2,0,3,0,70,3,2,4,3,0,13,3,2,4,6,6,3,2,1,5,4,2,5,9,3,2,0,3,0,26,3,2,4,3,0,13,3,2,4,6,6,3,2,1,5,4,2,6,9,3,2,0,3,0,70,3,2,3,3,0,1,3,2,4,6,3,0,13,3,2,4,6,6,4,2,7,9,3,2,6,3,0,3,3,0,25,3,0,0,6,3,2,7,6,3,0,3,3,0,25,3,0,0,6,3,2,5,6,3,0,1,5,4,2,8,9,3,2,6,3,0,70,3,2,3,3,0,1,5,3,0,13,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,34,5,6,6,3,0,76,3,2,8,3,0,13,3,2,5,6,6,8,4,1,5,9,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,9,9,3,1,0,3,0,4,5,8,9,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([1],[],[],0),6,11,17,9,3,1,0,3,0,76,5,3,1,1,5,3,0,13,5,8,9,3,1,0,3,0,62,5,3,0,62,5,3,0,15,1,new APLArray([2],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,0,3,0,62,5,3,0,19,3,0,65,5,5,3,0,29,1,new APLArray([0],[],[],0),6,11,8,9,1,new APLArray("LENGTH ERROR",[12],[1],0),3,0,61,5,8,9,3,1,0,3,1,4,5,10,2,4,1,6,9,4,1,7,9,9,3,1,6,3,0,71,5,3,0,0,5,3,0,3,3,0,25,3,0,0,6,3,1,7,3,1,5,5,6,8,6,4,0,80,9,7,31,7,11,3,2,2,3,1,0,3,2,0,6,8,3,0,72,7,11,3,2,0,3,1,0,3,2,0,6,8,6,8,4,0,81,9,3,0,1,4,0,2,9,3,0,5,4,0,6,9,3,0,8,4,0,9,9,3,0,46,4,0,47,9,3,0,29,4,0,30,8],"nSlots":82,"vars":{"+":{"category":2,"slot":0,"scopeDepth":0},"-":{"category":2,"slot":1,"scopeDepth":0},"−":{"category":2,"slot":2,"scopeDepth":0},"×":{"category":2,"slot":3,"scopeDepth":0},"÷":{"category":2,"slot":4,"scopeDepth":0},"*":{"category":2,"slot":5,"scopeDepth":0},"⋆":{"category":2,"slot":6,"scopeDepth":0},"⍟":{"category":2,"slot":7,"scopeDepth":0},"|":{"category":2,"slot":8,"scopeDepth":0},"∣":{"category":2,"slot":9,"scopeDepth":0},"\\":{"category":3,"slot":10,"scopeDepth":0},"⍀":{"category":3,"slot":11,"scopeDepth":0},"○":{"category":2,"slot":12,"scopeDepth":0},",":{"category":2,"slot":13,"scopeDepth":0},"=":{"category":2,"slot":14,"scopeDepth":0},"≠":{"category":2,"slot":15,"scopeDepth":0},"<":{"category":2,"slot":16,"scopeDepth":0},">":{"category":2,"slot":17,"scopeDepth":0},"≤":{"category":2,"slot":18,"scopeDepth":0},"≥":{"category":2,"slot":19,"scopeDepth":0},"≡":{"category":2,"slot":20,"scopeDepth":0},"∘":{"category":4,"slot":21,"scopeDepth":0},"∪":{"category":2,"slot":22,"scopeDepth":0},"∩":{"category":2,"slot":23,"scopeDepth":0},"⊥":{"category":2,"slot":24,"scopeDepth":0},".":{"category":4,"slot":25,"scopeDepth":0},"↓":{"category":2,"slot":26,"scopeDepth":0},"¨":{"category":3,"slot":27,"scopeDepth":0},"⊤":{"category":2,"slot":28,"scopeDepth":0},"∊":{"category":2,"slot":29,"scopeDepth":0},"∈":{"category":2,"slot":30,"scopeDepth":0},"!":{"category":2,"slot":31,"scopeDepth":0},"⍎":{"category":2,"slot":32,"scopeDepth":0},"⍷":{"category":2,"slot":33,"scopeDepth":0},"⌊":{"category":2,"slot":34,"scopeDepth":0},"⌈":{"category":2,"slot":35,"scopeDepth":0},"_fork1":{"category":2,"slot":36,"scopeDepth":0},"_fork2":{"category":2,"slot":37,"scopeDepth":0},"⍕":{"category":2,"slot":38,"scopeDepth":0},"⍋":{"category":2,"slot":39,"scopeDepth":0},"⍒":{"category":2,"slot":40,"scopeDepth":0},"⍁":{"category":4,"slot":41,"scopeDepth":0},"⍳":{"category":2,"slot":42,"scopeDepth":0},"⊂":{"category":2,"slot":43,"scopeDepth":0},"~":{"category":2,"slot":44,"scopeDepth":0},"∨":{"category":2,"slot":45,"scopeDepth":0},"∧":{"category":2,"slot":46,"scopeDepth":0},"^":{"category":2,"slot":47,"scopeDepth":0},"⍱":{"category":2,"slot":48,"scopeDepth":0},"⍲":{"category":2,"slot":49,"scopeDepth":0},"⍣":{"category":4,"slot":50,"scopeDepth":0},"get_⎕":{"category":2,"slot":51,"scopeDepth":0},"⎕":{"category":1},"set_⎕":{"category":2,"slot":52,"scopeDepth":0},"get_⍞":{"category":2,"slot":53,"scopeDepth":0},"⍞":{"category":1},"set_⍞":{"category":2,"slot":54,"scopeDepth":0},"get_⎕IO":{"category":2,"slot":55,"scopeDepth":0},"⎕IO":{"category":1},"set_⎕IO":{"category":2,"slot":56,"scopeDepth":0},"⎕DL":{"category":2,"slot":57,"scopeDepth":0},"⎕RE":{"category":2,"slot":58,"scopeDepth":0},"⎕UCS":{"category":2,"slot":59,"scopeDepth":0},"?":{"category":2,"slot":60,"scopeDepth":0},"↗":{"category":2,"slot":61,"scopeDepth":0},"⍴":{"category":2,"slot":62,"scopeDepth":0},"⌽":{"category":2,"slot":63,"scopeDepth":0},"⊖":{"category":2,"slot":64,"scopeDepth":0},"/":{"category":3,"slot":65,"scopeDepth":0},"⌿":{"category":3,"slot":66,"scopeDepth":0},"⌷":{"category":2,"slot":67,"scopeDepth":0},"_index":{"category":2,"slot":68,"scopeDepth":0},"_substitute":{"category":2,"slot":69,"scopeDepth":0},"↑":{"category":2,"slot":70,"scopeDepth":0},"⍉":{"category":2,"slot":71,"scopeDepth":0},"⍠":{"category":4,"slot":72,"scopeDepth":0},"⍬":{"scopeDepth":0,"slot":73,"category":1},"_hook":{"scopeDepth":0,"slot":74,"category":4},"⊃":{"scopeDepth":0,"slot":75,"category":2},"⍪":{"scopeDepth":0,"slot":76,"category":2},"⊢":{"scopeDepth":0,"slot":77,"category":2},"⊣":{"scopeDepth":0,"slot":78,"category":2},"≢":{"scopeDepth":0,"slot":79,"category":2},"⌹":{"scopeDepth":0,"slot":80,"category":2},"⍨":{"scopeDepth":0,"slot":81,"category":3}}}, code = _ref3.code, nSlots = _ref3.nSlots, vars = _ref3.vars;
     env = [[]];
     for (k in vars) {
       v = vars[k];
@@ -4819,7 +4796,7 @@
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2013-12-19\n");
+          process.stdout.write("ngn apl 2013-12-21\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ws = apl.ws();
@@ -7241,6 +7218,10 @@ var aplTests = [
 ["(⊂2 2⍴0)⊃1 2","!!!","RANK ERROR"],
 ["(⊂2 2)⊃1 2","!!!","RANK ERROR"],
 ["(⊂0 2)⊃2 2⍴'ABCD'","!!!","INDEX ERROR"],
+["↓1 2 3","<=>","⊂1 2 3"],
+["↓(1 2)(3 4)","<=>","⊂(1 2)(3 4)"],
+["↓2 2⍴⍳4","<=>","(0 1)(2 3)"],
+["↓2 3 4⍴⍳24","<=>","2 3⍴(0 1 2 3)(4 5 6 7)(8 9 10 11)(12 13 14 15)(16 17 18 19)(20 21 22 23)"],
 ["⍪2 3 4","<=>","3 1⍴2 3 4"],
 ["⍪0","<=>","1 1⍴0"],
 ["⍪2 2⍴2 3 4 5","<=>","2 2⍴2 3 4 5"],
@@ -7543,10 +7524,6 @@ var aplTests = [
 ["0 1↓2","<=>","1 0⍴0"],
 ["1 2↓3","<=>","0 0⍴0"],
 ["⍬↓0","<=>","0"],
-["↓1 2 3","<=>","⊂1 2 3"],
-["↓(1 2)(3 4)","<=>","⊂(1 2)(3 4)"],
-["↓2 2⍴⍳4","<=>","(0 1)(2 3)"],
-["↓2 3 4⍴⍳24","<=>","2 3⍴(0 1 2 3)(4 5 6 7)(8 9 10 11)(12 13 14 15)(16 17 18 19)(20 21 22 23)"],
 ["⍴¨ (0 0 0 0) (0 0 0)","<=>","(,4) (,3)"],
 ["⍴¨ \"MONDAY\" \"TUESDAY\"","<=>","(,6) (,7)"],
 ["⍴    (2 2⍴⍳4) (⍳10) 97.3 (3 4⍴\"K\")","<=>",",4"],
