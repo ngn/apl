@@ -26,7 +26,6 @@ withAlphaAndOmega ->
   include 'vocabulary/cupcap'
   include 'vocabulary/decode'
   include 'vocabulary/dot'
-  include 'vocabulary/drop'
   include 'vocabulary/each'
   include 'vocabulary/encode'
   include 'vocabulary/epsilon'
