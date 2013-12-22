@@ -1867,7 +1867,9 @@
         }
         return new APLArray(data, shape, stride);
       } else {
-        return new APLArray(omega.toArray());
+        if (!(0)) {
+          throw Error("\"assert 0\" at src/vocabulary/comma.coffee:120");
+        }
       }
     }
   });
@@ -2221,48 +2223,6 @@
     };
   };
   addVocabulary({
-    '↓': function(omega, alpha, axis) {
-      var a, i, offset, shape, tmp97, x, _i, _j, _len, _len1;
-      if (alpha) {
-        if (alpha.shape.length > 1) {
-          rankError();
-        }
-        a = alpha.toArray();
-        for (_i = 0, _len = a.length; _i < _len; _i++) {
-          x = a[_i];
-          if (!((tmp97 = (x)) === ~~tmp97)) {
-            domainError();
-          }
-        }
-        if (!omega.shape.length) {
-          omega = new APLArray(omega.data, repeat([1], a.length), repeat([0], a.length), omega.offset);
-        } else {
-          if (a.length > omega.shape.length) {
-            rankError();
-          }
-        }
-        shape = omega.shape.slice(0);
-        offset = omega.offset;
-        for (i = _j = 0, _len1 = a.length; _j < _len1; i = ++_j) {
-          x = a[i];
-          shape[i] = Math.max(0, omega.shape[i] - Math.abs(x));
-          if (x > 0) {
-            offset += x * omega.stride[i];
-          }
-        }
-        if (prod(shape) === 0) {
-          return new APLArray([], shape);
-        } else {
-          return new APLArray(omega.data, shape, omega.stride, offset);
-        }
-      } else {
-        if (!(0)) {
-          throw Error("\"assert 0\" at src/vocabulary/drop.coffee:43");
-        }
-      }
-    }
-  });
-  addVocabulary({
     '¨': adverb(function(f, g) {
       if (!(typeof f === 'function')) {
         throw Error("\"assert typeof f is 'function'\" at src/vocabulary/each.coffee:18");
@@ -2403,34 +2363,34 @@
     }
   });
   enlist = function(x, r) {
-    var t100, t101, t102, t103, t104, t105, t98, t99, y, _results;
+    var t100, t101, t102, t103, t104, t97, t98, t99, y, _results;
     if (x instanceof APLArray) {
-      t98 = x;
-      if (!t98.empty()) {
-        t100 = t98.data;
-        t101 = t98.shape;
-        t102 = t98.stride;
-        t103 = t101.length - 1;
-        t105 = t98.offset;
-        t104 = [];
-        t99 = t101.length;
-        while (--t99 >= 0) {
-          t104.push(0);
+      t97 = x;
+      if (!t97.empty()) {
+        t99 = t97.data;
+        t100 = t97.shape;
+        t101 = t97.stride;
+        t102 = t100.length - 1;
+        t104 = t97.offset;
+        t103 = [];
+        t98 = t100.length;
+        while (--t98 >= 0) {
+          t103.push(0);
         }
         _results = [];
         while (true) {
-          y = t100[t105];
+          y = t99[t104];
           enlist(y, r);
-          t99 = t103;
-          while (t99 >= 0 && t104[t99] + 1 === t101[t99]) {
-            t105 -= t104[t99] * t102[t99];
-            t104[t99--] = 0;
+          t98 = t102;
+          while (t98 >= 0 && t103[t98] + 1 === t100[t98]) {
+            t104 -= t103[t98] * t101[t98];
+            t103[t98--] = 0;
           }
-          if (t99 < 0) {
+          if (t98 < 0) {
             break;
           }
-          t104[t99]++;
-          _results.push(t105 += t102[t99]);
+          t103[t98]++;
+          _results.push(t104 += t101[t98]);
         }
         return _results;
       }
@@ -2440,10 +2400,10 @@
   };
   addVocabulary({
     '!': withIdentity(1, pervasive({
-      monad: function(x, t107, t108) {
-        var tmp106;
-        if (typeof x === 'number' && ((t107 == null) || typeof t107 === 'number')) {
-          if (!((tmp106 = (x)) === ~~tmp106)) {
+      monad: function(x, t106, t107) {
+        var tmp105;
+        if (typeof x === 'number' && ((t106 == null) || typeof t106 === 'number')) {
+          if (!((tmp105 = (x)) === ~~tmp105)) {
             return Γ(x + 1);
           } else if (x < 0) {
             return domainError();
@@ -2456,8 +2416,8 @@
           return domainError();
         }
       },
-      dyad: Beta = function(n, k, t111) {
-        var r, tmp109, tmp110;
+      dyad: Beta = function(n, k, t110) {
+        var r, tmp108, tmp109;
         if (typeof n === 'number' && ((k == null) || typeof k === 'number')) {
           r = (function() {
             switch (4 * negInt(k) + 2 * negInt(n) + negInt(n - k)) {
@@ -2479,7 +2439,7 @@
                 return 0;
             }
           })();
-          if (((tmp109 = (n)) === ~~tmp109) && ((tmp110 = (k)) === ~~tmp110)) {
+          if (((tmp108 = (n)) === ~~tmp108) && ((tmp109 = (k)) === ~~tmp109)) {
             return Math.round(r);
           } else {
             return r;
@@ -2491,8 +2451,8 @@
     }))
   });
   negInt = function(x) {
-    var tmp112;
-    return ((tmp112 = (x)) === ~~tmp112) && x < 0;
+    var tmp111;
+    return ((tmp111 = (x)) === ~~tmp111) && x < 0;
   };
   smallFactorials = (function() {
     var i, x;
@@ -2544,39 +2504,39 @@
   })(), Γ = _ref1.Γ, lnΓ = _ref1.lnΓ;
   addVocabulary({
     '⍎': function(omega, alpha) {
-      var c, s, t113, t114, t115, t116, t117, t118, t119, t120;
+      var c, s, t112, t113, t114, t115, t116, t117, t118, t119;
       if (alpha) {
         return nonceError();
       } else {
         s = '';
-        t113 = omega;
-        if (!t113.empty()) {
-          t115 = t113.data;
-          t116 = t113.shape;
-          t117 = t113.stride;
-          t118 = t116.length - 1;
-          t120 = t113.offset;
-          t119 = [];
-          t114 = t116.length;
-          while (--t114 >= 0) {
-            t119.push(0);
+        t112 = omega;
+        if (!t112.empty()) {
+          t114 = t112.data;
+          t115 = t112.shape;
+          t116 = t112.stride;
+          t117 = t115.length - 1;
+          t119 = t112.offset;
+          t118 = [];
+          t113 = t115.length;
+          while (--t113 >= 0) {
+            t118.push(0);
           }
           while (true) {
-            c = t115[t120];
+            c = t114[t119];
             if (typeof c !== 'string') {
               domainError();
             }
             s += c;
-            t114 = t118;
-            while (t114 >= 0 && t119[t114] + 1 === t116[t114]) {
-              t120 -= t119[t114] * t117[t114];
-              t119[t114--] = 0;
+            t113 = t117;
+            while (t113 >= 0 && t118[t113] + 1 === t115[t113]) {
+              t119 -= t118[t113] * t116[t113];
+              t118[t113--] = 0;
             }
-            if (t114 < 0) {
+            if (t113 < 0) {
               break;
             }
-            t119[t114]++;
-            t120 += t117[t114];
+            t118[t113]++;
+            t119 += t116[t113];
           }
         }
         return exec(s);
@@ -2633,7 +2593,7 @@
   addVocabulary({
     '⌊': withIdentity(Infinity, pervasive({
       monad: Complex.floor,
-      dyad: function(y, x, t121) {
+      dyad: function(y, x, t120) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return Math.min(y, x);
         } else {
@@ -2643,7 +2603,7 @@
     })),
     '⌈': withIdentity(-Infinity, pervasive({
       monad: Complex.ceil,
-      dyad: function(y, x, t122) {
+      dyad: function(y, x, t121) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return Math.max(y, x);
         } else {
@@ -2817,41 +2777,41 @@
     }
   });
   grade = function(omega, alpha, direction) {
-    var h, indices, t123, t124, t125, t126, t127, t128, t129, x, _i, _ref2, _results;
+    var h, indices, t122, t123, t124, t125, t126, t127, t128, x, _i, _ref2, _results;
     h = {};
     if (alpha) {
       if (!alpha.shape.length) {
         rankError();
       }
       h = {};
-      t123 = alpha;
-      if (!t123.empty()) {
-        t125 = t123.data;
-        t126 = t123.shape;
-        t127 = t123.stride;
-        t128 = t126.length - 1;
-        t129 = t123.offset;
+      t122 = alpha;
+      if (!t122.empty()) {
+        t124 = t122.data;
+        t125 = t122.shape;
+        t126 = t122.stride;
+        t127 = t125.length - 1;
+        t128 = t122.offset;
         indices = [];
-        t124 = t126.length;
-        while (--t124 >= 0) {
+        t123 = t125.length;
+        while (--t123 >= 0) {
           indices.push(0);
         }
         while (true) {
-          x = t125[t129];
+          x = t124[t128];
           if (typeof x !== 'string') {
             domainError();
           }
           h[x] = indices[indices.length - 1];
-          t124 = t128;
-          while (t124 >= 0 && indices[t124] + 1 === t126[t124]) {
-            t129 -= indices[t124] * t127[t124];
-            indices[t124--] = 0;
+          t123 = t127;
+          while (t123 >= 0 && indices[t123] + 1 === t125[t123]) {
+            t128 -= indices[t123] * t126[t123];
+            indices[t123--] = 0;
           }
-          if (t124 < 0) {
+          if (t123 < 0) {
             break;
           }
-          indices[t124]++;
-          t129 += t127[t124];
+          indices[t123]++;
+          t128 += t126[t123];
         }
       }
     }
@@ -2928,43 +2888,43 @@
   });
   addVocabulary({
     '⍳': function(omega, alpha) {
-      var A, a, d, data, i, itemData, itemShape, itemStride, j, m, n, p, t138, t139, t140, t141, t142, t143, t144, t145, tmp137, u, _i, _j, _k, _l, _len, _m, _n, _o, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
+      var A, a, d, data, i, itemData, itemShape, itemStride, j, m, n, p, t137, t138, t139, t140, t141, t142, t143, t144, tmp136, u, _i, _j, _k, _l, _len, _m, _n, _o, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
       if (alpha) {
         if (alpha.shape.length !== 1) {
           rankError();
         }
         return omega.map(function(x) {
-          var e, indices, rank, t130, t131, t132, t133, t134, t135, t136, y;
+          var e, indices, rank, t129, t130, t131, t132, t133, t134, t135, y;
           try {
             rank = alpha.shape;
-            t130 = alpha;
-            if (!t130.empty()) {
-              t132 = t130.data;
-              t133 = t130.shape;
-              t134 = t130.stride;
-              t135 = t133.length - 1;
-              t136 = t130.offset;
+            t129 = alpha;
+            if (!t129.empty()) {
+              t131 = t129.data;
+              t132 = t129.shape;
+              t133 = t129.stride;
+              t134 = t132.length - 1;
+              t135 = t129.offset;
               indices = [];
-              t131 = t133.length;
-              while (--t131 >= 0) {
+              t130 = t132.length;
+              while (--t130 >= 0) {
                 indices.push(0);
               }
               while (true) {
-                y = t132[t136];
+                y = t131[t135];
                 if (match(x, y)) {
                   rank = indices;
                   throw 'break';
                 }
-                t131 = t135;
-                while (t131 >= 0 && indices[t131] + 1 === t133[t131]) {
-                  t136 -= indices[t131] * t134[t131];
-                  indices[t131--] = 0;
+                t130 = t134;
+                while (t130 >= 0 && indices[t130] + 1 === t132[t130]) {
+                  t135 -= indices[t130] * t133[t130];
+                  indices[t130--] = 0;
                 }
-                if (t131 < 0) {
+                if (t130 < 0) {
                   break;
                 }
-                indices[t131]++;
-                t136 += t134[t131];
+                indices[t130]++;
+                t135 += t133[t130];
               }
             }
           } catch (_error) {
@@ -2986,7 +2946,7 @@
         a = omega.toArray();
         for (_i = 0, _len = a.length; _i < _len; _i++) {
           d = a[_i];
-          if (!((tmp137 = (d)) === ~~tmp137 && (0) <= tmp137)) {
+          if (!((tmp136 = (d)) === ~~tmp136 && (0) <= tmp136)) {
             domainError();
           }
         }
@@ -3008,39 +2968,39 @@
             p = n * i;
             for (j = _l = 0, _ref3 = a[i]; _l < _ref3; j = _l += 1) {
               itemData[p] = j;
-              t138 = itemData;
-              t139 = p;
-              t140 = 1;
-              t141 = u;
-              if (t138 instanceof Array) {
-                for (j = _m = _ref4 = t140, _ref5 = t141; _m < _ref5; j = _m += 1) {
-                  t138[t139 + j] = t138[t139 + j % t140];
+              t137 = itemData;
+              t138 = p;
+              t139 = 1;
+              t140 = u;
+              if (t137 instanceof Array) {
+                for (j = _m = _ref4 = t139, _ref5 = t140; _m < _ref5; j = _m += 1) {
+                  t137[t138 + j] = t137[t138 + j % t139];
                 }
               } else {
-                t138 = t138.subarray(t139, t139 + t141);
-                while (2 * t140 < t141) {
-                  t138.set(t138.subarray(0, t140), t140);
-                  t140 *= 2;
+                t137 = t137.subarray(t138, t138 + t140);
+                while (2 * t139 < t140) {
+                  t137.set(t137.subarray(0, t139), t139);
+                  t139 *= 2;
                 }
-                t138.set(t138.subarray(0, t141 - t140), t140);
+                t137.set(t137.subarray(0, t140 - t139), t139);
               }
               p += u;
             }
-            t142 = itemData;
-            t143 = n * i;
-            t144 = a[i] * u;
-            t145 = n;
-            if (t142 instanceof Array) {
-              for (j = _n = _ref6 = t144, _ref7 = t145; _n < _ref7; j = _n += 1) {
-                t142[t143 + j] = t142[t143 + j % t144];
+            t141 = itemData;
+            t142 = n * i;
+            t143 = a[i] * u;
+            t144 = n;
+            if (t141 instanceof Array) {
+              for (j = _n = _ref6 = t143, _ref7 = t144; _n < _ref7; j = _n += 1) {
+                t141[t142 + j] = t141[t142 + j % t143];
               }
             } else {
-              t142 = t142.subarray(t143, t143 + t145);
-              while (2 * t144 < t145) {
-                t142.set(t142.subarray(0, t144), t144);
-                t144 *= 2;
+              t141 = t141.subarray(t142, t142 + t144);
+              while (2 * t143 < t144) {
+                t141.set(t141.subarray(0, t143), t143);
+                t143 *= 2;
               }
-              t142.set(t142.subarray(0, t145 - t144), t144);
+              t141.set(t141.subarray(0, t144 - t143), t143);
             }
           }
           data = [];
@@ -3056,7 +3016,7 @@
   });
   addVocabulary({
     '⊂': function(omega, alpha, axes) {
-      var data, i, indices, p, resultAxes, shape, stride, t146, t147, t148, t149, t150, t151, unitShape, unitStride, x, _i, _ref2, _results;
+      var data, i, indices, p, resultAxes, shape, stride, t145, t146, t147, t148, t149, t150, unitShape, unitStride, x, _i, _ref2, _results;
       if (!(!alpha)) {
         throw Error("\"assert not ⍺\" at src/vocabulary/leftshoe.coffee:13");
       }
@@ -3115,31 +3075,31 @@
         return _results1;
       })();
       data = [];
-      t146 = new APLArray(omega.data, shape, stride, omega.offset);
-      if (!t146.empty()) {
-        t148 = t146.data;
-        t149 = t146.shape;
-        t150 = t146.stride;
-        t151 = t149.length - 1;
-        p = t146.offset;
+      t145 = new APLArray(omega.data, shape, stride, omega.offset);
+      if (!t145.empty()) {
+        t147 = t145.data;
+        t148 = t145.shape;
+        t149 = t145.stride;
+        t150 = t148.length - 1;
+        p = t145.offset;
         indices = [];
-        t147 = t149.length;
-        while (--t147 >= 0) {
+        t146 = t148.length;
+        while (--t146 >= 0) {
           indices.push(0);
         }
         while (true) {
-          x = t148[p];
+          x = t147[p];
           data.push(new APLArray(omega.data, unitShape, unitStride, p));
-          t147 = t151;
-          while (t147 >= 0 && indices[t147] + 1 === t149[t147]) {
-            p -= indices[t147] * t150[t147];
-            indices[t147--] = 0;
+          t146 = t150;
+          while (t146 >= 0 && indices[t146] + 1 === t148[t146]) {
+            p -= indices[t146] * t149[t146];
+            indices[t146--] = 0;
           }
-          if (t147 < 0) {
+          if (t146 < 0) {
             break;
           }
-          indices[t147]++;
-          p += t150[t147];
+          indices[t146]++;
+          p += t149[t146];
         }
       }
       return new APLArray(data, shape);
@@ -3168,7 +3128,7 @@
       }
     })),
     '⍱': pervasive({
-      dyad: function(y, x, t152) {
+      dyad: function(y, x, t151) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return +(!(bool(x) | bool(y)));
         } else {
@@ -3177,7 +3137,7 @@
       }
     }),
     '⍲': pervasive({
-      dyad: function(y, x, t153) {
+      dyad: function(y, x, t152) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return +(!(bool(x) & bool(y)));
         } else {
@@ -3299,8 +3259,8 @@
         nonceError();
       }
       return omega.map(function(x) {
-        var tmp154, y, _ref2;
-        if ((tmp154 = (x)) === ~~tmp154 && ((0) <= (_ref2 = tmp154) && _ref2 < (0x10000))) {
+        var tmp153, y, _ref2;
+        if ((tmp153 = (x)) === ~~tmp153 && ((0) <= (_ref2 = tmp153) && _ref2 < (0x10000))) {
           return y = String.fromCharCode(x);
         } else if (typeof x === 'string') {
           return y = x.charCodeAt(0);
@@ -3321,18 +3281,18 @@
   });
   roll = pervasive({
     monad: function(omega) {
-      var tmp155;
-      if (!((tmp155 = omega) === ~~tmp155 && (1) <= tmp155)) {
+      var tmp154;
+      if (!((tmp154 = omega) === ~~tmp154 && (1) <= tmp154)) {
         domainError();
       }
       return Math.floor(Math.random() * omega);
     }
   });
   deal = function(omega, alpha) {
-    var h, i, j, r, tmp156, tmp157, _i, _j, _ref2, _results;
+    var h, i, j, r, tmp155, tmp156, _i, _j, _ref2, _results;
     alpha = alpha.unwrap();
     omega = omega.unwrap();
-    if (!(((tmp156 = omega) === ~~tmp156 && (0) <= tmp156) && ((tmp157 = alpha) === ~~tmp157 && ((0) <= (_ref2 = tmp157) && _ref2 < (omega + 1))))) {
+    if (!(((tmp155 = omega) === ~~tmp155 && (0) <= tmp155) && ((tmp156 = alpha) === ~~tmp156 && ((0) <= (_ref2 = tmp156) && _ref2 < (omega + 1))))) {
       domainError();
     }
     r = (function() {
@@ -3355,7 +3315,7 @@
   });
   addVocabulary({
     '⍴': function(omega, alpha) {
-      var a, data, e, n, t159, t160, t161, t162, t163, t164, t165, t166, tmp158, x, _i, _len;
+      var a, data, e, n, t158, t159, t160, t161, t162, t163, t164, t165, tmp157, x, _i, _len;
       if (alpha) {
         if (alpha.shape.length > 1) {
           rankError();
@@ -3363,7 +3323,7 @@
         a = alpha.toArray();
         for (_i = 0, _len = a.length; _i < _len; _i++) {
           x = a[_i];
-          if (!((tmp158 = (x)) === ~~tmp158 && (0) <= tmp158)) {
+          if (!((tmp157 = (x)) === ~~tmp157 && (0) <= tmp157)) {
             domainError();
           }
         }
@@ -3375,34 +3335,34 @@
         } else {
           data = [];
           try {
-            t159 = omega;
-            if (!t159.empty()) {
-              t161 = t159.data;
-              t162 = t159.shape;
-              t163 = t159.stride;
-              t164 = t162.length - 1;
-              t166 = t159.offset;
-              t165 = [];
-              t160 = t162.length;
-              while (--t160 >= 0) {
-                t165.push(0);
+            t158 = omega;
+            if (!t158.empty()) {
+              t160 = t158.data;
+              t161 = t158.shape;
+              t162 = t158.stride;
+              t163 = t161.length - 1;
+              t165 = t158.offset;
+              t164 = [];
+              t159 = t161.length;
+              while (--t159 >= 0) {
+                t164.push(0);
               }
               while (true) {
-                x = t161[t166];
+                x = t160[t165];
                 if (data.length >= n) {
                   throw 'break';
                 }
                 data.push(x);
-                t160 = t164;
-                while (t160 >= 0 && t165[t160] + 1 === t162[t160]) {
-                  t166 -= t165[t160] * t163[t160];
-                  t165[t160--] = 0;
+                t159 = t163;
+                while (t159 >= 0 && t164[t159] + 1 === t161[t159]) {
+                  t165 -= t164[t159] * t162[t159];
+                  t164[t159--] = 0;
                 }
-                if (t160 < 0) {
+                if (t159 < 0) {
                   break;
                 }
-                t165[t160]++;
-                t166 += t163[t160];
+                t164[t159]++;
+                t165 += t162[t159];
               }
             }
           } catch (_error) {
@@ -3430,20 +3390,20 @@
   });
   addVocabulary({
     '⌽': rotate = function(omega, alpha, axis) {
-      var a, data, indices, n, offset, p, shape, step, stride, tmp167, tmp168, tmp169;
+      var a, data, indices, n, offset, p, shape, step, stride, tmp166, tmp167, tmp168;
       if (!(typeof axis === 'undefined' || axis instanceof APLArray)) {
         throw Error("\"assert typeof axis is 'undefined' or axis instanceof APLArray\" at src/vocabulary/rotate.coffee:4");
       }
       if (alpha) {
         axis = !axis ? omega.shape.length - 1 : axis.unwrap();
-        if (!((tmp167 = (axis)) === ~~tmp167)) {
+        if (!((tmp166 = (axis)) === ~~tmp166)) {
           domainError();
         }
         if (omega.shape.length && !((0 <= axis && axis < omega.shape.length))) {
           indexError();
         }
         step = alpha.unwrap();
-        if (!((tmp168 = (step)) === ~~tmp168)) {
+        if (!((tmp167 = (step)) === ~~tmp167)) {
           domainError();
         }
         if (!step) {
@@ -3478,7 +3438,7 @@
             lengthError();
           }
           axis = axis.unwrap();
-          if (!((tmp169 = (axis)) === ~~tmp169)) {
+          if (!((tmp168 = (axis)) === ~~tmp168)) {
             domainError();
           }
           if (!((0 <= axis && axis < omega.shape.length))) {
@@ -3616,7 +3576,7 @@
     };
   };
   compressOrReplicate = function(omega, alpha, axis) {
-    var a, b, data, filler, i, indices, n, p, shape, tmp170, x, _i, _j, _len, _ref2;
+    var a, b, data, filler, i, indices, n, p, shape, tmp169, x, _i, _j, _len, _ref2;
     if (!omega.shape.length) {
       omega = new APLArray([omega.unwrap()]);
     }
@@ -3637,7 +3597,7 @@
     b = [];
     for (i = _i = 0, _len = a.length; _i < _len; i = ++_i) {
       x = a[i];
-      if (!((tmp170 = (x)) === ~~tmp170)) {
+      if (!((tmp169 = (x)) === ~~tmp169)) {
         domainError();
       }
       shape[axis] += Math.abs(x);
@@ -3684,7 +3644,7 @@
   };
   addVocabulary({
     '⌷': squish = function(omega, alpha, axes) {
-      var a, axis, h, i, r, tmp171, u, _i, _j, _k, _len, _ref2, _ref3, _results;
+      var a, axis, h, i, r, tmp170, u, _i, _j, _k, _len, _ref2, _ref3, _results;
       if (typeof omega === 'function') {
         return function(x, y) {
           return omega(x, y, alpha);
@@ -3708,7 +3668,7 @@
         h = Array(omega.shape.length);
         for (_i = 0, _len = axes.length; _i < _len; _i++) {
           axis = axes[_i];
-          if (!((tmp171 = (axis)) === ~~tmp171)) {
+          if (!((tmp170 = (axis)) === ~~tmp170)) {
             domainError();
           }
           if (!((0 <= axis && axis < omega.shape.length))) {
@@ -3739,7 +3699,7 @@
       return squish(omega, alpha, axes);
     },
     _substitute: function(args) {
-      var a, alpha, axes, data, i, omega, p, stride, subs, t172, t173, t174, t175, t176, t177, t178, t179, t180, t181, t182, t183, t184, u, v, value, x, _i, _j, _len, _ref2, _ref3, _ref4, _results;
+      var a, alpha, axes, data, i, omega, p, stride, subs, t171, t172, t173, t174, t175, t176, t177, t178, t179, t180, t181, t182, t183, u, v, value, x, _i, _j, _len, _ref2, _ref3, _ref4, _results;
       _ref2 = (function() {
         var _i, _len, _ref2, _results;
         _ref2 = args.toArray();
@@ -3782,34 +3742,34 @@
       }
       data = omega.toArray();
       stride = strideForShape(omega.shape);
-      t172 = subs;
+      t171 = subs;
+      t176 = t171.data;
+      t178 = t171.shape;
+      t180 = t171.stride;
+      t172 = value;
       t177 = t172.data;
       t179 = t172.shape;
       t181 = t172.stride;
-      t173 = value;
-      t178 = t173.data;
-      t180 = t173.shape;
-      t182 = t173.stride;
-      if (t179.length !== t180.length) {
+      if (t178.length !== t179.length) {
         rankError();
       }
-      t176 = t179.length;
-      while (--t176 >= 0) {
-        if (t179[t176] !== t180[t176]) {
+      t175 = t178.length;
+      while (--t175 >= 0) {
+        if (t178[t175] !== t179[t175]) {
           lengthError();
         }
       }
-      if (!t172.empty()) {
-        t183 = t179.length - 1;
+      if (!t171.empty()) {
+        t182 = t178.length - 1;
+        t173 = t171.offset;
         t174 = t172.offset;
-        t175 = t173.offset;
-        t184 = Array((t176 = t179.length));
-        while (--t176 >= 0) {
-          t184[t176] = 0;
+        t183 = Array((t175 = t178.length));
+        while (--t175 >= 0) {
+          t183[t175] = 0;
         }
         while (true) {
-          u = t177[t174];
-          v = t178[t175];
+          u = t176[t173];
+          v = t177[t174];
           if (v instanceof APLArray && !v.shape.length) {
             v = v.unwrap();
           }
@@ -3824,32 +3784,32 @@
           } else {
             data[u] = v;
           }
-          t176 = t183;
-          while (t176 >= 0 && t184[t176] + 1 === t179[t176]) {
-            t174 -= t184[t176] * t181[t176];
-            t175 -= t184[t176] * t182[t176];
-            t184[t176--] = 0;
+          t175 = t182;
+          while (t175 >= 0 && t183[t175] + 1 === t178[t175]) {
+            t173 -= t183[t175] * t180[t175];
+            t174 -= t183[t175] * t181[t175];
+            t183[t175--] = 0;
           }
-          if (t176 < 0) {
+          if (t175 < 0) {
             break;
           }
-          t184[t176]++;
-          t174 += t181[t176];
-          t175 += t182[t176];
+          t183[t175]++;
+          t173 += t180[t175];
+          t174 += t181[t175];
         }
       }
       return new APLArray(data, omega.shape);
     }
   });
   indexAtSingleAxis = function(omega, sub, ax) {
-    var chunk, d, data, i, isUniform, k, n, offset, shape, shape1, stride, stride1, subStride, t187, t188, t189, t190, t191, t192, t193, t194, tmp185, tmp186, u, x, _i, _j, _k, _l, _len, _len1, _ref2, _ref3;
+    var chunk, d, data, i, isUniform, k, n, offset, shape, shape1, stride, stride1, subStride, t186, t187, t188, t189, t190, t191, t192, t193, tmp184, tmp185, u, x, _i, _j, _k, _l, _len, _len1, _ref2, _ref3;
     if (!(omega instanceof APLArray)) {
       throw Error("\"assert ⍵ instanceof APLArray\" at src/vocabulary/squish.coffee:122");
     }
     if (!(sub instanceof APLArray)) {
       throw Error("\"assert sub instanceof APLArray\" at src/vocabulary/squish.coffee:123");
     }
-    if (!((tmp185 = (ax)) === ~~tmp185)) {
+    if (!((tmp184 = (ax)) === ~~tmp184)) {
       throw Error("\"assert isInt ax\" at src/vocabulary/squish.coffee:124");
     }
     if (!((0 <= ax && ax < omega.shape.length))) {
@@ -3859,7 +3819,7 @@
     n = omega.shape[ax];
     for (_i = 0, _len = u.length; _i < _len; _i++) {
       x = u[_i];
-      if (!((tmp186 = (x)) === ~~tmp186)) {
+      if (!((tmp185 = (x)) === ~~tmp185)) {
         domainError();
       }
       if (!((0 <= x && x < n))) {
@@ -3895,32 +3855,32 @@
       stride1 = omega.stride.slice(0);
       stride1.splice(ax, 1);
       data = [];
-      t187 = sub;
-      if (!t187.empty()) {
-        t189 = t187.data;
-        t190 = t187.shape;
-        t191 = t187.stride;
-        t192 = t190.length - 1;
-        t194 = t187.offset;
-        t193 = [];
-        t188 = t190.length;
-        while (--t188 >= 0) {
-          t193.push(0);
+      t186 = sub;
+      if (!t186.empty()) {
+        t188 = t186.data;
+        t189 = t186.shape;
+        t190 = t186.stride;
+        t191 = t189.length - 1;
+        t193 = t186.offset;
+        t192 = [];
+        t187 = t189.length;
+        while (--t187 >= 0) {
+          t192.push(0);
         }
         while (true) {
-          x = t189[t194];
+          x = t188[t193];
           chunk = new APLArray(omega.data, shape1, stride1, omega.offset + x * omega.stride[ax]);
           data.push.apply(data, chunk.toArray());
-          t188 = t192;
-          while (t188 >= 0 && t193[t188] + 1 === t190[t188]) {
-            t194 -= t193[t188] * t191[t188];
-            t193[t188--] = 0;
+          t187 = t191;
+          while (t187 >= 0 && t192[t187] + 1 === t189[t187]) {
+            t193 -= t192[t187] * t190[t187];
+            t192[t187--] = 0;
           }
-          if (t188 < 0) {
+          if (t187 < 0) {
             break;
           }
-          t193[t188]++;
-          t194 += t191[t188];
+          t192[t187]++;
+          t193 += t190[t187];
         }
       }
       shape = shape1.slice(0);
@@ -4033,7 +3993,7 @@
   };
   addVocabulary({
     '⍉': function(omega, alpha) {
-      var i, n, shape, stride, tmp195, u, x, _i, _j, _len, _len1, _ref2;
+      var i, n, shape, stride, tmp194, u, x, _i, _j, _len, _len1, _ref2;
       if (alpha) {
         if (alpha.shape.length > 1) {
           rankError();
@@ -4050,7 +4010,7 @@
         _ref2 = alpha.toArray();
         for (i = _i = 0, _len = _ref2.length; _i < _len; i = ++_i) {
           x = _ref2[i];
-          if (!((tmp195 = (x)) === ~~tmp195 && (0) <= tmp195)) {
+          if (!((tmp194 = (x)) === ~~tmp194 && (0) <= tmp194)) {
             domainError();
           }
           if (x >= n) {
@@ -4670,7 +4630,7 @@
   };
   prelude = (function() {
     var code, env, k, nSlots, v, vars, _ref3;
-    _ref3 = {"code":[1,new APLArray([],[0],[1],0),4,0,73,9,7,22,3,1,2,3,0,65,3,1,0,3,0,29,3,1,2,6,3,0,44,5,6,8,3,0,72,3,0,44,6,4,0,44,9,7,39,7,15,3,2,0,3,1,0,5,3,1,2,3,2,2,6,8,3,0,72,7,15,3,2,0,3,1,0,5,3,1,2,3,2,0,6,8,6,8,4,0,74,9,7,173,3,1,2,3,0,62,5,3,0,62,5,3,0,16,1,new APLArray([1],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,0,4,1,3,9,3,1,2,7,123,3,2,0,3,0,62,5,3,0,62,5,3,0,16,1,new APLArray([1],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,2,0,3,0,13,5,4,2,0,9,3,1,3,3,0,62,5,3,0,62,5,3,0,15,3,2,0,3,0,62,5,6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,3,3,0,62,5,3,0,19,3,2,0,6,3,0,45,3,0,65,5,5,11,8,9,1,new APLArray("INDEX ERROR",[11],[1],0),3,0,61,5,8,9,3,1,3,3,0,67,3,2,0,6,3,0,75,5,4,1,3,8,3,0,27,5,5,9,3,1,3,8,3,0,72,7,229,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,9,9,3,1,0,3,0,70,5,8,9,3,1,0,3,0,62,5,3,0,3,3,0,65,5,5,3,0,14,1,new APLArray([0],[],[],0),6,11,5,9,3,1,0,8,9,3,1,0,3,0,62,5,4,1,3,9,3,1,0,3,0,13,5,4,1,0,9,3,1,0,3,0,62,3,0,27,5,5,4,1,4,3,0,79,3,0,27,5,5,3,0,35,3,0,65,5,5,4,1,5,9,3,1,4,3,0,13,3,0,21,1,new APLArray([1],[],[],0),3,0,62,3,1,5,6,6,3,0,36,3,0,26,6,3,0,37,3,0,62,6,3,0,27,5,5,4,1,4,3,0,35,3,0,65,5,5,3,0,70,5,4,1,6,9,3,1,0,7,18,3,2,0,3,0,62,3,2,2,6,3,0,70,3,1,6,6,8,3,0,27,5,3,1,4,6,3,0,76,3,0,65,5,5,3,0,70,5,3,0,62,3,1,6,3,0,13,3,1,3,6,6,8,6,4,0,75,9,3,0,26,3,0,72,7,60,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,5,9,3,1,0,8,9,3,1,0,3,1,0,3,0,62,5,3,0,62,5,3,0,0,1,new APLArray([-1],[],[],0),6,2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,0,43,6,5,8,6,4,0,26,9,7,23,3,1,0,1,new APLArray([0],[],[],0),2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,0,13,6,3,1,2,6,8,3,0,72,7,38,3,1,0,3,0,62,3,1,0,3,0,79,5,3,1,0,3,0,62,5,3,0,26,1,new APLArray([1],[],[],0),6,3,0,3,3,0,65,5,5,2,2,6,8,6,4,0,76,9,7,4,3,1,0,8,4,0,77,9,7,4,3,1,2,8,3,0,72,7,3,1,new APLArray([],[0],[1],0),8,6,4,0,78,9,7,15,3,1,0,3,0,20,3,1,2,6,3,0,44,5,8,3,0,72,7,21,1,new APLArray([1],[],[],0),3,0,13,3,1,0,3,0,62,5,6,3,0,62,3,0,73,6,8,6,4,0,79,9,7,22,3,1,2,3,0,3,3,0,25,3,0,0,6,3,1,0,3,0,80,5,6,8,3,0,72,7,724,7,28,1,new APLArray([0.5],[],[],0),3,0,5,3,2,0,3,0,0,5,3,0,3,3,0,25,3,0,0,6,3,2,0,6,6,8,4,1,3,9,7,290,1,new APLArray([1],[],[],0),2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,2,0,3,0,62,5,6,4,2,3,9,3,2,3,3,0,19,1,new APLArray([1],[],[],0),6,11,43,9,3,2,0,7,35,3,3,0,3,0,13,5,3,1,3,5,4,3,3,9,3,3,3,3,0,4,3,3,0,6,3,3,3,3,0,76,5,2,2,8,5,8,9,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,35,5,4,2,4,9,3,2,0,3,0,70,3,2,4,3,0,13,3,2,0,3,0,62,5,3,0,70,1,new APLArray([1],[],[],0),6,6,6,4,2,5,9,3,2,0,3,0,26,3,2,4,3,0,13,1,new APLArray([0],[],[],0),6,6,4,2,6,9,3,2,5,3,2,1,5,10,2,4,2,7,9,4,2,8,9,9,3,2,6,3,0,3,3,0,25,3,0,0,6,3,2,7,3,0,71,5,3,0,0,5,6,4,2,9,9,3,2,9,3,0,3,3,0,25,3,0,0,6,3,2,7,6,3,0,1,3,2,6,6,3,2,1,5,10,2,4,2,10,9,4,2,11,9,9,3,2,10,3,0,13,3,2,7,6,3,2,11,3,0,70,3,2,3,3,0,1,5,3,0,13,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,34,5,6,6,3,0,76,3,2,9,3,0,13,3,2,8,6,6,2,2,8,4,1,4,9,7,214,3,2,0,3,0,62,5,3,0,70,1,new APLArray([1],[],[],0),6,4,2,3,3,0,14,1,new APLArray([1],[],[],0),6,11,9,9,3,2,0,3,0,4,5,8,9,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,35,5,4,2,4,9,3,2,0,3,0,70,3,2,4,3,0,13,3,2,4,6,6,3,2,1,5,4,2,5,9,3,2,0,3,0,26,3,2,4,3,0,13,3,2,4,6,6,3,2,1,5,4,2,6,9,3,2,0,3,0,70,3,2,3,3,0,1,3,2,4,6,3,0,13,3,2,4,6,6,4,2,7,9,3,2,6,3,0,3,3,0,25,3,0,0,6,3,2,7,6,3,0,3,3,0,25,3,0,0,6,3,2,5,6,3,0,1,5,4,2,8,9,3,2,6,3,0,70,3,2,3,3,0,1,5,3,0,13,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,34,5,6,6,3,0,76,3,2,8,3,0,13,3,2,5,6,6,8,4,1,5,9,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,9,9,3,1,0,3,0,4,5,8,9,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([1],[],[],0),6,11,17,9,3,1,0,3,0,76,5,3,1,1,5,3,0,13,5,8,9,3,1,0,3,0,62,5,3,0,62,5,3,0,15,1,new APLArray([2],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,0,3,0,62,5,3,0,19,3,0,65,5,5,3,0,29,1,new APLArray([0],[],[],0),6,11,8,9,1,new APLArray("LENGTH ERROR",[12],[1],0),3,0,61,5,8,9,3,1,0,3,1,4,5,10,2,4,1,6,9,4,1,7,9,9,3,1,6,3,0,71,5,3,0,0,5,3,0,3,3,0,25,3,0,0,6,3,1,7,3,1,5,5,6,8,6,4,0,80,9,7,31,7,11,3,2,2,3,1,0,3,2,0,6,8,3,0,72,7,11,3,2,0,3,1,0,3,2,0,6,8,6,8,4,0,81,9,3,0,1,4,0,2,9,3,0,5,4,0,6,9,3,0,8,4,0,9,9,3,0,46,4,0,47,9,3,0,29,4,0,30,8],"nSlots":82,"vars":{"+":{"category":2,"slot":0,"scopeDepth":0},"-":{"category":2,"slot":1,"scopeDepth":0},"−":{"category":2,"slot":2,"scopeDepth":0},"×":{"category":2,"slot":3,"scopeDepth":0},"÷":{"category":2,"slot":4,"scopeDepth":0},"*":{"category":2,"slot":5,"scopeDepth":0},"⋆":{"category":2,"slot":6,"scopeDepth":0},"⍟":{"category":2,"slot":7,"scopeDepth":0},"|":{"category":2,"slot":8,"scopeDepth":0},"∣":{"category":2,"slot":9,"scopeDepth":0},"\\":{"category":3,"slot":10,"scopeDepth":0},"⍀":{"category":3,"slot":11,"scopeDepth":0},"○":{"category":2,"slot":12,"scopeDepth":0},",":{"category":2,"slot":13,"scopeDepth":0},"=":{"category":2,"slot":14,"scopeDepth":0},"≠":{"category":2,"slot":15,"scopeDepth":0},"<":{"category":2,"slot":16,"scopeDepth":0},">":{"category":2,"slot":17,"scopeDepth":0},"≤":{"category":2,"slot":18,"scopeDepth":0},"≥":{"category":2,"slot":19,"scopeDepth":0},"≡":{"category":2,"slot":20,"scopeDepth":0},"∘":{"category":4,"slot":21,"scopeDepth":0},"∪":{"category":2,"slot":22,"scopeDepth":0},"∩":{"category":2,"slot":23,"scopeDepth":0},"⊥":{"category":2,"slot":24,"scopeDepth":0},".":{"category":4,"slot":25,"scopeDepth":0},"↓":{"category":2,"slot":26,"scopeDepth":0},"¨":{"category":3,"slot":27,"scopeDepth":0},"⊤":{"category":2,"slot":28,"scopeDepth":0},"∊":{"category":2,"slot":29,"scopeDepth":0},"∈":{"category":2,"slot":30,"scopeDepth":0},"!":{"category":2,"slot":31,"scopeDepth":0},"⍎":{"category":2,"slot":32,"scopeDepth":0},"⍷":{"category":2,"slot":33,"scopeDepth":0},"⌊":{"category":2,"slot":34,"scopeDepth":0},"⌈":{"category":2,"slot":35,"scopeDepth":0},"_fork1":{"category":2,"slot":36,"scopeDepth":0},"_fork2":{"category":2,"slot":37,"scopeDepth":0},"⍕":{"category":2,"slot":38,"scopeDepth":0},"⍋":{"category":2,"slot":39,"scopeDepth":0},"⍒":{"category":2,"slot":40,"scopeDepth":0},"⍁":{"category":4,"slot":41,"scopeDepth":0},"⍳":{"category":2,"slot":42,"scopeDepth":0},"⊂":{"category":2,"slot":43,"scopeDepth":0},"~":{"category":2,"slot":44,"scopeDepth":0},"∨":{"category":2,"slot":45,"scopeDepth":0},"∧":{"category":2,"slot":46,"scopeDepth":0},"^":{"category":2,"slot":47,"scopeDepth":0},"⍱":{"category":2,"slot":48,"scopeDepth":0},"⍲":{"category":2,"slot":49,"scopeDepth":0},"⍣":{"category":4,"slot":50,"scopeDepth":0},"get_⎕":{"category":2,"slot":51,"scopeDepth":0},"⎕":{"category":1},"set_⎕":{"category":2,"slot":52,"scopeDepth":0},"get_⍞":{"category":2,"slot":53,"scopeDepth":0},"⍞":{"category":1},"set_⍞":{"category":2,"slot":54,"scopeDepth":0},"get_⎕IO":{"category":2,"slot":55,"scopeDepth":0},"⎕IO":{"category":1},"set_⎕IO":{"category":2,"slot":56,"scopeDepth":0},"⎕DL":{"category":2,"slot":57,"scopeDepth":0},"⎕RE":{"category":2,"slot":58,"scopeDepth":0},"⎕UCS":{"category":2,"slot":59,"scopeDepth":0},"?":{"category":2,"slot":60,"scopeDepth":0},"↗":{"category":2,"slot":61,"scopeDepth":0},"⍴":{"category":2,"slot":62,"scopeDepth":0},"⌽":{"category":2,"slot":63,"scopeDepth":0},"⊖":{"category":2,"slot":64,"scopeDepth":0},"/":{"category":3,"slot":65,"scopeDepth":0},"⌿":{"category":3,"slot":66,"scopeDepth":0},"⌷":{"category":2,"slot":67,"scopeDepth":0},"_index":{"category":2,"slot":68,"scopeDepth":0},"_substitute":{"category":2,"slot":69,"scopeDepth":0},"↑":{"category":2,"slot":70,"scopeDepth":0},"⍉":{"category":2,"slot":71,"scopeDepth":0},"⍠":{"category":4,"slot":72,"scopeDepth":0},"⍬":{"scopeDepth":0,"slot":73,"category":1},"_hook":{"scopeDepth":0,"slot":74,"category":4},"⊃":{"scopeDepth":0,"slot":75,"category":2},"⍪":{"scopeDepth":0,"slot":76,"category":2},"⊢":{"scopeDepth":0,"slot":77,"category":2},"⊣":{"scopeDepth":0,"slot":78,"category":2},"≢":{"scopeDepth":0,"slot":79,"category":2},"⌹":{"scopeDepth":0,"slot":80,"category":2},"⍨":{"scopeDepth":0,"slot":81,"category":3}}}, code = _ref3.code, nSlots = _ref3.nSlots, vars = _ref3.vars;
+    _ref3 = {"code":[1,new APLArray([],[0],[1],0),4,0,73,9,7,22,3,1,2,3,0,65,3,1,0,3,0,29,3,1,2,6,3,0,44,5,6,8,3,0,72,3,0,44,6,4,0,44,9,7,39,7,15,3,2,0,3,1,0,5,3,1,2,3,2,2,6,8,3,0,72,7,15,3,2,0,3,1,0,5,3,1,2,3,2,0,6,8,6,8,4,0,74,9,7,173,3,1,2,3,0,62,5,3,0,62,5,3,0,16,1,new APLArray([1],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,0,4,1,3,9,3,1,2,7,123,3,2,0,3,0,62,5,3,0,62,5,3,0,16,1,new APLArray([1],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,2,0,3,0,13,5,4,2,0,9,3,1,3,3,0,62,5,3,0,62,5,3,0,15,3,2,0,3,0,62,5,6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,3,3,0,62,5,3,0,19,3,2,0,6,3,0,45,3,0,65,5,5,11,8,9,1,new APLArray("INDEX ERROR",[11],[1],0),3,0,61,5,8,9,3,1,3,3,0,67,3,2,0,6,3,0,75,5,4,1,3,8,3,0,27,5,5,9,3,1,3,8,3,0,72,7,229,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,9,9,3,1,0,3,0,70,5,8,9,3,1,0,3,0,62,5,3,0,3,3,0,65,5,5,3,0,14,1,new APLArray([0],[],[],0),6,11,5,9,3,1,0,8,9,3,1,0,3,0,62,5,4,1,3,9,3,1,0,3,0,13,5,4,1,0,9,3,1,0,3,0,62,3,0,27,5,5,4,1,4,3,0,79,3,0,27,5,5,3,0,35,3,0,65,5,5,4,1,5,9,3,1,4,3,0,13,3,0,21,1,new APLArray([1],[],[],0),3,0,62,3,1,5,6,6,3,0,36,3,0,26,6,3,0,37,3,0,62,6,3,0,27,5,5,4,1,4,3,0,35,3,0,65,5,5,3,0,70,5,4,1,6,9,3,1,0,7,18,3,2,0,3,0,62,3,2,2,6,3,0,70,3,1,6,6,8,3,0,27,5,3,1,4,6,3,0,76,3,0,65,5,5,3,0,70,5,3,0,62,3,1,6,3,0,13,3,1,3,6,6,8,6,4,0,75,9,7,235,3,1,2,3,0,62,5,3,0,62,5,3,0,16,1,new APLArray([1],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,2,3,0,13,5,4,1,3,9,3,1,0,7,46,3,2,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,22,9,3,2,0,3,0,62,1,new APLArray([1],[],[],0),3,0,62,3,1,3,3,0,62,5,6,6,8,9,3,2,0,8,5,4,1,0,9,3,1,0,3,0,62,5,3,0,62,5,3,0,17,3,1,3,3,0,62,5,6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,3,3,0,70,3,1,0,3,0,62,5,3,0,62,5,6,4,1,3,9,3,1,0,3,0,62,5,3,0,0,3,1,3,6,3,0,35,1,new APLArray([0],[],[],0),6,3,0,3,1,new APLArray([0],[],[],0),3,0,18,3,1,3,6,6,3,0,0,3,1,0,3,0,62,5,3,0,1,3,1,3,6,3,0,34,1,new APLArray([0],[],[],0),6,3,0,3,1,new APLArray([0],[],[],0),3,0,17,3,1,3,6,6,6,4,1,3,9,3,1,0,3,0,70,3,1,3,6,8,3,0,72,7,60,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,5,9,3,1,0,8,9,3,1,0,3,1,0,3,0,62,5,3,0,62,5,3,0,0,1,new APLArray([-1],[],[],0),6,2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,0,43,6,5,8,6,4,0,26,9,7,23,3,1,0,1,new APLArray([0],[],[],0),2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,0,13,6,3,1,2,6,8,3,0,72,7,38,3,1,0,3,0,62,3,1,0,3,0,79,5,3,1,0,3,0,62,5,3,0,26,1,new APLArray([1],[],[],0),6,3,0,3,3,0,65,5,5,2,2,6,8,6,4,0,76,9,7,4,3,1,0,8,4,0,77,9,7,4,3,1,2,8,3,0,72,7,3,1,new APLArray([],[0],[1],0),8,6,4,0,78,9,7,15,3,1,0,3,0,20,3,1,2,6,3,0,44,5,8,3,0,72,7,21,1,new APLArray([1],[],[],0),3,0,13,3,1,0,3,0,62,5,6,3,0,62,3,0,73,6,8,6,4,0,79,9,3,0,13,3,0,72,7,23,3,1,0,3,0,62,3,1,0,3,0,62,5,3,0,3,3,0,65,5,5,6,8,6,4,0,13,9,7,22,3,1,2,3,0,3,3,0,25,3,0,0,6,3,1,0,3,0,80,5,6,8,3,0,72,7,724,7,28,1,new APLArray([0.5],[],[],0),3,0,5,3,2,0,3,0,0,5,3,0,3,3,0,25,3,0,0,6,3,2,0,6,6,8,4,1,3,9,7,290,1,new APLArray([1],[],[],0),2,1,1,new APLArray([0],[1],[1],0),2,2,3,0,68,3,2,0,3,0,62,5,6,4,2,3,9,3,2,3,3,0,19,1,new APLArray([1],[],[],0),6,11,43,9,3,2,0,7,35,3,3,0,3,0,13,5,3,1,3,5,4,3,3,9,3,3,3,3,0,4,3,3,0,6,3,3,3,3,0,76,5,2,2,8,5,8,9,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,35,5,4,2,4,9,3,2,0,3,0,70,3,2,4,3,0,13,3,2,0,3,0,62,5,3,0,70,1,new APLArray([1],[],[],0),6,6,6,4,2,5,9,3,2,0,3,0,26,3,2,4,3,0,13,1,new APLArray([0],[],[],0),6,6,4,2,6,9,3,2,5,3,2,1,5,10,2,4,2,7,9,4,2,8,9,9,3,2,6,3,0,3,3,0,25,3,0,0,6,3,2,7,3,0,71,5,3,0,0,5,6,4,2,9,9,3,2,9,3,0,3,3,0,25,3,0,0,6,3,2,7,6,3,0,1,3,2,6,6,3,2,1,5,10,2,4,2,10,9,4,2,11,9,9,3,2,10,3,0,13,3,2,7,6,3,2,11,3,0,70,3,2,3,3,0,1,5,3,0,13,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,34,5,6,6,3,0,76,3,2,9,3,0,13,3,2,8,6,6,2,2,8,4,1,4,9,7,214,3,2,0,3,0,62,5,3,0,70,1,new APLArray([1],[],[],0),6,4,2,3,3,0,14,1,new APLArray([1],[],[],0),6,11,9,9,3,2,0,3,0,4,5,8,9,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,35,5,4,2,4,9,3,2,0,3,0,70,3,2,4,3,0,13,3,2,4,6,6,3,2,1,5,4,2,5,9,3,2,0,3,0,26,3,2,4,3,0,13,3,2,4,6,6,3,2,1,5,4,2,6,9,3,2,0,3,0,70,3,2,3,3,0,1,3,2,4,6,3,0,13,3,2,4,6,6,4,2,7,9,3,2,6,3,0,3,3,0,25,3,0,0,6,3,2,7,6,3,0,3,3,0,25,3,0,0,6,3,2,5,6,3,0,1,5,4,2,8,9,3,2,6,3,0,70,3,2,3,3,0,1,5,3,0,13,1,new APLArray([2],[],[],0),3,0,4,3,2,3,6,3,0,34,5,6,6,3,0,76,3,2,8,3,0,13,3,2,5,6,6,8,4,1,5,9,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([0],[],[],0),6,11,9,9,3,1,0,3,0,4,5,8,9,3,1,0,3,0,62,5,3,0,62,5,3,0,14,1,new APLArray([1],[],[],0),6,11,17,9,3,1,0,3,0,76,5,3,1,1,5,3,0,13,5,8,9,3,1,0,3,0,62,5,3,0,62,5,3,0,15,1,new APLArray([2],[],[],0),6,11,8,9,1,new APLArray("RANK ERROR",[10],[1],0),3,0,61,5,8,9,3,1,0,3,0,62,5,3,0,19,3,0,65,5,5,3,0,29,1,new APLArray([0],[],[],0),6,11,8,9,1,new APLArray("LENGTH ERROR",[12],[1],0),3,0,61,5,8,9,3,1,0,3,1,4,5,10,2,4,1,6,9,4,1,7,9,9,3,1,6,3,0,71,5,3,0,0,5,3,0,3,3,0,25,3,0,0,6,3,1,7,3,1,5,5,6,8,6,4,0,80,9,7,31,7,11,3,2,2,3,1,0,3,2,0,6,8,3,0,72,7,11,3,2,0,3,1,0,3,2,0,6,8,6,8,4,0,81,9,3,0,1,4,0,2,9,3,0,5,4,0,6,9,3,0,8,4,0,9,9,3,0,46,4,0,47,9,3,0,29,4,0,30,8],"nSlots":82,"vars":{"+":{"category":2,"slot":0,"scopeDepth":0},"-":{"category":2,"slot":1,"scopeDepth":0},"−":{"category":2,"slot":2,"scopeDepth":0},"×":{"category":2,"slot":3,"scopeDepth":0},"÷":{"category":2,"slot":4,"scopeDepth":0},"*":{"category":2,"slot":5,"scopeDepth":0},"⋆":{"category":2,"slot":6,"scopeDepth":0},"⍟":{"category":2,"slot":7,"scopeDepth":0},"|":{"category":2,"slot":8,"scopeDepth":0},"∣":{"category":2,"slot":9,"scopeDepth":0},"\\":{"category":3,"slot":10,"scopeDepth":0},"⍀":{"category":3,"slot":11,"scopeDepth":0},"○":{"category":2,"slot":12,"scopeDepth":0},",":{"category":2,"slot":13,"scopeDepth":0},"=":{"category":2,"slot":14,"scopeDepth":0},"≠":{"category":2,"slot":15,"scopeDepth":0},"<":{"category":2,"slot":16,"scopeDepth":0},">":{"category":2,"slot":17,"scopeDepth":0},"≤":{"category":2,"slot":18,"scopeDepth":0},"≥":{"category":2,"slot":19,"scopeDepth":0},"≡":{"category":2,"slot":20,"scopeDepth":0},"∘":{"category":4,"slot":21,"scopeDepth":0},"∪":{"category":2,"slot":22,"scopeDepth":0},"∩":{"category":2,"slot":23,"scopeDepth":0},"⊥":{"category":2,"slot":24,"scopeDepth":0},".":{"category":4,"slot":25,"scopeDepth":0},"↓":{"category":2,"slot":26,"scopeDepth":0},"¨":{"category":3,"slot":27,"scopeDepth":0},"⊤":{"category":2,"slot":28,"scopeDepth":0},"∊":{"category":2,"slot":29,"scopeDepth":0},"∈":{"category":2,"slot":30,"scopeDepth":0},"!":{"category":2,"slot":31,"scopeDepth":0},"⍎":{"category":2,"slot":32,"scopeDepth":0},"⍷":{"category":2,"slot":33,"scopeDepth":0},"⌊":{"category":2,"slot":34,"scopeDepth":0},"⌈":{"category":2,"slot":35,"scopeDepth":0},"_fork1":{"category":2,"slot":36,"scopeDepth":0},"_fork2":{"category":2,"slot":37,"scopeDepth":0},"⍕":{"category":2,"slot":38,"scopeDepth":0},"⍋":{"category":2,"slot":39,"scopeDepth":0},"⍒":{"category":2,"slot":40,"scopeDepth":0},"⍁":{"category":4,"slot":41,"scopeDepth":0},"⍳":{"category":2,"slot":42,"scopeDepth":0},"⊂":{"category":2,"slot":43,"scopeDepth":0},"~":{"category":2,"slot":44,"scopeDepth":0},"∨":{"category":2,"slot":45,"scopeDepth":0},"∧":{"category":2,"slot":46,"scopeDepth":0},"^":{"category":2,"slot":47,"scopeDepth":0},"⍱":{"category":2,"slot":48,"scopeDepth":0},"⍲":{"category":2,"slot":49,"scopeDepth":0},"⍣":{"category":4,"slot":50,"scopeDepth":0},"get_⎕":{"category":2,"slot":51,"scopeDepth":0},"⎕":{"category":1},"set_⎕":{"category":2,"slot":52,"scopeDepth":0},"get_⍞":{"category":2,"slot":53,"scopeDepth":0},"⍞":{"category":1},"set_⍞":{"category":2,"slot":54,"scopeDepth":0},"get_⎕IO":{"category":2,"slot":55,"scopeDepth":0},"⎕IO":{"category":1},"set_⎕IO":{"category":2,"slot":56,"scopeDepth":0},"⎕DL":{"category":2,"slot":57,"scopeDepth":0},"⎕RE":{"category":2,"slot":58,"scopeDepth":0},"⎕UCS":{"category":2,"slot":59,"scopeDepth":0},"?":{"category":2,"slot":60,"scopeDepth":0},"↗":{"category":2,"slot":61,"scopeDepth":0},"⍴":{"category":2,"slot":62,"scopeDepth":0},"⌽":{"category":2,"slot":63,"scopeDepth":0},"⊖":{"category":2,"slot":64,"scopeDepth":0},"/":{"category":3,"slot":65,"scopeDepth":0},"⌿":{"category":3,"slot":66,"scopeDepth":0},"⌷":{"category":2,"slot":67,"scopeDepth":0},"_index":{"category":2,"slot":68,"scopeDepth":0},"_substitute":{"category":2,"slot":69,"scopeDepth":0},"↑":{"category":2,"slot":70,"scopeDepth":0},"⍉":{"category":2,"slot":71,"scopeDepth":0},"⍠":{"category":4,"slot":72,"scopeDepth":0},"⍬":{"scopeDepth":0,"slot":73,"category":1},"_hook":{"scopeDepth":0,"slot":74,"category":4},"⊃":{"scopeDepth":0,"slot":75,"category":2},"⍪":{"scopeDepth":0,"slot":76,"category":2},"⊢":{"scopeDepth":0,"slot":77,"category":2},"⊣":{"scopeDepth":0,"slot":78,"category":2},"≢":{"scopeDepth":0,"slot":79,"category":2},"⌹":{"scopeDepth":0,"slot":80,"category":2},"⍨":{"scopeDepth":0,"slot":81,"category":3}}}, code = _ref3.code, nSlots = _ref3.nSlots, vars = _ref3.vars;
     env = [[]];
     for (k in vars) {
       v = vars[k];
@@ -4740,7 +4700,7 @@
         var s;
         s = opts["in"]();
         if (!(typeof s === 'string')) {
-          throw Error("\"if opts.in then ctx['get_⎕'] = ctx['get_⍞'] = -> s = opts.in(); assert typeof s is 'string'; new APLArray s\" at /tmp/apl/src/apl.coffee:61");
+          throw Error("\"if opts.in then ctx['get_⎕'] = ctx['get_⍞'] = -> s = opts.in(); assert typeof s is 'string'; new APLArray s\" at /tmp/apl/src/apl.coffee:60");
         }
         return new APLArray(s);
       };
@@ -4796,7 +4756,7 @@
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2013-12-21\n");
+          process.stdout.write("ngn apl 2013-12-22\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ws = apl.ws();
@@ -7222,6 +7182,19 @@ var aplTests = [
 ["↓(1 2)(3 4)","<=>","⊂(1 2)(3 4)"],
 ["↓2 2⍴⍳4","<=>","(0 1)(2 3)"],
 ["↓2 3 4⍴⍳24","<=>","2 3⍴(0 1 2 3)(4 5 6 7)(8 9 10 11)(12 13 14 15)(16 17 18 19)(20 21 22 23)"],
+["4↓'OVERBOARD'","<=>","'BOARD'"],
+["¯5↓'OVERBOARD'","<=>","'OVER'"],
+["⍴10↓'OVERBOARD'","<=>",",0"],
+["0 ¯2↓3 3⍴'ONEFATFLY'","<=>","3 1⍴'OFF'"],
+["¯2 ¯1↓3 3⍴'ONEFATFLY'","<=>","1 2⍴'ON'"],
+["1↓3 3⍴'ONEFATFLY'","<=>","2 3⍴'FATFLY'"],
+["⍬↓3 3⍴⍳9","<=>","3 3⍴⍳9"],
+["1 1↓2 3 4⍴\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"","<=>","1 2 4⍴'QRSTUVWX'"],
+["¯1 ¯1↓2 3 4⍴\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"","<=>","1 2 4⍴'ABCDEFGH'"],
+["1↓0","<=>","⍬"],
+["0 1↓2","<=>","1 0⍴0"],
+["1 2↓3","<=>","0 0⍴0"],
+["⍬↓0","<=>","0"],
 ["⍪2 3 4","<=>","3 1⍴2 3 4"],
 ["⍪0","<=>","1 1⍴0"],
 ["⍪2 2⍴2 3 4 5","<=>","2 2⍴2 3 4 5"],
@@ -7238,6 +7211,8 @@ var aplTests = [
 ["≢⍬","<=>","0"],
 ["≢2 3⍴⍳6","<=>","2"],
 ["3≢3","<=>","0"],
+[",2 3 4⍴'abcdefghijklmnopqrstuvwx'","<=>","'abcdefghijklmnopqrstuvwx'"],
+[",123","<=>","1⍴123"],
 ["⌹2","<=>",".5"],
 ["⌹2 2⍴4 3 3 2","<=>","2 2⍴¯2 3 3 ¯4"],
 ["(4 4⍴12 1 4 10 ¯6 ¯5 4 7 ¯4 9 3 4 ¯2 ¯6 7 7)⌹93 81 93.5 120.5","<=>","\n .0003898888816687221 ¯.005029566573526544 .04730651764247189 .0705568912859835"],
@@ -7415,8 +7390,6 @@ var aplTests = [
 ["⍬,⍬","<=>","⍬"],
 ["⍬,1","<=>",",1"],
 ["1,⍬","<=>",",1"],
-[",2 3 4⍴'abcdefghijklmnopqrstuvwx'","<=>","'abcdefghijklmnopqrstuvwx'"],
-[",123","<=>","1⍴123"],
 ["12 = 12","<=>","1"],
 ["2 = 12","<=>","0"],
 ["\"Q\" = \"Q\"","<=>","1"],
@@ -7511,19 +7484,6 @@ var aplTests = [
 ["8 8 7 7 8 7 5 +.= 7","<=>","3"],
 ["7 +.= 7","<=>","1"],
 ["(3 2⍴5 ¯3 ¯2 4 ¯1 0) +.× 2 2⍴6 ¯3 5 7","<=>","3 2⍴15 ¯36 8 34 ¯6 3"],
-["4↓'OVERBOARD'","<=>","'BOARD'"],
-["¯5↓'OVERBOARD'","<=>","'OVER'"],
-["⍴10↓'OVERBOARD'","<=>",",0"],
-["0 ¯2↓ 3 3 ⍴ 'ONEFATFLY'","<=>","3 1 ⍴ 'OFF'"],
-["¯2 ¯1↓ 3 3 ⍴ 'ONEFATFLY'","<=>","1 2 ⍴ 'ON'"],
-["1↓ 3 3 ⍴ 'ONEFATFLY'","<=>","2 3 ⍴ 'FATFLY'"],
-["⍬↓3 3⍴⍳9","<=>","3 3⍴⍳9"],
-["1 1↓ 2 3 4⍴\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"","<=>","1 2 4 ⍴ 'QRSTUVWX'"],
-["¯1 ¯1↓ 2 3 4⍴\"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"","<=>","1 2 4 ⍴ 'ABCDEFGH'"],
-["1↓0","<=>","⍬"],
-["0 1↓2","<=>","1 0⍴0"],
-["1 2↓3","<=>","0 0⍴0"],
-["⍬↓0","<=>","0"],
 ["⍴¨ (0 0 0 0) (0 0 0)","<=>","(,4) (,3)"],
 ["⍴¨ \"MONDAY\" \"TUESDAY\"","<=>","(,6) (,7)"],
 ["⍴    (2 2⍴⍳4) (⍳10) 97.3 (3 4⍴\"K\")","<=>",",4"],
