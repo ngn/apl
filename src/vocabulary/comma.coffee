@@ -117,9 +117,4 @@ addVocabulary
       new APLArray data, shape, stride
 
     else
-
-      # Ravel (`,`)
-      #
-      # ,2 3 4⍴'abcdefghijklmnopqrstuvwx' <=> 'abcdefghijklmnopqrstuvwx'
-      # ,123 <=> 1⍴123
-      new APLArray ⍵.toArray()
+      assert 0

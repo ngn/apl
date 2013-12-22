@@ -117,6 +117,10 @@ _hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}
 ⍝ ≢2 3⍴⍳6 <=> 2
 ⍝ 3≢3 <=> 0
 
+,←{(×/⍴⍵)⍴⍵}⍠,
+⍝ ,2 3 4⍴'abcdefghijklmnopqrstuvwx' <=> 'abcdefghijklmnopqrstuvwx'
+⍝ ,123 <=> 1⍴123
+
 ⌹←{
   norm←{(⍵+.×+⍵)*0.5}
 
