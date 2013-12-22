@@ -8,12 +8,4 @@ addVocabulary
   # ⍎'undefinedVariable' !!!
   # ⍎'1 2 (3'            !!!
   # ⍎123                 !!!
-  '⍎': (⍵, ⍺) ->
-    if ⍺
-      nonceError()
-    else
-      s = ''
-      each ⍵, (c) ->
-        if typeof c isnt 'string' then domainError()
-        s += c
-      exec s
+  '⍎': (⍵, ⍺) -> if ⍺ then nonceError() else exec ⍵.toSimpleString()
