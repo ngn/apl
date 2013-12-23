@@ -104,7 +104,7 @@ class APLArray
       for x, i in @stride then assert isInt x, -@data.length, @data.length + 1
 
   empty: ->
-    for d in @shape when not d then return true
+    for d in @shape when !d then return true
     false
 
   map: (f) ->
@@ -127,7 +127,7 @@ class APLArray
 
   toInt: (start = -Infinity, end = Infinity) ->
     r = @unwrap()
-    if typeof r isnt 'number' or r isnt ~~r or not (start <= r < end) then domainError() else r
+    if typeof r isnt 'number' or r isnt ~~r or !(start <= r < end) then domainError() else r
 
   toBool: -> @toInt 0, 2
 
@@ -147,7 +147,7 @@ class APLArray
     for n in @shape when n isnt 1 then return false
     true
 
-  isSimple: -> ⍴⍴(@) is 0 and @data[@offset] not instanceof APLArray
+  isSimple: -> ⍴⍴(@) is 0 and @data[@offset] !instanceof APLArray
   unwrap: -> if prod(⍴ @) is 1 then @data[@offset] else lengthError()
   getPrototype: -> if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' ' # todo
   toString: -> format(@).join '\n'

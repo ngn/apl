@@ -17,10 +17,10 @@ addVocabulary
           f (g ⍵), ⍺
       else
         (⍵, ⍺) -> # f∘B
-          assert not ⍺?
+          assert !⍺?
           f g, ⍵
     else
       assert typeof g is 'function'
       (⍵, ⍺) -> # A∘g
-        assert not ⍺?
+        assert !⍺?
         g ⍵, f

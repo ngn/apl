@@ -82,7 +82,7 @@ addVocabulary
 
 depthOf = (x) ->
   if x instanceof APLArray
-    if (not ⍴⍴ x) and (x.data[0] not instanceof APLArray) then return 0
+    if (!⍴⍴ x) and (x.data[0] !instanceof APLArray) then return 0
     r = 0
     each x, (y) -> r = Math.max r, depthOf y
     r + 1

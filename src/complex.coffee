@@ -201,7 +201,7 @@ class Complex
       while y then [x, y] = [y, x % y] # Euclid's algorithm
       Math.abs x
     else
-      while not iszero y then [x, y] = [y, residue y, x] # Euclid's algorithm
+      while !iszero y then [x, y] = [y, residue y, x] # Euclid's algorithm
       firstquadrant x
 
   @lcm = (x, y) ->

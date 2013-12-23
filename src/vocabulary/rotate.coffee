@@ -13,12 +13,12 @@ addVocabulary
       # 0⌽1 2 3 4                 <=> 1 2 3 4
       # 0⌽1234                    <=> 1234
       # 5⌽⍬                       <=> ⍬
-      axis = if not axis then ⍴⍴(⍵) - 1 else axis.unwrap()
-      if not isInt axis then domainError()
-      if ⍴⍴(⍵) and not (0 <= axis < ⍴⍴ ⍵) then indexError()
+      axis = if !axis then ⍴⍴(⍵) - 1 else axis.unwrap()
+      if !isInt axis then domainError()
+      if ⍴⍴(⍵) and !(0 <= axis < ⍴⍴ ⍵) then indexError()
       step = ⍺.unwrap()
-      if not isInt step then domainError()
-      if not step then return ⍵
+      if !isInt step then domainError()
+      if !step then return ⍵
       n = ⍴(⍵)[axis]
       step = (n + (step % n)) % n # force % to handle negatives properly
       if ⍵.empty() or step is 0 then return ⍵
@@ -45,10 +45,10 @@ addVocabulary
       # ⌽    2 5⍴1 2 3 4 5 6 7 8 9 0 <=> 2 5⍴5 4 3 2 1 0 9 8 7 6
       # ⌽[0] 2 5⍴1 2 3 4 5 6 7 8 9 0 <=> 2 5⍴6 7 8 9 0 1 2 3 4 5
       if axis
-        if not axis.isSingleton() then lengthError()
+        if !axis.isSingleton() then lengthError()
         axis = axis.unwrap()
-        if not isInt axis then domainError()
-        if not (0 <= axis < ⍴⍴ ⍵) then indexError()
+        if !isInt axis then domainError()
+        if !(0 <= axis < ⍴⍴ ⍵) then indexError()
       else
         axis = [⍴⍴(⍵) - 1]
       if ⍴⍴(⍵) is 0 then return ⍵

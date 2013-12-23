@@ -43,17 +43,17 @@ addVocabulary
 scan = (f, g, axis) ->
   assert typeof g is 'undefined'
   (⍵, ⍺) ->
-    assert not ⍺?
+    assert !⍺?
     if !⍴⍴ ⍵ then return ⍵
     axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
     ⍵.map (x, indices) ->
       p = ⍵.offset
       for index, a in indices then p += index * ⍵.stride[a]
-      if not (x instanceof APLArray) then x = APLArray.scalar x
+      if x !instanceof APLArray then x = APLArray.scalar x
       for j in [0...indices[axis]] by 1
         p -= ⍵.stride[axis]
         y = ⍵.data[p]
-        if not (y instanceof APLArray) then y = APLArray.scalar y
+        if y !instanceof APLArray then y = APLArray.scalar y
         x = f x, y
       if !⍴⍴ x then x = x.unwrap()
       x
@@ -70,12 +70,12 @@ expand = (⍵, ⍺, axis) ->
   b = []
   i = 0
   for x in a
-    if not isInt x, 0, 2 then domainError()
+    if !isInt x, 0, 2 then domainError()
     b.push(if x > 0 then i++ else null)
   if i isnt ⍴(⍵)[axis] then lengthError()
 
   data = []
-  if shape[axis] isnt 0 and not ⍵.empty()
+  if shape[axis] isnt 0 and !⍵.empty()
     filler = ⍵.getPrototype()
     p = ⍵.offset
     indices = repeat [0], shape.length

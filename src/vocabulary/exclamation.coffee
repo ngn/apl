@@ -14,7 +14,7 @@ addVocabulary
     # !¯1   !!! DOMAIN ERROR
     # !¯200 !!! DOMAIN ERROR
     monad: real (x) ->
-      if not isInt x then Γ(x + 1)
+      if !isInt x then Γ(x + 1)
       else if x < 0 then domainError()
       else if x < smallFactorials.length then smallFactorials[x]
       else Math.round Γ(x + 1)

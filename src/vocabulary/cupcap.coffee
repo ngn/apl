@@ -22,7 +22,7 @@ addVocabulary
       data = []
       for a in [⍺, ⍵]
         if ⍴⍴(a) > 1 then rankError()
-        each a, (x) -> if not contains data, x then data.push x
+        each a, (x) -> if !contains data, x then data.push x
       new APLArray data
 
     else
@@ -34,7 +34,7 @@ addVocabulary
       # ∪17                 <=> ,17
       # ∪⍬                  <=> ⍬
       data = []
-      each ⍵, (x) -> if not contains data, x then data.push x
+      each ⍵, (x) -> if !contains data, x then data.push x
       new APLArray data
 
   '∩': (⍵, ⍺) ->

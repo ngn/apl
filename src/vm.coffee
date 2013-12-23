@@ -69,7 +69,7 @@ vm = ({code, env, stack, pc}) ->
         stack.push a...
       when JEQ
         n = code[pc++]
-        if not stack[stack.length - 1].toBool()
+        if !stack[stack.length - 1].toBool()
           pc += n
       when EMB
         frame = env[env.length - 1]
