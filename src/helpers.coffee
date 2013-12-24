@@ -17,7 +17,7 @@ all = (xs) -> (for x in xs when !x then return false); true
 
 # `repeat(a, n)` catenates `n` instances of a string or array `a`.
 repeat = (a, n) ->
-  assert typeof a is 'string' or a instanceof Array
+  assert a.length?
   assert isInt n, 0
   if !n then return a[...0]
   m = n * a.length
@@ -69,8 +69,8 @@ macro spread (a, i, m, n) -> # repeat the pattern a[i...i+m] so that it covers a
     n0: n
 
 arrayEquals = (a, b) ->
-  assert a instanceof Array
-  assert b instanceof Array
+  assert a.length?
+  assert b.length?
   if a.length isnt b.length then return false
   for x, i in a when x isnt b[i] then return false
   true

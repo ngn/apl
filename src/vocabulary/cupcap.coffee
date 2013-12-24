@@ -53,6 +53,6 @@ addVocabulary
       nonceError()
 
 contains = (a, x) ->
-  assert a instanceof Array
+  assert a.length?
   for y in a when match x, y then return true
   false

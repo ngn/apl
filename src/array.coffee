@@ -95,8 +95,8 @@ class APLArray
     @shape ?= [@data.length]
     @stride ?= strideForShape @shape
     assert @data.length?
-    assert @shape instanceof Array
-    assert @stride instanceof Array
+    assert @shape.length?
+    assert @stride.length?
     assert @data.length is 0 or isInt @offset, 0, @data.length
     assert @stride.length is ⍴⍴ @
     for x in @shape then assert isInt x, 0
@@ -154,7 +154,7 @@ class APLArray
   repr: -> "new APLArray(#{repr @data},#{repr @shape},#{repr @stride},#{repr @offset})"
 
 strideForShape = (shape) ->
-  assert shape instanceof Array
+  assert shape.length?
   if shape.length is 0 then return []
   r = Array shape.length
   r[r.length - 1] = 1
