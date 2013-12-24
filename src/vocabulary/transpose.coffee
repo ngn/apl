@@ -46,9 +46,4 @@ addVocabulary
       # ...                    3 15   7 19   11 23)
       # ⍉⍬                <=> ⍬
       # ⍉''               <=> ''
-      new APLArray(
-        ⍵.data
-        ⍴(⍵)[..].reverse()
-        ⍵.stride[..].reverse()
-        ⍵.offset
-      )
+      new APLArray ⍵.data, reversed(⍴ ⍵), reversed(⍵.stride), ⍵.offset

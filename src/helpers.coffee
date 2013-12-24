@@ -74,3 +74,15 @@ arrayEquals = (a, b) ->
   if a.length isnt b.length then return false
   for x, i in a when x isnt b[i] then return false
   true
+
+reversed = (a) ->
+  if a instanceof Array
+    a[..].reverse()
+  else
+    b = new a.constructor a.length
+    b.set a
+    i = -1
+    j = a.length
+    while ++i < --j
+      h = b[i]; b[i] = b[j]; b[j] = h
+    b
