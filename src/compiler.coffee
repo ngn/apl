@@ -24,7 +24,7 @@ compileAST = (ast, opts = {}) ->
   ast.vars = Object.create prelude.vars
   do ->
     opts.ctx ?= Object.create vocabulary
-    for k, v of opts.ctx when not ast.vars[k]
+    for k, v of opts.ctx when !ast.vars[k]
       ast.vars[k] = varInfo = category: NOUN, slot: ast.nSlots++, scopeDepth: ast.scopeDepth
       if typeof v is 'function' or v instanceof λ
         varInfo.category = if v.isAdverb then ADVERB else if v.isConjunction then CONJUNCTION else VERB

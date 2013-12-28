@@ -12,6 +12,6 @@ addVocabulary
     if f instanceof APLArray then [f, x] = [x, f]
     assert typeof f is 'function'
     assert x instanceof APLArray
-    if not x.isSingleton() then rankError()
+    if !x.isSingleton() then rankError()
     if ⍴⍴ x then x = APLArray.scalar x.unwrap()
     withIdentity x, (⍵, ⍺, axis) -> f ⍵, ⍺, axis

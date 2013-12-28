@@ -38,14 +38,13 @@ addVocabulary
 outerProduct = (f) ->
   assert typeof f is 'function'
   (⍵, ⍺) ->
-    if not ⍺
-      syntaxError 'Adverb ∘. (Outer product) can be applied to dyadic verbs only'
+    if !⍺ then syntaxError 'Adverb ∘. (Outer product) can be applied to dyadic verbs only'
     a = ⍺.toArray()
     b = ⍵.toArray()
     data = []
     for x in a then for y in b
-      if not (x instanceof APLArray) then x = APLArray.scalar x
-      if not (y instanceof APLArray) then y = APLArray.scalar y
+      if x !instanceof APLArray then x = APLArray.scalar x
+      if y !instanceof APLArray then y = APLArray.scalar y
       z = f y, x
       if !⍴⍴ z then z = z.unwrap()
       data.push z

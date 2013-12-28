@@ -42,13 +42,13 @@ pervasive = ({monad, dyad}) ->
       nonceError
   (⍵, ⍺) ->
     assert ⍵ instanceof APLArray
-    assert ⍺ instanceof APLArray or not ⍺?
+    assert ⍺ instanceof APLArray or !⍺?
     (if ⍺? then pervadeDyadic else pervadeMonadic) ⍵, ⍺
 
 macro real (f) ->
   (macro.codeToNode ->
     (x, y, axis) ->
-      if typeof x is 'number' and (not y? or typeof y is 'number')
+      if typeof x is 'number' and (!y? or typeof y is 'number')
         fBody
       else
         domainError()
@@ -59,7 +59,7 @@ macro real (f) ->
     fBody: f.body
 
 numeric = (f, g) -> (x, y, axis) ->
-  if typeof x is 'number' and (not y? or typeof y is 'number')
+  if typeof x is 'number' and (!y? or typeof y is 'number')
     f x, y, axis
   else
     x = complexify x
@@ -69,13 +69,13 @@ numeric = (f, g) -> (x, y, axis) ->
 
 match = (x, y) ->
   if x instanceof APLArray
-    if y not instanceof APLArray then false
+    if y !instanceof APLArray then false
     else
       if ⍴⍴(x) isnt ⍴⍴(y) then return false
       for axis in [0...⍴⍴ x] by 1
         if ⍴(x)[axis] isnt ⍴(y)[axis] then return false
       r = true
-      each2 x, y, (xi, yi) -> if not match xi, yi then r = false
+      each2 x, y, (xi, yi) -> if !match xi, yi then r = false
       r
   else
     if y instanceof APLArray then false
@@ -92,17 +92,17 @@ numApprox = (x, y) ->
 # used for comparing expected and actual results in doctests
 approx = (x, y) ->
   if x instanceof APLArray
-    if not (y instanceof APLArray) then false
+    if y !instanceof APLArray then false
     else
       if ⍴⍴(x) isnt ⍴⍴(y) then return false
       for axis in [0...⍴⍴ x] by 1
         if ⍴(x)[axis] isnt ⍴(y)[axis] then return false
       r = true
-      each2 x, y, (xi, yi) -> if not approx xi, yi then r = false
+      each2 x, y, (xi, yi) -> if !approx xi, yi then r = false
       r
   else
     if y instanceof APLArray then false
-    else if not (x? and y?) then false
+    else if !(x? and y?) then false
     else
       if typeof x is 'number' then x = new Complex x
       if typeof y is 'number' then y = new Complex y
@@ -112,18 +112,18 @@ approx = (x, y) ->
         x is y
 
 bool = (x) ->
-  if x not in [0, 1] then domainError() else x
+  if x !in [0, 1] then domainError() else x
 
 getAxisList = (axes, rank) ->
   assert isInt rank, 0
-  if not axes? then return []
+  if !axes? then return []
   assert axes instanceof APLArray
   if ⍴⍴(axes) isnt 1 or ⍴(axes)[0] isnt 1 then syntaxError() # [sic]
   a = axes.unwrap()
   if a instanceof APLArray
     a = a.toArray()
     for x, i in a
-      if not isInt x, 0, rank then domainError()
+      if !isInt x, 0, rank then domainError()
       if x in a[...i] then domainError 'Non-unique axes'
     a
   else if isInt a, 0, rank

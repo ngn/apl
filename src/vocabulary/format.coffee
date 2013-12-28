@@ -44,12 +44,12 @@ format = (a) ->
   else if typeof a is 'string' then [a]
   else if typeof a is 'number' then r = [formatNumber a]; r.align = 'right'; r
   else if typeof a is 'function' then ['λ']
-  else if not (a instanceof APLArray) then ['' + a]
+  else if !(a instanceof APLArray) then ['' + a]
   else if prod(⍴ a) is 0 then ['']
   else
     sa = ⍴ a
     a = a.toArray()
-    if not sa.length then return format a[0]
+    if !sa.length then return format a[0]
     nRows = prod sa[...sa.length - 1]
     nCols = sa[sa.length - 1]
 
@@ -72,7 +72,7 @@ format = (a) ->
           c.width = Math.max c.width, box[0].length
           c.type = Math.max c.type,
             if typeof x is 'string' and x.length is 1 then 0
-            else if not (x instanceof APLArray) then 1
+            else if !(x instanceof APLArray) then 1
             else 2
           box
 
@@ -83,7 +83,7 @@ format = (a) ->
         rows[i].bottomMargin++
 
     for c, j in cols
-      if j isnt nCols - 1 and not (c.type is cols[j + 1].type is 0)
+      if j isnt nCols - 1 and !(c.type is cols[j + 1].type is 0)
         c.rightMargin++
       if c.type is 2
         c.leftMargin++

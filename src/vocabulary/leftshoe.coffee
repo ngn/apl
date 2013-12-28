@@ -10,12 +10,12 @@ addVocabulary
   # ⍴⊂[1 0]2 3⍴⍳6 <=> ⍬
   # ⍴⊃⊂⊂1 2 3     <=> ⍬
   '⊂': (⍵, ⍺, axes) ->
-    assert not ⍺
+    assert !⍺
     axes = if axes? then getAxisList axes, ⍴⍴ ⍵ else [0...⍴⍴ ⍵]
     if ⍵.isSimple() then return ⍵
     unitShape  = for i in axes then ⍴(⍵)[i]
     unitStride = for i in axes then ⍵.stride[i]
-    resultAxes = for i in [0...⍴⍴ ⍵] when i not in axes then i
+    resultAxes = for i in [0...⍴⍴ ⍵] when i !in axes then i
     shape      = for i in resultAxes then ⍴(⍵)[i]
     stride     = for i in resultAxes then ⍵.stride[i]
     data = []

@@ -25,7 +25,7 @@ addVocabulary
       if axis
         axis = axis.unwrap()
         if typeof axis isnt 'number' then domainError()
-        if nAxes and not (0 <= axis < nAxes) then rankError()
+        if nAxes and !(0 <= axis < nAxes) then rankError()
       else
         axis = nAxes - 1
 
@@ -40,14 +40,14 @@ addVocabulary
         if isInt axis then s[axis] = 1
         ⍵ = new APLArray [⍵.unwrap()], s, repeat([0], ⍴⍴ ⍺)
       else if ⍴⍴(⍺) + 1 is ⍴⍴ ⍵
-        if not isInt axis then rankError()
+        if !isInt axis then rankError()
         shape = ⍴(⍺)[..]
         shape.splice axis, 0, 1
         stride = ⍺.stride[..]
         stride.splice axis, 0, 0
         ⍺ = new APLArray ⍺.data, shape, stride, ⍺.offset
       else if ⍴⍴(⍺) is ⍴⍴(⍵) + 1
-        if not isInt axis then rankError()
+        if !isInt axis then rankError()
         shape = ⍴(⍵)[..]
         shape.splice axis, 0, 1
         stride = ⍵.stride[..]
@@ -78,7 +78,7 @@ addVocabulary
         rStride = stride[..]
         rStride.splice Math.ceil(axis), 1
 
-      if not ⍺.empty()
+      if !⍺.empty()
         r = 0 # pointer in data (the result)
         p = ⍺.offset # pointer in ⍺.data
         pIndices = repeat [0], ⍴⍴ ⍺
@@ -94,7 +94,7 @@ addVocabulary
           r += rStride[a]
           pIndices[a]++
 
-      if not ⍵.empty()
+      if !⍵.empty()
         r = # pointer in data (the result)
           if isInt axis
             stride[axis] * ⍴(⍺)[axis]

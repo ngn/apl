@@ -39,7 +39,7 @@ reduce = @reduce = (f, g, axis0) ->
   (⍵, ⍺) ->
     if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
     axis = if axis0? then axis0.toInt() else ⍴⍴(⍵) - 1
-    if not (0 <= axis < ⍴⍴ ⍵) then rankError()
+    if !(0 <= axis < ⍴⍴ ⍵) then rankError()
 
     if ⍺
       isNWise = true
@@ -129,20 +129,20 @@ compressOrReplicate = (⍵, ⍺, axis) ->
   a = ⍺.toArray()
   n = ⍴(⍵)[axis]
   if a.length is 1 then a = repeat a, n
-  if n not in [1, a.length] then lengthError()
+  if n !in [1, a.length] then lengthError()
 
   shape = ⍴(⍵)[..]
   shape[axis] = 0
   b = []
   for x, i in a
-    if not isInt x then domainError()
+    if !isInt x then domainError()
     shape[axis] += Math.abs x
     for [0...Math.abs(x)] then b.push(if x > 0 then i else null)
   if n is 1
     b = (for x in b then (if x? then 0 else x))
 
   data = []
-  if shape[axis] isnt 0 and not ⍵.empty()
+  if shape[axis] isnt 0 and !⍵.empty()
     filler = ⍵.getPrototype()
     p = ⍵.offset
     indices = repeat [0], shape.length

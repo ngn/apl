@@ -73,7 +73,7 @@ if module?
       else file = arg
     if file?
       exec require('fs').readFileSync file, 'utf8'
-    else if not require('tty').isatty()
+    else if !require('tty').isatty()
       exec Buffer.concat(loop # read all of stdin
         b = new Buffer 1024
         break unless (k = require('fs').readSync 0, b, 0, b.length, null)
@@ -86,7 +86,7 @@ if module?
       ws = apl.ws()
       rl.on 'line', (line) ->
         try
-          if not line.match /^[\ \t\f\r\n]*$/
+          if !line.match /^[\ \t\f\r\n]*$/
             process.stdout.write format(ws line).join('\n') + '\n'
         catch e
           process.stdout.write e + '\n'

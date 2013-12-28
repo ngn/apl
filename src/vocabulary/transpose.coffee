@@ -23,7 +23,7 @@ addVocabulary
       shape = []
       stride = []
       for x, i in ⍺.toArray()
-        if not isInt x, 0 then domainError()
+        if !isInt x, 0 then domainError()
         if x >= n then rankError()
         if shape[x]?
           shape[x] = Math.min shape[x], ⍴(⍵)[i]
@@ -31,7 +31,7 @@ addVocabulary
         else
           shape[x] = ⍴(⍵)[i]
           stride[x] = ⍵.stride[i]
-      for u in shape when not u? then rankError()
+      for u in shape when !u? then rankError()
       new APLArray ⍵.data, shape, stride, ⍵.offset
     else
       # Transpose (`⍉`)
@@ -46,9 +46,4 @@ addVocabulary
       # ...                    3 15   7 19   11 23)
       # ⍉⍬                <=> ⍬
       # ⍉''               <=> ''
-      new APLArray(
-        ⍵.data
-        ⍴(⍵)[..].reverse()
-        ⍵.stride[..].reverse()
-        ⍵.offset
-      )
+      new APLArray ⍵.data, reversed(⍴ ⍵), reversed(⍵.stride), ⍵.offset

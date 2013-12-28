@@ -47,7 +47,7 @@ addVocabulary
       # ⍳¯1 !!! DOMAIN ERROR
       if ⍴⍴(⍵) > 1 then rankError()
       a = ⍵.toArray()
-      for d in a when not isInt d, 0 then domainError()
+      for d in a when !isInt d, 0 then domainError()
       n = prod a
       if !n
         data = []

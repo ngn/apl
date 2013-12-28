@@ -5,7 +5,7 @@ addVocabulary
     #
     # ~0 1 <=> 1 0
     # ~2   !!! DOMAIN ERROR
-    monad: (x) -> +not bool x
+    monad: (x) -> +!bool x
 
   '∨': withIdentity 0, pervasive
 
@@ -33,7 +33,7 @@ addVocabulary
     # 2 3 4∨0j1 1j2 2j3 <=> 1 1 1
     # 2j2 2j4∨5j5 4j4   <=> 1j1 2
     dyad: (y, x) ->
-      if not (Complex.isint x) or not (Complex.isint y)
+      if (!Complex.isint x) or (!Complex.isint y)
         domainError '∨ is implemented only for Gaussian integers' # todo
       Complex.gcd x, y
 
@@ -66,7 +66,7 @@ addVocabulary
     # 2 3 4∧0j1 1j2 2j3              <=> 0j2 3j6 8j12
     # 2j2 2j4∧5j5 4j4                <=> 10j10 ¯4j12
     dyad: (y, x) ->
-      if not (Complex.isint x) or not (Complex.isint y)
+      if (!Complex.isint x) or (!Complex.isint y)
         domainError '∧ is implemented only for Gaussian integers' # todo
       Complex.lcm x, y
 

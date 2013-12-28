@@ -13,7 +13,7 @@ addVocabulary
 # ?1j2 !!! DOMAIN ERROR
 # ?∞   !!! DOMAIN ERROR
 roll = pervasive monad: (⍵) ->
-  if not isInt ⍵, 1 then domainError()
+  if !isInt ⍵, 1 then domainError()
   Math.floor Math.random() * ⍵
 
 # Deal (`?`)
@@ -29,7 +29,7 @@ roll = pervasive monad: (⍵) ->
 deal = (⍵, ⍺) ->
   ⍺ = ⍺.unwrap()
   ⍵ = ⍵.unwrap()
-  if not (isInt(⍵, 0) and isInt ⍺, 0, ⍵ + 1) then domainError()
+  if !(isInt(⍵, 0) and isInt ⍺, 0, ⍵ + 1) then domainError()
   r = [0...⍵]
   for i in [0...⍺] by 1
     j = i + Math.floor Math.random() * (⍵ - i)

@@ -18,30 +18,30 @@ addVocabulary
     assert typeof f is 'function'
     assert typeof g is 'undefined'
     (⍵, ⍺) ->
-      if not ⍺
+      if !⍺
         ⍵.map (x) ->
-          if not (x instanceof APLArray) then x = new APLArray [x], []
+          if x !instanceof APLArray then x = new APLArray [x], []
           r = f x
           assert r instanceof APLArray
           if ⍴⍴ r then r else r.unwrap()
       else if arrayEquals ⍴(⍺), ⍴(⍵)
         ⍵.map2 ⍺, (x, y) ->
-          if not (x instanceof APLArray) then x = new APLArray [x], []
-          if not (y instanceof APLArray) then y = new APLArray [y], []
+          if x !instanceof APLArray then x = new APLArray [x], []
+          if y !instanceof APLArray then y = new APLArray [y], []
           r = f x, y
           assert r instanceof APLArray
           if ⍴⍴ r then r else r.unwrap()
       else if ⍺.isSingleton()
         y = if ⍺.data[0] instanceof APLArray then ⍺.unwrap() else ⍺
         ⍵.map (x) ->
-          if not (x instanceof APLArray) then x = new APLArray [x], []
+          if x !instanceof APLArray then x = new APLArray [x], []
           r = f x, y
           assert r instanceof APLArray
           if ⍴⍴ r then r else r.unwrap()
       else if ⍵.isSingleton()
         x = if ⍵.data[0] instanceof APLArray then ⍵.unwrap() else ⍵
         ⍺.map (y) ->
-          if not (y instanceof APLArray) then y = new APLArray [y], []
+          if y !instanceof APLArray then y = new APLArray [y], []
           r = f x, y
           assert r instanceof APLArray
           if ⍴⍴ r then r else r.unwrap()
