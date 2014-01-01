@@ -22,13 +22,12 @@ compileAST = (ast, opts = {}) ->
   ast.scopeDepth = 0
   ast.nSlots = prelude.nSlots
   ast.vars = Object.create prelude.vars
-  do ->
-    opts.ctx ?= Object.create vocabulary
-    for k, v of opts.ctx when !ast.vars[k]
-      ast.vars[k] = varInfo = category: NOUN, slot: ast.nSlots++, scopeDepth: ast.scopeDepth
-      if typeof v is 'function' or v instanceof λ
-        varInfo.category = if v.isAdverb then ADVERB else if v.isConjunction then CONJUNCTION else VERB
-        if /^[gs]et_.*/.test k then ast.vars[k[4..]] = category: NOUN
+  opts.ctx ?= Object.create vocabulary
+  for key, value of opts.ctx when !ast.vars[key]
+    ast.vars[key] = varInfo = category: NOUN, slot: ast.nSlots++, scopeDepth: ast.scopeDepth
+    if typeof value is 'function' or value instanceof λ
+      varInfo.category = if value.isAdverb then ADVERB else if value.isConjunction then CONJUNCTION else VERB
+      if /^[gs]et_.*/.test key then ast.vars[key[4..]] = category: NOUN
 
   err = (node, message) ->
     syntaxError message, file: opts.file, offset: node.offset, aplCode: opts.aplCode
