@@ -19,7 +19,7 @@ Runs on [NodeJS](http://nodejs.org/) or in a browser<br>
 **[In-browser demo](http://ngn.github.com/apl/web/index.html)**
 
 Supports: most primitives, dfns (`{⍺ ⍵}`), nested arrays, complex numbers
-(`1j2`), infinities (`¯`), forks and hooks, strand assignment (`(a b)←c`), index
+(`1j2`), infinities (`¯` or `∞`), forks and hooks, strand assignment (`(a b)←c`), index
 assignment (`a[b]←c`), user-defined operators (`{⍺⍺ ⍵⍵}`)
 
 Doesn't support: traditional functions (`∇R←X f Y`), non-zero index origin

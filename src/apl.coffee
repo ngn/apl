@@ -1,5 +1,10 @@
 macro -> macro.fileToNode 'node_modules/macronym/assert.coffee'
 
+macro ->
+  @tmpCounter = 0
+  @tmp = -> "t#{@tmpCounter++}"
+  return
+
 # Make it possible to use ⍺ and ⍵ as identifiers in CoffeeScript code
 macro withAlphaAndOmega (f) ->
   f.body.subst

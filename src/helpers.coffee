@@ -1,12 +1,11 @@
 macro isInt (x, start, end) ->
-  macro.tmpCounter ?= 0
   new macro.Parens(
     (
       if end then        macro.codeToNode -> (tmp = x) is ~~tmp and start <= tmp < end
       else if start then macro.codeToNode -> (tmp = x) is ~~tmp and start <= tmp
       else               macro.codeToNode -> (tmp = x) is ~~tmp
     ).subst
-      tmp:   macro.csToNode "tmp#{macro.tmpCounter++}"
+      tmp:   macro.csToNode @tmp()
       x:     new macro.Parens x
       start: new macro.Parens start
       end:   new macro.Parens end
@@ -43,7 +42,6 @@ Array::set ?= (a, offset) ->
   return
 
 macro spread (a, i, m, n) -> # repeat the pattern a[i...i+m] so that it covers a[i...i+n]
-  macro.tmpCounter ?= 0
   (macro.codeToNode ->
     a = a0
     i = i0
@@ -59,10 +57,10 @@ macro spread (a, i, m, n) -> # repeat the pattern a[i...i+m] so that it covers a
         m *= 2
       a.set a.subarray(0, n - m), m
   ).subst
-    a: macro.csToNode "t#{macro.tmpCounter++}"
-    i: macro.csToNode "t#{macro.tmpCounter++}"
-    m: macro.csToNode "t#{macro.tmpCounter++}"
-    n: macro.csToNode "t#{macro.tmpCounter++}"
+    a: macro.csToNode @tmp()
+    i: macro.csToNode @tmp()
+    m: macro.csToNode @tmp()
+    n: macro.csToNode @tmp()
     a0: a
     i0: i
     m0: m
