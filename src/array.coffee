@@ -5,7 +5,6 @@ macro ⍴⍴ (a) -> macro.codeToNode(-> (a).shape.length).subst {a}
 # APLArray in ravel order.  No function calls are made during iteration as
 # those are relatively expensive in JavaScript.
 macro each (a0, f) ->
-  macro.tmpCounter ?= 0
   (macro.codeToNode ->
     a = a0
     if !a.empty()
@@ -30,19 +29,18 @@ macro each (a0, f) ->
   ).subst
     a0:       a0
     body:     f.body
-    a:        macro.csToNode "t#{macro.tmpCounter++}"
-    axis:     macro.csToNode "t#{macro.tmpCounter++}"
-    data:     macro.csToNode "t#{macro.tmpCounter++}"
-    shape:    macro.csToNode "t#{macro.tmpCounter++}"
-    stride:   macro.csToNode "t#{macro.tmpCounter++}"
-    lastAxis: macro.csToNode "t#{macro.tmpCounter++}"
+    a:        macro.csToNode @tmp()
+    axis:     macro.csToNode @tmp()
+    data:     macro.csToNode @tmp()
+    shape:    macro.csToNode @tmp()
+    stride:   macro.csToNode @tmp()
+    lastAxis: macro.csToNode @tmp()
     x:        macro.csToNode f.params[0].name.value
-    indices:  macro.csToNode f.params[1]?.name?.value ? "t#{macro.tmpCounter++}"
-    p:        macro.csToNode f.params[2]?.name?.value ? "t#{macro.tmpCounter++}"
+    indices:  macro.csToNode f.params[1]?.name?.value ? @tmp()
+    p:        macro.csToNode f.params[2]?.name?.value ? @tmp()
 
 # each2() is like each() but it iterates over two APLArray-s in parallel
 macro each2 (a0, b0, f) ->
-  macro.tmpCounter ?= 0
   (macro.codeToNode ->
     a = a0; data  = a.data; shape  = a.shape; stride  = a.stride
     b = b0; data1 = b.data; shape1 = b.shape; stride1 = b.stride
@@ -72,21 +70,21 @@ macro each2 (a0, b0, f) ->
     a0:       a0
     b0:       b0
     body:     f.body
-    a:        macro.csToNode "t#{macro.tmpCounter++}"
-    b:        macro.csToNode "t#{macro.tmpCounter++}"
-    p:        macro.csToNode "t#{macro.tmpCounter++}"
-    q:        macro.csToNode "t#{macro.tmpCounter++}"
-    axis:     macro.csToNode "t#{macro.tmpCounter++}"
-    data:     macro.csToNode "t#{macro.tmpCounter++}"
-    data1:    macro.csToNode "t#{macro.tmpCounter++}"
-    shape:    macro.csToNode "t#{macro.tmpCounter++}"
-    shape1:   macro.csToNode "t#{macro.tmpCounter++}"
-    stride:   macro.csToNode "t#{macro.tmpCounter++}"
-    stride1:  macro.csToNode "t#{macro.tmpCounter++}"
-    lastAxis: macro.csToNode "t#{macro.tmpCounter++}"
+    a:        macro.csToNode @tmp()
+    b:        macro.csToNode @tmp()
+    p:        macro.csToNode @tmp()
+    q:        macro.csToNode @tmp()
+    axis:     macro.csToNode @tmp()
+    data:     macro.csToNode @tmp()
+    data1:    macro.csToNode @tmp()
+    shape:    macro.csToNode @tmp()
+    shape1:   macro.csToNode @tmp()
+    stride:   macro.csToNode @tmp()
+    stride1:  macro.csToNode @tmp()
+    lastAxis: macro.csToNode @tmp()
     x:        macro.csToNode f.params[0].name.value
     y:        macro.csToNode f.params[1].name.value
-    indices:  macro.csToNode f.params[2]?.name?.value ? "t#{macro.tmpCounter++}"
+    indices:  macro.csToNode f.params[2]?.name?.value ? @tmp()
 
 
 class APLArray
