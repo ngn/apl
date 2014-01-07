@@ -64,14 +64,15 @@ _hook←{⍵⍶⍹⍵;⍺⍶⍹⍵}
 ⍝ (⊂2 2)⊃1 2        !!! RANK ERROR
 ⍝ (⊂0 2)⊃2 2⍴'ABCD' !!! INDEX ERROR
 
-⊂←⊂⍠{
-  ⍝ Split ⍺ into enclosed vectors at each ⍵
-  ⍵←⍺=⍵
-  ⍝ Like dyadic ⊂, but empties remain (as in Javascript.split)
-  ⍵←(⍴⍵),⍨⍵/⍳⍴⍵ ⋄ drop←0
-  ⍵{∆←drop↓⍺↑⍵ ⋄ drop←⍺+1 ⋄ ∆}¨⊂⍺
+⊂←⊂⍠{ ⍝ ⍺⊂⍵ definition
+  1<⍴⍴⍺:↗'RANK ERROR' ⋄ 1≠⍴⍴⍵:↗'NONCE ERROR' ⋄ ⍺←,⍺=0
+  keep←~1 1⍷⍺ ⋄ sel←keep/⍺ ⋄ dat←keep/⍵
+  {1=1↑sel:{sel←1↓sel ⋄ dat←1↓dat}⍬}⍬
+  {1=¯1↑sel:{sel←¯1↓sel ⋄ dat←¯1↓dat}⍬}⍬
+  sel←(⍴sel),⍨sel/⍳⍴sel ⋄ drop←0
+  sel{∆←drop↓⍺↑⍵ ⋄ drop←⍺+1 ⋄ ∆}¨⊂dat
 }
-⍝ ' this  is a test'⊂' ' <=> '' 'this' '' 'is' (,'a') 'test'
+⍝ a←' this is a test ' ⋄ (a≠' ')⊂a <=> 'this' 'is' (,'a') 'test'
 
 ↓←{
   0=⍴⍴⍵:⍵ ⋄ ⊂[¯1+⍴⍴⍵]⍵
