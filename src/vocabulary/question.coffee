@@ -5,9 +5,9 @@ addVocabulary
 
 # Roll (`?`)
 #
-# n←6 ⋄ r←?n ⋄ (0≤r)∧(r<n) <=> 1
+# n←6 ⋄ r←?n ⋄ (0≤r)∧(r<n) ←→ 1
 # ?0   !!! DOMAIN ERROR
-# ?1   <=> 0
+# ?1   ←→ 0
 # ?1.5 !!! DOMAIN ERROR
 # ?'a' !!! DOMAIN ERROR
 # ?1j2 !!! DOMAIN ERROR
@@ -18,11 +18,11 @@ roll = pervasive monad: (⍵) ->
 
 # Deal (`?`)
 #
-# n←100 ⋄ (+/n?n)=(+/⍳n) <=> 1 # a permutation (an "n?n" dealing) contains all 0...n
-# n←100 ⋄ A←(n÷2)?n ⋄ ∧/(0≤A),A<n <=> 1 # any number x in a dealing is 0 <= x < n
-# 0?100 <=> ⍬
-# 0?0   <=> ⍬
-# 1?1   <=> ,0
+# n←100 ⋄ (+/n?n)=(+/⍳n) ←→ 1 # a permutation (an "n?n" dealing) contains all 0...n
+# n←100 ⋄ A←(n÷2)?n ⋄ ∧/(0≤A),A<n ←→ 1 # any number x in a dealing is 0 <= x < n
+# 0?100 ←→ ⍬
+# 0?0   ←→ ⍬
+# 1?1   ←→ ,0
 # 1?1 1 !!! LENGTH ERROR
 # 5?3   !!! DOMAIN ERROR
 # ¯1?3  !!! DOMAIN ERROR

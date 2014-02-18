@@ -170,7 +170,7 @@ compileAST = (ast, opts = {}) ->
     switch node[0]
       when 'B'
         if node.length is 1
-          # {}0   <=>   ⍬
+          # {}0 ←→ ⍬
           [LDC, APLArray.zilde, RET]
         else
           a = []
@@ -182,15 +182,15 @@ compileAST = (ast, opts = {}) ->
         y = render node[2]
         x.concat JEQ, y.length + 2, POP, y, RET
       when '←'
-        # A←5     <=> 5
-        # A×A←2 5 <=> 4 25
+        # A←5     ←→ 5
+        # A×A←2 5 ←→ 4 25
         render(node[2]).concat renderLHS node[1]
       when 'X'
         # r←3 ⋄ get_c←{2×○r} ⋄ get_S←{○r*2}
         # ... before←.01×⌊100×r c S
         # ... r←r+1
         # ... after←.01×⌊100×r c S
-        # ... before after <=> (3 18.84 28.27)(4 25.13 50.26)
+        # ... before after ←→ (3 18.84 28.27)(4 25.13 50.26)
         # {⍺}0 !!! VALUE ERROR
         # {x}0 ⋄ x←0 !!! VALUE ERROR
         name = node[1]
@@ -201,22 +201,22 @@ compileAST = (ast, opts = {}) ->
           v = vars[name]
           [GET, v.scopeDepth, v.slot]
       when '{'
-        # {1 + 1} 1                    <=> 2
-        # {⍵=0:1 ⋄ 2×∇⍵-1} 5           <=> 32 # two to the power of
-        # {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8 <=> 34 # Fibonacci sequence
-        # ⊂{⍺⍺ ⍺⍺ ⍵}'hello'            <=> ⊂⊂'hello'
-        # ⊂{⍺⍺ ⍵⍵ ⍵}⌽'hello'           <=> ⊂'olleh'
-        # ⊂{⍶⍶⍵}'hello'                <=> ⊂⊂'hello'
-        # ⊂{⍶⍹⍵}⌽'hello'               <=> ⊂'olleh'
-        # +{⍵⍶⍵}10 20 30               <=> 20 40 60
-        # f←{⍵⍶⍵} ⋄ +f 10 20 30        <=> 20 40 60
-        # twice←{⍶⍶⍵} ⋄ *twice 2       <=> 1618.1779919126539
-        # f←{-⍵;⍺×⍵} ⋄ (f 5)(3 f 5)    <=> ¯5 15
-        # f←{;} ⋄ (f 5)(3 f 5)         <=> ⍬⍬
-        # ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ *²2          <=> 1618.1779919126539
-        # ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ 3*²2         <=> 19683
-        # H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ +H÷ 2        <=> 2.5
-        # H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ 7 +H÷ 2      <=> 7.5
+        # {1 + 1} 1                    ←→ 2
+        # {⍵=0:1 ⋄ 2×∇⍵-1} 5           ←→ 32 # two to the power of
+        # {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8 ←→ 34 # Fibonacci sequence
+        # ⊂{⍺⍺ ⍺⍺ ⍵}'hello'            ←→ ⊂⊂'hello'
+        # ⊂{⍺⍺ ⍵⍵ ⍵}⌽'hello'           ←→ ⊂'olleh'
+        # ⊂{⍶⍶⍵}'hello'                ←→ ⊂⊂'hello'
+        # ⊂{⍶⍹⍵}⌽'hello'               ←→ ⊂'olleh'
+        # +{⍵⍶⍵}10 20 30               ←→ 20 40 60
+        # f←{⍵⍶⍵} ⋄ +f 10 20 30        ←→ 20 40 60
+        # twice←{⍶⍶⍵} ⋄ *twice 2       ←→ 1618.1779919126539
+        # f←{-⍵;⍺×⍵} ⋄ (f 5)(3 f 5)    ←→ ¯5 15
+        # f←{;} ⋄ (f 5)(3 f 5)         ←→ ⍬⍬
+        # ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ *²2          ←→ 1618.1779919126539
+        # ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ 3*²2         ←→ 19683
+        # H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ +H÷ 2        ←→ 2.5
+        # H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ 7 +H÷ 2      ←→ 7.5
         # {;;}                         !!!
         x = render node[1]
         lx = [LAM, x.length].concat x
@@ -230,26 +230,26 @@ compileAST = (ast, opts = {}) ->
           else err node
         if node.category isnt VERB then [LAM, f.length + 1].concat f, RET else f
       when 'S'
-        #   ⍴''     <=> ,0
-        #   ⍴'x'    <=> ⍬
-        #   ⍴'xx'   <=> ,2
-        #   ⍴'a''b' <=> ,3
-        #   ⍴"a""b" <=> ,3
-        #   ⍴'a""b' <=> ,4
-        #   ⍴'''a'  <=> ,2
-        #   ⍴'a'''  <=> ,2
-        #   ''''    <=> "'"
-        #   ⍴"\f\t\n\r\u1234\xff" <=> ,18
+        #   ⍴''     ←→ ,0
+        #   ⍴'x'    ←→ ⍬
+        #   ⍴'xx'   ←→ ,2
+        #   ⍴'a''b' ←→ ,3
+        #   ⍴"a""b" ←→ ,3
+        #   ⍴'a""b' ←→ ,4
+        #   ⍴'''a'  ←→ ,2
+        #   ⍴'a'''  ←→ ,2
+        #   ''''    ←→ "'"
+        #   ⍴"\f\t\n\r\u1234\xff" ←→ ,18
         #   "a      !!!
         d = node[1][0] # the delimiter: '"' or "'"
         s = node[1][1...-1].replace ///#{d + d}///g, d
         [LDC, new APLArray s, if s.length is 1 then []]
       when 'N'
-        # ∞ <=> ¯
-        # ¯∞ <=> ¯¯
-        # ¯∞j¯∞ <=> ¯¯j¯¯
-        # ∞∞ <=> ¯ ¯
-        # ∞¯ <=> ¯ ¯
+        # ∞ ←→ ¯
+        # ¯∞ ←→ ¯¯
+        # ¯∞j¯∞ ←→ ¯¯j¯¯
+        # ∞∞ ←→ ¯ ¯
+        # ∞¯ ←→ ¯ ¯
         a = for x in node[1].replace(/[¯∞]/g, '-').split /j/i
               if x is '-' then Infinity
               else if x is '--' then -Infinity
@@ -258,11 +258,11 @@ compileAST = (ast, opts = {}) ->
         v = if a[1] then new Complex(a[0], a[1]) else a[0]
         [LDC, new APLArray [v], []]
       when 'J'
-        # 123 + «456 + 789» <=> 1368
+        # 123 + «456 + 789» ←→ 1368
         f = do Function "return function(_w,_a){return(#{node[1].replace /^«|»$/g, ''})};"
         [EMB, (_w, _a) -> aplify f _w, _a]
       when '['
-        # ⍴ x[⍋x←6?40] <=> ,6
+        # ⍴ x[⍋x←6?40] ←→ ,6
         v = node.scopeNode.vars._index
         axes = []
         a = []
@@ -309,13 +309,13 @@ compileAST = (ast, opts = {}) ->
           v = vars[name]
           [SET, v.scopeDepth, v.slot]
       when '.' # strand assignment
-        # (a b) ← 1 2 ⋄ a           <=> 1
-        # (a b) ← 1 2 ⋄ b           <=> 2
+        # (a b) ← 1 2 ⋄ a           ←→ 1
+        # (a b) ← 1 2 ⋄ b           ←→ 2
         # (a b) ← +                 !!!
-        # (a b c) ← 3 4 5 ⋄ a b c   <=> 3 4 5
-        # (a b c) ← 6     ⋄ a b c   <=> 6 6 6
+        # (a b c) ← 3 4 5 ⋄ a b c   ←→ 3 4 5
+        # (a b c) ← 6     ⋄ a b c   ←→ 6 6 6
         # (a b c) ← 7 8   ⋄ a b c   !!!
-        # ((a b)c)←3(4 5) ⋄ a b c   <=> 3 3 (4 5)
+        # ((a b)c)←3(4 5) ⋄ a b c   ←→ 3 3 (4 5)
         n = node.length - 1
         a = [SPL, n]
         for i in [1...node.length] by 1 then a.push renderLHS(node[i])...; a.push POP

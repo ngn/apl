@@ -1,5 +1,5 @@
 @runDocTest = ([code, mode, expectation], exec, approx) ->
-  if mode is '<=>'
+  if mode is '←→'
     try
       y = exec expectation
     catch e
