@@ -17,6 +17,7 @@ An [APL](https://en.wikipedia.org/wiki/APL_%28programming_language%29) compiler 
 Runs on [NodeJS](http://nodejs.org/) or in a browser<br>
 
 **[In-browser demo](http://ngn.github.com/apl/web/index.html)**
+(See also: [Paul L Jackson's web site](https://home.comcast.net/~paul.l.jackson/APL.js/) and [repl.it](http://repl.it/languages/APL))
 
 Supports: most primitives, dfns (`{⍺ ⍵}`), nested arrays, complex numbers
 (`1j2`), infinities (`¯` or `∞`), forks and hooks, strand assignment (`(a b)←c`), index
@@ -25,8 +26,6 @@ assignment (`a[b]←c`), user-defined operators (`{⍺⍺ ⍵⍵}`)
 Doesn't support: traditional functions (`∇R←X f Y`), non-zero index origin
 (`⎕IO`), comparison tolerance (`⎕CT`), prototypes, NaN-s, modified assignment
 (`x+←1`), control structures (`:If`), object-oriented features, namespaces
-
-[More info](https://github.com/ngn/vector-article/#readme)
 
 # Usage
 
