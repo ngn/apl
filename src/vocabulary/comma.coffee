@@ -25,7 +25,7 @@ addVocabulary
       if axis
         axis = axis.unwrap()
         if typeof axis isnt 'number' then domainError()
-        if nAxes and !(0 <= axis < nAxes) then rankError()
+        if nAxes and !(-1 < axis < nAxes) then rankError()
       else
         axis = nAxes - 1
 
