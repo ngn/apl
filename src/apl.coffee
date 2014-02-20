@@ -19,8 +19,13 @@ include 'complex'
 include 'vm'
 include 'lexer'
 include 'parser'
+
+vocabulary = {}
+addVocabulary = (h) ->
+  for k, v of h then vocabulary[k] = v
+  return
+
 withAlphaAndOmega ->
-  include 'vocabulary'
   include 'vocabulary/vhelpers'
   include 'vocabulary/arithmetic'
   include 'vocabulary/backslash'
