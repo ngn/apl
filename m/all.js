@@ -1775,7 +1775,7 @@
           if (typeof axis !== 'number') {
             domainError();
           }
-          if (nAxes && !((0 <= axis && axis < nAxes))) {
+          if (nAxes && !((-1 < axis && axis < nAxes))) {
             rankError();
           }
         } else {
@@ -4732,7 +4732,7 @@
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2014-02-18\n");
+          process.stdout.write("ngn apl 2014-02-20\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ws = apl.ws();
