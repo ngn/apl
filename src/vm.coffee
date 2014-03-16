@@ -84,7 +84,7 @@ vm = ({code, env, stack, pc}) ->
             env: for x in env then x[..]
             stack: stack[...frame[3]]
             pc: frame[1].addr + frame[1].size - 1
-          assert code[contPc] is RET
+          assert code[cont.pc] is RET
           stack.push (r) -> {code, env, stack, pc} = cont; stack.push r
       else aplError 'Unrecognized instruction: ' + code[pc - 1] + ', pc:' + pc
   return
