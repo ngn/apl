@@ -131,13 +131,13 @@ jQuery ($) ->
     alt: [
       '{empty} ¨ ¯ < ≤ = ≥ > ≠ ∨ ∧ ÷ ×'
       '{empty} ⍵ ∊ ⍴ ~ ↑ ↓ ⍳ ○ ⍟ ← → ⍀'
-      '⍺ ⌈ ⌊ {empty} ∇ ∆ ∘ {empty} ⎕ ⋄ {empty} {enter}'
+      '⍺ ⌈ ⌊ ⍫ ∇ ∆ ∘ {empty} ⎕ ⋄ {empty} {enter}'
       '{shift} ⊂ ⊃ ∩ ∪ ⊥ ⊤ ∣ ⍪ {empty} ⌿ {bksp}'
       '{alt} {space} {exec!!}'
     ]
     'alt-shift': [
       '⍨ ∞ ⍁ ⍂ ⍠ ≈ ⌸ ⍯ ⍣ ⍱ ⍲ ≢ ≡'
-      '⌹ ⍹ ⍷ ⍤ {empty} {empty} ⊖ ⍸ ⍬ ⌽ ⊣ ⊢ ⍉'
+      '⌹ ⍹ ⍷ ⍤ {empty} ⌶ ⊖ ⍸ ⍬ ⌽ ⊣ ⊢ ⍉'
       '⍶ {empty} {empty} {empty} ⍒ ⍋ ⍝ {empty} ⍞ {empty} {empty} {enter}'
       '{shift} ⊆ ⊇ ⋔ ⍦ ⍎ ⍕ ⌷ « » ↗ {bksp}'
       '{alt} {space} {exec!!}'
