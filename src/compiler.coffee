@@ -71,11 +71,13 @@ compileAST = (ast, opts = {}) ->
             queue.push extend (body = node[i]),
               scopeNode: scopeNode
               scopeDepth: d = scopeNode.scopeDepth + 1 + (node.category isnt VERB)
-              nSlots: 3
+              nSlots: 4
               vars: v = extend Object.create(vars),
                 '⍵': slot: 0, scopeDepth: d, category: NOUN
                 '∇': slot: 1, scopeDepth: d, category: VERB
                 '⍺': slot: 2, scopeDepth: d, category: NOUN
+                # slot 3 is reserved for a "base pointer"
+                '⍫':          scopeDepth: d, category: VERB
             if node.category is CONJUNCTION
               v['⍵⍵'] = v['⍹'] = slot: 0, scopeDepth: d - 1, category: VERB
               v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: CONJUNCTION
@@ -147,7 +149,7 @@ compileAST = (ast, opts = {}) ->
       switch node[0]
         when 'X'
           name = node[1]
-          if name is '∇' then err node, 'Assignment to ∇ is not allowed.'
+          if name in '∇⍫' then err node, "Assignment to #{name} is not allowed."
           if vars[name]
             if vars[name].category isnt rhsCategory
               err node, "Inconsistent usage of symbol '#{name}', it is assigned both nouns and verbs."
@@ -193,9 +195,13 @@ compileAST = (ast, opts = {}) ->
         # ... before after ←→ (3 18.84 28.27)(4 25.13 50.26)
         # {⍺}0 !!! VALUE ERROR
         # {x}0 ⋄ x←0 !!! VALUE ERROR
+        # {⍫1⋄2}⍬ ←→ 1
+        # c←{} ⋄ x←{c←⍫⋄1}⍬ ⋄ {x=1:c 2⋄x}⍬ ←→ 2
         name = node[1]
         {vars} = node.scopeNode
-        if (v = vars["get_#{name}"])?.category is VERB
+        if name is '⍫'
+          [CON]
+        else if (v = vars["get_#{name}"])?.category is VERB
           [LDC, APLArray.zero, GET, v.scopeDepth, v.slot, MON]
         else
           v = vars[name]

@@ -1,8 +1,8 @@
-[LDC, VEC, GET, SET, MON, DYA, LAM, RET, POP, SPL, JEQ, EMB] = [1..12]
+[LDC, VEC, GET, SET, MON, DYA, LAM, RET, POP, SPL, JEQ, EMB, CON] = [1..13]
 
 class λ
-  constructor: (@code, @addr, @env) ->
-  toFunction: -> (x, y) => vm code: @code, env: @env.concat([[x, @, y]]), pc: @addr
+  constructor: (@code, @addr, @size, @env) ->
+  toFunction: -> (x, y) => vm code: @code, env: @env.concat([[x, @, y, null]]), pc: @addr
   toString: -> 'λ'
 
 vm = ({code, env, stack, pc}) ->
@@ -31,10 +31,11 @@ vm = ({code, env, stack, pc}) ->
           else
             stack.push f w
         else
+          bp = stack.length
           stack.push code, pc, env
           {code} = f
           pc = f.addr
-          env = f.env.concat [[w, f, null]]
+          env = f.env.concat [[w, f, null, bp]]
       when DYA
         [w, f, a] = stack.splice -3
         if typeof f is 'function'
@@ -46,13 +47,14 @@ vm = ({code, env, stack, pc}) ->
           else
             stack.push f w, a
         else
+          bp = stack.length
           stack.push code, pc, env
           {code} = f
           pc = f.addr
-          env = f.env.concat [[w, f, a]]
+          env = f.env.concat [[w, f, a, bp]]
       when LAM
         size = code[pc++]
-        stack.push new λ code, pc, env
+        stack.push new λ code, pc, size, env
         pc += size
       when RET
         if stack.length is 1 then return stack[0]
@@ -74,5 +76,15 @@ vm = ({code, env, stack, pc}) ->
       when EMB
         frame = env[env.length - 1]
         stack.push code[pc++](frame[0], frame[2])
+      when CON
+        frame = env[env.length - 1]
+        do ->
+          cont =
+            code: code
+            env: for x in env then x[..]
+            stack: stack[...frame[3]]
+            pc: frame[1].addr + frame[1].size - 1
+          assert code[contPc] is RET
+          stack.push (r) -> {code, env, stack, pc} = cont; stack.push r
       else aplError 'Unrecognized instruction: ' + code[pc - 1] + ', pc:' + pc
   return
