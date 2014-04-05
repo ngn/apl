@@ -43,7 +43,7 @@ format = (a) ->
   else if a is null then ['null']
   else if typeof a is 'string' then [a]
   else if typeof a is 'number' then r = [formatNumber a]; r.align = 'right'; r
-  else if typeof a is 'function' then ['λ']
+  else if typeof a is 'function' then ['#procedure']
   else if !(a instanceof APLArray) then ['' + a]
   else if prod(⍴ a) is 0 then ['']
   else

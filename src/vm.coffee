@@ -1,9 +1,9 @@
 [LDC, VEC, GET, SET, MON, DYA, LAM, RET, POP, SPL, JEQ, EMB, CON] = [1..13]
 
-class λ
+class Proc
   constructor: (@code, @addr, @size, @env) ->
   toFunction: -> (x, y) => vm code: @code, env: @env.concat([[x, @, y, null]]), pc: @addr
-  toString: -> 'λ'
+  toString: -> '#procedure'
 
 vm = ({code, env, stack, pc}) ->
   assert code instanceof Array
@@ -24,7 +24,7 @@ vm = ({code, env, stack, pc}) ->
       when MON
         [w, f] = stack.splice -2
         if typeof f is 'function'
-          if w instanceof λ then w = w.toFunction()
+          if w instanceof Proc then w = w.toFunction()
           if f.cps
             f w, undefined, undefined, (r) -> stack.push r; vm {code, env, stack, pc}; return
             return
@@ -39,8 +39,8 @@ vm = ({code, env, stack, pc}) ->
       when DYA
         [w, f, a] = stack.splice -3
         if typeof f is 'function'
-          if w instanceof λ then w = w.toFunction()
-          if a instanceof λ then a = a.toFunction()
+          if w instanceof Proc then w = w.toFunction()
+          if a instanceof Proc then a = a.toFunction()
           if f.cps
             f w, a, undefined, (r) -> stack.push r; vm {code, env, stack, pc}; return
             return
@@ -54,7 +54,7 @@ vm = ({code, env, stack, pc}) ->
           env = f.env.concat [[w, f, a, bp]]
       when LAM
         size = code[pc++]
-        stack.push new λ code, pc, size, env
+        stack.push new Proc code, pc, size, env
         pc += size
       when RET
         if stack.length is 1 then return stack[0]

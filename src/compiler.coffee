@@ -25,7 +25,7 @@ compileAST = (ast, opts = {}) ->
   opts.ctx ?= Object.create vocabulary
   for key, value of opts.ctx when !ast.vars[key]
     ast.vars[key] = varInfo = category: NOUN, slot: ast.nSlots++, scopeDepth: ast.scopeDepth
-    if typeof value is 'function' or value instanceof λ
+    if typeof value is 'function' or value instanceof Proc
       varInfo.category = if value.isAdverb then ADVERB else if value.isConjunction then CONJUNCTION else VERB
       if /^[gs]et_.*/.test key then ast.vars[key[4..]] = category: NOUN
 
