@@ -76,9 +76,19 @@ class Complex
     simplify (x.re * y.re + x.im * y.im) / d, (y.re * x.im - y.im * x.re) / d
 
   # ¯1 ¯2 ¯3 ¯4*2 ←→ 1 4 9 16
+  # 0j1*2 ←→ ¯1
+  # 1j2*3 ←→ ¯11j¯2
+  # .5j1.5*5 ←→ 9.875j¯0.375
   @pow = pow = (x, y) ->
     if typeof x is typeof y is 'number' and (x >= 0 or isInt(y))
       Math.pow x, y
+    else if typeof y is 'number' and isInt y, 0
+      r = 1
+      while y
+        if y & 1 then r = multiply r, x
+        x = multiply x, x
+        y >>= 1
+      r
     else
       exp multiply(y, log x)
 

@@ -90,7 +90,6 @@ if module?
         b.slice 0, k
       ).toString 'utf8'
     else
-      process.stdout.write macro -> macro.valToNode "ngn apl #{(new Date).toISOString().replace /T.*/, ''}\n"
       rl = require('readline').createInterface process.stdin, process.stdout
       rl.setPrompt '      '
       ws = apl.ws()
