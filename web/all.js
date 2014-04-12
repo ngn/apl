@@ -587,9 +587,19 @@
     };
 
     Complex.pow = pow = function(x, y) {
-      var t32, _ref;
+      var r, t32, t33, _ref;
       if ((typeof x === (_ref = typeof y) && _ref === 'number') && (x >= 0 || ((t32 = (y)) === ~~t32))) {
         return Math.pow(x, y);
+      } else if (typeof y === 'number' && ((t33 = (y)) === ~~t33 && (0) <= t33)) {
+        r = 1;
+        while (y) {
+          if (y & 1) {
+            r = multiply(r, x);
+          }
+          x = multiply(x, x);
+          y >>= 1;
+        }
+        return r;
       } else {
         return exp(multiply(y, log(x)));
       }
@@ -1257,7 +1267,7 @@
     };
   };
   match = function(x, y) {
-    var axis, r, t33, t34, t35, t36, t37, t38, t39, t40, t41, t42, t43, t44, t45, xi, yi, _i, _ref1;
+    var axis, r, t34, t35, t36, t37, t38, t39, t40, t41, t42, t43, t44, t45, t46, xi, yi, _i, _ref1;
     if (x instanceof APLArray) {
       if (!(y instanceof APLArray)) {
         return false;
@@ -1271,49 +1281,49 @@
           }
         }
         r = true;
-        t33 = x;
-        t38 = t33.data;
-        t40 = t33.shape;
-        t42 = t33.stride;
-        t34 = y;
+        t34 = x;
         t39 = t34.data;
         t41 = t34.shape;
         t43 = t34.stride;
-        if (t40.length !== t41.length) {
+        t35 = y;
+        t40 = t35.data;
+        t42 = t35.shape;
+        t44 = t35.stride;
+        if (t41.length !== t42.length) {
           rankError();
         }
-        t37 = t40.length;
-        while (--t37 >= 0) {
-          if (t40[t37] !== t41[t37]) {
+        t38 = t41.length;
+        while (--t38 >= 0) {
+          if (t41[t38] !== t42[t38]) {
             lengthError();
           }
         }
-        if (!t33.empty()) {
-          t44 = t40.length - 1;
-          t35 = t33.offset;
+        if (!t34.empty()) {
+          t45 = t41.length - 1;
           t36 = t34.offset;
-          t45 = Array((t37 = t40.length));
-          while (--t37 >= 0) {
-            t45[t37] = 0;
+          t37 = t35.offset;
+          t46 = Array((t38 = t41.length));
+          while (--t38 >= 0) {
+            t46[t38] = 0;
           }
           while (true) {
-            xi = t38[t35];
-            yi = t39[t36];
+            xi = t39[t36];
+            yi = t40[t37];
             if (!match(xi, yi)) {
               r = false;
             }
-            t37 = t44;
-            while (t37 >= 0 && t45[t37] + 1 === t40[t37]) {
-              t35 -= t45[t37] * t42[t37];
-              t36 -= t45[t37] * t43[t37];
-              t45[t37--] = 0;
+            t38 = t45;
+            while (t38 >= 0 && t46[t38] + 1 === t41[t38]) {
+              t36 -= t46[t38] * t43[t38];
+              t37 -= t46[t38] * t44[t38];
+              t46[t38--] = 0;
             }
-            if (t37 < 0) {
+            if (t38 < 0) {
               break;
             }
-            t45[t37]++;
-            t35 += t42[t37];
-            t36 += t43[t37];
+            t46[t38]++;
+            t36 += t43[t38];
+            t37 += t44[t38];
           }
         }
         return r;
@@ -1334,7 +1344,7 @@
     return x === y || Math.abs(x - y) < 1e-11;
   };
   approx = function(x, y) {
-    var axis, r, t46, t47, t48, t49, t50, t51, t52, t53, t54, t55, t56, t57, t58, xi, yi, _i, _ref1;
+    var axis, r, t47, t48, t49, t50, t51, t52, t53, t54, t55, t56, t57, t58, t59, xi, yi, _i, _ref1;
     if (x instanceof APLArray) {
       if (!(y instanceof APLArray)) {
         return false;
@@ -1348,49 +1358,49 @@
           }
         }
         r = true;
-        t46 = x;
-        t51 = t46.data;
-        t53 = t46.shape;
-        t55 = t46.stride;
-        t47 = y;
+        t47 = x;
         t52 = t47.data;
         t54 = t47.shape;
         t56 = t47.stride;
-        if (t53.length !== t54.length) {
+        t48 = y;
+        t53 = t48.data;
+        t55 = t48.shape;
+        t57 = t48.stride;
+        if (t54.length !== t55.length) {
           rankError();
         }
-        t50 = t53.length;
-        while (--t50 >= 0) {
-          if (t53[t50] !== t54[t50]) {
+        t51 = t54.length;
+        while (--t51 >= 0) {
+          if (t54[t51] !== t55[t51]) {
             lengthError();
           }
         }
-        if (!t46.empty()) {
-          t57 = t53.length - 1;
-          t48 = t46.offset;
+        if (!t47.empty()) {
+          t58 = t54.length - 1;
           t49 = t47.offset;
-          t58 = Array((t50 = t53.length));
-          while (--t50 >= 0) {
-            t58[t50] = 0;
+          t50 = t48.offset;
+          t59 = Array((t51 = t54.length));
+          while (--t51 >= 0) {
+            t59[t51] = 0;
           }
           while (true) {
-            xi = t51[t48];
-            yi = t52[t49];
+            xi = t52[t49];
+            yi = t53[t50];
             if (!approx(xi, yi)) {
               r = false;
             }
-            t50 = t57;
-            while (t50 >= 0 && t58[t50] + 1 === t53[t50]) {
-              t48 -= t58[t50] * t55[t50];
-              t49 -= t58[t50] * t56[t50];
-              t58[t50--] = 0;
+            t51 = t58;
+            while (t51 >= 0 && t59[t51] + 1 === t54[t51]) {
+              t49 -= t59[t51] * t56[t51];
+              t50 -= t59[t51] * t57[t51];
+              t59[t51--] = 0;
             }
-            if (t50 < 0) {
+            if (t51 < 0) {
               break;
             }
-            t58[t50]++;
-            t48 += t55[t50];
-            t49 += t56[t50];
+            t59[t51]++;
+            t49 += t56[t51];
+            t50 += t57[t51];
           }
         }
         return r;
@@ -1423,8 +1433,8 @@
     }
   };
   getAxisList = function(axes, rank) {
-    var a, i, t59, t60, t61, x, _i, _len, _ref1, _ref2;
-    if (!((t59 = (rank)) === ~~t59 && (0) <= t59)) {
+    var a, i, t60, t61, t62, x, _i, _len, _ref1, _ref2;
+    if (!((t60 = (rank)) === ~~t60 && (0) <= t60)) {
       throw Error("\"assert isInt rank, 0\" at src/vocabulary/vhelpers.coffee:118");
     }
     if (axes == null) {
@@ -1441,7 +1451,7 @@
       a = a.toArray();
       for (i = _i = 0, _len = a.length; _i < _len; i = ++_i) {
         x = a[i];
-        if (!((t60 = (x)) === ~~t60 && ((0) <= (_ref1 = t60) && _ref1 < (rank)))) {
+        if (!((t61 = (x)) === ~~t61 && ((0) <= (_ref1 = t61) && _ref1 < (rank)))) {
           domainError();
         }
         if (__indexOf.call(a.slice(0, i), x) >= 0) {
@@ -1449,7 +1459,7 @@
         }
       }
       return a;
-    } else if ((t61 = (a)) === ~~t61 && ((0) <= (_ref2 = t61) && _ref2 < (rank))) {
+    } else if ((t62 = (a)) === ~~t62 && ((0) <= (_ref2 = t62) && _ref2 < (rank))) {
       return [a];
     } else {
       return domainError();
@@ -1603,7 +1613,7 @@
     };
   };
   expand = function(omega, alpha, axis) {
-    var a, b, data, filler, i, indices, p, shape, t62, x, _i, _len, _ref1;
+    var a, b, data, filler, i, indices, p, shape, t63, x, _i, _len, _ref1;
     if (!omega.shape.length) {
       nonceError('Expand of scalar not implemented');
     }
@@ -1618,7 +1628,7 @@
     i = 0;
     for (_i = 0, _len = a.length; _i < _len; _i++) {
       x = a[_i];
-      if (!((t62 = (x)) === ~~t62 && ((0) <= (_ref1 = t62) && _ref1 < (2)))) {
+      if (!((t63 = (x)) === ~~t63 && ((0) <= (_ref1 = t63) && _ref1 < (2)))) {
         domainError();
       }
       b.push(x > 0 ? i++ : null);
@@ -1799,7 +1809,7 @@
   });
   addVocabulary({
     ',': function(omega, alpha, axis) {
-      var a, data, i, nAxes, p, pIndices, q, r, rStride, s, shape, stride, t63, t64, t65, t66, t67, t68, t69, _i, _j, _ref1, _ref2, _ref3;
+      var a, data, i, nAxes, p, pIndices, q, r, rStride, s, shape, stride, t64, t65, t66, t67, t68, t69, t70, _i, _j, _ref1, _ref2, _ref3;
       if (alpha) {
         nAxes = Math.max(alpha.shape.length, omega.shape.length);
         if (axis) {
@@ -1817,18 +1827,18 @@
           return new APLArray([alpha.unwrap(), omega.unwrap()]);
         } else if (!alpha.shape.length) {
           s = omega.shape.slice(0);
-          if ((t63 = (axis)) === ~~t63) {
+          if ((t64 = (axis)) === ~~t64) {
             s[axis] = 1;
           }
           alpha = new APLArray([alpha.unwrap()], s, repeat([0], omega.shape.length));
         } else if (!omega.shape.length) {
           s = alpha.shape.slice(0);
-          if ((t64 = (axis)) === ~~t64) {
+          if ((t65 = (axis)) === ~~t65) {
             s[axis] = 1;
           }
           omega = new APLArray([omega.unwrap()], s, repeat([0], alpha.shape.length));
         } else if (alpha.shape.length + 1 === omega.shape.length) {
-          if (!((t65 = (axis)) === ~~t65)) {
+          if (!((t66 = (axis)) === ~~t66)) {
             rankError();
           }
           shape = alpha.shape.slice(0);
@@ -1837,7 +1847,7 @@
           stride.splice(axis, 0, 0);
           alpha = new APLArray(alpha.data, shape, stride, alpha.offset);
         } else if (alpha.shape.length === omega.shape.length + 1) {
-          if (!((t66 = (axis)) === ~~t66)) {
+          if (!((t67 = (axis)) === ~~t67)) {
             rankError();
           }
           shape = omega.shape.slice(0);
@@ -1857,7 +1867,7 @@
           }
         }
         shape = alpha.shape.slice(0);
-        if ((t67 = (axis)) === ~~t67) {
+        if ((t68 = (axis)) === ~~t68) {
           shape[axis] += omega.shape[axis];
         } else {
           shape.splice(Math.ceil(axis), 0, 2);
@@ -1868,7 +1878,7 @@
         for (i = _j = _ref3 = shape.length - 2; _j >= 0; i = _j += -1) {
           stride[i] = stride[i + 1] * shape[i + 1];
         }
-        if ((t68 = (axis)) === ~~t68) {
+        if ((t69 = (axis)) === ~~t69) {
           rStride = stride;
         } else {
           rStride = stride.slice(0);
@@ -1895,7 +1905,7 @@
           }
         }
         if (!omega.empty()) {
-          r = (t69 = (axis)) === ~~t69 ? stride[axis] * alpha.shape[axis] : stride[Math.ceil(axis)];
+          r = (t70 = (axis)) === ~~t70 ? stride[axis] * alpha.shape[axis] : stride[Math.ceil(axis)];
           q = omega.offset;
           pIndices = repeat([0], omega.shape.length);
           while (true) {
@@ -1938,7 +1948,7 @@
       }
     })),
     '<': withIdentity(0, pervasive({
-      dyad: function(y, x, t70) {
+      dyad: function(y, x, t71) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return +(x < y);
         } else {
@@ -1947,7 +1957,7 @@
       }
     })),
     '>': withIdentity(0, pervasive({
-      dyad: function(y, x, t71) {
+      dyad: function(y, x, t72) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return +(x > y);
         } else {
@@ -1956,7 +1966,7 @@
       }
     })),
     '≤': withIdentity(1, pervasive({
-      dyad: function(y, x, t72) {
+      dyad: function(y, x, t73) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return +(x <= y);
         } else {
@@ -1965,7 +1975,7 @@
       }
     })),
     '≥': withIdentity(1, pervasive({
-      dyad: function(y, x, t73) {
+      dyad: function(y, x, t74) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return +(x >= y);
         } else {
@@ -1982,37 +1992,37 @@
     }
   });
   depthOf = function(x) {
-    var r, t74, t75, t76, t77, t78, t79, t80, t81, y;
+    var r, t75, t76, t77, t78, t79, t80, t81, t82, y;
     if (x instanceof APLArray) {
       if ((!x.shape.length) && (!(x.data[0] instanceof APLArray))) {
         return 0;
       }
       r = 0;
-      t74 = x;
-      if (!t74.empty()) {
-        t76 = t74.data;
-        t77 = t74.shape;
-        t78 = t74.stride;
-        t79 = t77.length - 1;
-        t81 = t74.offset;
-        t80 = [];
-        t75 = t77.length;
-        while (--t75 >= 0) {
-          t80.push(0);
+      t75 = x;
+      if (!t75.empty()) {
+        t77 = t75.data;
+        t78 = t75.shape;
+        t79 = t75.stride;
+        t80 = t78.length - 1;
+        t82 = t75.offset;
+        t81 = [];
+        t76 = t78.length;
+        while (--t76 >= 0) {
+          t81.push(0);
         }
         while (true) {
-          y = t76[t81];
+          y = t77[t82];
           r = Math.max(r, depthOf(y));
-          t75 = t79;
-          while (t75 >= 0 && t80[t75] + 1 === t77[t75]) {
-            t81 -= t80[t75] * t78[t75];
-            t80[t75--] = 0;
+          t76 = t80;
+          while (t76 >= 0 && t81[t76] + 1 === t78[t76]) {
+            t82 -= t81[t76] * t79[t76];
+            t81[t76--] = 0;
           }
-          if (t75 < 0) {
+          if (t76 < 0) {
             break;
           }
-          t80[t75]++;
-          t81 += t78[t75];
+          t81[t76]++;
+          t82 += t79[t76];
         }
       }
       return r + 1;
@@ -2050,7 +2060,7 @@
   });
   addVocabulary({
     '∪': function(omega, alpha) {
-      var a, data, t82, t83, t84, t85, t86, t87, t88, t89, t90, t91, t92, t93, t94, t95, t96, t97, x, _i, _len, _ref1;
+      var a, data, t83, t84, t85, t86, t87, t88, t89, t90, t91, t92, t93, t94, t95, t96, t97, t98, x, _i, _len, _ref1;
       if (alpha) {
         data = [];
         _ref1 = [alpha, omega];
@@ -2059,66 +2069,66 @@
           if (a.shape.length > 1) {
             rankError();
           }
-          t82 = a;
-          if (!t82.empty()) {
-            t84 = t82.data;
-            t85 = t82.shape;
-            t86 = t82.stride;
-            t87 = t85.length - 1;
-            t89 = t82.offset;
-            t88 = [];
-            t83 = t85.length;
-            while (--t83 >= 0) {
-              t88.push(0);
+          t83 = a;
+          if (!t83.empty()) {
+            t85 = t83.data;
+            t86 = t83.shape;
+            t87 = t83.stride;
+            t88 = t86.length - 1;
+            t90 = t83.offset;
+            t89 = [];
+            t84 = t86.length;
+            while (--t84 >= 0) {
+              t89.push(0);
             }
             while (true) {
-              x = t84[t89];
+              x = t85[t90];
               if (!contains(data, x)) {
                 data.push(x);
               }
-              t83 = t87;
-              while (t83 >= 0 && t88[t83] + 1 === t85[t83]) {
-                t89 -= t88[t83] * t86[t83];
-                t88[t83--] = 0;
+              t84 = t88;
+              while (t84 >= 0 && t89[t84] + 1 === t86[t84]) {
+                t90 -= t89[t84] * t87[t84];
+                t89[t84--] = 0;
               }
-              if (t83 < 0) {
+              if (t84 < 0) {
                 break;
               }
-              t88[t83]++;
-              t89 += t86[t83];
+              t89[t84]++;
+              t90 += t87[t84];
             }
           }
         }
         return new APLArray(data);
       } else {
         data = [];
-        t90 = omega;
-        if (!t90.empty()) {
-          t92 = t90.data;
-          t93 = t90.shape;
-          t94 = t90.stride;
-          t95 = t93.length - 1;
-          t97 = t90.offset;
-          t96 = [];
-          t91 = t93.length;
-          while (--t91 >= 0) {
-            t96.push(0);
+        t91 = omega;
+        if (!t91.empty()) {
+          t93 = t91.data;
+          t94 = t91.shape;
+          t95 = t91.stride;
+          t96 = t94.length - 1;
+          t98 = t91.offset;
+          t97 = [];
+          t92 = t94.length;
+          while (--t92 >= 0) {
+            t97.push(0);
           }
           while (true) {
-            x = t92[t97];
+            x = t93[t98];
             if (!contains(data, x)) {
               data.push(x);
             }
-            t91 = t95;
-            while (t91 >= 0 && t96[t91] + 1 === t93[t91]) {
-              t97 -= t96[t91] * t94[t91];
-              t96[t91--] = 0;
+            t92 = t96;
+            while (t92 >= 0 && t97[t92] + 1 === t94[t92]) {
+              t98 -= t97[t92] * t95[t92];
+              t97[t92--] = 0;
             }
-            if (t91 < 0) {
+            if (t92 < 0) {
               break;
             }
-            t96[t91]++;
-            t97 += t94[t91];
+            t97[t92]++;
+            t98 += t95[t92];
           }
         }
         return new APLArray(data);
@@ -2412,34 +2422,34 @@
     }
   });
   enlist = function(x, r) {
-    var t100, t101, t102, t103, t104, t105, t98, t99, y, _results;
+    var t100, t101, t102, t103, t104, t105, t106, t99, y, _results;
     if (x instanceof APLArray) {
-      t98 = x;
-      if (!t98.empty()) {
-        t100 = t98.data;
-        t101 = t98.shape;
-        t102 = t98.stride;
-        t103 = t101.length - 1;
-        t105 = t98.offset;
-        t104 = [];
-        t99 = t101.length;
-        while (--t99 >= 0) {
-          t104.push(0);
+      t99 = x;
+      if (!t99.empty()) {
+        t101 = t99.data;
+        t102 = t99.shape;
+        t103 = t99.stride;
+        t104 = t102.length - 1;
+        t106 = t99.offset;
+        t105 = [];
+        t100 = t102.length;
+        while (--t100 >= 0) {
+          t105.push(0);
         }
         _results = [];
         while (true) {
-          y = t100[t105];
+          y = t101[t106];
           enlist(y, r);
-          t99 = t103;
-          while (t99 >= 0 && t104[t99] + 1 === t101[t99]) {
-            t105 -= t104[t99] * t102[t99];
-            t104[t99--] = 0;
+          t100 = t104;
+          while (t100 >= 0 && t105[t100] + 1 === t102[t100]) {
+            t106 -= t105[t100] * t103[t100];
+            t105[t100--] = 0;
           }
-          if (t99 < 0) {
+          if (t100 < 0) {
             break;
           }
-          t104[t99]++;
-          _results.push(t105 += t102[t99]);
+          t105[t100]++;
+          _results.push(t106 += t103[t100]);
         }
         return _results;
       }
@@ -2449,10 +2459,10 @@
   };
   addVocabulary({
     '!': withIdentity(1, pervasive({
-      monad: function(x, t107, t108) {
-        var t106;
-        if (typeof x === 'number' && ((t107 == null) || typeof t107 === 'number')) {
-          if (!((t106 = (x)) === ~~t106)) {
+      monad: function(x, t108, t109) {
+        var t107;
+        if (typeof x === 'number' && ((t108 == null) || typeof t108 === 'number')) {
+          if (!((t107 = (x)) === ~~t107)) {
             return Γ(x + 1);
           } else if (x < 0) {
             return domainError();
@@ -2465,8 +2475,8 @@
           return domainError();
         }
       },
-      dyad: Beta = function(n, k, t111) {
-        var r, t109, t110;
+      dyad: Beta = function(n, k, t112) {
+        var r, t110, t111;
         if (typeof n === 'number' && ((k == null) || typeof k === 'number')) {
           r = (function() {
             switch (4 * negInt(k) + 2 * negInt(n) + negInt(n - k)) {
@@ -2488,7 +2498,7 @@
                 return 0;
             }
           })();
-          if (((t109 = (n)) === ~~t109) && ((t110 = (k)) === ~~t110)) {
+          if (((t110 = (n)) === ~~t110) && ((t111 = (k)) === ~~t111)) {
             return Math.round(r);
           } else {
             return r;
@@ -2500,8 +2510,8 @@
     }))
   });
   negInt = function(x) {
-    var t112;
-    return ((t112 = (x)) === ~~t112) && x < 0;
+    var t113;
+    return ((t113 = (x)) === ~~t113) && x < 0;
   };
   smallFactorials = (function() {
     var i, x;
@@ -2610,7 +2620,7 @@
   addVocabulary({
     '⌊': withIdentity(Infinity, pervasive({
       monad: Complex.floor,
-      dyad: function(y, x, t113) {
+      dyad: function(y, x, t114) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return Math.min(y, x);
         } else {
@@ -2620,7 +2630,7 @@
     })),
     '⌈': withIdentity(-Infinity, pervasive({
       monad: Complex.ceil,
-      dyad: function(y, x, t114) {
+      dyad: function(y, x, t115) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return Math.max(y, x);
         } else {
@@ -2794,41 +2804,41 @@
     }
   });
   grade = function(omega, alpha, direction) {
-    var h, indices, t115, t116, t117, t118, t119, t120, t121, x, _i, _ref2, _results;
+    var h, indices, t116, t117, t118, t119, t120, t121, t122, x, _i, _ref2, _results;
     h = {};
     if (alpha) {
       if (!alpha.shape.length) {
         rankError();
       }
       h = {};
-      t115 = alpha;
-      if (!t115.empty()) {
-        t117 = t115.data;
-        t118 = t115.shape;
-        t119 = t115.stride;
-        t120 = t118.length - 1;
-        t121 = t115.offset;
+      t116 = alpha;
+      if (!t116.empty()) {
+        t118 = t116.data;
+        t119 = t116.shape;
+        t120 = t116.stride;
+        t121 = t119.length - 1;
+        t122 = t116.offset;
         indices = [];
-        t116 = t118.length;
-        while (--t116 >= 0) {
+        t117 = t119.length;
+        while (--t117 >= 0) {
           indices.push(0);
         }
         while (true) {
-          x = t117[t121];
+          x = t118[t122];
           if (typeof x !== 'string') {
             domainError();
           }
           h[x] = indices[indices.length - 1];
-          t116 = t120;
-          while (t116 >= 0 && indices[t116] + 1 === t118[t116]) {
-            t121 -= indices[t116] * t119[t116];
-            indices[t116--] = 0;
+          t117 = t121;
+          while (t117 >= 0 && indices[t117] + 1 === t119[t117]) {
+            t122 -= indices[t117] * t120[t117];
+            indices[t117--] = 0;
           }
-          if (t116 < 0) {
+          if (t117 < 0) {
             break;
           }
-          indices[t116]++;
-          t121 += t119[t116];
+          indices[t117]++;
+          t122 += t120[t117];
         }
       }
     }
@@ -2905,43 +2915,43 @@
   });
   addVocabulary({
     '⍳': function(omega, alpha) {
-      var A, a, d, data, i, itemData, itemShape, itemStride, j, m, n, p, t129, t130, t131, t132, t133, t134, t135, t136, t137, u, _i, _j, _k, _l, _len, _m, _n, _o, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
+      var A, a, d, data, i, itemData, itemShape, itemStride, j, m, n, p, t130, t131, t132, t133, t134, t135, t136, t137, t138, u, _i, _j, _k, _l, _len, _m, _n, _o, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
       if (alpha) {
         if (alpha.shape.length !== 1) {
           rankError();
         }
         return omega.map(function(x) {
-          var e, indices, rank, t122, t123, t124, t125, t126, t127, t128, y;
+          var e, indices, rank, t123, t124, t125, t126, t127, t128, t129, y;
           try {
             rank = alpha.shape;
-            t122 = alpha;
-            if (!t122.empty()) {
-              t124 = t122.data;
-              t125 = t122.shape;
-              t126 = t122.stride;
-              t127 = t125.length - 1;
-              t128 = t122.offset;
+            t123 = alpha;
+            if (!t123.empty()) {
+              t125 = t123.data;
+              t126 = t123.shape;
+              t127 = t123.stride;
+              t128 = t126.length - 1;
+              t129 = t123.offset;
               indices = [];
-              t123 = t125.length;
-              while (--t123 >= 0) {
+              t124 = t126.length;
+              while (--t124 >= 0) {
                 indices.push(0);
               }
               while (true) {
-                y = t124[t128];
+                y = t125[t129];
                 if (match(x, y)) {
                   rank = indices;
                   throw 'break';
                 }
-                t123 = t127;
-                while (t123 >= 0 && indices[t123] + 1 === t125[t123]) {
-                  t128 -= indices[t123] * t126[t123];
-                  indices[t123--] = 0;
+                t124 = t128;
+                while (t124 >= 0 && indices[t124] + 1 === t126[t124]) {
+                  t129 -= indices[t124] * t127[t124];
+                  indices[t124--] = 0;
                 }
-                if (t123 < 0) {
+                if (t124 < 0) {
                   break;
                 }
-                indices[t123]++;
-                t128 += t126[t123];
+                indices[t124]++;
+                t129 += t127[t124];
               }
             }
           } catch (_error) {
@@ -2963,7 +2973,7 @@
         a = omega.toArray();
         for (_i = 0, _len = a.length; _i < _len; _i++) {
           d = a[_i];
-          if (!((t129 = (d)) === ~~t129 && (0) <= t129)) {
+          if (!((t130 = (d)) === ~~t130 && (0) <= t130)) {
             domainError();
           }
         }
@@ -2985,39 +2995,39 @@
             p = n * i;
             for (j = _l = 0, _ref3 = a[i]; _l < _ref3; j = _l += 1) {
               itemData[p] = j;
-              t130 = itemData;
-              t131 = p;
-              t132 = 1;
-              t133 = u;
-              if (t130 instanceof Array) {
-                for (j = _m = _ref4 = t132, _ref5 = t133; _m < _ref5; j = _m += 1) {
-                  t130[t131 + j] = t130[t131 + j % t132];
+              t131 = itemData;
+              t132 = p;
+              t133 = 1;
+              t134 = u;
+              if (t131 instanceof Array) {
+                for (j = _m = _ref4 = t133, _ref5 = t134; _m < _ref5; j = _m += 1) {
+                  t131[t132 + j] = t131[t132 + j % t133];
                 }
               } else {
-                t130 = t130.subarray(t131, t131 + t133);
-                while (2 * t132 < t133) {
-                  t130.set(t130.subarray(0, t132), t132);
-                  t132 *= 2;
+                t131 = t131.subarray(t132, t132 + t134);
+                while (2 * t133 < t134) {
+                  t131.set(t131.subarray(0, t133), t133);
+                  t133 *= 2;
                 }
-                t130.set(t130.subarray(0, t133 - t132), t132);
+                t131.set(t131.subarray(0, t134 - t133), t133);
               }
               p += u;
             }
-            t134 = itemData;
-            t135 = n * i;
-            t136 = a[i] * u;
-            t137 = n;
-            if (t134 instanceof Array) {
-              for (j = _n = _ref6 = t136, _ref7 = t137; _n < _ref7; j = _n += 1) {
-                t134[t135 + j] = t134[t135 + j % t136];
+            t135 = itemData;
+            t136 = n * i;
+            t137 = a[i] * u;
+            t138 = n;
+            if (t135 instanceof Array) {
+              for (j = _n = _ref6 = t137, _ref7 = t138; _n < _ref7; j = _n += 1) {
+                t135[t136 + j] = t135[t136 + j % t137];
               }
             } else {
-              t134 = t134.subarray(t135, t135 + t137);
-              while (2 * t136 < t137) {
-                t134.set(t134.subarray(0, t136), t136);
-                t136 *= 2;
+              t135 = t135.subarray(t136, t136 + t138);
+              while (2 * t137 < t138) {
+                t135.set(t135.subarray(0, t137), t137);
+                t137 *= 2;
               }
-              t134.set(t134.subarray(0, t137 - t136), t136);
+              t135.set(t135.subarray(0, t138 - t137), t137);
             }
           }
           data = [];
@@ -3033,7 +3043,7 @@
   });
   addVocabulary({
     '⊂': function(omega, alpha, axes) {
-      var data, i, indices, p, resultAxes, shape, stride, t138, t139, t140, t141, t142, t143, unitShape, unitStride, x, _i, _ref2, _results;
+      var data, i, indices, p, resultAxes, shape, stride, t139, t140, t141, t142, t143, t144, unitShape, unitStride, x, _i, _ref2, _results;
       if (!(!alpha)) {
         throw Error("\"assert !⍺\" at src/vocabulary/leftshoe.coffee:13");
       }
@@ -3092,31 +3102,31 @@
         return _results1;
       })();
       data = [];
-      t138 = new APLArray(omega.data, shape, stride, omega.offset);
-      if (!t138.empty()) {
-        t140 = t138.data;
-        t141 = t138.shape;
-        t142 = t138.stride;
-        t143 = t141.length - 1;
-        p = t138.offset;
+      t139 = new APLArray(omega.data, shape, stride, omega.offset);
+      if (!t139.empty()) {
+        t141 = t139.data;
+        t142 = t139.shape;
+        t143 = t139.stride;
+        t144 = t142.length - 1;
+        p = t139.offset;
         indices = [];
-        t139 = t141.length;
-        while (--t139 >= 0) {
+        t140 = t142.length;
+        while (--t140 >= 0) {
           indices.push(0);
         }
         while (true) {
-          x = t140[p];
+          x = t141[p];
           data.push(new APLArray(omega.data, unitShape, unitStride, p));
-          t139 = t143;
-          while (t139 >= 0 && indices[t139] + 1 === t141[t139]) {
-            p -= indices[t139] * t142[t139];
-            indices[t139--] = 0;
+          t140 = t144;
+          while (t140 >= 0 && indices[t140] + 1 === t142[t140]) {
+            p -= indices[t140] * t143[t140];
+            indices[t140--] = 0;
           }
-          if (t139 < 0) {
+          if (t140 < 0) {
             break;
           }
-          indices[t139]++;
-          p += t142[t139];
+          indices[t140]++;
+          p += t143[t140];
         }
       }
       return new APLArray(data, shape);
@@ -3145,7 +3155,7 @@
       }
     })),
     '⍱': pervasive({
-      dyad: function(y, x, t144) {
+      dyad: function(y, x, t145) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return +(!(bool(x) | bool(y)));
         } else {
@@ -3154,7 +3164,7 @@
       }
     }),
     '⍲': pervasive({
-      dyad: function(y, x, t145) {
+      dyad: function(y, x, t146) {
         if (typeof y === 'number' && ((x == null) || typeof x === 'number')) {
           return +(!(bool(x) & bool(y)));
         } else {
@@ -3276,8 +3286,8 @@
         nonceError();
       }
       return omega.map(function(x) {
-        var t146, y, _ref2;
-        if ((t146 = (x)) === ~~t146 && ((0) <= (_ref2 = t146) && _ref2 < (0x10000))) {
+        var t147, y, _ref2;
+        if ((t147 = (x)) === ~~t147 && ((0) <= (_ref2 = t147) && _ref2 < (0x10000))) {
           return y = String.fromCharCode(x);
         } else if (typeof x === 'string') {
           return y = x.charCodeAt(0);
@@ -3298,18 +3308,18 @@
   });
   roll = pervasive({
     monad: function(omega) {
-      var t147;
-      if (!((t147 = omega) === ~~t147 && (1) <= t147)) {
+      var t148;
+      if (!((t148 = omega) === ~~t148 && (1) <= t148)) {
         domainError();
       }
       return Math.floor(Math.random() * omega);
     }
   });
   deal = function(omega, alpha) {
-    var h, i, j, r, t148, t149, _i, _j, _ref2, _results;
+    var h, i, j, r, t149, t150, _i, _j, _ref2, _results;
     alpha = alpha.unwrap();
     omega = omega.unwrap();
-    if (!(((t148 = omega) === ~~t148 && (0) <= t148) && ((t149 = alpha) === ~~t149 && ((0) <= (_ref2 = t149) && _ref2 < (omega + 1))))) {
+    if (!(((t149 = omega) === ~~t149 && (0) <= t149) && ((t150 = alpha) === ~~t150 && ((0) <= (_ref2 = t150) && _ref2 < (omega + 1))))) {
       domainError();
     }
     r = (function() {
@@ -3332,7 +3342,7 @@
   });
   addVocabulary({
     '⍴': function(omega, alpha) {
-      var a, data, e, n, t150, t151, t152, t153, t154, t155, t156, t157, t158, x, _i, _len;
+      var a, data, e, n, t151, t152, t153, t154, t155, t156, t157, t158, t159, x, _i, _len;
       if (alpha) {
         if (alpha.shape.length > 1) {
           rankError();
@@ -3340,7 +3350,7 @@
         a = alpha.toArray();
         for (_i = 0, _len = a.length; _i < _len; _i++) {
           x = a[_i];
-          if (!((t150 = (x)) === ~~t150 && (0) <= t150)) {
+          if (!((t151 = (x)) === ~~t151 && (0) <= t151)) {
             domainError();
           }
         }
@@ -3352,34 +3362,34 @@
         } else {
           data = [];
           try {
-            t151 = omega;
-            if (!t151.empty()) {
-              t153 = t151.data;
-              t154 = t151.shape;
-              t155 = t151.stride;
-              t156 = t154.length - 1;
-              t158 = t151.offset;
-              t157 = [];
-              t152 = t154.length;
-              while (--t152 >= 0) {
-                t157.push(0);
+            t152 = omega;
+            if (!t152.empty()) {
+              t154 = t152.data;
+              t155 = t152.shape;
+              t156 = t152.stride;
+              t157 = t155.length - 1;
+              t159 = t152.offset;
+              t158 = [];
+              t153 = t155.length;
+              while (--t153 >= 0) {
+                t158.push(0);
               }
               while (true) {
-                x = t153[t158];
+                x = t154[t159];
                 if (data.length >= n) {
                   throw 'break';
                 }
                 data.push(x);
-                t152 = t156;
-                while (t152 >= 0 && t157[t152] + 1 === t154[t152]) {
-                  t158 -= t157[t152] * t155[t152];
-                  t157[t152--] = 0;
+                t153 = t157;
+                while (t153 >= 0 && t158[t153] + 1 === t155[t153]) {
+                  t159 -= t158[t153] * t156[t153];
+                  t158[t153--] = 0;
                 }
-                if (t152 < 0) {
+                if (t153 < 0) {
                   break;
                 }
-                t157[t152]++;
-                t158 += t155[t152];
+                t158[t153]++;
+                t159 += t156[t153];
               }
             }
           } catch (_error) {
@@ -3407,20 +3417,20 @@
   });
   addVocabulary({
     '⌽': rotate = function(omega, alpha, axis) {
-      var a, data, indices, n, offset, p, shape, step, stride, t159, t160, t161;
+      var a, data, indices, n, offset, p, shape, step, stride, t160, t161, t162;
       if (!(typeof axis === 'undefined' || axis instanceof APLArray)) {
         throw Error("\"assert typeof axis is 'undefined' or axis instanceof APLArray\" at src/vocabulary/rotate.coffee:4");
       }
       if (alpha) {
         axis = !axis ? omega.shape.length - 1 : axis.unwrap();
-        if (!((t159 = (axis)) === ~~t159)) {
+        if (!((t160 = (axis)) === ~~t160)) {
           domainError();
         }
         if (omega.shape.length && !((0 <= axis && axis < omega.shape.length))) {
           indexError();
         }
         step = alpha.unwrap();
-        if (!((t160 = (step)) === ~~t160)) {
+        if (!((t161 = (step)) === ~~t161)) {
           domainError();
         }
         if (!step) {
@@ -3455,7 +3465,7 @@
             lengthError();
           }
           axis = axis.unwrap();
-          if (!((t161 = (axis)) === ~~t161)) {
+          if (!((t162 = (axis)) === ~~t162)) {
             domainError();
           }
           if (!((0 <= axis && axis < omega.shape.length))) {
@@ -3593,7 +3603,7 @@
     };
   };
   compressOrReplicate = function(omega, alpha, axis) {
-    var a, b, data, filler, i, indices, n, p, shape, t162, x, _i, _j, _len, _ref2;
+    var a, b, data, filler, i, indices, n, p, shape, t163, x, _i, _j, _len, _ref2;
     if (!omega.shape.length) {
       omega = new APLArray([omega.unwrap()]);
     }
@@ -3614,7 +3624,7 @@
     b = [];
     for (i = _i = 0, _len = a.length; _i < _len; i = ++_i) {
       x = a[i];
-      if (!((t162 = (x)) === ~~t162)) {
+      if (!((t163 = (x)) === ~~t163)) {
         domainError();
       }
       shape[axis] += Math.abs(x);
@@ -3661,7 +3671,7 @@
   };
   addVocabulary({
     '⌷': squish = function(omega, alpha, axes) {
-      var a, axis, h, i, r, t163, u, _i, _j, _k, _len, _ref2, _ref3, _results;
+      var a, axis, h, i, r, t164, u, _i, _j, _k, _len, _ref2, _ref3, _results;
       if (typeof omega === 'function') {
         return function(x, y) {
           return omega(x, y, alpha);
@@ -3685,7 +3695,7 @@
         h = Array(omega.shape.length);
         for (_i = 0, _len = axes.length; _i < _len; _i++) {
           axis = axes[_i];
-          if (!((t163 = (axis)) === ~~t163)) {
+          if (!((t164 = (axis)) === ~~t164)) {
             domainError();
           }
           if (!((0 <= axis && axis < omega.shape.length))) {
@@ -3716,7 +3726,7 @@
       return squish(omega, alpha, axes);
     },
     _substitute: function(args) {
-      var a, alpha, axes, data, i, omega, p, stride, subs, t164, t165, t166, t167, t168, t169, t170, t171, t172, t173, t174, t175, t176, u, v, value, x, _i, _j, _len, _ref2, _ref3, _ref4, _results;
+      var a, alpha, axes, data, i, omega, p, stride, subs, t165, t166, t167, t168, t169, t170, t171, t172, t173, t174, t175, t176, t177, u, v, value, x, _i, _j, _len, _ref2, _ref3, _ref4, _results;
       _ref2 = (function() {
         var _i, _len, _ref2, _results;
         _ref2 = args.toArray();
@@ -3759,34 +3769,34 @@
       }
       data = omega.toArray();
       stride = strideForShape(omega.shape);
-      t164 = subs;
-      t169 = t164.data;
-      t171 = t164.shape;
-      t173 = t164.stride;
-      t165 = value;
+      t165 = subs;
       t170 = t165.data;
       t172 = t165.shape;
       t174 = t165.stride;
-      if (t171.length !== t172.length) {
+      t166 = value;
+      t171 = t166.data;
+      t173 = t166.shape;
+      t175 = t166.stride;
+      if (t172.length !== t173.length) {
         rankError();
       }
-      t168 = t171.length;
-      while (--t168 >= 0) {
-        if (t171[t168] !== t172[t168]) {
+      t169 = t172.length;
+      while (--t169 >= 0) {
+        if (t172[t169] !== t173[t169]) {
           lengthError();
         }
       }
-      if (!t164.empty()) {
-        t175 = t171.length - 1;
-        t166 = t164.offset;
+      if (!t165.empty()) {
+        t176 = t172.length - 1;
         t167 = t165.offset;
-        t176 = Array((t168 = t171.length));
-        while (--t168 >= 0) {
-          t176[t168] = 0;
+        t168 = t166.offset;
+        t177 = Array((t169 = t172.length));
+        while (--t169 >= 0) {
+          t177[t169] = 0;
         }
         while (true) {
-          u = t169[t166];
-          v = t170[t167];
+          u = t170[t167];
+          v = t171[t168];
           if (v instanceof APLArray && !v.shape.length) {
             v = v.unwrap();
           }
@@ -3801,32 +3811,32 @@
           } else {
             data[u] = v;
           }
-          t168 = t175;
-          while (t168 >= 0 && t176[t168] + 1 === t171[t168]) {
-            t166 -= t176[t168] * t173[t168];
-            t167 -= t176[t168] * t174[t168];
-            t176[t168--] = 0;
+          t169 = t176;
+          while (t169 >= 0 && t177[t169] + 1 === t172[t169]) {
+            t167 -= t177[t169] * t174[t169];
+            t168 -= t177[t169] * t175[t169];
+            t177[t169--] = 0;
           }
-          if (t168 < 0) {
+          if (t169 < 0) {
             break;
           }
-          t176[t168]++;
-          t166 += t173[t168];
-          t167 += t174[t168];
+          t177[t169]++;
+          t167 += t174[t169];
+          t168 += t175[t169];
         }
       }
       return new APLArray(data, omega.shape);
     }
   });
   indexAtSingleAxis = function(omega, sub, ax) {
-    var chunk, d, data, i, isUniform, k, n, offset, shape, shape1, stride, stride1, subStride, t177, t178, t179, t180, t181, t182, t183, t184, t185, t186, u, x, _i, _j, _k, _l, _len, _len1, _ref2, _ref3;
+    var chunk, d, data, i, isUniform, k, n, offset, shape, shape1, stride, stride1, subStride, t178, t179, t180, t181, t182, t183, t184, t185, t186, t187, u, x, _i, _j, _k, _l, _len, _len1, _ref2, _ref3;
     if (!(omega instanceof APLArray)) {
       throw Error("\"assert ⍵ instanceof APLArray\" at src/vocabulary/squish.coffee:122");
     }
     if (!(sub instanceof APLArray)) {
       throw Error("\"assert sub instanceof APLArray\" at src/vocabulary/squish.coffee:123");
     }
-    if (!((t177 = (ax)) === ~~t177)) {
+    if (!((t178 = (ax)) === ~~t178)) {
       throw Error("\"assert isInt ax\" at src/vocabulary/squish.coffee:124");
     }
     if (!((0 <= ax && ax < omega.shape.length))) {
@@ -3836,7 +3846,7 @@
     n = omega.shape[ax];
     for (_i = 0, _len = u.length; _i < _len; _i++) {
       x = u[_i];
-      if (!((t178 = (x)) === ~~t178)) {
+      if (!((t179 = (x)) === ~~t179)) {
         domainError();
       }
       if (!((0 <= x && x < n))) {
@@ -3872,32 +3882,32 @@
       stride1 = omega.stride.slice(0);
       stride1.splice(ax, 1);
       data = [];
-      t179 = sub;
-      if (!t179.empty()) {
-        t181 = t179.data;
-        t182 = t179.shape;
-        t183 = t179.stride;
-        t184 = t182.length - 1;
-        t186 = t179.offset;
-        t185 = [];
-        t180 = t182.length;
-        while (--t180 >= 0) {
-          t185.push(0);
+      t180 = sub;
+      if (!t180.empty()) {
+        t182 = t180.data;
+        t183 = t180.shape;
+        t184 = t180.stride;
+        t185 = t183.length - 1;
+        t187 = t180.offset;
+        t186 = [];
+        t181 = t183.length;
+        while (--t181 >= 0) {
+          t186.push(0);
         }
         while (true) {
-          x = t181[t186];
+          x = t182[t187];
           chunk = new APLArray(omega.data, shape1, stride1, omega.offset + x * omega.stride[ax]);
           data.push.apply(data, chunk.toArray());
-          t180 = t184;
-          while (t180 >= 0 && t185[t180] + 1 === t182[t180]) {
-            t186 -= t185[t180] * t183[t180];
-            t185[t180--] = 0;
+          t181 = t185;
+          while (t181 >= 0 && t186[t181] + 1 === t183[t181]) {
+            t187 -= t186[t181] * t184[t181];
+            t186[t181--] = 0;
           }
-          if (t180 < 0) {
+          if (t181 < 0) {
             break;
           }
-          t185[t180]++;
-          t186 += t183[t180];
+          t186[t181]++;
+          t187 += t184[t181];
         }
       }
       shape = shape1.slice(0);
@@ -4010,7 +4020,7 @@
   };
   addVocabulary({
     '⍉': function(omega, alpha) {
-      var i, n, shape, stride, t187, u, x, _i, _j, _len, _len1, _ref2;
+      var i, n, shape, stride, t188, u, x, _i, _j, _len, _len1, _ref2;
       if (alpha) {
         if (alpha.shape.length > 1) {
           rankError();
@@ -4027,7 +4037,7 @@
         _ref2 = alpha.toArray();
         for (i = _i = 0, _len = _ref2.length; _i < _len; i = ++_i) {
           x = _ref2[i];
-          if (!((t187 = (x)) === ~~t187 && (0) <= t187)) {
+          if (!((t188 = (x)) === ~~t188 && (0) <= t188)) {
             domainError();
           }
           if (x >= n) {
@@ -4770,7 +4780,6 @@
             return _results;
           })()).toString('utf8'));
         } else {
-          process.stdout.write("ngn apl 2014-04-05\n");
           rl = require('readline').createInterface(process.stdin, process.stdout);
           rl.setPrompt('      ');
           ws = apl.ws();
@@ -7156,6 +7165,9 @@ var aplTests = [
 ["(a b c) ← 6     ⋄ a b c","←→","6 6 6"],
 ["((a b)c)←3(4 5) ⋄ a b c","←→","3 3 (4 5)"],
 ["¯1 ¯2 ¯3 ¯4*2","←→","1 4 9 16"],
+["0j1*2","←→","¯1"],
+["1j2*3","←→","¯11j¯2"],
+[".5j1.5*5","←→","9.875j¯0.375"],
 ["'hello'}","!!!","SYNTAX ERROR"],
 ["⍬","←→","0⍴0"],
 ["⍴⍬","←→",",0"],
