@@ -14,11 +14,11 @@ addVocabulary
       process.stdout.write s
     x
 
-  'get_⍞': ->
+  'get_⍞': cps (_, _1, _2, callback) ->
     if typeof window?.prompt is 'function'
-      prompt('') or ''
+      setTimeout (-> callback new APLArray(prompt('') or '')), 0
     else
-      nonceError 'Reading from ⍞ is not implemented.'
+      readline '', (line) -> callback new APLArray line
 
   'set_⍞': (x) ->
     s = format(x).join '\n'
