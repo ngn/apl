@@ -71,6 +71,15 @@ apl.ws = (opts = {}) ->
   if opts.out then ctx['set_⎕'] = ctx['set_⍞'] = (x) -> opts.out format(x).join('\n') + '\n'
   (aplCode) -> exec aplCode, {ctx}
 
+readline = (prompt, f) ->
+  (readline.requesters ?= []).push f
+  if !(rl = readline.rl)
+    rl = readline.rl = require('readline').createInterface process.stdin, process.stdout
+    rl.on 'line', (line) -> readline.requesters.pop()? line
+    rl.on 'close', -> process.stdout.write '\n'; process.exit 0
+  rl.setPrompt prompt
+  rl.prompt()
+
 if module?
   module.exports = apl
   if module is require?.main then do ->
@@ -90,17 +99,13 @@ if module?
         b.slice 0, k
       ).toString 'utf8'
     else
-      rl = require('readline').createInterface process.stdin, process.stdout
-      rl.setPrompt '      '
       ws = apl.ws()
-      rl.on 'line', (line) ->
+      readline '      ', f = (line) ->
         try
           if !line.match /^[\ \t\f\r\n]*$/
             process.stdout.write format(ws line).join('\n') + '\n'
         catch e
           process.stdout.write e + '\n'
-        rl.prompt()
+        readline '      ', f
         return
-      rl.on 'close', -> process.stdout.write '\n'; process.exit 0
-      rl.prompt()
     return
