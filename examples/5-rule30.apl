@@ -1,13 +1,7 @@
-#!/usr/bin/env apl
+#!/usr/bin/env a
 ⍝ See https://en.wikipedia.org/wiki/Rule_30
 
-rule ← 30
-ruleSet ← ⌽(8/2)⊤rule
-n ← 39 ⍝ number of rows to compute
-row ← (n/0),1,n/0
-table ← (0,⍴row)⍴0
-{
-    table ← table⍪row
-    row ← ruleSet[(1⌽row)+(2×row)+4×¯1⌽row]
-}¨⍳n
-⎕ ← ' #'[table]
+rule←30
+n←50 ⍝ number of rows to compute
+t←⌽rule⊤⍨8⍴2
+⎕←' #'[⊃⌽{⍵,⍨⊂t[2⊥¨3,/0,0,⍨↑⍵]}⍣n⊂z,1,z←n⍴0]
