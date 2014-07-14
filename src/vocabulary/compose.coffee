@@ -1,7 +1,5 @@
 addVocabulary
 
-  # Composition operator (`∘`)
-  #
   # (÷∘-)2     ←→ ¯0.5
   # 8(÷∘-)2    ←→ ¯4
   # ÷∘-2       ←→ ¯0.5

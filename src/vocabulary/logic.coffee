@@ -1,23 +1,18 @@
 addVocabulary
 
   '~': pervasive
-    # Not (`~`)
-    #
     # ~0 1 ←→ 1 0
     # ~2   !!! DOMAIN ERROR
     monad: (x) -> +!bool x
 
   '∨': withIdentity 0, pervasive
-
-    # Or (GCD) (`∨`)
-    #
     # 1∨1               ←→ 1
     # 1∨0               ←→ 1
     # 0∨1               ←→ 1
     # 0∨0               ←→ 0
     # 0 0 1 1 ∨ 0 1 0 1 ←→ 0 1 1 1
-    # 12∨18             ←→ 6   # 12=2×2×3, 18=2×3×3
-    # 299∨323           ←→ 1   # 299=13×23, 323=17×19
+    # 12∨18             ←→ 6 ⍝ 12=2×2×3, 18=2×3×3
+    # 299∨323           ←→ 1 ⍝ 299=13×23, 323=17×19
     # 12345∨12345       ←→ 12345
     # 0∨123             ←→ 123
     # 123∨0             ←→ 123
@@ -38,9 +33,6 @@ addVocabulary
       Complex.gcd x, y
 
   '∧': withIdentity 1, pervasive
-
-    # And (LCM) (`∧`)
-    #
     # 1∧1                            ←→ 1
     # 1∧0                            ←→ 0
     # 0∧1                            ←→ 0
@@ -70,8 +62,6 @@ addVocabulary
         domainError '∧ is implemented only for Gaussian integers' # todo
       Complex.lcm x, y
 
-  # Nor (`⍱`)
-  #
   # 0⍱0 ←→ 1
   # 0⍱1 ←→ 0
   # 1⍱0 ←→ 0
@@ -79,8 +69,6 @@ addVocabulary
   # 0⍱2 !!! DOMAIN ERROR
   '⍱': pervasive dyad: real (y, x) -> +!(bool(x) | bool(y))
 
-  # Nand (`⍲`)
-  #
   # 0⍲0 ←→ 1
   # 0⍲1 ←→ 1
   # 1⍲0 ←→ 1

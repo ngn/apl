@@ -28,8 +28,6 @@ addVocabulary
       process.stdout.write s
     x
 
-  # Index origin (`⎕IO`)
-  #
   # The index origin is fixed at 0.  Reading it returns 0.  Attempts to set it
   # to anything other than that fail.
   #
@@ -39,17 +37,14 @@ addVocabulary
   'get_⎕IO': -> APLArray.zero
   'set_⎕IO': (x) -> if match x, APLArray.zero then x else domainError 'The index origin (⎕IO) is fixed at 0'
 
-  # Delay (`⎕DL`)
   '⎕DL': cps (⍵, ⍺, _, callback) ->
     t0 = +new Date
     setTimeout (-> callback new APLArray [new Date - t0]), ⍵.unwrap()
     return
 
-  # Regular expression search
-  #
-  # 'b(c+)d' ⎕RE 'abcd' ←→ 1 'bcd' (,'c')
-  # 'B(c+)d' ⎕RE 'abcd' ←→ ⍬
-  # 'a(b'    ⎕RE 'c'           !!! DOMAIN ERROR
+  # 'b(c+)d'⎕RE'abcd' ←→ 1 'bcd' (,'c')
+  # 'B(c+)d'⎕RE'abcd' ←→ ⍬
+  # 'a(b'   ⎕RE'c'           !!! DOMAIN ERROR
   '⎕RE': (⍵, ⍺) ->
     x = ⍺.toSimpleString()
     y = ⍵.toSimpleString()
@@ -61,11 +56,8 @@ addVocabulary
     else
       APLArray.zilde
 
-  # Unicode convert
-  # (monadic only; tolerant to mixed-type arrays)
-  #
-  # ⎕UCS 'a' ←→ 97
-  # ⎕UCS 'ab' ←→ 97 98
+  # ⎕UCS'a' ←→ 97
+  # ⎕UCS'ab' ←→ 97 98
   # ⎕UCS 2 2⍴97+⍳4 ←→ 2 2⍴'abcd'
   '⎕UCS': (⍵, ⍺) ->
     if ⍺? then nonceError()

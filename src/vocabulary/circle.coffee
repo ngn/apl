@@ -1,9 +1,5 @@
 addVocabulary
-
   '○': pervasive
-
-    # Pi times (`○`)
-    #
     # ○2     ←→ 6.283185307179586
     # ○2J2   ←→ 6.283185307179586J6.283185307179586
     # ○'ABC' !!! DOMAIN ERROR
@@ -11,8 +7,6 @@ addVocabulary
       (x) ->
         new Complex Math.PI * x.re, Math.PI * x.im
 
-    # Circular and hyperbolic functions (`○`)
-    #
     # ¯12○2          ←→ ¯0.4161468365471J0.9092974268257
     # ¯12○2j3        ←→ ¯0.02071873100224J0.04527125315609
     # ¯11○2          ←→ 0j2

@@ -6,8 +6,6 @@ addVocabulary
     else
       first ⍵
 
-# Take (`↑`)
-#
 # 5↑'ABCDEFGH'     ←→ 'ABCDE'
 # ¯3↑'ABCDEFGH'    ←→ 'FGH'
 # 3↑22 2 19 12     ←→ 22 2 19
@@ -82,14 +80,12 @@ take = (⍵, ⍺) ->
         offset += (⍴(⍵)[i] + x) * ⍵.stride[i]
     new APLArray ⍵.data, shape, ⍵.stride, offset
 
-# First (`↑`)
-#
-# ↑(1 2 3)(4 5 6)   ←→ 1 2 3
-# ↑(1 2)(3 4 5)     ←→ 1 2
-# ↑'AB'             ←→ 'A'
-# ↑123              ←→ 123
-# ↑⍬                ←→ 0
-#!    ↑''               ←→ ' '
+# ↑(1 2 3)(4 5 6) ←→ 1 2 3
+# ↑(1 2)(3 4 5)   ←→ 1 2
+# ↑'AB'           ←→ 'A'
+# ↑123            ←→ 123
+# ↑⍬              ←→ 0
+#! ↑''             ←→ ' '
 first = (⍵) ->
   x = if ⍵.empty() then ⍵.getPrototype() else ⍵.data[⍵.offset]
   if x instanceof APLArray then x else new APLArray [x], []

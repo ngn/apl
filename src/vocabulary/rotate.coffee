@@ -1,10 +1,7 @@
 addVocabulary
-
   '⌽': rotate = (⍵, ⍺, axis) ->
     assert typeof axis is 'undefined' or axis instanceof APLArray
     if ⍺
-      # Rotate (`⌽`)
-      #
       # 1⌽1 2 3 4 5 6             ←→ 2 3 4 5 6 1
       # 3⌽'ABCDEFGH'              ←→ 'DEFGHABC'
       # 3⌽2 5⍴1 2 3 4 5 6 7 8 9 0 ←→ 2 5⍴4 5 1 2 3 9 0 6 7 8
@@ -37,8 +34,6 @@ addVocabulary
         p += stride[a]
       new APLArray data, shape
     else
-      # Reverse (`⌽`)
-      #
       # ⌽1 2 3 4 5 6                 ←→ 6 5 4 3 2 1
       # ⌽(1 2)(3 4)(5 6)             ←→ (5 6)(3 4)(1 2)
       # ⌽"BOB WON POTS"              ←→ 'STOP NOW BOB'
@@ -57,16 +52,11 @@ addVocabulary
       offset = ⍵.offset + (⍴(⍵)[axis] - 1) * ⍵.stride[axis]
       new APLArray ⍵.data, ⍴(⍵), stride, offset
 
-  # 1st axis reverse (`⊖`)
-  #
   # ⊖1 2 3 4 5 6                 ←→ 6 5 4 3 2 1
   # ⊖(1 2) (3 4) (5 6)           ←→ (5 6)(3 4)(1 2)
   # ⊖'BOB WON POTS'              ←→ 'STOP NOW BOB'
   # ⊖    2 5⍴1 2 3 4 5 6 7 8 9 0 ←→ 2 5⍴6 7 8 9 0 1 2 3 4 5
   # ⊖[1] 2 5⍴1 2 3 4 5 6 7 8 9 0 ←→ 2 5⍴5 4 3 2 1 0 9 8 7 6
-  #
-  # 1st axis rotate (`⊖`)
-  #
   # 1⊖3 3⍴⍳9 ←→ 3 3⍴3 4 5 6 7 8 0 1 2
   '⊖': (⍵, ⍺, axis = APLArray.zero) ->
     rotate ⍵, ⍺, axis

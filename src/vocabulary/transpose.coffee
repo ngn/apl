@@ -2,8 +2,6 @@ addVocabulary
 
   '⍉': (⍵, ⍺) ->
     if ⍺
-      # Transpose (`⍉`)
-      #
       # (2 2⍴⍳4)⍉2 2 2 2⍴⍳16 !!! RANK ERROR
       # 0⍉3 5 8 ←→ 3 5 8
       # 1 0⍉2 2 2⍴⍳8 !!! LENGTH ERROR
@@ -34,16 +32,13 @@ addVocabulary
       for u in shape when !u? then rankError()
       new APLArray ⍵.data, shape, stride, ⍵.offset
     else
-      # Transpose (`⍉`)
-      #
       # ⍉2 3⍴1 2 3 6 7 8  ←→ 3 2⍴1 6 2 7 3 8
       # ⍴⍉2 3⍴1 2 3 6 7 8 ←→ 3 2
       # ⍉1 2 3            ←→ 1 2 3
-      # ⍉2 3 4⍴⍳24        ←→ (4 3 2⍴
-      # ...                    0 12   4 16    8 20
-      # ...                    1 13   5 17    9 21
-      # ...                    2 14   6 18   10 22
-      # ...                    3 15   7 19   11 23)
+      # ⍉2 3 4⍴⍳24        ←→ (4 3 2⍴0 12  4 16   8 20
+      # ...                         1 13  5 17   9 21
+      # ...                         2 14  6 18  10 22
+      # ...                         3 15  7 19  11 23)
       # ⍉⍬                ←→ ⍬
       # ⍉''               ←→ ''
       new APLArray ⍵.data, reversed(⍴ ⍵), reversed(⍵.stride), ⍵.offset

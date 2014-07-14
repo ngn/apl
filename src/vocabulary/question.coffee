@@ -1,10 +1,7 @@
 addVocabulary
-
   '?': (⍵, ⍺) ->
     if ⍺ then deal ⍵, ⍺ else roll ⍵
 
-# Roll (`?`)
-#
 # n←6 ⋄ r←?n ⋄ (0≤r)∧(r<n) ←→ 1
 # ?0   !!! DOMAIN ERROR
 # ?1   ←→ 0
@@ -16,8 +13,6 @@ roll = pervasive monad: (⍵) ->
   if !isInt ⍵, 1 then domainError()
   Math.floor Math.random() * ⍵
 
-# Deal (`?`)
-#
 # n←100 ⋄ (+/n?n)=(+/⍳n) ←→ 1 # a permutation (an "n?n" dealing) contains all 0...n
 # n←100 ⋄ A←(n÷2)?n ⋄ ∧/(0≤A),A<n ←→ 1 # any number x in a dealing is 0 <= x < n
 # 0?100 ←→ ⍬

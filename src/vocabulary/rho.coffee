@@ -1,9 +1,6 @@
 addVocabulary
-
   '⍴': (⍵, ⍺) ->
     if ⍺
-      # Reshape (`⍴`)
-      #
       # ⍴1 2 3⍴0  ←→ 1 2 3
       # ⍴⍴1 2 3⍴0 ←→ ,3
       # 3 3⍴⍳4    ←→ 3 3⍴0 1 2 3 0 1 2 3 0
@@ -37,8 +34,6 @@ addVocabulary
           data = repeat [⍵.getPrototype()], n
         new APLArray data, a
     else
-      # Shape of (`⍴`)
-      #
       # ⍴0       ←→ 0⍴0
       # ⍴0 0     ←→ 1⍴2
       # ⍴⍴0      ←→ 1⍴0

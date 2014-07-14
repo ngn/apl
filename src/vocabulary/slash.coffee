@@ -12,8 +12,6 @@ addVocabulary
     else
       compressOrReplicate ⍵, ⍺, axis
 
-# Reduce (`/`)
-#
 # +/3                    ←→ 3
 # +/3 5 8                ←→ 16
 # +/2 4 6                ←→ 12
@@ -98,8 +96,6 @@ reduce = @reduce = (f, g, axis0) ->
 
     new APLArray data, rShape
 
-# Replicate (`/`)
-#
 # 0 1 0 1/'ABCD'                                ←→ 'BD'
 # 1 1 1 1 0/12 14 16 18 20                      ←→ 12 14 16 18
 # MARKS←45 60 33 50 66 19 ⋄ (MARKS≥50)/MARKS    ←→ 60 50 66

@@ -1,7 +1,4 @@
 addVocabulary
-
-  # Identity operator (`⍁`)
-  #
   # f←{⍺+2×⍵} ⋄ f/⍬           !!! DOMAIN ERROR
   # f←{⍺+2×⍵} ⋄ (f⍁123)/⍬     ←→ 123
   # f←{⍺+2×⍵} ⋄ (456⍁f)/⍬     ←→ 456
