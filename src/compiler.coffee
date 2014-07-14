@@ -67,7 +67,7 @@ compileAST = (ast, opts = {}) ->
               valueError "Symbol '#{name}' is referenced before assignment.",
                 file: opts.file, offset: node.offset, aplCode: opts.aplCode
         when '{'
-          for i in [1...node.length]
+          for i in [1...node.length] by 1
             queue.push extend (body = node[i]),
               scopeNode: scopeNode
               scopeDepth: d = scopeNode.scopeDepth + 1 + (node.category isnt VERB)

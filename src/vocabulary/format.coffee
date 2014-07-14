@@ -93,10 +93,10 @@ format = (a) ->
         else
           left = repeat ' ', c.leftMargin
           right = repeat ' ', c.rightMargin + c.width - t[0].length
-        for k in [0...t.length] then t[k] = left + t[k] + right
+        for k in [0...t.length] by 1 then t[k] = left + t[k] + right
         bottom = repeat ' ', t[0].length
         for [t.length...r.height + r.bottomMargin] then t.push bottom
-      for k in [0...r.height + r.bottomMargin]
-        result.push((for j in [0...nCols] then grid[i][j][k]).join '')
+      for k in [0...r.height + r.bottomMargin] by 1
+        result.push((for j in [0...nCols] by 1 then grid[i][j][k]).join '')
 
     result

@@ -54,7 +54,7 @@ addVocabulary
         rankError()
 
       assert ⍴⍴(⍺) is ⍴⍴(⍵)
-      for i in [0...⍴⍴ ⍺]
+      for i in [0...⍴⍴ ⍺] by 1
         if i isnt axis and ⍴(⍺)[i] isnt ⍴(⍵)[i]
           lengthError()
 

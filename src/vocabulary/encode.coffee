@@ -39,7 +39,7 @@ addVocabulary
     data = Array prod shape
     n = if ⍴⍴ ⍺ then ⍴(⍺)[0] else 1
     m = a.length / n
-    for i in [0...m]
+    for i in [0...m] by 1
       for y, j in b
         if isNeg = (y < 0) then y = -y
         for k in [n - 1 .. 0] by -1

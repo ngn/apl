@@ -14,7 +14,7 @@ addVocabulary
     if ⍵.isSimple() then return ⍵
     unitShape  = for i in axes then ⍴(⍵)[i]
     unitStride = for i in axes then ⍵.stride[i]
-    resultAxes = for i in [0...⍴⍴ ⍵] when i !in axes then i
+    resultAxes = for i in [0...⍴⍴ ⍵] by 1 when i !in axes then i
     shape      = for i in resultAxes then ⍴(⍵)[i]
     stride     = for i in resultAxes then ⍵.stride[i]
     data = []

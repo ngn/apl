@@ -50,7 +50,7 @@ addVocabulary
       if prod(⍴ ⍺) is 0
         return new A [1], ⍴(⍵), repeat [0], ⍴⍴ ⍵
       findShape = []
-      for i in [0...⍴⍴ ⍵]
+      for i in [0...⍴⍴ ⍵] by 1
         d = ⍴(⍵)[i] - ⍴(⍺)[i] + 1
         if d <= 0 then return new A [0], ⍴(⍵), repeat [0], ⍴⍴ ⍵
         findShape.push d

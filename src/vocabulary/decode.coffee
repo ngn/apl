@@ -48,14 +48,14 @@ addVocabulary
     a = ⍺.toArray()
     b = ⍵.toArray()
     data = []
-    for i in [0 ... a.length / lastDimA]
-      for j in [0 ... b.length / firstDimB]
+    for i in [0 ... a.length / lastDimA] by 1
+      for j in [0 ... b.length / firstDimB] by 1
         x = a[i * lastDimA ... (i + 1) * lastDimA]
-        y = for k in [0...firstDimB] then b[j + k * (b.length / firstDimB)]
+        y = for k in [0...firstDimB] by 1 then b[j + k * (b.length / firstDimB)]
         if x.length is 1 then x = for [0...y.length] then x[0]
         if y.length is 1 then y = for [0...x.length] then y[0]
         z = y[0]
-        for k in [1...y.length]
+        for k in [1...y.length] by 1
           z = z * x[k] + y[k]
         data.push z
     new A data, ⍴(⍺)[...-1].concat ⍴(⍵)[1..]
