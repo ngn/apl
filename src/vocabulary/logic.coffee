@@ -28,9 +28,9 @@ addVocabulary
     # 2 3 4∨0j1 1j2 2j3 ←→ 1 1 1
     # 2j2 2j4∨5j5 4j4   ←→ 1j1 2
     dyad: (y, x) ->
-      if (!Complex.isint x) or (!Complex.isint y)
+      if (!Z.isint x) or (!Z.isint y)
         domainError '∨ is implemented only for Gaussian integers' # todo
-      Complex.gcd x, y
+      Z.gcd x, y
 
   '∧': withIdentity 1, pervasive
     # 1∧1                            ←→ 1
@@ -58,9 +58,9 @@ addVocabulary
     # 2 3 4∧0j1 1j2 2j3              ←→ 0j2 3j6 8j12
     # 2j2 2j4∧5j5 4j4                ←→ 10j10 ¯4j12
     dyad: (y, x) ->
-      if (!Complex.isint x) or (!Complex.isint y)
+      if (!Z.isint x) or (!Z.isint y)
         domainError '∧ is implemented only for Gaussian integers' # todo
-      Complex.lcm x, y
+      Z.lcm x, y
 
   # 0⍱0 ←→ 1
   # 0⍱1 ←→ 0

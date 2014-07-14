@@ -80,7 +80,7 @@ match = (x, y) ->
   else
     if y instanceof APLArray then false
     else
-      if x instanceof Complex and y instanceof Complex
+      if x instanceof Z and y instanceof Z
         x.re is y.re and x.im is y.im
       else
         x is y
@@ -104,10 +104,10 @@ approx = (x, y) ->
     if y instanceof APLArray then false
     else if !(x? and y?) then false
     else
-      if typeof x is 'number' then x = new Complex x
-      if typeof y is 'number' then y = new Complex y
-      if x instanceof Complex
-        y instanceof Complex and numApprox(x.re, y.re) and numApprox(x.im, y.im)
+      if typeof x is 'number' then x = new Z x
+      if typeof y is 'number' then y = new Z y
+      if x instanceof Z
+        y instanceof Z and numApprox(x.re, y.re) and numApprox(x.im, y.im)
       else
         x is y
 

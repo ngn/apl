@@ -12,7 +12,7 @@ addVocabulary
     # ⌊¯1.2j2.3  ←→ ¯1j2
     # ⌊¯1.2j¯2.3 ←→ ¯1j¯3
     # ⌊0 5 ¯5 (○1) ¯1.5 ←→ 0 5 ¯5 3 ¯2
-    monad: Complex.floor
+    monad: Z.floor
 
     # 3⌊5 ←→ 3
     # ⌊/⍬ ←→ ¯
@@ -30,7 +30,7 @@ addVocabulary
     # ⌈¯1.2j2.3  ←→ ¯1j3
     # ⌈¯1.2j¯2.3 ←→ ¯1j¯2
     # ⌈0 5 ¯5(○1)¯1.5 ←→ 0 5 ¯5 4 ¯1
-    monad: Complex.ceil
+    monad: Z.ceil
 
     # 3⌈5 ←→ 5
     # ⌈/⍬ ←→ ¯¯

@@ -261,7 +261,7 @@ compileAST = (ast, opts = {}) ->
               else if x is '--' then -Infinity
               else if x.match /^-?0x/i then parseInt x, 16
               else parseFloat x
-        v = if a[1] then new Complex(a[0], a[1]) else a[0]
+        v = if a[1] then new Z(a[0], a[1]) else a[0]
         [LDC, new APLArray [v], []]
       when 'J'
         # 123 + «456 + 789» ←→ 1368

@@ -7,7 +7,7 @@ addVocabulary
     # +((5 6)(7 1)) ←→ (5 6)(7 1)
     # + (5 6)(7 1)  ←→ (5 6)(7 1)
     # +1j¯2         ←→ 1j2
-    monad: numeric ((x) -> x), Complex.conjugate
+    monad: numeric ((x) -> x), Z.conjugate
 
     # 1+2                      ←→ 3
     # 2 3+5 8                  ←→ 7 11
@@ -21,13 +21,13 @@ addVocabulary
     # ¯+¯¯                     !!! DOMAIN ERROR
     # 1j¯+2j¯¯                 !!! DOMAIN ERROR
     dyad: numeric ((y, x) -> x + y),
-      (y, x) -> Complex.add x, y
+      (y, x) -> Z.add x, y
 
   '-': withIdentity 0, pervasive
     # -4     ←→ ¯4
     # -1 2 3 ←→ ¯1 ¯2 ¯3
     # -1j2   ←→ ¯1j¯2
-    monad: numeric ((x) -> -x), Complex.negate
+    monad: numeric ((x) -> -x), Z.negate
 
     # 1-3     ←→ ¯2
     # 5-¯3    ←→ 8
@@ -35,7 +35,7 @@ addVocabulary
     # 5-3j8   ←→ 2j¯8
     # -/⍬     ←→ 0
     dyad: numeric ((y, x) -> x - y),
-      (y, x) -> Complex.subtract x, y
+      (y, x) -> Z.subtract x, y
 
   '×': withIdentity 1, pervasive
     # ×¯2 ¯1 0 1 2 ←→ ¯1 ¯1 0 1 1
@@ -52,7 +52,7 @@ addVocabulary
     # 2×1j¯2    ←→ 2j¯4
     # ×/⍬       ←→ 1
     dyad: numeric ((y, x) -> x * y),
-      (y, x) -> Complex.multiply x, y
+      (y, x) -> Z.multiply x, y
 
   '÷': withIdentity 1, pervasive
     # ÷2   ←→ .5
@@ -69,12 +69,12 @@ addVocabulary
     # 5÷2j1    ←→ 2j¯1
     # ÷/⍬      ←→ 1
     dyad: numeric ((y, x) -> x / y),
-      (y, x) -> Complex.divide x, y
+      (y, x) -> Z.divide x, y
 
   '*': withIdentity 1, pervasive
     # *2   ←→ 7.38905609893065
     # *2j3 ←→ ¯7.315110094901103J1.0427436562359045
-    monad: exp = numeric Math.exp, Complex.exp
+    monad: exp = numeric Math.exp, Z.exp
 
     # 2*3 ←→ 8
     # 3*2 ←→ 9
@@ -83,14 +83,14 @@ addVocabulary
     # ¯1*.5 ←→ 0j1
     # 1j2*3j4 ←→ .129009594074467j.03392409290517014
     # */⍬ ←→ 1
-    dyad: (y, x) -> Complex.pow x, y
+    dyad: (y, x) -> Z.pow x, y
 
   '⍟': pervasive
     # ⍟123 ←→ 4.812184355372417
     # ⍟0 ←→ ¯¯
     # ⍟¯1 ←→ 0j1×○1
     # ⍟123j456 ←→ 6.157609243895447J1.3073297857599793
-    monad: Complex.log
+    monad: Z.log
 
     # 12⍟34 ←→ 1.419111870829036
     # 12⍟¯34 ←→ 1.419111870829036j1.26426988871305
@@ -100,12 +100,12 @@ addVocabulary
       if typeof x is typeof y is 'number' and x > 0 and y > 0
         Math.log(y) / Math.log(x)
       else
-        Complex.divide (Complex.log y), (Complex.log x)
+        Z.divide (Z.log y), (Z.log x)
 
   '|': withIdentity 0, pervasive
     # ∣¯8 0 8 ¯3.5 ←→ 8 0 8 3.5
     # |5j12 ←→ 13
-    monad: numeric ((x) -> Math.abs x), Complex.magnitude
+    monad: numeric ((x) -> Math.abs x), Z.magnitude
 
     # 3∣5 ←→ 2
     # 1j2|3j4 ←→ ¯1j1
@@ -117,4 +117,4 @@ addVocabulary
     # 10|4j3 ←→ 4j3
     # 4j6|7j10 ←→ 3j4
     # ¯10 7j10 0.3|17 5 10 ←→ ¯3 ¯5j7 0.1
-    dyad: (y, x) -> Complex.residue x, y
+    dyad: (y, x) -> Z.residue x, y

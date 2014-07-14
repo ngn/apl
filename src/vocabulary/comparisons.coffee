@@ -18,7 +18,7 @@ addVocabulary
   # 2j¯3+¯2j3           ←→ 0
   # =/⍬                 ←→ 1
   '=': withIdentity 1, pervasive dyad: eq = (y, x) ->
-    if x instanceof Complex and y instanceof Complex
+    if x instanceof Z and y instanceof Z
       +(x.re is y.re and x.im is y.im)
     else
       +(x is y)
