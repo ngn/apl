@@ -67,7 +67,7 @@ withAlphaAndOmega ->
 extend apl, {format, approx, parse, compileAST, repr}
 apl.ws = (opts = {}) ->
   ctx = Object.create vocabulary
-  if opts.in then ctx['get_⎕'] = ctx['get_⍞'] = -> s = opts.in(); assert typeof s is 'string'; new APLArray s
+  if opts.in then ctx['get_⎕'] = ctx['get_⍞'] = -> s = opts.in(); assert typeof s is 'string'; new A s
   if opts.out then ctx['set_⎕'] = ctx['set_⍞'] = (x) -> opts.out format(x).join('\n') + '\n'
   (aplCode) -> exec aplCode, {ctx}
 

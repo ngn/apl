@@ -6,7 +6,7 @@ addVocabulary
     else
       compressOrReplicate ⍵, ⍺, axis
 
-  '⌿': adverb (⍵, ⍺, axis = APLArray.zero) ->
+  '⌿': adverb (⍵, ⍺, axis = A.zero) ->
     if typeof ⍵ is 'function'
       reduce ⍵, ⍺, axis
     else
@@ -33,9 +33,9 @@ addVocabulary
 reduce = @reduce = (f, g, axis0) ->
   assert typeof f is 'function'
   assert typeof g is 'undefined'
-  assert((typeof axis0 is 'undefined') or (axis0 instanceof APLArray))
+  assert((typeof axis0 is 'undefined') or (axis0 instanceof A))
   (⍵, ⍺) ->
-    if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
+    if !⍴⍴ ⍵ then ⍵ = new A [⍵.unwrap()]
     axis = if axis0? then axis0.toInt() else ⍴⍴(⍵) - 1
     if !(0 <= axis < ⍴⍴ ⍵) then rankError()
 
@@ -53,7 +53,7 @@ reduce = @reduce = (f, g, axis0) ->
     shape[axis] = ⍴(⍵)[axis] - n + 1
     rShape = shape
     if isNWise
-      if shape[axis] is 0 then return new APLArray [], rShape
+      if shape[axis] is 0 then return new A [], rShape
       if shape[axis] < 0 then lengthError()
     else
       rShape = rShape[..]
@@ -62,7 +62,7 @@ reduce = @reduce = (f, g, axis0) ->
     if ⍵.empty()
       if (z = f.identity)?
         assert !⍴⍴ z
-        return new APLArray z.data, rShape, repeat([0], rShape.length), z.offset
+        return new A z.data, rShape, repeat([0], rShape.length), z.offset
       else
         domainError()
 
@@ -72,17 +72,17 @@ reduce = @reduce = (f, g, axis0) ->
     loop
       if isBackwards
         x = ⍵.data[p]
-        x = if x instanceof APLArray then x else APLArray.scalar x
+        x = if x instanceof A then x else A.scalar x
         for i in [1...n] by 1
           y = ⍵.data[p + i * ⍵.stride[axis]]
-          y = if y instanceof APLArray then y else APLArray.scalar y
+          y = if y instanceof A then y else A.scalar y
           x = f x, y
       else
         x = ⍵.data[p + (n - 1) * ⍵.stride[axis]]
-        x = if x instanceof APLArray then x else APLArray.scalar x
+        x = if x instanceof A then x else A.scalar x
         for i in [n - 2 .. 0] by -1
           y = ⍵.data[p + i * ⍵.stride[axis]]
-          y = if y instanceof APLArray then y else APLArray.scalar y
+          y = if y instanceof A then y else A.scalar y
           x = f x, y
       if !⍴⍴ x then x = x.unwrap()
       data.push x
@@ -94,7 +94,7 @@ reduce = @reduce = (f, g, axis0) ->
       p += ⍵.stride[a]
       indices[a]++
 
-    new APLArray data, rShape
+    new A data, rShape
 
 # 0 1 0 1/'ABCD'                                ←→ 'BD'
 # 1 1 1 1 0/12 14 16 18 20                      ←→ 12 14 16 18
@@ -119,7 +119,7 @@ reduce = @reduce = (f, g, axis0) ->
 # 2 ¯1 2 /[1] 3 1⍴"ABC"   ←→ 3 5⍴'AA AABB BBCC CC'
 # 2 ¯2 2 / 7              ←→ 7 7 0 0 7 7
 compressOrReplicate = (⍵, ⍺, axis) ->
-  if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
+  if !⍴⍴ ⍵ then ⍵ = new A [⍵.unwrap()]
   axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
   if ⍴⍴(⍺) > 1 then rankError()
   a = ⍺.toArray()
@@ -158,4 +158,4 @@ compressOrReplicate = (⍵, ⍺, axis) ->
       if i isnt axis then p += ⍵.stride[i]
       indices[i]++
 
-  new APLArray data, shape
+  new A data, shape

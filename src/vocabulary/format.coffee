@@ -29,7 +29,7 @@ addVocabulary
       # ⍕¯1             ←→ 1 2⍴'¯1'
       # ⍕¯1e¯100J¯2e¯99 ←→ 1 14⍴'¯1e¯100J¯2e¯99'
       t = format ⍵
-      new APLArray t.join(''), [t.length, t[0].length]
+      new A t.join(''), [t.length, t[0].length]
 
 # Format an APL object as an array of strings
 format = (a) ->
@@ -38,7 +38,7 @@ format = (a) ->
   else if typeof a is 'string' then [a]
   else if typeof a is 'number' then r = [formatNumber a]; r.align = 'right'; r
   else if typeof a is 'function' then ['#procedure']
-  else if !(a instanceof APLArray) then ['' + a]
+  else if !(a instanceof A) then ['' + a]
   else if prod(⍴ a) is 0 then ['']
   else
     sa = ⍴ a
@@ -66,7 +66,7 @@ format = (a) ->
           c.width = Math.max c.width, box[0].length
           c.type = Math.max c.type,
             if typeof x is 'string' and x.length is 1 then 0
-            else if !(x instanceof APLArray) then 1
+            else if !(x instanceof A) then 1
             else 2
           box
 

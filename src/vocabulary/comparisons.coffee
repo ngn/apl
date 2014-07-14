@@ -51,18 +51,18 @@ addVocabulary
       #! (⍳0)≡""               ←→ 0
       # (2 0⍴0)≡(0 2⍴0)        ←→ 0
       #! (0⍴1 2 3)≡0⍴⊂2 2⍴⍳4   ←→ 0
-      APLArray.bool[+match ⍵, ⍺]
+      A.bool[+match ⍵, ⍺]
     else
       # ≡4                      ←→ 0
       # ≡⍳4                     ←→ 1
       # ≡2 2⍴⍳4                 ←→ 1
       # ≡"abc"1 2 3(23 55)      ←→ 2
       # ≡"abc"(2 4⍴"abc"2 3"k") ←→ 3
-      new APLArray [depthOf ⍵], []
+      new A [depthOf ⍵], []
 
 depthOf = (x) ->
-  if x instanceof APLArray
-    if (!⍴⍴ x) and (x.data[0] !instanceof APLArray) then return 0
+  if x instanceof A
+    if (!⍴⍴ x) and (x.data[0] !instanceof A) then return 0
     r = 0
     each x, (y) -> r = Math.max r, depthOf y
     r + 1

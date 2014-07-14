@@ -10,7 +10,7 @@ pervasive = ({monad, dyad}) ->
   pervadeMonadic =
     if monad
       (x) ->
-        if x instanceof APLArray
+        if x instanceof A
           x.map pervadeMonadic
         else
           r = monad x
@@ -22,8 +22,8 @@ pervasive = ({monad, dyad}) ->
     if dyad
       (x, y) ->
         # tx, ty: 0=unwrapped scalar; 1=singleton array; 2=non-singleton array
-        tx = if x instanceof APLArray then (if x.isSingleton() then 1 else 2) else 0
-        ty = if y instanceof APLArray then (if y.isSingleton() then 1 else 2) else 0
+        tx = if x instanceof A then (if x.isSingleton() then 1 else 2) else 0
+        ty = if y instanceof A then (if y.isSingleton() then 1 else 2) else 0
         switch 16 * tx + ty
           when 0x00
             r = dyad x, y
@@ -41,8 +41,8 @@ pervasive = ({monad, dyad}) ->
     else
       nonceError
   (⍵, ⍺) ->
-    assert ⍵ instanceof APLArray
-    assert ⍺ instanceof APLArray or !⍺?
+    assert ⍵ instanceof A
+    assert ⍺ instanceof A or !⍺?
     (if ⍺? then pervadeDyadic else pervadeMonadic) ⍵, ⍺
 
 macro real (f) ->
@@ -68,8 +68,8 @@ numeric = (f, g) -> (x, y, axis) ->
     g x, y, axis
 
 match = (x, y) ->
-  if x instanceof APLArray
-    if y !instanceof APLArray then false
+  if x instanceof A
+    if y !instanceof A then false
     else
       if ⍴⍴(x) isnt ⍴⍴(y) then return false
       for axis in [0...⍴⍴ x] by 1
@@ -78,7 +78,7 @@ match = (x, y) ->
       each2 x, y, (xi, yi) -> if !match xi, yi then r = false
       r
   else
-    if y instanceof APLArray then false
+    if y instanceof A then false
     else
       if x instanceof Z and y instanceof Z
         x.re is y.re and x.im is y.im
@@ -91,8 +91,8 @@ numApprox = (x, y) ->
 # approx() is like match(), but it is tolerant to precision errors;
 # used for comparing expected and actual results in doctests
 approx = (x, y) ->
-  if x instanceof APLArray
-    if y !instanceof APLArray then false
+  if x instanceof A
+    if y !instanceof A then false
     else
       if ⍴⍴(x) isnt ⍴⍴(y) then return false
       for axis in [0...⍴⍴ x] by 1
@@ -101,7 +101,7 @@ approx = (x, y) ->
       each2 x, y, (xi, yi) -> if !approx xi, yi then r = false
       r
   else
-    if y instanceof APLArray then false
+    if y instanceof A then false
     else if !(x? and y?) then false
     else
       if typeof x is 'number' then x = new Z x
@@ -117,10 +117,10 @@ bool = (x) ->
 getAxisList = (axes, rank) ->
   assert isInt rank, 0
   if !axes? then return []
-  assert axes instanceof APLArray
+  assert axes instanceof A
   if ⍴⍴(axes) isnt 1 or ⍴(axes)[0] isnt 1 then syntaxError() # [sic]
   a = axes.unwrap()
-  if a instanceof APLArray
+  if a instanceof A
     a = a.toArray()
     for x, i in a
       if !isInt x, 0, rank then domainError()
@@ -132,7 +132,7 @@ getAxisList = (axes, rank) ->
     domainError()
 
 withIdentity = (x, f) ->
-  f.identity = if x instanceof APLArray then x else APLArray.scalar x
+  f.identity = if x instanceof A then x else A.scalar x
   f
 
 adverb      = (f) -> f.isAdverb      = true; f

@@ -18,7 +18,7 @@ vm = ({code, env, stack, pc}) ->
         a = []
         for x in stack.splice stack.length - code[pc++]
           a.push(if x.isSimple() then x.unwrap() else x)
-        stack.push new APLArray a
+        stack.push new A a
       when GET then stack.push(env[code[pc++]][code[pc++]] ? valueError())
       when SET then env[code[pc++]][code[pc++]] = stack[stack.length - 1]
       when MON
@@ -63,7 +63,7 @@ vm = ({code, env, stack, pc}) ->
       when SPL
         n = code[pc++]
         a = stack[stack.length - 1].toArray().reverse()
-        a = for x in a then (if x instanceof APLArray then x else new APLArray [x], [])
+        a = for x in a then (if x instanceof A then x else new A [x], [])
         if a.length is 1
           a = repeat a, n
         else if a.length isnt n

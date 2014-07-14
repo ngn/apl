@@ -18,7 +18,7 @@ addVocabulary
     shape      = for i in resultAxes then ⍴(⍵)[i]
     stride     = for i in resultAxes then ⍵.stride[i]
     data = []
-    each new APLArray(⍵.data, shape, stride, ⍵.offset),
+    each new A(⍵.data, shape, stride, ⍵.offset),
       (x, indices, p) ->
-        data.push new APLArray ⍵.data, unitShape, unitStride, p
-    new APLArray data, shape
+        data.push new A ⍵.data, unitShape, unitStride, p
+    new A data, shape

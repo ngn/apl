@@ -56,7 +56,7 @@ grade = (⍵, ⍺, direction) ->
 
   if !⍴⍴ ⍵ then rankError()
 
-  new APLArray [0...⍴(⍵)[0]]
+  new A [0...⍴(⍵)[0]]
     .sort (i, j) ->
       p = ⍵.offset
       indices = repeat [0], ⍴⍴ ⍵

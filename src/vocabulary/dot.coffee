@@ -33,12 +33,12 @@ outerProduct = (f) ->
     b = ⍵.toArray()
     data = []
     for x in a then for y in b
-      if x !instanceof APLArray then x = APLArray.scalar x
-      if y !instanceof APLArray then y = APLArray.scalar y
+      if x !instanceof A then x = A.scalar x
+      if y !instanceof A then y = A.scalar y
       z = f y, x
       if !⍴⍴ z then z = z.unwrap()
       data.push z
-    new APLArray data, ⍴(⍺).concat ⍴ ⍵
+    new A data, ⍴(⍺).concat ⍴ ⍵
 
 # For matrices, the inner product behaves like matrix multiplication where +
 # and × can be substituted with any verbs.
@@ -57,9 +57,9 @@ innerProduct = (g, f) ->
   F = vocabulary['¨'] reduce f
   G = outerProduct g
   (⍵, ⍺) ->
-    if !⍴⍴ ⍺ then ⍺ = new APLArray [⍺.unwrap()]
-    if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
+    if !⍴⍴ ⍺ then ⍺ = new A [⍺.unwrap()]
+    if !⍴⍴ ⍵ then ⍵ = new A [⍵.unwrap()]
     F G(
-      vocabulary['⊂'](⍵, undefined, new APLArray [0])
-      vocabulary['⊂'](⍺, undefined, new APLArray [⍴⍴(⍺) - 1])
+      vocabulary['⊂'](⍵, undefined, new A [0])
+      vocabulary['⊂'](⍺, undefined, new A [⍴⍴(⍺) - 1])
     )

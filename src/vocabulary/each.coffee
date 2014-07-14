@@ -17,30 +17,30 @@ addVocabulary
     (⍵, ⍺) ->
       if !⍺
         ⍵.map (x) ->
-          if x !instanceof APLArray then x = new APLArray [x], []
+          if x !instanceof A then x = new A [x], []
           r = f x
-          assert r instanceof APLArray
+          assert r instanceof A
           if ⍴⍴ r then r else r.unwrap()
       else if arrayEquals ⍴(⍺), ⍴(⍵)
         ⍵.map2 ⍺, (x, y) ->
-          if x !instanceof APLArray then x = new APLArray [x], []
-          if y !instanceof APLArray then y = new APLArray [y], []
+          if x !instanceof A then x = new A [x], []
+          if y !instanceof A then y = new A [y], []
           r = f x, y
-          assert r instanceof APLArray
+          assert r instanceof A
           if ⍴⍴ r then r else r.unwrap()
       else if ⍺.isSingleton()
-        y = if ⍺.data[0] instanceof APLArray then ⍺.unwrap() else ⍺
+        y = if ⍺.data[0] instanceof A then ⍺.unwrap() else ⍺
         ⍵.map (x) ->
-          if x !instanceof APLArray then x = new APLArray [x], []
+          if x !instanceof A then x = new A [x], []
           r = f x, y
-          assert r instanceof APLArray
+          assert r instanceof A
           if ⍴⍴ r then r else r.unwrap()
       else if ⍵.isSingleton()
-        x = if ⍵.data[0] instanceof APLArray then ⍵.unwrap() else ⍵
+        x = if ⍵.data[0] instanceof A then ⍵.unwrap() else ⍵
         ⍺.map (y) ->
-          if y !instanceof APLArray then y = new APLArray [y], []
+          if y !instanceof A then y = new A [y], []
           r = f x, y
-          assert r instanceof APLArray
+          assert r instanceof A
           if ⍴⍴ r then r else r.unwrap()
       else
         lengthError()

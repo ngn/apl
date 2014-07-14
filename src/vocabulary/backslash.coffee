@@ -29,7 +29,7 @@ addVocabulary
     else
       expand ⍵, ⍺, axis
 
-  '⍀': adverb (⍵, ⍺, axis = APLArray.zero) ->
+  '⍀': adverb (⍵, ⍺, axis = A.zero) ->
     if typeof ⍵ is 'function'
       scan ⍵, undefined, axis
     else
@@ -45,11 +45,11 @@ scan = (f, g, axis) ->
     ⍵.map (x, indices) ->
       p = ⍵.offset
       for index, a in indices then p += index * ⍵.stride[a]
-      if x !instanceof APLArray then x = APLArray.scalar x
+      if x !instanceof A then x = A.scalar x
       for j in [0...indices[axis]] by 1
         p -= ⍵.stride[axis]
         y = ⍵.data[p]
-        if y !instanceof APLArray then y = APLArray.scalar y
+        if y !instanceof A then y = A.scalar y
         x = f x, y
       if !⍴⍴ x then x = x.unwrap()
       x
@@ -91,4 +91,4 @@ expand = (⍵, ⍺, axis) ->
       if i isnt axis then p += ⍵.stride[i]
       indices[i]++
 
-  new APLArray data, shape
+  new A data, shape

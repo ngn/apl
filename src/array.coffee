@@ -2,7 +2,7 @@ macro ⍴ (a) -> macro.codeToNode(-> (a).shape).subst {a}
 macro ⍴⍴ (a) -> macro.codeToNode(-> (a).shape.length).subst {a}
 
 # each() is a hygienic macro that efficiently iterates the elements of an
-# APLArray in ravel order.  No function calls are made during iteration as
+# APL array in ravel order.  No function calls are made during iteration as
 # those are relatively expensive in JavaScript.
 macro each (a0, f) ->
   (macro.codeToNode ->
@@ -39,7 +39,7 @@ macro each (a0, f) ->
     indices:  macro.csToNode f.params[1]?.name?.value ? @tmp()
     p:        macro.csToNode f.params[2]?.name?.value ? @tmp()
 
-# each2() is like each() but it iterates over two APLArray-s in parallel
+# each2() is like each() but it iterates over two APL array in parallel
 macro each2 (a0, b0, f) ->
   (macro.codeToNode ->
     a = a0; data  = a.data; shape  = a.shape; stride  = a.stride
@@ -87,7 +87,7 @@ macro each2 (a0, b0, f) ->
     indices:  macro.csToNode f.params[2]?.name?.value ? @tmp()
 
 
-class APLArray
+class A # an APL array
 
   constructor: (@data, @shape, @stride, @offset = 0) ->
     @shape ?= [@data.length]
@@ -109,14 +109,14 @@ class APLArray
     assert typeof f is 'function'
     data = []
     each @, (x, indices) -> data.push f x, indices
-    new APLArray data, @shape
+    new A data, @shape
 
   map2: (a, f) ->
-    assert a instanceof APLArray
+    assert a instanceof A
     assert typeof f is 'function'
     data = []
     each2 @, a, (x, y, indices) -> data.push f x, y, indices
-    new APLArray data, @shape
+    new A data, @shape
 
   toArray: ->
     r = []
@@ -145,11 +145,11 @@ class APLArray
     for n in @shape when n isnt 1 then return false
     true
 
-  isSimple: -> ⍴⍴(@) is 0 and @data[@offset] !instanceof APLArray
+  isSimple: -> ⍴⍴(@) is 0 and @data[@offset] !instanceof A
   unwrap: -> if prod(⍴ @) is 1 then @data[@offset] else lengthError()
   getPrototype: -> if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' ' # todo
   toString: -> format(@).join '\n'
-  repr: -> "new APLArray(#{repr @data},#{repr @shape},#{repr @stride},#{repr @offset})"
+  repr: -> "new A(#{repr @data},#{repr @shape},#{repr @stride},#{repr @offset})"
 
 strideForShape = (shape) ->
   assert shape.length?
@@ -161,8 +161,8 @@ strideForShape = (shape) ->
     r[i] = r[i + 1] * shape[i + 1]
   r
 
-APLArray.zero   = new APLArray [0], []
-APLArray.one    = new APLArray [1], []
-APLArray.zilde  = new APLArray [], [0]
-APLArray.scalar = (x) -> new APLArray [x], []
-APLArray.bool   = [APLArray.zero, APLArray.one]
+A.zero   = new A [0], []
+A.one    = new A [1], []
+A.zilde  = new A [], [0]
+A.scalar = (x) -> new A [x], []
+A.bool   = [A.zero, A.one]

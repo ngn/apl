@@ -15,7 +15,7 @@ addVocabulary
       # 0 0 0⍉3 3 3⍴⍳27 ←→ 0 13 26
       # 0 1 0⍉3 3 3⍴⍳27 ←→ 3 3⍴0 3 6 10 13 16 20 23 26
       if ⍴⍴(⍺) > 1 then rankError()
-      if !⍴⍴ ⍺ then ⍺ = new APLArray [⍺.unwrap()]
+      if !⍴⍴ ⍺ then ⍺ = new A [⍺.unwrap()]
       n = ⍴⍴ ⍵
       if ⍴(⍺)[0] isnt n then lengthError()
       shape = []
@@ -30,7 +30,7 @@ addVocabulary
           shape[x] = ⍴(⍵)[i]
           stride[x] = ⍵.stride[i]
       for u in shape when !u? then rankError()
-      new APLArray ⍵.data, shape, stride, ⍵.offset
+      new A ⍵.data, shape, stride, ⍵.offset
     else
       # ⍉2 3⍴1 2 3 6 7 8  ←→ 3 2⍴1 6 2 7 3 8
       # ⍴⍉2 3⍴1 2 3 6 7 8 ←→ 3 2
@@ -41,4 +41,4 @@ addVocabulary
       # ...                         3 15  7 19  11 23)
       # ⍉⍬                ←→ ⍬
       # ⍉''               ←→ ''
-      new APLArray ⍵.data, reversed(⍴ ⍵), reversed(⍵.stride), ⍵.offset
+      new A ⍵.data, reversed(⍴ ⍵), reversed(⍵.stride), ⍵.offset

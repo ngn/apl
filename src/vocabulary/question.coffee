@@ -29,4 +29,4 @@ deal = (⍵, ⍺) ->
   for i in [0...⍺] by 1
     j = i + Math.floor Math.random() * (⍵ - i)
     h = r[i]; r[i] = r[j]; r[j] = h
-  new APLArray r[...⍺]
+  new A r[...⍺]

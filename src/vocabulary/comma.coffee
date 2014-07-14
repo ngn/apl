@@ -27,29 +27,29 @@ addVocabulary
         axis = nAxes - 1
 
       if ⍴⍴(⍺) is ⍴⍴(⍵) is 0
-        return new APLArray [⍺.unwrap(), ⍵.unwrap()]
+        return new A [⍺.unwrap(), ⍵.unwrap()]
       else if !⍴⍴ ⍺
         s = ⍴(⍵)[..]
         if isInt axis then s[axis] = 1
-        ⍺ = new APLArray [⍺.unwrap()], s, repeat([0], ⍴⍴ ⍵)
+        ⍺ = new A [⍺.unwrap()], s, repeat([0], ⍴⍴ ⍵)
       else if !⍴⍴ ⍵
         s = ⍴(⍺)[..]
         if isInt axis then s[axis] = 1
-        ⍵ = new APLArray [⍵.unwrap()], s, repeat([0], ⍴⍴ ⍺)
+        ⍵ = new A [⍵.unwrap()], s, repeat([0], ⍴⍴ ⍺)
       else if ⍴⍴(⍺) + 1 is ⍴⍴ ⍵
         if !isInt axis then rankError()
         shape = ⍴(⍺)[..]
         shape.splice axis, 0, 1
         stride = ⍺.stride[..]
         stride.splice axis, 0, 0
-        ⍺ = new APLArray ⍺.data, shape, stride, ⍺.offset
+        ⍺ = new A ⍺.data, shape, stride, ⍺.offset
       else if ⍴⍴(⍺) is ⍴⍴(⍵) + 1
         if !isInt axis then rankError()
         shape = ⍴(⍵)[..]
         shape.splice axis, 0, 1
         stride = ⍵.stride[..]
         stride.splice axis, 0, 0
-        ⍵ = new APLArray ⍵.data, shape, stride, ⍵.offset
+        ⍵ = new A ⍵.data, shape, stride, ⍵.offset
       else if ⍴⍴(⍺) isnt ⍴⍴(⍵)
         rankError()
 
@@ -111,7 +111,7 @@ addVocabulary
           r += rStride[a]
           pIndices[a]++
 
-      new APLArray data, shape, stride
+      new A data, shape, stride
 
     else
       assert 0

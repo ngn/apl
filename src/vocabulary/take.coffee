@@ -31,7 +31,7 @@ addVocabulary
 # ⍬↑3 3⍴⍳9         ←→ 3 3⍴⍳9
 take = (⍵, ⍺) ->
   if ⍴⍴(⍺) > 1 then rankError()
-  if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()], (if !⍴⍴ ⍺ then [1] else repeat [1], ⍴(⍺)[0])
+  if !⍴⍴ ⍵ then ⍵ = new A [⍵.unwrap()], (if !⍴⍴ ⍺ then [1] else repeat [1], ⍴(⍺)[0])
   a = ⍺.toArray()
   if a.length > ⍴⍴ ⍵ then rankError()
   for x in a when typeof x isnt 'number' or x isnt Math.floor x then domainError()
@@ -72,13 +72,13 @@ take = (⍵, ⍺) ->
         p += ⍵.stride[axis]
         q += stride[axis]
         copyIndices[axis]++
-    new APLArray data, shape, stride
+    new A data, shape, stride
   else
     offset = ⍵.offset
     for x, i in a
       if x < 0
         offset += (⍴(⍵)[i] + x) * ⍵.stride[i]
-    new APLArray ⍵.data, shape, ⍵.stride, offset
+    new A ⍵.data, shape, ⍵.stride, offset
 
 # ↑(1 2 3)(4 5 6) ←→ 1 2 3
 # ↑(1 2)(3 4 5)   ←→ 1 2
@@ -88,4 +88,4 @@ take = (⍵, ⍺) ->
 #! ↑''             ←→ ' '
 first = (⍵) ->
   x = if ⍵.empty() then ⍵.getPrototype() else ⍵.data[⍵.offset]
-  if x instanceof APLArray then x else new APLArray [x], []
+  if x instanceof A then x else new A [x], []

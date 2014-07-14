@@ -2,7 +2,7 @@ addVocabulary
 
   'get_⎕': ->
     if typeof window?.prompt is 'function'
-      new APLArray(prompt('⎕:') or '')
+      new A(prompt('⎕:') or '')
     else
       nonceError 'Reading from ⎕ is not implemented.'
 
@@ -16,9 +16,9 @@ addVocabulary
 
   'get_⍞': cps (_, _1, _2, callback) ->
     if typeof window?.prompt is 'function'
-      setTimeout (-> callback new APLArray(prompt('') or '')), 0
+      setTimeout (-> callback new A(prompt('') or '')), 0
     else
-      readline '', (line) -> callback new APLArray line
+      readline '', (line) -> callback new A line
 
   'set_⍞': (x) ->
     s = format(x).join '\n'
@@ -34,12 +34,12 @@ addVocabulary
   # ⎕IO   ←→ 0
   # ⎕IO←0 ←→ 0
   # ⎕IO←1 !!!
-  'get_⎕IO': -> APLArray.zero
-  'set_⎕IO': (x) -> if match x, APLArray.zero then x else domainError 'The index origin (⎕IO) is fixed at 0'
+  'get_⎕IO': -> A.zero
+  'set_⎕IO': (x) -> if match x, A.zero then x else domainError 'The index origin (⎕IO) is fixed at 0'
 
   '⎕DL': cps (⍵, ⍺, _, callback) ->
     t0 = +new Date
-    setTimeout (-> callback new APLArray [new Date - t0]), ⍵.unwrap()
+    setTimeout (-> callback new A [new Date - t0]), ⍵.unwrap()
     return
 
   # 'b(c+)d'⎕RE'abcd' ←→ 1 'bcd' (,'c')
@@ -51,10 +51,10 @@ addVocabulary
     try re = new RegExp x catch e then domainError e.toString()
     if m = re.exec y
       r = [m.index]
-      for u in m then r.push new APLArray(u or '')
-      new APLArray r
+      for u in m then r.push new A(u or '')
+      new A r
     else
-      APLArray.zilde
+      A.zilde
 
   # ⎕UCS'a' ←→ 97
   # ⎕UCS'ab' ←→ 97 98

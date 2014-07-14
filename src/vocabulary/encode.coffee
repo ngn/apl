@@ -50,4 +50,4 @@ addVocabulary
           else
             data[(k * m + i) * b.length + j] = y % x
             y = Math.round((y - (y % x)) / x)
-    new APLArray data, shape
+    new A data, shape

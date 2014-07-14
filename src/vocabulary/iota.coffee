@@ -25,7 +25,7 @@ addVocabulary
               throw 'break'
         catch e
           if e isnt 'break' then throw e
-        if rank.length is 1 then rank[0] else new APLArray rank
+        if rank.length is 1 then rank[0] else new A rank
     else
       # ⍳5     ←→ 0 1 2 3 4
       # ⍴⍳5    ←→ 1 ⍴ 5
@@ -54,12 +54,12 @@ addVocabulary
         for i in [0...n] by 1 then data[i] = i
       else
         m = Math.max a...
-        A =
+        ctor =
           if      m <=       0x100 then Uint8Array
           else if m <=     0x10000 then Uint16Array
           else if m <= 0x100000000 then Uint32Array
           else domainError()
-        itemData = new A n * a.length
+        itemData = new ctor n * a.length
         u = n
         for i in [0...a.length] by 1
           u /= a[i]
@@ -73,5 +73,5 @@ addVocabulary
         itemShape = [a.length]
         itemStride = [n]
         for i in [0...n] by 1
-          data.push new APLArray itemData, itemShape, itemStride, i
-      new APLArray data, a
+          data.push new A itemData, itemShape, itemStride, i
+      new A data, a

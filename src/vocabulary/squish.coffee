@@ -37,7 +37,7 @@ addVocabulary
 
     r = ⍵
     for i in [a.length - 1..0] by -1
-      u = if a[i] instanceof APLArray then a[i] else new APLArray [a[i]], []
+      u = if a[i] instanceof A then a[i] else new A [a[i]], []
       r = indexAtSingleAxis r, u, axes[i]
     r
 
@@ -86,7 +86,7 @@ addVocabulary
   _substitute: (args) ->
     [value, ⍺, ⍵, axes] =
       for x in args.toArray()
-        if x instanceof APLArray then x else new APLArray [x], []
+        if x instanceof A then x else new A [x], []
 
     if 1 < ⍴⍴ ⍺ then rankError()
     a = ⍺.toArray()
@@ -99,25 +99,25 @@ addVocabulary
     else
       axes = [0...a.length]
 
-    subs = squish (vocabulary['⍳'] new APLArray ⍴ ⍵), ⍺, new APLArray axes
+    subs = squish (vocabulary['⍳'] new A ⍴ ⍵), ⍺, new A axes
     if value.isSingleton()
-      value = new APLArray [value], ⍴(subs), repeat [0], ⍴⍴(subs)
+      value = new A [value], ⍴(subs), repeat [0], ⍴⍴(subs)
     data = ⍵.toArray()
     stride = strideForShape ⍴ ⍵
     each2 subs, value, (u, v) ->
-      if v instanceof APLArray and !⍴⍴ v then v = v.unwrap()
-      if u instanceof APLArray
+      if v instanceof A and !⍴⍴ v then v = v.unwrap()
+      if u instanceof A
         p = 0 # pointer in data
         for x, i in u.toArray() then p += x * stride[i]
         data[p] = v
       else
         data[u] = v
 
-    new APLArray data, ⍴ ⍵
+    new A data, ⍴ ⍵
 
 indexAtSingleAxis = (⍵, sub, ax) ->
-  assert ⍵ instanceof APLArray
-  assert sub instanceof APLArray
+  assert ⍵ instanceof A
+  assert sub instanceof A
   assert isInt ax
   assert 0 <= ax < ⍴⍴ ⍵
   u = sub.toArray()
@@ -138,13 +138,13 @@ indexAtSingleAxis = (⍵, sub, ax) ->
     for x, i in subStride then subStride[i] = x * d * ⍵.stride[ax]
     stride.splice ax, 1, subStride...
     offset = ⍵.offset + u[0] * ⍵.stride[ax]
-    new APLArray ⍵.data, shape, stride, offset
+    new A ⍵.data, shape, stride, offset
   else
     shape1 = ⍴(⍵)[..]; shape1.splice ax, 1
     stride1 = ⍵.stride[..]; stride1.splice ax, 1
     data = []
     each sub, (x) ->
-      chunk = new APLArray ⍵.data, shape1, stride1, ⍵.offset + x * ⍵.stride[ax]
+      chunk = new A ⍵.data, shape1, stride1, ⍵.offset + x * ⍵.stride[ax]
       data.push chunk.toArray()...
     shape = shape1[..]
     stride = strideForShape shape
@@ -153,4 +153,4 @@ indexAtSingleAxis = (⍵, sub, ax) ->
     k = prod shape1
     for i in [0...subStride.length] by 1 then subStride[i] *= k
     stride.splice ax, 0, subStride...
-    new APLArray data, shape, stride
+    new A data, shape, stride

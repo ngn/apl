@@ -39,8 +39,8 @@ addVocabulary
   # ...             0 1 10 11 100 101 110 111)
   '⊥': (⍵, ⍺) ->
     assert ⍺
-    if !⍴⍴ ⍺ then ⍺ = new APLArray [⍺.unwrap()]
-    if !⍴⍴ ⍵ then ⍵ = new APLArray [⍵.unwrap()]
+    if !⍴⍴ ⍺ then ⍺ = new A [⍺.unwrap()]
+    if !⍴⍴ ⍵ then ⍵ = new A [⍵.unwrap()]
     lastDimA = ⍴(⍺)[⍴⍴(⍺) - 1]
     firstDimB = ⍴(⍵)[0]
     if lastDimA isnt 1 and firstDimB isnt 1 and lastDimA isnt firstDimB
@@ -58,4 +58,4 @@ addVocabulary
         for k in [1...y.length]
           z = z * x[k] + y[k]
         data.push z
-    new APLArray data, ⍴(⍺)[...-1].concat ⍴(⍵)[1..]
+    new A data, ⍴(⍺)[...-1].concat ⍴(⍵)[1..]

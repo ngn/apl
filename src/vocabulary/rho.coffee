@@ -15,10 +15,10 @@ addVocabulary
       for x in a when !isInt x, 0 then domainError()
       n = prod a
       if !n
-        new APLArray [], a
+        new A [], a
       else if (a.length >= ⍴⍴ ⍵) and arrayEquals ⍴(⍵), a[a.length - (⍴⍴ ⍵)...]
         # If ⍺ is only prepending axes to ⍴⍵, we can reuse the .data array
-        new APLArray ⍵.data, a, repeat([0], a.length - ⍴⍴ ⍵).concat(⍵.stride), ⍵.offset
+        new A ⍵.data, a, repeat([0], a.length - ⍴⍴ ⍵).concat(⍵.stride), ⍵.offset
       else
         data = []
         try
@@ -32,7 +32,7 @@ addVocabulary
           if data.length isnt n then data = data.concat data[... n - data.length]
         else
           data = repeat [⍵.getPrototype()], n
-        new APLArray data, a
+        new A data, a
     else
       # ⍴0       ←→ 0⍴0
       # ⍴0 0     ←→ 1⍴2
@@ -42,4 +42,4 @@ addVocabulary
       # ⍴'a'     ←→ 0⍴0
       # ⍴'ab'    ←→ 1⍴2
       # ⍴2 3 4⍴0 ←→ 2 3 4
-      new APLArray ⍴ ⍵
+      new A ⍴ ⍵
