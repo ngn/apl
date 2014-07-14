@@ -1,4 +1,6 @@
 addVocabulary
+  '⍀': adverb (⍵, ⍺, axis = A.zero) -> scanOrExpand ⍵, ⍺, axis
+
   # +\20 10 ¯5 7               ←→ 20 30 25 32
   # ,\"AB" "CD" "EF"           ←→ 'AB' 'ABCD' 'ABCDEF'
   # ×\2 3⍴5 2 3 4 7 6          ←→ 2 3⍴5 10 30 4 28 168
@@ -23,72 +25,59 @@ addVocabulary
   # 1 0 1⍀2 2⍴'ABCD'    ←→ 3 2⍴'AB  CD'
   # 1 0 1\[0]2 2⍴'ABCD' ←→ 3 2⍴'AB  CD'
   # 1 0 1\[1]2 2⍴'ABCD' ←→ 2 3⍴'A BC D'
-  '\\': adverb (⍵, ⍺, axis) ->
+  '\\': scanOrExpand = adverb (⍵, ⍺, axis) ->
     if typeof ⍵ is 'function'
-      scan ⍵, undefined, axis
+      assert typeof ⍺ is 'undefined'
+      f = ⍵
+      (⍵, ⍺) ->
+        assert !⍺?
+        if !⍴⍴ ⍵ then return ⍵
+        axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
+        ⍵.map (x, indices) ->
+          p = ⍵.offset
+          for index, a in indices then p += index * ⍵.stride[a]
+          if x !instanceof A then x = A.scalar x
+          for j in [0...indices[axis]] by 1
+            p -= ⍵.stride[axis]
+            y = ⍵.data[p]
+            if y !instanceof A then y = A.scalar y
+            x = f x, y
+          if !⍴⍴ x then x = x.unwrap()
+          x
     else
-      expand ⍵, ⍺, axis
+      if !⍴⍴ ⍵ then nonceError 'Expand of scalar not implemented'
+      axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
+      if ⍴⍴(⍺) > 1 then rankError()
+      a = ⍺.toArray()
 
-  '⍀': adverb (⍵, ⍺, axis = A.zero) ->
-    if typeof ⍵ is 'function'
-      scan ⍵, undefined, axis
-    else
-      expand ⍵, ⍺, axis
+      shape = ⍴(⍵)[..]
+      shape[axis] = a.length
+      b = []
+      i = 0
+      for x in a
+        if !isInt x, 0, 2 then domainError()
+        b.push(if x > 0 then i++ else null)
+      if i isnt ⍴(⍵)[axis] then lengthError()
 
-# Helper for `\` and `⍀` in their adverbial sense
-scan = (f, g, axis) ->
-  assert typeof g is 'undefined'
-  (⍵, ⍺) ->
-    assert !⍺?
-    if !⍴⍴ ⍵ then return ⍵
-    axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
-    ⍵.map (x, indices) ->
-      p = ⍵.offset
-      for index, a in indices then p += index * ⍵.stride[a]
-      if x !instanceof A then x = A.scalar x
-      for j in [0...indices[axis]] by 1
-        p -= ⍵.stride[axis]
-        y = ⍵.data[p]
-        if y !instanceof A then y = A.scalar y
-        x = f x, y
-      if !⍴⍴ x then x = x.unwrap()
-      x
+      data = []
+      if shape[axis] isnt 0 and !⍵.empty()
+        filler = ⍵.getPrototype()
+        p = ⍵.offset
+        indices = repeat [0], shape.length
+        loop
+          x =
+            if b[indices[axis]]?
+              ⍵.data[p + b[indices[axis]] * ⍵.stride[axis]]
+            else
+              filler
+          data.push x
 
-# Helper for `\` and `⍀` in their verbal sense
-expand = (⍵, ⍺, axis) ->
-  if !⍴⍴ ⍵ then nonceError 'Expand of scalar not implemented'
-  axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
-  if ⍴⍴(⍺) > 1 then rankError()
-  a = ⍺.toArray()
+          i = shape.length - 1
+          while i >= 0 and indices[i] + 1 is shape[i]
+            if i isnt axis then p -= ⍵.stride[i] * indices[i]
+            indices[i--] = 0
+          if i < 0 then break
+          if i isnt axis then p += ⍵.stride[i]
+          indices[i]++
 
-  shape = ⍴(⍵)[..]
-  shape[axis] = a.length
-  b = []
-  i = 0
-  for x in a
-    if !isInt x, 0, 2 then domainError()
-    b.push(if x > 0 then i++ else null)
-  if i isnt ⍴(⍵)[axis] then lengthError()
-
-  data = []
-  if shape[axis] isnt 0 and !⍵.empty()
-    filler = ⍵.getPrototype()
-    p = ⍵.offset
-    indices = repeat [0], shape.length
-    loop
-      x =
-        if b[indices[axis]]?
-          ⍵.data[p + b[indices[axis]] * ⍵.stride[axis]]
-        else
-          filler
-      data.push x
-
-      i = shape.length - 1
-      while i >= 0 and indices[i] + 1 is shape[i]
-        if i isnt axis then p -= ⍵.stride[i] * indices[i]
-        indices[i--] = 0
-      if i < 0 then break
-      if i isnt axis then p += ⍵.stride[i]
-      indices[i]++
-
-  new A data, shape
+      new A data, shape
