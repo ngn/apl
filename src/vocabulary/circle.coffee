@@ -1,18 +1,12 @@
 addVocabulary
-
   '○': pervasive
-
-    # Pi times (`○`)
-    #
     # ○2     ←→ 6.283185307179586
     # ○2J2   ←→ 6.283185307179586J6.283185307179586
     # ○'ABC' !!! DOMAIN ERROR
     monad: numeric ((x) -> Math.PI * x),
       (x) ->
-        new Complex Math.PI * x.re, Math.PI * x.im
+        new Z Math.PI * x.re, Math.PI * x.im
 
-    # Circular and hyperbolic functions (`○`)
-    #
     # ¯12○2          ←→ ¯0.4161468365471J0.9092974268257
     # ¯12○2j3        ←→ ¯0.02071873100224J0.04527125315609
     # ¯11○2          ←→ 0j2
@@ -78,21 +72,21 @@ addVocabulary
     dyad: (x, i) ->
       if typeof x is 'number'
         switch i
-          when -12 then Complex.exp simplify 0, x
+          when -12 then Z.exp simplify 0, x
           when -11 then simplify 0, x
           when -10 then x
           when -9 then x
           when -8 then simplify 0, -Math.sqrt(1 + x * x)
-          when -7 then Complex.atanh x
-          when -6 then Complex.acosh x
-          when -5 then Complex.asinh x
+          when -7 then Z.atanh x
+          when -6 then Z.acosh x
+          when -5 then Z.asinh x
           when -4
-            t = Complex.sqrt(x * x - 1)
+            t = Z.sqrt(x * x - 1)
             if x < -1 then -t else t
-          when -3 then Complex.atan x
-          when -2 then Complex.acos x
-          when -1 then Complex.asin x
-          when  0 then Complex.sqrt(1 - x * x)
+          when -3 then Z.atan x
+          when -2 then Z.acos x
+          when -1 then Z.asin x
+          when  0 then Z.sqrt(1 - x * x)
           when  1 then Math.sin x
           when  2 then Math.cos x
           when  3 then Math.tan x
@@ -100,46 +94,46 @@ addVocabulary
           when  5 then a = Math.exp x; b = 1 / a ; 0.5 * (a - b) # sinh
           when  6 then a = Math.exp x; b = 1 / a ; 0.5 * (a + b) # cosh
           when  7 then a = Math.exp x; b = 1 / a; (a - b) / (a + b) # tanh
-          when  8 then Complex.sqrt(-1 - x * x)
+          when  8 then Z.sqrt(-1 - x * x)
           when  9 then x
           when 10 then Math.abs x
           when 11 then 0
           when 12 then 0
           else domainError 'Unknown circular or hyperbolic function ' + i
-      else if x instanceof Complex
+      else if x instanceof Z
         switch i
-          when -12 then Complex.exp simplify -x.im, x.re
-          when -11 then Complex.itimes x
-          when -10 then Complex.conjugate x
+          when -12 then Z.exp simplify -x.im, x.re
+          when -11 then Z.itimes x
+          when -10 then Z.conjugate x
           when -9 then x
           when -8
-            t = Complex.subtract -1, (Complex.multiply x, x)
-            Complex.negate Complex.sqrt t
-          when -7 then Complex.atanh x
-          when -6 then Complex.acosh x
-          when -5 then Complex.asinh x
+            t = Z.subtract -1, (Z.multiply x, x)
+            Z.negate Z.sqrt t
+          when -7 then Z.atanh x
+          when -6 then Z.acosh x
+          when -5 then Z.asinh x
           when -4
             if x.re is -1 and x.im is 0 then 0
             else
-              a = Complex.add x, 1
-              b = Complex.subtract x, 1
-              Complex.multiply a, Complex.sqrt (Complex.divide b, a)
-          when -3 then Complex.atan x
-          when -2 then Complex.acos x
-          when -1 then Complex.asin x
-          when  0 then Complex.sqrt Complex.subtract 1, Complex.multiply x, x
-          when  1 then Complex.sin x
-          when  2 then Complex.cos x
-          when  3 then Complex.tan x
-          when  4 then Complex.sqrt Complex.add 1, Complex.multiply x, x
-          when  5 then Complex.sinh x
-          when  6 then Complex.cosh x
-          when  7 then Complex.tanh x
-          when  8 then Complex.sqrt Complex.subtract -1, Complex.multiply x, x
+              a = Z.add x, 1
+              b = Z.subtract x, 1
+              Z.multiply a, Z.sqrt (Z.divide b, a)
+          when -3 then Z.atan x
+          when -2 then Z.acos x
+          when -1 then Z.asin x
+          when  0 then Z.sqrt Z.subtract 1, Z.multiply x, x
+          when  1 then Z.sin x
+          when  2 then Z.cos x
+          when  3 then Z.tan x
+          when  4 then Z.sqrt Z.add 1, Z.multiply x, x
+          when  5 then Z.sinh x
+          when  6 then Z.cosh x
+          when  7 then Z.tanh x
+          when  8 then Z.sqrt Z.subtract -1, Z.multiply x, x
           when  9 then x.re
-          when 10 then Complex.magnitude x
+          when 10 then Z.magnitude x
           when 11 then x.im
-          when 12 then Complex.direction x
+          when 12 then Z.direction x
           else domainError 'Unknown circular or hyperbolic function ' + i
       else
         domainError()

@@ -2,14 +2,8 @@ addVocabulary
 
   '⍕': (⍵, ⍺) ->
     if ⍺
-
-      # Format by example or specification (`⍕`)
       nonceError()
-
     else
-
-      # Format (`⍕`)
-      #
       # ⍕123            ←→ 1 3⍴'123'
       # ⍕123 456        ←→ 1 7⍴'123 456'
       # ⍕123 'a'        ←→ 1 5⍴'123 a'
@@ -17,25 +11,25 @@ addVocabulary
       # ⍕1 2⍴'a'        ←→ 1 2⍴'a'
       # ⍕2 2⍴'a'        ←→ 2 2⍴'a'
       # ⍕2 2⍴5          ←→ 2 3⍴('5 5',
-      # ...                      '5 5')
+      # ...                     '5 5')
       # ⍕2 2⍴0 0 0 'a'  ←→ 2 3⍴('0 0',
-      # ...                      '0 a')
+      # ...                     '0 a')
       # ⍕2 2⍴0 0 0 'ab' ←→ 2 6⍴('0   0 ',
-      # ...                      '0  ab ')
+      # ...                     '0  ab ')
       # ⍕2 2⍴0 0 0 123  ←→ 2 5⍴('0   0',
-      # ...                      '0 123')
+      # ...                     '0 123')
       # ⍕4 3 ⍴ '---' '---' '---' 1 2 3 4 5 6 100 200 300
       # ...             ←→ 4 17⍴(' ---   ---   --- ',
-      # ...                       '   1     2     3 ',
-      # ...                       '   4     5     6 ',
-      # ...                       ' 100   200   300 ')
+      # ...                      '   1     2     3 ',
+      # ...                      '   4     5     6 ',
+      # ...                      ' 100   200   300 ')
       # ⍕1 ⍬ 2 '' 3     ←→ 1 11⍴'1    2    3'
       # ⍕∞              ←→ 1 1⍴'∞'
       # ⍕¯∞             ←→ 1 2⍴'¯∞'
       # ⍕¯1             ←→ 1 2⍴'¯1'
       # ⍕¯1e¯100J¯2e¯99 ←→ 1 14⍴'¯1e¯100J¯2e¯99'
       t = format ⍵
-      new APLArray t.join(''), [t.length, t[0].length]
+      new A t.join(''), [t.length, t[0].length]
 
 # Format an APL object as an array of strings
 format = (a) ->
@@ -44,7 +38,7 @@ format = (a) ->
   else if typeof a is 'string' then [a]
   else if typeof a is 'number' then r = [formatNumber a]; r.align = 'right'; r
   else if typeof a is 'function' then ['#procedure']
-  else if !(a instanceof APLArray) then ['' + a]
+  else if !(a instanceof A) then ['' + a]
   else if prod(⍴ a) is 0 then ['']
   else
     sa = ⍴ a
@@ -72,7 +66,7 @@ format = (a) ->
           c.width = Math.max c.width, box[0].length
           c.type = Math.max c.type,
             if typeof x is 'string' and x.length is 1 then 0
-            else if !(x instanceof APLArray) then 1
+            else if !(x instanceof A) then 1
             else 2
           box
 
@@ -99,10 +93,10 @@ format = (a) ->
         else
           left = repeat ' ', c.leftMargin
           right = repeat ' ', c.rightMargin + c.width - t[0].length
-        for k in [0...t.length] then t[k] = left + t[k] + right
+        for k in [0...t.length] by 1 then t[k] = left + t[k] + right
         bottom = repeat ' ', t[0].length
         for [t.length...r.height + r.bottomMargin] then t.push bottom
-      for k in [0...r.height + r.bottomMargin]
-        result.push((for j in [0...nCols] then grid[i][j][k]).join '')
+      for k in [0...r.height + r.bottomMargin] by 1
+        result.push((for j in [0...nCols] by 1 then grid[i][j][k]).join '')
 
     result

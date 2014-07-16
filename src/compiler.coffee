@@ -67,7 +67,7 @@ compileAST = (ast, opts = {}) ->
               valueError "Symbol '#{name}' is referenced before assignment.",
                 file: opts.file, offset: node.offset, aplCode: opts.aplCode
         when '{'
-          for i in [1...node.length]
+          for i in [1...node.length] by 1
             queue.push extend (body = node[i]),
               scopeNode: scopeNode
               scopeDepth: d = scopeNode.scopeDepth + 1 + (node.category isnt VERB)
@@ -173,7 +173,7 @@ compileAST = (ast, opts = {}) ->
       when 'B'
         if node.length is 1
           # {}0 ←→ ⍬
-          [LDC, APLArray.zilde, RET]
+          [LDC, A.zilde, RET]
         else
           a = []
           for i in [1...node.length] by 1 then a.push render(node[i])...; a.push POP
@@ -202,7 +202,7 @@ compileAST = (ast, opts = {}) ->
         if name is '⍫'
           [CON]
         else if (v = vars["get_#{name}"])?.category is VERB
-          [LDC, APLArray.zero, GET, v.scopeDepth, v.slot, MON]
+          [LDC, A.zero, GET, v.scopeDepth, v.slot, MON]
         else
           v = vars[name]
           [GET, v.scopeDepth, v.slot]
@@ -249,7 +249,7 @@ compileAST = (ast, opts = {}) ->
         #   "a      !!!
         d = node[1][0] # the delimiter: '"' or "'"
         s = node[1][1...-1].replace ///#{d + d}///g, d
-        [LDC, new APLArray s, if s.length is 1 then []]
+        [LDC, new A s, if s.length is 1 then []]
       when 'N'
         # ∞ ←→ ¯
         # ¯∞ ←→ ¯¯
@@ -261,8 +261,8 @@ compileAST = (ast, opts = {}) ->
               else if x is '--' then -Infinity
               else if x.match /^-?0x/i then parseInt x, 16
               else parseFloat x
-        v = if a[1] then new Complex(a[0], a[1]) else a[0]
-        [LDC, new APLArray [v], []]
+        v = if a[1] then new Z(a[0], a[1]) else a[0]
+        [LDC, new A [v], []]
       when 'J'
         # 123 + «456 + 789» ←→ 1368
         f = do Function "return function(_w,_a){return(#{node[1].replace /^«|»$/g, ''})};"
@@ -273,17 +273,17 @@ compileAST = (ast, opts = {}) ->
         axes = []
         a = []
         for i in [2...node.length] by 1 when c = node[i] then axes.push i - 2; a.push render(c)...
-        a.push VEC, axes.length, LDC, new APLArray(axes), VEC, 2, GET, v.scopeDepth, v.slot
+        a.push VEC, axes.length, LDC, new A(axes), VEC, 2, GET, v.scopeDepth, v.slot
         a.push render(node[1])...
         a.push DYA
         a
       when 'V'
         fragments = for i in [1...node.length] by 1 then render node[i]
         if all(for f in fragments then f.length is 2 and f[0] is LDC)
-          [LDC, new APLArray(for f in fragments then (if (x = f[1]).isSimple() then x.unwrap() else x))]
+          [LDC, new A(for f in fragments then (if (x = f[1]).isSimple() then x.unwrap() else x))]
         else
           [].concat fragments..., VEC, node.length - 1
-      when '⍬' then [LDC, APLArray.zilde]
+      when '⍬' then [LDC, A.zilde]
       when 'M' then render(node[2]).concat render(node[1]), MON
       when 'A' then render(node[1]).concat render(node[2]), MON
       when 'D', 'C' then render(node[3]).concat render(node[2]), render(node[1]), DYA
@@ -333,7 +333,7 @@ compileAST = (ast, opts = {}) ->
         for i in [2...node.length] by 1 when c = node[i] then axes.push i - 2; a.push render(c)...
         a.push VEC, axes.length
         a.push render(node[1])...
-        a.push LDC, new APLArray(axes), VEC, 4, GET, v.scopeDepth, v.slot, MON
+        a.push LDC, new A(axes), VEC, 4, GET, v.scopeDepth, v.slot, MON
         a.push renderLHS(node[1])...
         a
       else
@@ -355,9 +355,9 @@ prelude = do ->
   {nSlots, vars, env}
 
 aplify = (x) ->
-  if typeof x is 'string' then (if x.length is 1 then APLArray.scalar x else new APLArray x)
-  else if typeof x is 'number' then APLArray.scalar x
+  if typeof x is 'string' then (if x.length is 1 then A.scalar x else new A x)
+  else if typeof x is 'number' then A.scalar x
   else if x instanceof Array
-    new APLArray(for y in x then (y = aplify y; if ⍴⍴ y then y else y.unwrap()))
-  else if x instanceof APLArray then x
+    new A(for y in x then (y = aplify y; if ⍴⍴ y then y else y.unwrap()))
+  else if x instanceof A then x
   else aplError 'Cannot aplify object ' + x

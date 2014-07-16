@@ -3,21 +3,18 @@ addVocabulary
   ',': (⍵, ⍺, axis) ->
     if ⍺
 
-      # Catenate (`,`)
-      #
       # 10,66               ←→ 10 66
       # '10 ','MAY ','1985' ←→ '10 MAY 1985'
       # (2 3⍴⍳6),2 2⍴⍳4     ←→ 2 5⍴(0 1 2 0 1  3 4 5 2 3)
       # (3 2⍴⍳6),2 2⍴⍳4     !!! LENGTH ERROR
       # (2 3⍴⍳6),9          ←→ 2 4⍴(0 1 2 9  3 4 5 9)
-      # (2 3 4⍴⍳24),99      ←→ 2 3 5⍴(
-      # ...                          0  1  2  3 99
-      # ...                          4  5  6  7 99
-      # ...                          8  9 10 11 99
+      # (2 3 4⍴⍳24),99      ←→ 2 3 5⍴(0  1  2  3 99
+      # ...                           4  5  6  7 99
+      # ...                           8  9 10 11 99
       # ...
-      # ...                         12 13 14 15 99
-      # ...                         16 17 18 19 99
-      # ...                         20 21 22 23 99)
+      # ...                          12 13 14 15 99
+      # ...                          16 17 18 19 99
+      # ...                          20 21 22 23 99)
       # ⍬,⍬                 ←→ ⍬
       # ⍬,1                 ←→ ,1
       # 1,⍬                 ←→ ,1
@@ -30,34 +27,34 @@ addVocabulary
         axis = nAxes - 1
 
       if ⍴⍴(⍺) is ⍴⍴(⍵) is 0
-        return new APLArray [⍺.unwrap(), ⍵.unwrap()]
+        return new A [⍺.unwrap(), ⍵.unwrap()]
       else if !⍴⍴ ⍺
         s = ⍴(⍵)[..]
         if isInt axis then s[axis] = 1
-        ⍺ = new APLArray [⍺.unwrap()], s, repeat([0], ⍴⍴ ⍵)
+        ⍺ = new A [⍺.unwrap()], s, repeat([0], ⍴⍴ ⍵)
       else if !⍴⍴ ⍵
         s = ⍴(⍺)[..]
         if isInt axis then s[axis] = 1
-        ⍵ = new APLArray [⍵.unwrap()], s, repeat([0], ⍴⍴ ⍺)
+        ⍵ = new A [⍵.unwrap()], s, repeat([0], ⍴⍴ ⍺)
       else if ⍴⍴(⍺) + 1 is ⍴⍴ ⍵
         if !isInt axis then rankError()
         shape = ⍴(⍺)[..]
         shape.splice axis, 0, 1
         stride = ⍺.stride[..]
         stride.splice axis, 0, 0
-        ⍺ = new APLArray ⍺.data, shape, stride, ⍺.offset
+        ⍺ = new A ⍺.data, shape, stride, ⍺.offset
       else if ⍴⍴(⍺) is ⍴⍴(⍵) + 1
         if !isInt axis then rankError()
         shape = ⍴(⍵)[..]
         shape.splice axis, 0, 1
         stride = ⍵.stride[..]
         stride.splice axis, 0, 0
-        ⍵ = new APLArray ⍵.data, shape, stride, ⍵.offset
+        ⍵ = new A ⍵.data, shape, stride, ⍵.offset
       else if ⍴⍴(⍺) isnt ⍴⍴(⍵)
         rankError()
 
       assert ⍴⍴(⍺) is ⍴⍴(⍵)
-      for i in [0...⍴⍴ ⍺]
+      for i in [0...⍴⍴ ⍺] by 1
         if i isnt axis and ⍴(⍺)[i] isnt ⍴(⍵)[i]
           lengthError()
 
@@ -114,7 +111,7 @@ addVocabulary
           r += rStride[a]
           pIndices[a]++
 
-      new APLArray data, shape, stride
+      new A data, shape, stride
 
     else
       assert 0

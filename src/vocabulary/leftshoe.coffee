@@ -1,5 +1,4 @@
 addVocabulary
-
   # ⍴⊂2 3⍴⍳6      ←→ ⍬
   # ⍴⍴⊂2 3⍴⍳6     ←→ ,0
   # ⊂[0]2 3⍴⍳6    ←→ (0 3)(1 4)(2 5)
@@ -15,11 +14,11 @@ addVocabulary
     if ⍵.isSimple() then return ⍵
     unitShape  = for i in axes then ⍴(⍵)[i]
     unitStride = for i in axes then ⍵.stride[i]
-    resultAxes = for i in [0...⍴⍴ ⍵] when i !in axes then i
+    resultAxes = for i in [0...⍴⍴ ⍵] by 1 when i !in axes then i
     shape      = for i in resultAxes then ⍴(⍵)[i]
     stride     = for i in resultAxes then ⍵.stride[i]
     data = []
-    each new APLArray(⍵.data, shape, stride, ⍵.offset),
+    each new A(⍵.data, shape, stride, ⍵.offset),
       (x, indices, p) ->
-        data.push new APLArray ⍵.data, unitShape, unitStride, p
-    new APLArray data, shape
+        data.push new A ⍵.data, unitShape, unitStride, p
+    new A data, shape

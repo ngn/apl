@@ -1,7 +1,4 @@
 addVocabulary
-
-  # Power operator (`⍣`)
-  #
   # ({⍵+1}⍣5) 3 ←→ 8
   # ({⍵+1}⍣0) 3 ←→ 3
   # (⍴⍣3)2 2⍴⍳4 ←→ ,1
@@ -9,7 +6,7 @@ addVocabulary
   # 1(+÷)⍣=1    ←→ 1.618033988749895
   # c←0 ⋄ 5⍣{c←c+1}0 ⋄ c ←→ 5
   '⍣': conjunction (g, f) ->
-    if f instanceof APLArray and typeof g is 'function'
+    if f instanceof A and typeof g is 'function'
       h = f; f = g; g = h
     else
       assert typeof f is 'function'

@@ -44,6 +44,7 @@ tokenize = (s, opts = {}) ->
       if type in '([{' then stack.push type
       else if type in ')]}' then stack.pop()
       if type isnt 'L' or stack[stack.length - 1] is '{'
+        if value[0] is '⎕' then value = value.toUpperCase()
         tokens.push {type, value, offset, aplCode: s}
     offset += value.length
   tokens.push {type: '$', value: '', offset, aplCode: s}

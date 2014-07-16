@@ -1,20 +1,20 @@
 # complexify(x)
-#   * if x is real, it's converted to a Complex instance with imaginary part 0
+#   * if x is real, it's converted to a complex instance with imaginary part 0
 #   * if x is already complex, it's preserved
 complexify = (x) ->
   if typeof x is 'number'
-    new Complex x, 0
-  else if x instanceof Complex
+    new Z x, 0
+  else if x instanceof Z
     x
   else
     domainError()
 
 # simplify(re, im)
 #   * if the imaginary part is 0, the real part is returned
-#   * otherwise, a Complex instance is created
-simplify = (re, im) -> if im isnt 0 then new Complex re, im else re
+#   * otherwise, a complex instance is created
+simplify = (re, im) -> if im isnt 0 then new Z re, im else re
 
-class Complex
+class Z # complex number
 
   constructor: (@re, @im = 0) ->
     assert typeof @re is 'number'
@@ -22,7 +22,7 @@ class Complex
     if isNaN(@re) or isNaN(@im) then domainError 'NaN'
 
   toString: -> "#{formatNumber @re}J#{formatNumber @im}"
-  repr: -> "new Complex(#{repr @re},#{repr @im})"
+  repr: -> "new Z(#{repr @re},#{repr @im})"
 
   @exp = exp = (x) ->
     x = complexify x
@@ -42,9 +42,9 @@ class Complex
         direction x
       )
 
-  @conjugate = (x) -> new Complex x.re, -x.im
+  @conjugate = (x) -> new Z x.re, -x.im
 
-  @negate = negate = (x) -> new Complex -x.re, -x.im
+  @negate = negate = (x) -> new Z -x.re, -x.im
 
   @itimes = itimes = (x) ->
     x = complexify x
@@ -124,12 +124,12 @@ class Complex
       sqrt subtract pow(x, 2), 1
     )
     # TODO look up the algorithm for determining the sign of arccos; the following line is dubious
-    if r instanceof Complex and (r.re < 0 or (r.re is 0 and r.im < 0)) then negate r else r
+    if r instanceof Z and (r.re < 0 or (r.re is 0 and r.im < 0)) then negate r else r
 
   @atan = atan = (x) -> # arctan x = (i/2) (ln(1-ix) - ln(1+ix))
     x = complexify x
     ix = itimes x
-    multiply new Complex(0, .5), subtract(
+    multiply new Z(0, .5), subtract(
       log subtract 1, ix
       log add 1, ix
     )
@@ -153,7 +153,7 @@ class Complex
   @acosh = (x) -> # arccosh x = +/- i arccos x
     x = complexify x
     sign = if x.im > 0 or (x.im is 0 and x.re <= 1) then 1 else -1
-    multiply new Complex(0, sign), acos x
+    multiply new Z(0, sign), acos x
 
   @atanh = (x) -> # arctanh x = i arctan(-ix)
     itimes atan negitimes x
@@ -181,7 +181,7 @@ class Complex
       simplify re, im
 
   iszero = (x) ->
-    x is 0 or (x instanceof Complex and x.re is 0 and x.im is 0)
+    x is 0 or (x instanceof Z and x.re is 0 and x.im is 0)
 
   @residue = residue = (x, y) ->
     if typeof x is typeof y is 'number'
