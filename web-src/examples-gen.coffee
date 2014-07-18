@@ -5,7 +5,7 @@ fs.writeFileSync "#{__dirname}/examples.js", """
   // Generated code, do not edit
   window.examples = [
     #{(
-      for f in fs.readdirSync "#{__dirname}/../examples" when /^\w.+\.apl$/.test f
+      for f in fs.readdirSync("#{__dirname}/../examples").sort() when /^\w.+\.apl$/.test f
         '  ' + JSON.stringify [
           f.replace(/^\d+-|\.apl$/g, '')
           fs.readFileSync("#{__dirname}/../examples/#{f}", 'utf8').replace(/^#!.*\n+|\n+$/g, '').replace(/\n* *⎕ *← *(.*)$/, '\n$1')
