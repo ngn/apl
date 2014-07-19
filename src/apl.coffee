@@ -1,5 +1,3 @@
-macro -> macro.fileToNode 'node_modules/macronym/assert.coffee'
-
 macro ->
   @tmpCounter = 0
   @tmp = -> "t#{@tmpCounter++}"

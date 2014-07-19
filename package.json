@@ -10,7 +10,6 @@
   },
   "main": "./lib/apl.js",
   "devDependencies": {
-    "coffee-script": "git+https://github.com/paiq/blackcoffee#4e1403ec30",
-    "macronym": "git+https://github.com/ngn/macronym"
+    "coffee-script": "git+https://github.com/paiq/blackcoffee#4e1403ec30"
   }
 }
