@@ -1,3 +1,18 @@
+macro assert (condition) ->
+  (macro.codeToNode -> if not x then throw Error y)
+    .subst
+      x: new macro.Parens condition
+      y: macro.valToNode(
+        "#{
+          JSON.stringify(
+            macro.require('fs')
+              .readFileSync(macro.file, 'utf8')
+              .split('\n')[macro.line - 1]
+              .replace /^ */, ''
+          )
+        } at #{macro.file}:#{macro.line}"
+      )
+
 macro isInt (x, start, end) ->
   new macro.Parens(
     (

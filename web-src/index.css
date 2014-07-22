@@ -1,15 +1,11 @@
 body {
     width: 1000px;
     margin: 10px auto;
-    font-family: apl;
+    font-family: "APL385 Unicode", monospace;
 }
 
-textarea, input {
-    font-family: apl;
-}
-
-h1 {
-    font-family: apl;
+textarea, input, h1 {
+    font-family: "APL385 Unicode", monospace;
 }
 
 a {
@@ -73,7 +69,7 @@ a:hover {
 
 .ui-keyboard-button {
     background-color: #eee;
-    font-family: apl;
+    font-family: "APL385 Unicode", monospace;
     font-size: large;
     border-radius: 6px;
     border-style: solid;
