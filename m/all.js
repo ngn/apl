@@ -5,8 +5,6 @@
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-
-
   prod = function(xs) {
     var r, x, _i, _len;
     r = 1;
@@ -29,10 +27,10 @@
   repeat = function(a, n) {
     var m, t0;
     if (!(a.length != null)) {
-      throw Error("\"assert a.length?\" at src/helpers.coffee:19");
+      throw Error("\"assert a.length?\" at src/helpers.coffee:34");
     }
     if (!((t0 = (n)) === ~~t0 && (0) <= t0)) {
-      throw Error("\"assert isInt n, 0\" at src/helpers.coffee:20");
+      throw Error("\"assert isInt n, 0\" at src/helpers.coffee:35");
     }
     if (!n) {
       return a.slice(0, 0);
@@ -79,10 +77,10 @@
   arrayEquals = function(a, b) {
     var i, x, _i, _len;
     if (!(a.length != null)) {
-      throw Error("\"assert a.length?\" at src/helpers.coffee:70");
+      throw Error("\"assert a.length?\" at src/helpers.coffee:85");
     }
     if (!(b.length != null)) {
-      throw Error("\"assert b.length?\" at src/helpers.coffee:71");
+      throw Error("\"assert b.length?\" at src/helpers.coffee:86");
     }
     if (a.length !== b.length) {
       return false;
@@ -4714,7 +4712,7 @@
         var s;
         s = opts["in"]();
         if (!(typeof s === 'string')) {
-          throw Error("\"if opts.in then ctx['get_⎕'] = ctx['get_⍞'] = -> s = opts.in(); assert typeof s is 'string'; new A s\" at /tmp/apl/src/apl.coffee:70");
+          throw Error("\"if opts.in then ctx['get_⎕'] = ctx['get_⍞'] = -> s = opts.in(); assert typeof s is 'string'; new A s\" at /tmp/apl/src/apl.coffee:68");
         }
         return new A(s);
       };
