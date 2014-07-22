@@ -29,7 +29,6 @@ fi
 mkdir -p web web-tmp
 xcoffee web-src/index.coffee web-tmp
 cp -uv web-src/index.html web/index.html
-cp -uv web-src/apl385.ttf web/apl385.ttf
 cp -uv web-src/tipsy.gif  web/tipsy.gif
 xcoffee web-src/examples-gen.coffee web-tmp
 i=web-tmp/examples-gen.js ; o=web-tmp/examples.js ; [ $i -nt $o ] && echo "Building $o" && node $i
@@ -53,16 +52,15 @@ if [ ! -e $o ] || [ -n "$(find src web-src web-tmp test lib -newer $o)" ]; then
         node test/collectdoctests.js
     ) >$o
 fi
-xcat 'web-src/index.css web-src/keyboard.css web-src/tipsy.css web-src/apl385.css' web/all.css
+xcat 'web-src/index.css web-src/keyboard.css web-src/tipsy.css' web/all.css
 
 # Build mobile demo
 mkdir -p m/images m-tmp
 xcoffee m-src/index.coffee m-tmp
 cp -uv m-src/index.html        m/index.html
-cp -uv web-src/apl385.ttf      m/apl385.ttf
 cp -uv m-src/images/cursor.png m/images/cursor.png
 xcat 'lib/apl.js web-src/jquery.min.js m-tmp/index.js' m/all.js
-xcat 'web-src/apl385.css m-src/index.css' m/all.css
+xcat m-src/index.css m/all.css
 
 # Test
 
