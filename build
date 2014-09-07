@@ -7,6 +7,12 @@ if [ ! -x $coffee ]; then
     npm install
 fi
 
+cp_uv() {
+	if [[ $1 -nt $2 ]]; then
+		cp -v "$1" "$2"
+	fi
+}
+
 # xcat INPUTFILES OUTPUTFILE
 # Concatenates INPUTFILES into OUTPUTFILE only if at least one of them is newer than OUTPUTFILE
 xcat() { [ -e $2 ] && [ -z "$(find $1 -newer $2)" ] || ( echo "$1 -> $2" && cat $1 >$2 ); }
@@ -28,8 +34,8 @@ fi
 # Build web demo
 mkdir -p web web-tmp
 xcoffee web-src/index.coffee web-tmp
-cp -uv web-src/index.html web/index.html
-cp -uv web-src/tipsy.gif  web/tipsy.gif
+cp_uv web-src/index.html web/index.html
+cp_uv web-src/tipsy.gif  web/tipsy.gif
 xcoffee web-src/examples-gen.coffee web-tmp
 i=web-tmp/examples-gen.js ; o=web-tmp/examples.js ; [ $i -nt $o ] && echo "Building $o" && node $i
 xcoffee test/collectdoctests.coffee test
@@ -57,8 +63,8 @@ xcat 'web-src/index.css web-src/keyboard.css web-src/tipsy.css' web/all.css
 # Build mobile demo
 mkdir -p m/images m-tmp
 xcoffee m-src/index.coffee m-tmp
-cp -uv m-src/index.html        m/index.html
-cp -uv m-src/images/cursor.png m/images/cursor.png
+cp_uv m-src/index.html        m/index.html
+cp_uv m-src/images/cursor.png m/images/cursor.png
 xcat 'lib/apl.js web-src/jquery.min.js m-tmp/index.js' m/all.js
 xcat m-src/index.css m/all.css
 
