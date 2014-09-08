@@ -1,10 +1,11 @@
 addVocabulary
 
-  'get_⎕': ->
+  'get_⎕': cps (_, _1, _2, callback) ->
     if typeof window?.prompt is 'function'
-      new A(prompt('⎕:') or '')
+      setTimeout (-> callback new A(prompt('⎕:') or '')), 0
     else
-      nonceError 'Reading from ⎕ is not implemented.'
+      process.stdout.write '⎕:\n'
+      readline '      ', (line) -> callback exec new A(line).toSimpleString()
 
   'set_⎕': (x) ->
     s = format(x).join('\n') + '\n'
