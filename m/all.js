@@ -3201,13 +3201,18 @@
     })
   });
   addVocabulary({
-    'get_⎕': function() {
+    'get_⎕': cps(function(_, _1, _2, callback) {
       if (typeof (typeof window !== "undefined" && window !== null ? window.prompt : void 0) === 'function') {
-        return new A(prompt('⎕:') || '');
+        return setTimeout((function() {
+          return callback(new A(prompt('⎕:') || ''));
+        }), 0);
       } else {
-        return nonceError('Reading from ⎕ is not implemented.');
+        process.stdout.write('⎕:\n');
+        return readline('      ', function(line) {
+          return callback(exec(new A(line).toSimpleString()));
+        });
       }
-    },
+    }),
     'set_⎕': function(x) {
       var s;
       s = format(x).join('\n') + '\n';
