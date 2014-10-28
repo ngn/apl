@@ -66,3 +66,5 @@ addVocabulary
       if isInt x, 0, 0x10000 then y = String.fromCharCode x
       else if typeof x is 'string' then y = x.charCodeAt 0
       else domainError()
+
+  'get_⎕OFF': -> if process? then process.exit 0 else nonceError()
