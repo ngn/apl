@@ -81,15 +81,33 @@ readline = (prompt, f) ->
 if module?
   module.exports = apl
   if module is require?.main then do ->
-    usage = 'Usage: apl.js filename.apl\n'
+    usage = '''
+      Usage: apl.js [options] [filename.apl]
+      Options:\n  -l --linewise   Process stdin line by line and disable prompt\n
+    '''
     file = null
+    linewise = 0
     for arg in process.argv[2..]
       if arg in ['-h', '--help'] then (process.stderr.write usage; process.exit 0)
+      else if arg == '-l' or arg == '--linewise' then linewise = 1
       else if /^-/.test arg then (process.stderr.write "unrecognized option: #{arg}\n#{usage}"; process.exit 1)
       else if file? then (process.stderr.write usage; process.exit 1)
       else file = arg
     if file?
       exec require('fs').readFileSync file, 'utf8'
+    else if linewise
+      do ->
+        fs = require 'fs'; ws = apl.ws(); a = Buffer 256; i = n = 0; b = Buffer a.length # a: accumulated line, b: buffer
+        while k = fs.readSync 0, b, 0, b.length, null
+          if n + k > a.length then a = Buffer.concat [a, a]
+          b.copy a, n, 0, k; n += k
+          while i < n
+            if a[i] == 10 # '\n'
+              process.stdout.write try format(ws '' + a[...i]).join('\n') + '\n' catch e then e + '\n'
+              a.copy a, 0, i + 1; n -= i + 1; i = 0
+            else
+              i++
+        return
     else if !require('tty').isatty()
       exec Buffer.concat(loop # read all of stdin
         b = new Buffer 1024
