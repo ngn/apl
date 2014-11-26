@@ -104,19 +104,17 @@ compileAST = (ast, opts = {}) ->
               h[i...j] = NOUN
             else
               i++
-          # Apply conjunctions
-          i = a.length - 2
-          while --i >= 0
-            if h[i + 1] is CONJUNCTION and (h[i] isnt NOUN or h[i + 2] isnt NOUN)
-              a[i...i+3] = [['C'].concat a[i...i+3]]
-              h[i...i+3] = VERB
-              i--
-          # Apply postfix adverbs
+          # Apply conjunctions and postfix adverbs
+          # ⌽¨⍣3⊢(1 2)3(4 5 6) ←→ (2 1)3(6 5 4)
           i = 0
-          while i < a.length - 1
-            if h[i] isnt NOUN and h[i + 1] is ADVERB
-              a[i...i+2] = [['A'].concat a[i...i+2]]
-              h[i...i+2] = VERB
+          while i < a.length
+            if h[i] is VERB and i + 1 < a.length and h[i + 1] is ADVERB
+              a[i...i + 2] = [['A'].concat a[i...i + 2]]
+              h[i...i + 2] = VERB
+            else if h[i] in [NOUN, VERB, CONJUNCTION] and i + 2 < a.length and h[i + 1] is CONJUNCTION and h[i + 2] in [NOUN, VERB]
+              # allow conjunction-conjunction-something to accommodate ∘.f syntax
+              a[i...i + 3] = [['C'].concat a[i...i + 3]]
+              h[i...i + 3] = VERB
             else
               i++
           # Hooks
