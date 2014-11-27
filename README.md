@@ -56,4 +56,5 @@ or used in an HTML page:
 
 # Editor support
 
-[Vim keymap and syntax](https://github.com/ngn/vim-apl)
+* [Vim keymap and syntax](https://github.com/ngn/vim-apl)
+* [baruchel/vim-notebook](https://github.com/baruchel/vim-notebook): evaluate blocks of APL code in a vim buffer
