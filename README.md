@@ -17,7 +17,7 @@ An [APL](https://en.wikipedia.org/wiki/APL_%28programming_language%29) compiler 
 Runs on [NodeJS](http://nodejs.org/) or in a browser<br>
 
 **[In-browser demo](http://ngn.github.com/apl/web/index.html)**
-(See also: [Paul L Jackson's web site](https://home.comcast.net/~paul.l.jackson/APL.js/) and [repl.it](http://repl.it/languages/APL))
+(See also: [Paul L Jackson's web site](https://plj541.github.io/APL.js/) and [repl.it](http://repl.it/languages/APL))
 
 Supports: most primitives, dfns (`{⍺ ⍵}`), nested arrays, complex numbers
 (`1j2`), infinities (`¯` or `∞`), forks and hooks, strand assignment (`(a b)←c`), index

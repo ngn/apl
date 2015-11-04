@@ -8,6 +8,9 @@
 ⍝ ⍬⍬    ←→ ⍬ ⍬
 ⍝ 1⍬2⍬3 ←→ 1 ⍬ 2 ⍬ 3
 
+⎕a←'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+⎕á←'ÁÂÃÇÈÊËÌÍÎÏÐÒÓÔÕÙÚÛÝþãìðòõ'
+
 ~←~⍠{(~⍺∊⍵)/⍺}
 ⍝ "ABCDEFGHIJKLMNOPQRSTUVWXYZ"~"AEIOU" ←→ 'BCDFGHJKLMNPQRSTVWXYZ'
 ⍝ 1 2 3 4 5 6~2 4 6                    ←→ 1 3 5
