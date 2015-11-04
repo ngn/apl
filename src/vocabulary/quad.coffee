@@ -2,7 +2,7 @@ addVocabulary
 
   'get_⎕': cps (_, _1, _2, callback) ->
     if typeof window?.prompt is 'function'
-      setTimeout (-> callback new A(prompt('⎕:') or '')), 0
+      setTimeout (-> callback exec new A(prompt('⎕:') or '')), 0
     else
       process.stdout.write '⎕:\n'
       readline '      ', (line) -> callback exec new A(line).toSimpleString()
