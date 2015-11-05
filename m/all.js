@@ -3205,7 +3205,7 @@
     'get_⎕': cps(function(_, _1, _2, callback) {
       if (typeof (typeof window !== "undefined" && window !== null ? window.prompt : void 0) === 'function') {
         return setTimeout((function() {
-          return callback(exec(new A(prompt('⎕:') || '')));
+          return callback(exec(prompt('⎕:') || ''));
         }), 0);
       } else {
         process.stdout.write('⎕:\n');
