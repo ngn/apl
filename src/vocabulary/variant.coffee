@@ -4,5 +4,5 @@ addVocabulary
   '⍠': conjunction (f, g) ->
     assert typeof f is 'function'
     assert typeof g is 'function'
-    (⍵, ⍺, axis) ->
-      (if ⍺? then f else g) ⍵, ⍺, axis
+    (om, al, axis) ->
+      (if al? then f else g) om, al, axis

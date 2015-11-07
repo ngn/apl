@@ -3,12 +3,6 @@ macro ->
   @tmp = -> "t#{@tmpCounter++}"
   return
 
-# Make it possible to use ⍺ and ⍵ as identifiers in CoffeeScript code
-macro withAlphaAndOmega (f) ->
-  f.body.subst
-    '⍺': macro.codeToNode -> alpha
-    '⍵': macro.codeToNode -> omega
-
 macro include (f) ->
   fs = macro.require 'fs'
   if fs.existsSync "src/#{macro.nodeToVal f}.js"
@@ -23,49 +17,42 @@ include 'complex'
 include 'vm'
 include 'lexer'
 include 'parser'
-
-`
-var vocabulary={}
-function addVocabulary(h){for(var k in h)vocabulary[k]=h[k]}
-`
-
-withAlphaAndOmega ->
-  include 'vocabulary/vhelpers'
-  include 'vocabulary/arithmetic'
-  include 'vocabulary/backslash'
-  include 'vocabulary/circle'
-  include 'vocabulary/comma'
-  include 'vocabulary/comparisons'
-  include 'vocabulary/compose'
-  include 'vocabulary/cupcap'
-  include 'vocabulary/decode'
-  include 'vocabulary/dot'
-  include 'vocabulary/each'
-  include 'vocabulary/encode'
-  include 'vocabulary/epsilon'
-  include 'vocabulary/exclamation'
-  include 'vocabulary/execute'
-  include 'vocabulary/find'
-  include 'vocabulary/floorceil'
-  include 'vocabulary/fork'
-  include 'vocabulary/format'
-  include 'vocabulary/grade'
-  include 'vocabulary/identity'
-  include 'vocabulary/iota'
-  include 'vocabulary/leftshoe'
-  include 'vocabulary/logic'
-  include 'vocabulary/poweroperator'
-  include 'vocabulary/quad'
-  include 'vocabulary/question'
-  include 'vocabulary/raise'
-  include 'vocabulary/rho'
-  include 'vocabulary/rotate'
-  include 'vocabulary/slash'
-  include 'vocabulary/squish'
-  include 'vocabulary/take'
-  include 'vocabulary/transpose'
-  include 'vocabulary/variant'
-  include 'compiler'
+include 'vocabulary/vhelpers'
+include 'vocabulary/arithmetic'
+include 'vocabulary/backslash'
+include 'vocabulary/circle'
+include 'vocabulary/comma'
+include 'vocabulary/comparisons'
+include 'vocabulary/compose'
+include 'vocabulary/cupcap'
+include 'vocabulary/decode'
+include 'vocabulary/dot'
+include 'vocabulary/each'
+include 'vocabulary/encode'
+include 'vocabulary/epsilon'
+include 'vocabulary/exclamation'
+include 'vocabulary/execute'
+include 'vocabulary/find'
+include 'vocabulary/floorceil'
+include 'vocabulary/fork'
+include 'vocabulary/format'
+include 'vocabulary/grade'
+include 'vocabulary/identity'
+include 'vocabulary/iota'
+include 'vocabulary/leftshoe'
+include 'vocabulary/logic'
+include 'vocabulary/poweroperator'
+include 'vocabulary/quad'
+include 'vocabulary/question'
+include 'vocabulary/raise'
+include 'vocabulary/rho'
+include 'vocabulary/rotate'
+include 'vocabulary/slash'
+include 'vocabulary/squish'
+include 'vocabulary/take'
+include 'vocabulary/transpose'
+include 'vocabulary/variant'
+include 'compiler'
 
 `
 var apl=this.apl=function(aplCode,opts){return(apl.ws(opts))(aplCode)}

@@ -14,30 +14,30 @@ addVocabulary
   '¨': adverb (f, g) ->
     assert typeof f is 'function'
     assert typeof g is 'undefined'
-    (⍵, ⍺) ->
-      if !⍺
-        ⍵.map (x) ->
+    (om, al) ->
+      if !al
+        om.map (x) ->
           if x !instanceof A then x = new A [x], []
           r = f x
           assert r instanceof A
           if r.shape.length then r else r.unwrap()
-      else if arrayEquals ⍺.shape, ⍵.shape
-        ⍵.map2 ⍺, (x, y) ->
+      else if arrayEquals al.shape, om.shape
+        om.map2 al, (x, y) ->
           if x !instanceof A then x = new A [x], []
           if y !instanceof A then y = new A [y], []
           r = f x, y
           assert r instanceof A
           if r.shape.length then r else r.unwrap()
-      else if ⍺.isSingleton()
-        y = if ⍺.data[0] instanceof A then ⍺.unwrap() else ⍺
-        ⍵.map (x) ->
+      else if al.isSingleton()
+        y = if al.data[0] instanceof A then al.unwrap() else al
+        om.map (x) ->
           if x !instanceof A then x = new A [x], []
           r = f x, y
           assert r instanceof A
           if r.shape.length then r else r.unwrap()
-      else if ⍵.isSingleton()
-        x = if ⍵.data[0] instanceof A then ⍵.unwrap() else ⍵
-        ⍺.map (y) ->
+      else if om.isSingleton()
+        x = if om.data[0] instanceof A then om.unwrap() else om
+        al.map (y) ->
           if y !instanceof A then y = new A [y], []
           r = f x, y
           assert r instanceof A

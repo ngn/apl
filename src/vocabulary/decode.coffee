@@ -37,16 +37,16 @@ addVocabulary
   # ... A←2 1⍴2 10
   # ... A⊥M ←→ (2 8⍴0 1  2  3   4   5   6   7
   # ...             0 1 10 11 100 101 110 111)
-  '⊥': (⍵, ⍺) ->
-    assert ⍺
-    if !⍺.shape.length then ⍺ = new A [⍺.unwrap()]
-    if !⍵.shape.length then ⍵ = new A [⍵.unwrap()]
-    lastDimA = ⍺.shape[⍺.shape.length - 1]
-    firstDimB = ⍵.shape[0]
+  '⊥': (om, al) ->
+    assert al
+    if !al.shape.length then al = new A [al.unwrap()]
+    if !om.shape.length then om = new A [om.unwrap()]
+    lastDimA = al.shape[al.shape.length - 1]
+    firstDimB = om.shape[0]
     if lastDimA isnt 1 and firstDimB isnt 1 and lastDimA isnt firstDimB
       lengthError()
-    a = ⍺.toArray()
-    b = ⍵.toArray()
+    a = al.toArray()
+    b = om.toArray()
     data = []
     for i in [0 ... a.length / lastDimA] by 1
       for j in [0 ... b.length / firstDimB] by 1
@@ -58,4 +58,4 @@ addVocabulary
         for k in [1...y.length] by 1
           z = z * x[k] + y[k]
         data.push z
-    new A data, ⍺.shape[...-1].concat ⍵.shape[1..]
+    new A data, al.shape[...-1].concat om.shape[1..]

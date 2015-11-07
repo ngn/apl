@@ -1,5 +1,5 @@
 addVocabulary
-  '⍀': adverb (⍵, ⍺, axis = A.zero) -> scanOrExpand ⍵, ⍺, axis
+  '⍀': adverb (om, al, axis = A.zero) -> scanOrExpand om, al, axis
 
   # +\20 10 ¯5 7               ←→ 20 30 25 32
   # ,\"AB" "CD" "EF"           ←→ 'AB' 'ABCD' 'ABCDEF'
@@ -25,59 +25,59 @@ addVocabulary
   # 1 0 1⍀2 2⍴'ABCD'    ←→ 3 2⍴'AB  CD'
   # 1 0 1\[0]2 2⍴'ABCD' ←→ 3 2⍴'AB  CD'
   # 1 0 1\[1]2 2⍴'ABCD' ←→ 2 3⍴'A BC D'
-  '\\': scanOrExpand = adverb (⍵, ⍺, axis) ->
-    if typeof ⍵ is 'function'
-      assert typeof ⍺ is 'undefined'
-      f = ⍵
-      (⍵, ⍺) ->
-        assert !⍺?
-        if !⍵.shape.length then return ⍵
-        axis = if axis then axis.toInt 0, ⍵.shape.length else ⍵.shape.length - 1
-        ⍵.map (x, indices) ->
-          p = ⍵.offset
-          for index, a in indices then p += index * ⍵.stride[a]
+  '\\': scanOrExpand = adverb (om, al, axis) ->
+    if typeof om is 'function'
+      assert typeof al is 'undefined'
+      f = om
+      (om, al) ->
+        assert !al?
+        if !om.shape.length then return om
+        axis = if axis then axis.toInt 0, om.shape.length else om.shape.length - 1
+        om.map (x, indices) ->
+          p = om.offset
+          for index, a in indices then p += index * om.stride[a]
           if x !instanceof A then x = A.scalar x
           for j in [0...indices[axis]] by 1
-            p -= ⍵.stride[axis]
-            y = ⍵.data[p]
+            p -= om.stride[axis]
+            y = om.data[p]
             if y !instanceof A then y = A.scalar y
             x = f x, y
           if !x.shape.length then x = x.unwrap()
           x
     else
-      if !⍵.shape.length then nonceError 'Expand of scalar not implemented'
-      axis = if axis then axis.toInt 0, ⍵.shape.length else ⍵.shape.length - 1
-      if ⍺.shape.length > 1 then rankError()
-      a = ⍺.toArray()
+      if !om.shape.length then nonceError 'Expand of scalar not implemented'
+      axis = if axis then axis.toInt 0, om.shape.length else om.shape.length - 1
+      if al.shape.length > 1 then rankError()
+      a = al.toArray()
 
-      shape = ⍵.shape[..]
+      shape = om.shape[..]
       shape[axis] = a.length
       b = []
       i = 0
       for x in a
         if !isInt x, 0, 2 then domainError()
         b.push(if x > 0 then i++ else null)
-      if i isnt ⍵.shape[axis] then lengthError()
+      if i isnt om.shape[axis] then lengthError()
 
       data = []
-      if shape[axis] isnt 0 and !⍵.empty()
-        filler = ⍵.getPrototype()
-        p = ⍵.offset
+      if shape[axis] isnt 0 and !om.empty()
+        filler = om.getPrototype()
+        p = om.offset
         indices = repeat [0], shape.length
         loop
           x =
             if b[indices[axis]]?
-              ⍵.data[p + b[indices[axis]] * ⍵.stride[axis]]
+              om.data[p + b[indices[axis]] * om.stride[axis]]
             else
               filler
           data.push x
 
           i = shape.length - 1
           while i >= 0 and indices[i] + 1 is shape[i]
-            if i isnt axis then p -= ⍵.stride[i] * indices[i]
+            if i isnt axis then p -= om.stride[i] * indices[i]
             indices[i--] = 0
           if i < 0 then break
-          if i isnt axis then p += ⍵.stride[i]
+          if i isnt axis then p += om.stride[i]
           indices[i]++
 
       new A data, shape

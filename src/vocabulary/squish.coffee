@@ -16,26 +16,26 @@ addVocabulary
   # (1 2)0⌷3 4⍴11 12 13 14 21 22 23 24 31 32 33 34 ←→ 21 31
   # a←2 2⍴0 ⋄ a[;0]←1 ⋄ a ←→ 2 2⍴1 0 1 0
   # a←2 3⍴0 ⋄ a[1;0 2]←1 ⋄ a ←→ 2 3⍴0 0 0 1 0 1
-  '⌷': squish = (⍵, ⍺, axes) ->
-    if typeof ⍵ is 'function' then return (x, y) -> ⍵ x, y, ⍺
-    if !⍺ then nonceError()
-    if 1 < ⍺.shape.length then rankError()
-    a = ⍺.toArray()
-    if a.length > ⍵.shape.length then lengthError()
+  '⌷': squish = (om, al, axes) ->
+    if typeof om is 'function' then return (x, y) -> om x, y, al
+    if !al then nonceError()
+    if 1 < al.shape.length then rankError()
+    a = al.toArray()
+    if a.length > om.shape.length then lengthError()
 
     if axes
       axes = axes.toArray()
       if a.length isnt axes.length then lengthError()
-      h = Array ⍵.shape.length
+      h = Array om.shape.length
       for axis in axes
         if !isInt axis then domainError()
-        if !(0 <= axis < ⍵.shape.length) then rankError()
+        if !(0 <= axis < om.shape.length) then rankError()
         if h[axis] then rankError 'Duplicate axis'
         h[axis] = 1
     else
       axes = [0...a.length]
 
-    r = ⍵
+    r = om
     for i in [a.length - 1..0] by -1
       u = if a[i] instanceof A then a[i] else new A [a[i]], []
       r = indexAtSingleAxis r, u, axes[i]
@@ -63,9 +63,9 @@ addVocabulary
   # " X"[(3 3⍴⍳9)∊1 3 6 7 8] ←→ 3 3⍴(' X ',
   # ...                              'X  ',
   # ...                              'XXX')
-  _index: (alphaAndAxes, ⍵) ->
-    [⍺, axes] = alphaAndAxes.toArray()
-    squish ⍵, ⍺, axes
+  _index: (alphaAndAxes, om) ->
+    [al, axes] = alphaAndAxes.toArray()
+    squish om, al, axes
 
   # a←⍳5 ⋄ a[1 3]←7 8 ⋄ a ←→ 0 7 2 8 4
   # a←⍳5 ⋄ a[1 3]←7   ⋄ a ←→ 0 7 2 7 4
@@ -84,13 +84,13 @@ addVocabulary
   # a←3 3⍴⍳9 ⋄ a[⍬;1 2]←789 ⋄ a ←→ 3 3⍴⍳9
   # a←1 2 3 ⋄ a[]←4 5 6 ⋄ a ←→ 4 5 6
   _substitute: (args) ->
-    [value, ⍺, ⍵, axes] =
+    [value, al, om, axes] =
       for x in args.toArray()
         if x instanceof A then x else new A [x], []
 
-    if 1 < ⍺.shape.length then rankError()
-    a = ⍺.toArray()
-    if a.length > ⍵.shape.length then lengthError()
+    if 1 < al.shape.length then rankError()
+    a = al.toArray()
+    if a.length > om.shape.length then lengthError()
 
     if axes
       if 1 < axes.shape.length then rankError()
@@ -99,11 +99,11 @@ addVocabulary
     else
       axes = [0...a.length]
 
-    subs = squish (vocabulary['⍳'] new A ⍵.shape), ⍺, new A axes
+    subs = squish (vocabulary['⍳'] new A om.shape), al, new A axes
     if value.isSingleton()
       value = new A [value], subs.shape, repeat [0], subs.shape.length
-    data = ⍵.toArray()
-    stride = strideForShape ⍵.shape
+    data = om.toArray()
+    stride = strideForShape om.shape
     each2 subs, value, (u, v) ->
       if v instanceof A and !v.shape.length then v = v.unwrap()
       if u instanceof A
@@ -113,15 +113,15 @@ addVocabulary
       else
         data[u] = v
 
-    new A data, ⍵.shape
+    new A data, om.shape
 
-indexAtSingleAxis = (⍵, sub, ax) ->
-  assert ⍵ instanceof A
+indexAtSingleAxis = (om, sub, ax) ->
+  assert om instanceof A
   assert sub instanceof A
   assert isInt ax
-  assert 0 <= ax < ⍵.shape.length
+  assert 0 <= ax < om.shape.length
   u = sub.toArray()
-  n = ⍵.shape[ax]
+  n = om.shape[ax]
   for x in u
     if !isInt x then domainError()
     if !(0 <= x < n) then indexError()
@@ -131,20 +131,20 @@ indexAtSingleAxis = (⍵, sub, ax) ->
     d = u[1] - u[0]
     for i in [2...u.length] by 1 when u[i] - u[i - 1] isnt d then (isUniform = false; break)
   if isUniform
-    shape = ⍵.shape[..]
+    shape = om.shape[..]
     shape.splice ax, 1, sub.shape...
-    stride = ⍵.stride[..]
+    stride = om.stride[..]
     subStride = strideForShape sub.shape
-    for x, i in subStride then subStride[i] = x * d * ⍵.stride[ax]
+    for x, i in subStride then subStride[i] = x * d * om.stride[ax]
     stride.splice ax, 1, subStride...
-    offset = ⍵.offset + u[0] * ⍵.stride[ax]
-    new A ⍵.data, shape, stride, offset
+    offset = om.offset + u[0] * om.stride[ax]
+    new A om.data, shape, stride, offset
   else
-    shape1 = ⍵.shape[..]; shape1.splice ax, 1
-    stride1 = ⍵.stride[..]; stride1.splice ax, 1
+    shape1 = om.shape[..]; shape1.splice ax, 1
+    stride1 = om.stride[..]; stride1.splice ax, 1
     data = []
     each sub, (x) ->
-      chunk = new A ⍵.data, shape1, stride1, ⍵.offset + x * ⍵.stride[ax]
+      chunk = new A om.data, shape1, stride1, om.offset + x * om.stride[ax]
       data.push chunk.toArray()...
     shape = shape1[..]
     stride = strideForShape shape

@@ -1,7 +1,7 @@
 addVocabulary
 
-  '⍳': (⍵, ⍺) ->
-    if ⍺
+  '⍳': (om, al) ->
+    if al
       # 2 5 9 14 20⍳9                           ←→ 2
       # 2 5 9 14 20⍳6                           ←→ 5
       # "GORSUCH"⍳"S"                           ←→ 3
@@ -15,11 +15,11 @@ addVocabulary
       # 123 123⍳123                             ←→ 0
       # ⍬⍳123 234                               ←→ 0 0
       # 123 234⍳⍬                               ←→ ⍬
-      if ⍺.shape.length isnt 1 then rankError()
-      ⍵.map (x) ->
+      if al.shape.length isnt 1 then rankError()
+      om.map (x) ->
         try
-          rank = ⍺.shape
-          each ⍺, (y, indices) ->
+          rank = al.shape
+          each al, (y, indices) ->
             if match x, y
               rank = indices
               throw 'break'
@@ -39,8 +39,8 @@ addVocabulary
       # ...              (1 2 0)(1 2 1)(1 2 2)(1 2 3))
       # ⍴⍳2 3 4 ←→ 2 3 4
       # ⍳¯1 !!! DOMAIN ERROR
-      if ⍵.shape.length > 1 then rankError()
-      a = ⍵.toArray()
+      if om.shape.length > 1 then rankError()
+      a = om.toArray()
       for d in a when !isInt d, 0 then domainError()
       n = prod a
       if !n

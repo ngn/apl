@@ -1,7 +1,7 @@
 addVocabulary
-  '⌽': rotate = (⍵, ⍺, axis) ->
+  '⌽': rotate = (om, al, axis) ->
     assert typeof axis is 'undefined' or axis instanceof A
-    if ⍺
+    if al
       # 1⌽1 2 3 4 5 6             ←→ 2 3 4 5 6 1
       # 3⌽'ABCDEFGH'              ←→ 'DEFGHABC'
       # 3⌽2 5⍴1 2 3 4 5 6 7 8 9 0 ←→ 2 5⍴4 5 1 2 3 9 0 6 7 8
@@ -10,21 +10,21 @@ addVocabulary
       # 0⌽1 2 3 4                 ←→ 1 2 3 4
       # 0⌽1234                    ←→ 1234
       # 5⌽⍬                       ←→ ⍬
-      axis = if !axis then ⍵.shape.length - 1 else axis.unwrap()
+      axis = if !axis then om.shape.length - 1 else axis.unwrap()
       if !isInt axis then domainError()
-      if ⍵.shape.length and !(0 <= axis < ⍵.shape.length) then indexError()
-      step = ⍺.unwrap()
+      if om.shape.length and !(0 <= axis < om.shape.length) then indexError()
+      step = al.unwrap()
       if !isInt step then domainError()
-      if !step then return ⍵
-      n = ⍵.shape[axis]
+      if !step then return om
+      n = om.shape[axis]
       step = (n + (step % n)) % n # force % to handle negatives properly
-      if ⍵.empty() or step is 0 then return ⍵
+      if om.empty() or step is 0 then return om
       data = []
-      {shape, stride} = ⍵
-      p = ⍵.offset
+      {shape, stride} = om
+      p = om.offset
       indices = repeat [0], shape.length
       loop
-        data.push ⍵.data[p + ((indices[axis] + step) % shape[axis] - indices[axis]) * stride[axis]]
+        data.push om.data[p + ((indices[axis] + step) % shape[axis] - indices[axis]) * stride[axis]]
         a = shape.length - 1
         while a >= 0 and indices[a] + 1 is shape[a]
           p -= indices[a] * stride[a]
@@ -43,14 +43,14 @@ addVocabulary
         if !axis.isSingleton() then lengthError()
         axis = axis.unwrap()
         if !isInt axis then domainError()
-        if !(0 <= axis < ⍵.shape.length) then indexError()
+        if !(0 <= axis < om.shape.length) then indexError()
       else
-        axis = [⍵.shape.length - 1]
-      if ⍵.shape.length is 0 then return ⍵
-      stride = ⍵.stride[..]
+        axis = [om.shape.length - 1]
+      if om.shape.length is 0 then return om
+      stride = om.stride[..]
       stride[axis] = -stride[axis]
-      offset = ⍵.offset + (⍵.shape[axis] - 1) * ⍵.stride[axis]
-      new A ⍵.data, ⍵.shape, stride, offset
+      offset = om.offset + (om.shape[axis] - 1) * om.stride[axis]
+      new A om.data, om.shape, stride, offset
 
   # ⊖1 2 3 4 5 6                 ←→ 6 5 4 3 2 1
   # ⊖(1 2) (3 4) (5 6)           ←→ (5 6)(3 4)(1 2)
@@ -58,5 +58,5 @@ addVocabulary
   # ⊖    2 5⍴1 2 3 4 5 6 7 8 9 0 ←→ 2 5⍴6 7 8 9 0 1 2 3 4 5
   # ⊖[1] 2 5⍴1 2 3 4 5 6 7 8 9 0 ←→ 2 5⍴5 4 3 2 1 0 9 8 7 6
   # 1⊖3 3⍴⍳9 ←→ 3 3⍴3 4 5 6 7 8 0 1 2
-  '⊖': (⍵, ⍺, axis = A.zero) ->
-    rotate ⍵, ⍺, axis
+  '⊖': (om, al, axis = A.zero) ->
+    rotate om, al, axis

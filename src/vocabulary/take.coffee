@@ -1,10 +1,10 @@
 addVocabulary
 
-  '↑': (⍵, ⍺) ->
-    if ⍺
-      take ⍵, ⍺
+  '↑': (om, al) ->
+    if al
+      take om, al
     else
-      first ⍵
+      first om
 
 # 5↑'ABCDEFGH'     ←→ 'ABCDE'
 # ¯3↑'ABCDEFGH'    ←→ 'FGH'
@@ -29,18 +29,18 @@ addVocabulary
 # ¯2↑3 3⍴⍳9        ←→ 2 3⍴3+⍳6
 # 4↑3 3⍴⍳9         ←→ 4 3⍴(⍳9),0 0 0
 # ⍬↑3 3⍴⍳9         ←→ 3 3⍴⍳9
-take = (⍵, ⍺) ->
-  if ⍺.shape.length > 1 then rankError()
-  if !⍵.shape.length then ⍵ = new A [⍵.unwrap()], (if !⍺.shape.length then [1] else repeat [1], ⍺.shape[0])
-  a = ⍺.toArray()
-  if a.length > ⍵.shape.length then rankError()
+take = (om, al) ->
+  if al.shape.length > 1 then rankError()
+  if !om.shape.length then om = new A [om.unwrap()], (if !al.shape.length then [1] else repeat [1], al.shape[0])
+  a = al.toArray()
+  if a.length > om.shape.length then rankError()
   for x in a when typeof x isnt 'number' or x isnt Math.floor x then domainError()
 
   mustCopy = false
-  shape = ⍵.shape[..]
+  shape = om.shape[..]
   for x, i in a
     shape[i] = Math.abs x
-    if shape[i] > ⍵.shape[i]
+    if shape[i] > om.shape[i]
       mustCopy = true
 
   if mustCopy
@@ -48,37 +48,37 @@ take = (⍵, ⍺) ->
     stride[stride.length - 1] = 1
     for i in [stride.length - 2 .. 0] by -1
       stride[i] = stride[i + 1] * shape[i + 1]
-    data = repeat [⍵.getPrototype()], prod shape
+    data = repeat [om.getPrototype()], prod shape
     copyShape = shape[..]
-    p = ⍵.offset
+    p = om.offset
     q = 0
     for x, i in a
-      copyShape[i] = Math.min ⍵.shape[i], Math.abs x
+      copyShape[i] = Math.min om.shape[i], Math.abs x
       if x < 0
-        if x < -⍵.shape[i]
-          q -= (x + ⍵.shape[i]) * stride[i]
+        if x < -om.shape[i]
+          q -= (x + om.shape[i]) * stride[i]
         else
-          p += (x + ⍵.shape[i]) * ⍵.stride[i]
+          p += (x + om.shape[i]) * om.stride[i]
     if prod copyShape
       copyIndices = repeat [0], copyShape.length
       loop
-        data[q] = ⍵.data[p]
+        data[q] = om.data[p]
         axis = copyShape.length - 1
         while axis >= 0 and copyIndices[axis] + 1 is copyShape[axis]
-          p -= copyIndices[axis] * ⍵.stride[axis]
+          p -= copyIndices[axis] * om.stride[axis]
           q -= copyIndices[axis] * stride[axis]
           copyIndices[axis--] = 0
         if axis < 0 then break
-        p += ⍵.stride[axis]
+        p += om.stride[axis]
         q += stride[axis]
         copyIndices[axis]++
     new A data, shape, stride
   else
-    offset = ⍵.offset
+    offset = om.offset
     for x, i in a
       if x < 0
-        offset += (⍵.shape[i] + x) * ⍵.stride[i]
-    new A ⍵.data, shape, ⍵.stride, offset
+        offset += (om.shape[i] + x) * om.stride[i]
+    new A om.data, shape, om.stride, offset
 
 # ↑(1 2 3)(4 5 6) ←→ 1 2 3
 # ↑(1 2)(3 4 5)   ←→ 1 2
@@ -86,6 +86,6 @@ take = (⍵, ⍺) ->
 # ↑123            ←→ 123
 # ↑⍬              ←→ 0
 #! ↑''             ←→ ' '
-first = (⍵) ->
-  x = if ⍵.empty() then ⍵.getPrototype() else ⍵.data[⍵.offset]
+first = (om) ->
+  x = if om.empty() then om.getPrototype() else om.data[om.offset]
   if x instanceof A then x else new A [x], []

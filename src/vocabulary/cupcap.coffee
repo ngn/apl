@@ -1,7 +1,7 @@
 addVocabulary
 
-  '∪': (⍵, ⍺) ->
-    if ⍺
+  '∪': (om, al) ->
+    if al
       # 1 2∪2 3     ←→ 1 2 3
       # 'SHOCK'∪'CHOCOLATE' ←→ 'SHOCKLATE'
       # 1∪1         ←→ ,1
@@ -15,7 +15,7 @@ addVocabulary
       # ⍬∪⍬         ←→ ⍬
       # 'lentils' 'bulghur'(3 4 5)∪'lentils' 'rice' ←→ 'lentils' 'bulghur'(3 4 5)'rice'
       data = []
-      for a in [⍺, ⍵]
+      for a in [al, om]
         if a.shape.length > 1 then rankError()
         each a, (x) -> if !contains data, x then data.push x
       new A data
@@ -25,16 +25,16 @@ addVocabulary
       # ∪17                 ←→ ,17
       # ∪⍬                  ←→ ⍬
       data = []
-      each ⍵, (x) -> if !contains data, x then data.push x
+      each om, (x) -> if !contains data, x then data.push x
       new A data
 
-  '∩': (⍵, ⍺) ->
-    if ⍺
+  '∩': (om, al) ->
+    if al
       # 'ABRA'∩'CAR' ←→ 'ARA'
       # 1'PLUS'2∩⍳5  ←→ 1 2
       data = []
-      b = ⍵.toArray()
-      for x in ⍺.toArray() when contains b, x then data.push x
+      b = om.toArray()
+      for x in al.toArray() when contains b, x then data.push x
       new A data
     else
       nonceError()

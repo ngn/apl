@@ -39,30 +39,30 @@ addVocabulary
   # ...   ←→ 6 4⍴'ABELABLEACESACREaBELaBLE'
   #
   # ⍋0 1 2 3 4 3 6 6 4 9 1 11 12 13 14 15 ←→ 0 1 10 2 3 5 4 8 6 7 9 11 12 13 14 15
-  '⍋': (⍵, ⍺) -> grade ⍵, ⍺, 1
+  '⍋': (om, al) -> grade om, al, 1
 
   # ⍒3 1 8 ←→ 2 0 1
-  '⍒': (⍵, ⍺) -> grade ⍵, ⍺, -1
+  '⍒': (om, al) -> grade om, al, -1
 
 # Helper for `⍋` and `⍒`
-grade = (⍵, ⍺, direction) ->
+grade = (om, al, direction) ->
   h = {} # maps a character to its index in the collation
-  if ⍺
-    if !⍺.shape.length then rankError()
+  if al
+    if !al.shape.length then rankError()
     h = {}
-    each ⍺, (x, indices) ->
+    each al, (x, indices) ->
       if typeof x isnt 'string' then domainError()
       h[x] = indices[indices.length - 1]
 
-  if !⍵.shape.length then rankError()
+  if !om.shape.length then rankError()
 
-  new A [0...⍵.shape[0]]
+  new A [0...om.shape[0]]
     .sort (i, j) ->
-      p = ⍵.offset
-      indices = repeat [0], ⍵.shape.length
+      p = om.offset
+      indices = repeat [0], om.shape.length
       loop
-        x = ⍵.data[p + i * ⍵.stride[0]]
-        y = ⍵.data[p + j * ⍵.stride[0]]
+        x = om.data[p + i * om.stride[0]]
+        y = om.data[p + j * om.stride[0]]
         tx = typeof x
         ty = typeof y
         if tx < ty then return -direction
@@ -72,10 +72,10 @@ grade = (⍵, ⍺, direction) ->
         if x < y then return -direction
         if x > y then return direction
         a = indices.length - 1
-        while a > 0 and indices[a] + 1 is ⍵.shape[a]
-          p -= ⍵.stride[a] * indices[a]
+        while a > 0 and indices[a] + 1 is om.shape[a]
+          p -= om.stride[a] * indices[a]
           indices[a--] = 0
         if a <= 0 then break
-        p += ⍵.stride[a]
+        p += om.stride[a]
         indices[a]++
       (i > j) - (i < j)

@@ -1,7 +1,7 @@
 addVocabulary
 
-  '⍕': (⍵, ⍺) ->
-    if ⍺
+  '⍕': (om, al) ->
+    if al
       nonceError()
     else
       # ⍕123            ←→ 1 3⍴'123'
@@ -28,7 +28,7 @@ addVocabulary
       # ⍕¯∞             ←→ 1 2⍴'¯∞'
       # ⍕¯1             ←→ 1 2⍴'¯1'
       # ⍕¯1e¯100J¯2e¯99 ←→ 1 14⍴'¯1e¯100J¯2e¯99'
-      t = format ⍵
+      t = format om
       new A t.join(''), [t.length, t[0].length]
 
 # Format an APL object as an array of strings

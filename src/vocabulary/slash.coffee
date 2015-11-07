@@ -1,7 +1,7 @@
 addVocabulary
-  '⌿': adverb (⍵, ⍺, axis = A.zero) -> reduce ⍵, ⍺, axis
-  '/': reduce = adverb (⍵, ⍺, axis) ->
-    if typeof ⍵ is 'function'
+  '⌿': adverb (om, al, axis = A.zero) -> reduce om, al, axis
+  '/': reduce = adverb (om, al, axis) ->
+    if typeof om is 'function'
       # +/3                    ←→ 3
       # +/3 5 8                ←→ 16
       # ⌈/82 66 93 13          ←→ 93
@@ -16,26 +16,26 @@ addVocabulary
       # 12+/1+⍳10   !!! LENGTH ERROR
       # 2-/3 4 9 7  ←→ ¯1 ¯5 2
       # ¯2-/3 4 9 7 ←→ 1 5 ¯2
-      f = ⍵; g = ⍺; axis0 = axis
+      f = om; g = al; axis0 = axis
       assert typeof f is 'function'
       assert typeof g is 'undefined'
       assert(typeof axis0 is 'undefined' or axis0 instanceof A)
-      (⍵, ⍺) ->
-        if !⍵.shape.length then ⍵ = new A [⍵.unwrap()]
-        axis = if axis0? then axis0.toInt() else ⍵.shape.length - 1
-        if !(0 <= axis < ⍵.shape.length) then rankError()
+      (om, al) ->
+        if !om.shape.length then om = new A [om.unwrap()]
+        axis = if axis0? then axis0.toInt() else om.shape.length - 1
+        if !(0 <= axis < om.shape.length) then rankError()
 
-        if ⍺
+        if al
           isNWise = true
-          n = ⍺.toInt()
+          n = al.toInt()
           if n < 0
             isBackwards = true
             n = -n
         else
-          n = ⍵.shape[axis]
+          n = om.shape[axis]
 
-        shape = ⍵.shape[..]
-        shape[axis] = ⍵.shape[axis] - n + 1
+        shape = om.shape[..]
+        shape[axis] = om.shape[axis] - n + 1
         rShape = shape
         if isNWise
           if shape[axis] is 0 then return new A [], rShape
@@ -44,7 +44,7 @@ addVocabulary
           rShape = rShape[..]
           rShape.splice axis, 1
 
-        if ⍵.empty()
+        if om.empty()
           if (z = f.identity)?
             assert !z.shape.length
             return new A z.data, rShape, repeat([0], rShape.length), z.offset
@@ -53,30 +53,30 @@ addVocabulary
 
         data = []
         indices = repeat [0], shape.length
-        p = ⍵.offset
+        p = om.offset
         loop
           if isBackwards
-            x = ⍵.data[p]
+            x = om.data[p]
             x = if x instanceof A then x else A.scalar x
             for i in [1...n] by 1
-              y = ⍵.data[p + i * ⍵.stride[axis]]
+              y = om.data[p + i * om.stride[axis]]
               y = if y instanceof A then y else A.scalar y
               x = f x, y
           else
-            x = ⍵.data[p + (n - 1) * ⍵.stride[axis]]
+            x = om.data[p + (n - 1) * om.stride[axis]]
             x = if x instanceof A then x else A.scalar x
             for i in [n - 2 .. 0] by -1
-              y = ⍵.data[p + i * ⍵.stride[axis]]
+              y = om.data[p + i * om.stride[axis]]
               y = if y instanceof A then y else A.scalar y
               x = f x, y
           if !x.shape.length then x = x.unwrap()
           data.push x
           a = indices.length - 1
           while a >= 0 and indices[a] + 1 is shape[a]
-            p -= indices[a] * ⍵.stride[a]
+            p -= indices[a] * om.stride[a]
             indices[a--] = 0
           if a < 0 then break
-          p += ⍵.stride[a]
+          p += om.stride[a]
           indices[a]++
 
         new A data, rShape
@@ -103,15 +103,15 @@ addVocabulary
       # 2 ¯1 2/[1]3 1⍴7 8 9       ←→ 3 5⍴7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
       # 2 ¯1 2/[1]3 1⍴'abc'       ←→ 3 5⍴'aa aabb bbcc cc'
       # 2 ¯2 2/7                  ←→ 7 7 0 0 7 7
-      if !⍵.shape.length then ⍵ = new A [⍵.unwrap()]
-      axis = if axis then axis.toInt 0, ⍵.shape.length else ⍵.shape.length - 1
-      if ⍺.shape.length > 1 then rankError()
-      a = ⍺.toArray()
-      n = ⍵.shape[axis]
+      if !om.shape.length then om = new A [om.unwrap()]
+      axis = if axis then axis.toInt 0, om.shape.length else om.shape.length - 1
+      if al.shape.length > 1 then rankError()
+      a = al.toArray()
+      n = om.shape[axis]
       if a.length is 1 then a = repeat a, n
       if n !in [1, a.length] then lengthError()
 
-      shape = ⍵.shape[..]
+      shape = om.shape[..]
       shape[axis] = 0
       b = []
       for x, i in a
@@ -122,24 +122,24 @@ addVocabulary
         b = for x in b then (if x? then 0 else x)
 
       data = []
-      if shape[axis] isnt 0 and !⍵.empty()
-        filler = ⍵.getPrototype()
-        p = ⍵.offset
+      if shape[axis] isnt 0 and !om.empty()
+        filler = om.getPrototype()
+        p = om.offset
         indices = repeat [0], shape.length
         loop
           x =
             if b[indices[axis]]?
-              ⍵.data[p + b[indices[axis]] * ⍵.stride[axis]]
+              om.data[p + b[indices[axis]] * om.stride[axis]]
             else
               filler
           data.push x
 
           i = shape.length - 1
           while i >= 0 and indices[i] + 1 is shape[i]
-            if i isnt axis then p -= ⍵.stride[i] * indices[i]
+            if i isnt axis then p -= om.stride[i] * indices[i]
             indices[i--] = 0
           if i < 0 then break
-          if i isnt axis then p += ⍵.stride[i]
+          if i isnt axis then p += om.stride[i]
           indices[i]++
 
       new A data, shape

@@ -40,8 +40,8 @@ addVocabulary
   # ≥/⍬ ←→ 1
   '≥': withIdentity 1,  pervasive dyad: real (y, x) -> +(x >= y)
 
-  '≡': (⍵, ⍺) ->
-    if ⍺
+  '≡': (om, al) ->
+    if al
       # 3≡3                    ←→ 1
       # 3≡,3                   ←→ 0
       # 4 7.1 8≡4 7.2 8        ←→ 0
@@ -51,14 +51,14 @@ addVocabulary
       #! (⍳0)≡""               ←→ 0
       # (2 0⍴0)≡(0 2⍴0)        ←→ 0
       #! (0⍴1 2 3)≡0⍴⊂2 2⍴⍳4   ←→ 0
-      A.bool[+match ⍵, ⍺]
+      A.bool[+match om, al]
     else
       # ≡4                      ←→ 0
       # ≡⍳4                     ←→ 1
       # ≡2 2⍴⍳4                 ←→ 1
       # ≡"abc"1 2 3(23 55)      ←→ 2
       # ≡"abc"(2 4⍴"abc"2 3"k") ←→ 3
-      new A [depthOf ⍵], []
+      new A [depthOf om], []
 
 depthOf = (x) ->
   if x instanceof A

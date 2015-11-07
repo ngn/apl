@@ -31,13 +31,13 @@ addVocabulary
   # ...         0 1 0
   # ...         1 1 4
   # ...         1 3 11)
-  '⊤': (⍵, ⍺) ->
-    assert ⍺
-    a = ⍺.toArray()
-    b = ⍵.toArray()
-    shape = ⍺.shape.concat ⍵.shape
+  '⊤': (om, al) ->
+    assert al
+    a = al.toArray()
+    b = om.toArray()
+    shape = al.shape.concat om.shape
     data = Array prod shape
-    n = if ⍺.shape.length then ⍺.shape[0] else 1
+    n = if al.shape.length then al.shape[0] else 1
     m = a.length / n
     for i in [0...m] by 1
       for y, j in b

@@ -27,10 +27,10 @@ addVocabulary
 # 2 3∘.{⍺×⍵}4 5  ←→ 2 2⍴8 10 12 15
 outerProduct = (f) ->
   assert typeof f is 'function'
-  (⍵, ⍺) ->
-    if !⍺ then syntaxError 'Adverb ∘. (Outer product) can be applied to dyadic verbs only'
-    a = ⍺.toArray()
-    b = ⍵.toArray()
+  (om, al) ->
+    if !al then syntaxError 'Adverb ∘. (Outer product) can be applied to dyadic verbs only'
+    a = al.toArray()
+    b = om.toArray()
     data = []
     for x in a then for y in b
       if x !instanceof A then x = A.scalar x
@@ -38,7 +38,7 @@ outerProduct = (f) ->
       z = f y, x
       if !z.shape.length then z = z.unwrap()
       data.push z
-    new A data, ⍺.shape.concat ⍵.shape
+    new A data, al.shape.concat om.shape
 
 # For matrices, the inner product behaves like matrix multiplication where +
 # and × can be substituted with any verbs.
@@ -56,10 +56,10 @@ outerProduct = (f) ->
 innerProduct = (g, f) ->
   F = vocabulary['¨'] reduce f
   G = outerProduct g
-  (⍵, ⍺) ->
-    if !⍺.shape.length then ⍺ = new A [⍺.unwrap()]
-    if !⍵.shape.length then ⍵ = new A [⍵.unwrap()]
+  (om, al) ->
+    if !al.shape.length then al = new A [al.unwrap()]
+    if !om.shape.length then om = new A [om.unwrap()]
     F G(
-      vocabulary['⊂'](⍵, undefined, new A [0])
-      vocabulary['⊂'](⍺, undefined, new A [⍺.shape.length - 1])
+      vocabulary['⊂'](om, undefined, new A [0])
+      vocabulary['⊂'](al, undefined, new A [al.shape.length - 1])
     )

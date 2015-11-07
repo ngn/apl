@@ -38,17 +38,17 @@ addVocabulary
   'get_⎕IO': -> A.zero
   'set_⎕IO': (x) -> if match x, A.zero then x else domainError 'The index origin (⎕IO) is fixed at 0'
 
-  '⎕DL': cps (⍵, ⍺, _, callback) ->
+  '⎕DL': cps (om, al, _, callback) ->
     t0 = +new Date
-    setTimeout (-> callback new A [new Date - t0]), ⍵.unwrap()
+    setTimeout (-> callback new A [new Date - t0]), om.unwrap()
     return
 
   # 'b(c+)d'⎕RE'abcd' ←→ 1 'bcd' (,'c')
   # 'B(c+)d'⎕RE'abcd' ←→ ⍬
   # 'a(b'   ⎕RE'c'           !!! DOMAIN ERROR
-  '⎕RE': (⍵, ⍺) ->
-    x = ⍺.toSimpleString()
-    y = ⍵.toSimpleString()
+  '⎕RE': (om, al) ->
+    x = al.toSimpleString()
+    y = om.toSimpleString()
     try re = new RegExp x catch e then domainError e.toString()
     if m = re.exec y
       r = [m.index]
@@ -60,9 +60,9 @@ addVocabulary
   # ⎕UCS'a' ←→ 97
   # ⎕UCS'ab' ←→ 97 98
   # ⎕UCS 2 2⍴97+⍳4 ←→ 2 2⍴'abcd'
-  '⎕UCS': (⍵, ⍺) ->
-    if ⍺? then nonceError()
-    ⍵.map (x) ->
+  '⎕UCS': (om, al) ->
+    if al? then nonceError()
+    om.map (x) ->
       if isInt x, 0, 0x10000 then y = String.fromCharCode x
       else if typeof x is 'string' then y = x.charCodeAt 0
       else domainError()

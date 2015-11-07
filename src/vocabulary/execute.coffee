@@ -5,4 +5,4 @@ addVocabulary
   # ⍎'undefinedVariable' !!!
   # ⍎'1 2 (3'            !!!
   # ⍎123                 !!!
-  '⍎': (⍵, ⍺) -> if ⍺ then nonceError() else exec ⍵.toSimpleString()
+  '⍎': (om, al) -> if al then nonceError() else exec om.toSimpleString()

@@ -11,4 +11,4 @@ addVocabulary
     assert x instanceof A
     if !x.isSingleton() then rankError()
     if x.shape.length then x = A.scalar x.unwrap()
-    withIdentity x, (⍵, ⍺, axis) -> f ⍵, ⍺, axis
+    withIdentity x, (om, al, axis) -> f om, al, axis

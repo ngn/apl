@@ -1,3 +1,8 @@
+`
+var vocabulary={}
+function addVocabulary(h){for(var k in h)vocabulary[k]=h[k]}
+`
+
 # pervasive() is a higher-order function
 #
 # Consider a function that accepts and returns only scalars.  To make it
@@ -40,10 +45,10 @@ pervasive = ({monad, dyad}) ->
           else assert 0
     else
       nonceError
-  (⍵, ⍺) ->
-    assert ⍵ instanceof A
-    assert ⍺ instanceof A or !⍺?
-    (if ⍺? then pervadeDyadic else pervadeMonadic) ⍵, ⍺
+  (om, al) ->
+    assert om instanceof A
+    assert al instanceof A or !al?
+    (if al? then pervadeDyadic else pervadeMonadic) om, al
 
 macro real (f) ->
   (macro.codeToNode ->

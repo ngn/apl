@@ -1,7 +1,7 @@
 addVocabulary
 
-  '⍉': (⍵, ⍺) ->
-    if ⍺
+  '⍉': (om, al) ->
+    if al
       # (2 2⍴⍳4)⍉2 2 2 2⍴⍳16 !!! RANK ERROR
       # 0⍉3 5 8 ←→ 3 5 8
       # 1 0⍉2 2 2⍴⍳8 !!! LENGTH ERROR
@@ -14,23 +14,23 @@ addVocabulary
       # 0 0⍉2 3⍴⍳9 ←→ 0 4
       # 0 0 0⍉3 3 3⍴⍳27 ←→ 0 13 26
       # 0 1 0⍉3 3 3⍴⍳27 ←→ 3 3⍴0 3 6 10 13 16 20 23 26
-      if ⍺.shape.length > 1 then rankError()
-      if !⍺.shape.length then ⍺ = new A [⍺.unwrap()]
-      n = ⍵.shape.length
-      if ⍺.shape[0] isnt n then lengthError()
+      if al.shape.length > 1 then rankError()
+      if !al.shape.length then al = new A [al.unwrap()]
+      n = om.shape.length
+      if al.shape[0] isnt n then lengthError()
       shape = []
       stride = []
-      for x, i in ⍺.toArray()
+      for x, i in al.toArray()
         if !isInt x, 0 then domainError()
         if x >= n then rankError()
         if shape[x]?
-          shape[x] = Math.min shape[x], ⍵.shape[i]
-          stride[x] += ⍵.stride[i]
+          shape[x] = Math.min shape[x], om.shape[i]
+          stride[x] += om.stride[i]
         else
-          shape[x] = ⍵.shape[i]
-          stride[x] = ⍵.stride[i]
+          shape[x] = om.shape[i]
+          stride[x] = om.stride[i]
       for u in shape when !u? then rankError()
-      new A ⍵.data, shape, stride, ⍵.offset
+      new A om.data, shape, stride, om.offset
     else
       # ⍉2 3⍴1 2 3 6 7 8  ←→ 3 2⍴1 6 2 7 3 8
       # ⍴⍉2 3⍴1 2 3 6 7 8 ←→ 3 2
@@ -41,4 +41,4 @@ addVocabulary
       # ...                         3 15  7 19  11 23)
       # ⍉⍬                ←→ ⍬
       # ⍉''               ←→ ''
-      new A ⍵.data, reversed(⍵.shape), reversed(⍵.stride), ⍵.offset
+      new A om.data, reversed(om.shape), reversed(om.stride), om.offset
