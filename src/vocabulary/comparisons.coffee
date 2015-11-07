@@ -62,7 +62,7 @@ addVocabulary
 
 depthOf = (x) ->
   if x instanceof A
-    if (!⍴⍴ x) and (x.data[0] !instanceof A) then return 0
+    if !x.shape.length and (x.data[0] !instanceof A) then return 0
     r = 0
     each x, (y) -> r = Math.max r, depthOf y
     r + 1

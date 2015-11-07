@@ -48,18 +48,18 @@ addVocabulary
 grade = (⍵, ⍺, direction) ->
   h = {} # maps a character to its index in the collation
   if ⍺
-    if !⍴⍴ ⍺ then rankError()
+    if !⍺.shape.length then rankError()
     h = {}
     each ⍺, (x, indices) ->
       if typeof x isnt 'string' then domainError()
       h[x] = indices[indices.length - 1]
 
-  if !⍴⍴ ⍵ then rankError()
+  if !⍵.shape.length then rankError()
 
-  new A [0...⍴(⍵)[0]]
+  new A [0...⍵.shape[0]]
     .sort (i, j) ->
       p = ⍵.offset
-      indices = repeat [0], ⍴⍴ ⍵
+      indices = repeat [0], ⍵.shape.length
       loop
         x = ⍵.data[p + i * ⍵.stride[0]]
         y = ⍵.data[p + j * ⍵.stride[0]]
@@ -72,7 +72,7 @@ grade = (⍵, ⍺, direction) ->
         if x < y then return -direction
         if x > y then return direction
         a = indices.length - 1
-        while a > 0 and indices[a] + 1 is ⍴(⍵)[a]
+        while a > 0 and indices[a] + 1 is ⍵.shape[a]
           p -= ⍵.stride[a] * indices[a]
           indices[a--] = 0
         if a <= 0 then break

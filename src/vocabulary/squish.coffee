@@ -19,17 +19,17 @@ addVocabulary
   '⌷': squish = (⍵, ⍺, axes) ->
     if typeof ⍵ is 'function' then return (x, y) -> ⍵ x, y, ⍺
     if !⍺ then nonceError()
-    if 1 < ⍴⍴ ⍺ then rankError()
+    if 1 < ⍺.shape.length then rankError()
     a = ⍺.toArray()
-    if a.length > ⍴⍴ ⍵ then lengthError()
+    if a.length > ⍵.shape.length then lengthError()
 
     if axes
       axes = axes.toArray()
       if a.length isnt axes.length then lengthError()
-      h = Array ⍴⍴ ⍵
+      h = Array ⍵.shape.length
       for axis in axes
         if !isInt axis then domainError()
-        if !(0 <= axis < ⍴⍴ ⍵) then rankError()
+        if !(0 <= axis < ⍵.shape.length) then rankError()
         if h[axis] then rankError 'Duplicate axis'
         h[axis] = 1
     else
@@ -88,24 +88,24 @@ addVocabulary
       for x in args.toArray()
         if x instanceof A then x else new A [x], []
 
-    if 1 < ⍴⍴ ⍺ then rankError()
+    if 1 < ⍺.shape.length then rankError()
     a = ⍺.toArray()
-    if a.length > ⍴⍴ ⍵ then lengthError()
+    if a.length > ⍵.shape.length then lengthError()
 
     if axes
-      if 1 < ⍴⍴ axes then rankError()
+      if 1 < axes.shape.length then rankError()
       axes = axes.toArray()
       if a.length isnt axes.length then lengthError()
     else
       axes = [0...a.length]
 
-    subs = squish (vocabulary['⍳'] new A ⍴ ⍵), ⍺, new A axes
+    subs = squish (vocabulary['⍳'] new A ⍵.shape), ⍺, new A axes
     if value.isSingleton()
-      value = new A [value], ⍴(subs), repeat [0], ⍴⍴(subs)
+      value = new A [value], subs.shape, repeat [0], subs.shape.length
     data = ⍵.toArray()
-    stride = strideForShape ⍴ ⍵
+    stride = strideForShape ⍵.shape
     each2 subs, value, (u, v) ->
-      if v instanceof A and !⍴⍴ v then v = v.unwrap()
+      if v instanceof A and !v.shape.length then v = v.unwrap()
       if u instanceof A
         p = 0 # pointer in data
         for x, i in u.toArray() then p += x * stride[i]
@@ -113,15 +113,15 @@ addVocabulary
       else
         data[u] = v
 
-    new A data, ⍴ ⍵
+    new A data, ⍵.shape
 
 indexAtSingleAxis = (⍵, sub, ax) ->
   assert ⍵ instanceof A
   assert sub instanceof A
   assert isInt ax
-  assert 0 <= ax < ⍴⍴ ⍵
+  assert 0 <= ax < ⍵.shape.length
   u = sub.toArray()
-  n = ⍴(⍵)[ax]
+  n = ⍵.shape[ax]
   for x in u
     if !isInt x then domainError()
     if !(0 <= x < n) then indexError()
@@ -131,16 +131,16 @@ indexAtSingleAxis = (⍵, sub, ax) ->
     d = u[1] - u[0]
     for i in [2...u.length] by 1 when u[i] - u[i - 1] isnt d then (isUniform = false; break)
   if isUniform
-    shape = ⍴(⍵)[..]
-    shape.splice ax, 1, ⍴(sub)...
+    shape = ⍵.shape[..]
+    shape.splice ax, 1, sub.shape...
     stride = ⍵.stride[..]
-    subStride = strideForShape ⍴ sub
+    subStride = strideForShape sub.shape
     for x, i in subStride then subStride[i] = x * d * ⍵.stride[ax]
     stride.splice ax, 1, subStride...
     offset = ⍵.offset + u[0] * ⍵.stride[ax]
     new A ⍵.data, shape, stride, offset
   else
-    shape1 = ⍴(⍵)[..]; shape1.splice ax, 1
+    shape1 = ⍵.shape[..]; shape1.splice ax, 1
     stride1 = ⍵.stride[..]; stride1.splice ax, 1
     data = []
     each sub, (x) ->
@@ -148,8 +148,8 @@ indexAtSingleAxis = (⍵, sub, ax) ->
       data.push chunk.toArray()...
     shape = shape1[..]
     stride = strideForShape shape
-    shape.splice ax, 0, ⍴(sub)...
-    subStride = strideForShape ⍴ sub
+    shape.splice ax, 0, sub.shape...
+    subStride = strideForShape sub.shape
     k = prod shape1
     for i in [0...subStride.length] by 1 then subStride[i] *= k
     stride.splice ax, 0, subStride...

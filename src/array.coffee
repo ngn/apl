@@ -1,6 +1,3 @@
-macro ⍴ (a) -> macro.codeToNode(-> (a).shape).subst {a}
-macro ⍴⍴ (a) -> macro.codeToNode(-> (a).shape.length).subst {a}
-
 # each() is a hygienic macro that efficiently iterates the elements of an
 # APL array in ravel order.  No function calls are made during iteration as
 # those are relatively expensive in JavaScript.
@@ -9,7 +6,7 @@ macro each (a0, f) ->
     a = a0
     if !a.empty()
       data = a.data
-      shape = ⍴ a
+      shape = a.shape
       stride = a.stride
       lastAxis = shape.length - 1
       p = a.offset
@@ -96,7 +93,7 @@ class A # an APL array
     assert @shape.length?
     assert @stride.length?
     assert @data.length is 0 or isInt @offset, 0, @data.length
-    assert @stride.length is ⍴⍴ @
+    assert @stride.length is @shape.length
     for x in @shape then assert isInt x, 0
     if @data.length
       for x, i in @stride then assert isInt x, -@data.length, @data.length + 1
@@ -130,10 +127,10 @@ class A # an APL array
   toBool: -> @toInt 0, 2
 
   toSimpleString: ->
-    if ⍴⍴(@) > 1 then rankError()
+    if @shape.length > 1 then rankError()
     if typeof @data is 'string'
-      if !⍴⍴ @ then return @data[@offset]
-      if ⍴(@)[0] is 0 then return ''
+      if !@shape.length then return @data[@offset]
+      if @shape[0] is 0 then return ''
       if @stride[0] is 1 then return @data[@offset ... @offset + @shape[0]]
       @toArray().join ''
     else
@@ -145,8 +142,8 @@ class A # an APL array
     for n in @shape when n isnt 1 then return false
     true
 
-  isSimple: -> ⍴⍴(@) is 0 and @data[@offset] !instanceof A
-  unwrap: -> if prod(⍴ @) is 1 then @data[@offset] else lengthError()
+  isSimple: -> @shape.length is 0 and @data[@offset] !instanceof A
+  unwrap: -> if prod(@shape) is 1 then @data[@offset] else lengthError()
   getPrototype: -> if @empty() or typeof @data[@offset] isnt 'string' then 0 else ' ' # todo
   toString: -> format(@).join '\n'
   repr: -> "new A(#{repr @data},#{repr @shape},#{repr @stride},#{repr @offset})"

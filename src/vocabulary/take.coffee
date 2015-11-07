@@ -30,17 +30,17 @@ addVocabulary
 # 4↑3 3⍴⍳9         ←→ 4 3⍴(⍳9),0 0 0
 # ⍬↑3 3⍴⍳9         ←→ 3 3⍴⍳9
 take = (⍵, ⍺) ->
-  if ⍴⍴(⍺) > 1 then rankError()
-  if !⍴⍴ ⍵ then ⍵ = new A [⍵.unwrap()], (if !⍴⍴ ⍺ then [1] else repeat [1], ⍴(⍺)[0])
+  if ⍺.shape.length > 1 then rankError()
+  if !⍵.shape.length then ⍵ = new A [⍵.unwrap()], (if !⍺.shape.length then [1] else repeat [1], ⍺.shape[0])
   a = ⍺.toArray()
-  if a.length > ⍴⍴ ⍵ then rankError()
+  if a.length > ⍵.shape.length then rankError()
   for x in a when typeof x isnt 'number' or x isnt Math.floor x then domainError()
 
   mustCopy = false
-  shape = ⍴(⍵)[..]
+  shape = ⍵.shape[..]
   for x, i in a
     shape[i] = Math.abs x
-    if shape[i] > ⍴(⍵)[i]
+    if shape[i] > ⍵.shape[i]
       mustCopy = true
 
   if mustCopy
@@ -53,12 +53,12 @@ take = (⍵, ⍺) ->
     p = ⍵.offset
     q = 0
     for x, i in a
-      copyShape[i] = Math.min ⍴(⍵)[i], Math.abs x
+      copyShape[i] = Math.min ⍵.shape[i], Math.abs x
       if x < 0
-        if x < -⍴(⍵)[i]
-          q -= (x + ⍴(⍵)[i]) * stride[i]
+        if x < -⍵.shape[i]
+          q -= (x + ⍵.shape[i]) * stride[i]
         else
-          p += (x + ⍴(⍵)[i]) * ⍵.stride[i]
+          p += (x + ⍵.shape[i]) * ⍵.stride[i]
     if prod copyShape
       copyIndices = repeat [0], copyShape.length
       loop
@@ -77,7 +77,7 @@ take = (⍵, ⍺) ->
     offset = ⍵.offset
     for x, i in a
       if x < 0
-        offset += (⍴(⍵)[i] + x) * ⍵.stride[i]
+        offset += (⍵.shape[i] + x) * ⍵.stride[i]
     new A ⍵.data, shape, ⍵.stride, offset
 
 # ↑(1 2 3)(4 5 6) ←→ 1 2 3

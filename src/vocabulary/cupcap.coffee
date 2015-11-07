@@ -16,7 +16,7 @@ addVocabulary
       # 'lentils' 'bulghur'(3 4 5)∪'lentils' 'rice' ←→ 'lentils' 'bulghur'(3 4 5)'rice'
       data = []
       for a in [⍺, ⍵]
-        if ⍴⍴(a) > 1 then rankError()
+        if a.shape.length > 1 then rankError()
         each a, (x) -> if !contains data, x then data.push x
       new A data
     else

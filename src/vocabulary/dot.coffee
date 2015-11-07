@@ -36,9 +36,9 @@ outerProduct = (f) ->
       if x !instanceof A then x = A.scalar x
       if y !instanceof A then y = A.scalar y
       z = f y, x
-      if !⍴⍴ z then z = z.unwrap()
+      if !z.shape.length then z = z.unwrap()
       data.push z
-    new A data, ⍴(⍺).concat ⍴ ⍵
+    new A data, ⍺.shape.concat ⍵.shape
 
 # For matrices, the inner product behaves like matrix multiplication where +
 # and × can be substituted with any verbs.
@@ -57,9 +57,9 @@ innerProduct = (g, f) ->
   F = vocabulary['¨'] reduce f
   G = outerProduct g
   (⍵, ⍺) ->
-    if !⍴⍴ ⍺ then ⍺ = new A [⍺.unwrap()]
-    if !⍴⍴ ⍵ then ⍵ = new A [⍵.unwrap()]
+    if !⍺.shape.length then ⍺ = new A [⍺.unwrap()]
+    if !⍵.shape.length then ⍵ = new A [⍵.unwrap()]
     F G(
       vocabulary['⊂'](⍵, undefined, new A [0])
-      vocabulary['⊂'](⍺, undefined, new A [⍴⍴(⍺) - 1])
+      vocabulary['⊂'](⍺, undefined, new A [⍺.shape.length - 1])
     )

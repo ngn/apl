@@ -39,10 +39,10 @@ addVocabulary
   # ...             0 1 10 11 100 101 110 111)
   '⊥': (⍵, ⍺) ->
     assert ⍺
-    if !⍴⍴ ⍺ then ⍺ = new A [⍺.unwrap()]
-    if !⍴⍴ ⍵ then ⍵ = new A [⍵.unwrap()]
-    lastDimA = ⍴(⍺)[⍴⍴(⍺) - 1]
-    firstDimB = ⍴(⍵)[0]
+    if !⍺.shape.length then ⍺ = new A [⍺.unwrap()]
+    if !⍵.shape.length then ⍵ = new A [⍵.unwrap()]
+    lastDimA = ⍺.shape[⍺.shape.length - 1]
+    firstDimB = ⍵.shape[0]
     if lastDimA isnt 1 and firstDimB isnt 1 and lastDimA isnt firstDimB
       lengthError()
     a = ⍺.toArray()
@@ -58,4 +58,4 @@ addVocabulary
         for k in [1...y.length] by 1
           z = z * x[k] + y[k]
         data.push z
-    new A data, ⍴(⍺)[...-1].concat ⍴(⍵)[1..]
+    new A data, ⍺.shape[...-1].concat ⍵.shape[1..]

@@ -35,9 +35,9 @@ addVocabulary
     assert ⍺
     a = ⍺.toArray()
     b = ⍵.toArray()
-    shape = ⍴(⍺).concat ⍴ ⍵
+    shape = ⍺.shape.concat ⍵.shape
     data = Array prod shape
-    n = if ⍴⍴ ⍺ then ⍴(⍺)[0] else 1
+    n = if ⍺.shape.length then ⍺.shape[0] else 1
     m = a.length / n
     for i in [0...m] by 1
       for y, j in b

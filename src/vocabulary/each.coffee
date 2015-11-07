@@ -20,27 +20,27 @@ addVocabulary
           if x !instanceof A then x = new A [x], []
           r = f x
           assert r instanceof A
-          if ⍴⍴ r then r else r.unwrap()
-      else if arrayEquals ⍴(⍺), ⍴(⍵)
+          if r.shape.length then r else r.unwrap()
+      else if arrayEquals ⍺.shape, ⍵.shape
         ⍵.map2 ⍺, (x, y) ->
           if x !instanceof A then x = new A [x], []
           if y !instanceof A then y = new A [y], []
           r = f x, y
           assert r instanceof A
-          if ⍴⍴ r then r else r.unwrap()
+          if r.shape.length then r else r.unwrap()
       else if ⍺.isSingleton()
         y = if ⍺.data[0] instanceof A then ⍺.unwrap() else ⍺
         ⍵.map (x) ->
           if x !instanceof A then x = new A [x], []
           r = f x, y
           assert r instanceof A
-          if ⍴⍴ r then r else r.unwrap()
+          if r.shape.length then r else r.unwrap()
       else if ⍵.isSingleton()
         x = if ⍵.data[0] instanceof A then ⍵.unwrap() else ⍵
         ⍺.map (y) ->
           if y !instanceof A then y = new A [y], []
           r = f x, y
           assert r instanceof A
-          if ⍴⍴ r then r else r.unwrap()
+          if r.shape.length then r else r.unwrap()
       else
         lengthError()

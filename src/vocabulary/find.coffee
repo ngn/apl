@@ -39,28 +39,28 @@ addVocabulary
       # (2 3 0⍴0)⍷(3 4 5⍴0) ←→ 3 4 5⍴1
       # (2 3 4⍴0)⍷(3 4 0⍴0) ←→ 3 4 0⍴0
       # (2 3 0⍴0)⍷(3 4 0⍴0) ←→ 3 4 0⍴0
-      if ⍴⍴(⍺) > ⍴⍴(⍵) then return new A [0], ⍴(⍵), repeat [0], ⍴⍴ ⍵
-      if ⍴⍴(⍺) < ⍴⍴(⍵)
+      if ⍺.shape.length > ⍵.shape.length then return new A [0], ⍵.shape, repeat [0], ⍵.shape.length
+      if ⍺.shape.length < ⍵.shape.length
         ⍺ = new A( # prepend ones to the shape of ⍺
           ⍺.data
-          repeat([1], ⍴⍴(⍵) - ⍴⍴(⍺)).concat ⍴ ⍺
-          repeat([0], ⍴⍴(⍵) - ⍴⍴(⍺)).concat ⍺.stride
+          repeat([1], ⍵.shape.length - ⍺.shape.length).concat ⍺.shape
+          repeat([0], ⍵.shape.length - ⍺.shape.length).concat ⍺.stride
           ⍺.offset
         )
-      if prod(⍴ ⍺) is 0
-        return new A [1], ⍴(⍵), repeat [0], ⍴⍴ ⍵
+      if prod(⍺.shape) is 0
+        return new A [1], ⍵.shape, repeat [0], ⍵.shape.length
       findShape = []
-      for i in [0...⍴⍴ ⍵] by 1
-        d = ⍴(⍵)[i] - ⍴(⍺)[i] + 1
-        if d <= 0 then return new A [0], ⍴(⍵), repeat [0], ⍴⍴ ⍵
+      for i in [0...⍵.shape.length] by 1
+        d = ⍵.shape[i] - ⍺.shape[i] + 1
+        if d <= 0 then return new A [0], ⍵.shape, repeat [0], ⍵.shape.length
         findShape.push d
-      stride = strideForShape ⍴ ⍵
-      data = repeat [0], prod ⍴ ⍵
+      stride = strideForShape ⍵.shape
+      data = repeat [0], prod ⍵.shape
       p = ⍵.offset
       q = 0
       indices = repeat [0], findShape.length
       loop
-        data[q] = +match ⍺, new A ⍵.data, ⍴(⍺), ⍵.stride, p
+        data[q] = +match ⍺, new A ⍵.data, ⍺.shape, ⍵.stride, p
         a = findShape.length - 1
         while a >= 0 and indices[a] + 1 is findShape[a]
           p -= indices[a] * ⍵.stride[a]
@@ -70,6 +70,6 @@ addVocabulary
         p += ⍵.stride[a]
         q += stride[a]
         indices[a]++
-      new A data, ⍴ ⍵
+      new A data, ⍵.shape
     else
       nonceError()

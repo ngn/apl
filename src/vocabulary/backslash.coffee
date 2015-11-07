@@ -31,8 +31,8 @@ addVocabulary
       f = ⍵
       (⍵, ⍺) ->
         assert !⍺?
-        if !⍴⍴ ⍵ then return ⍵
-        axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
+        if !⍵.shape.length then return ⍵
+        axis = if axis then axis.toInt 0, ⍵.shape.length else ⍵.shape.length - 1
         ⍵.map (x, indices) ->
           p = ⍵.offset
           for index, a in indices then p += index * ⍵.stride[a]
@@ -42,22 +42,22 @@ addVocabulary
             y = ⍵.data[p]
             if y !instanceof A then y = A.scalar y
             x = f x, y
-          if !⍴⍴ x then x = x.unwrap()
+          if !x.shape.length then x = x.unwrap()
           x
     else
-      if !⍴⍴ ⍵ then nonceError 'Expand of scalar not implemented'
-      axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
-      if ⍴⍴(⍺) > 1 then rankError()
+      if !⍵.shape.length then nonceError 'Expand of scalar not implemented'
+      axis = if axis then axis.toInt 0, ⍵.shape.length else ⍵.shape.length - 1
+      if ⍺.shape.length > 1 then rankError()
       a = ⍺.toArray()
 
-      shape = ⍴(⍵)[..]
+      shape = ⍵.shape[..]
       shape[axis] = a.length
       b = []
       i = 0
       for x in a
         if !isInt x, 0, 2 then domainError()
         b.push(if x > 0 then i++ else null)
-      if i isnt ⍴(⍵)[axis] then lengthError()
+      if i isnt ⍵.shape[axis] then lengthError()
 
       data = []
       if shape[axis] isnt 0 and !⍵.empty()

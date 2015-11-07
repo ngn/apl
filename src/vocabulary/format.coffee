@@ -39,9 +39,9 @@ format = (a) ->
   else if typeof a is 'number' then r = [formatNumber a]; r.align = 'right'; r
   else if typeof a is 'function' then ['#procedure']
   else if !(a instanceof A) then ['' + a]
-  else if prod(⍴ a) is 0 then ['']
+  else if prod(a.shape) is 0 then ['']
   else
-    sa = ⍴ a
+    sa = a.shape
     a = a.toArray()
     if !sa.length then return format a[0]
     nRows = prod sa[...sa.length - 1]

@@ -339,13 +339,11 @@ prelude = do ->
   vm {code, env}
   for k, v of vars then vocabulary[k] = env[0][v.slot]
   {nSlots, vars, env}
-
-rhoRho=(x)->⍴⍴ y
 `
 function aplify(x){
   if(typeof x==='string')return x.length===1?A.scalar(x):new A(x)
   if(typeof x==='number')return A.scalar(x)
-  if(x instanceof Array)return new A(x.map(function(y){y=aplify(y);return rhoRho(y)?y:y.unwrap()}))
+  if(x instanceof Array)return new A(x.map(function(y){y=aplify(y);return y.shape.length?y:y.unwrap()}))
   if(x instanceof A)return x
   aplError('Cannot aplify object:'+x)
 }

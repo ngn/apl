@@ -10,12 +10,12 @@ addVocabulary
   # ⍴⊃⊂⊂1 2 3     ←→ ⍬
   '⊂': (⍵, ⍺, axes) ->
     assert !⍺
-    axes = if axes? then getAxisList axes, ⍴⍴ ⍵ else [0...⍴⍴ ⍵]
+    axes = if axes? then getAxisList axes, ⍵.shape.length else [0...⍵.shape.length]
     if ⍵.isSimple() then return ⍵
-    unitShape  = for i in axes then ⍴(⍵)[i]
+    unitShape  = for i in axes then ⍵.shape[i]
     unitStride = for i in axes then ⍵.stride[i]
-    resultAxes = for i in [0...⍴⍴ ⍵] by 1 when i !in axes then i
-    shape      = for i in resultAxes then ⍴(⍵)[i]
+    resultAxes = for i in [0...⍵.shape.length] by 1 when i !in axes then i
+    shape      = for i in resultAxes then ⍵.shape[i]
     stride     = for i in resultAxes then ⍵.stride[i]
     data = []
     each new A(⍵.data, shape, stride, ⍵.offset),

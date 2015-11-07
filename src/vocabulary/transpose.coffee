@@ -14,20 +14,20 @@ addVocabulary
       # 0 0⍉2 3⍴⍳9 ←→ 0 4
       # 0 0 0⍉3 3 3⍴⍳27 ←→ 0 13 26
       # 0 1 0⍉3 3 3⍴⍳27 ←→ 3 3⍴0 3 6 10 13 16 20 23 26
-      if ⍴⍴(⍺) > 1 then rankError()
-      if !⍴⍴ ⍺ then ⍺ = new A [⍺.unwrap()]
-      n = ⍴⍴ ⍵
-      if ⍴(⍺)[0] isnt n then lengthError()
+      if ⍺.shape.length > 1 then rankError()
+      if !⍺.shape.length then ⍺ = new A [⍺.unwrap()]
+      n = ⍵.shape.length
+      if ⍺.shape[0] isnt n then lengthError()
       shape = []
       stride = []
       for x, i in ⍺.toArray()
         if !isInt x, 0 then domainError()
         if x >= n then rankError()
         if shape[x]?
-          shape[x] = Math.min shape[x], ⍴(⍵)[i]
+          shape[x] = Math.min shape[x], ⍵.shape[i]
           stride[x] += ⍵.stride[i]
         else
-          shape[x] = ⍴(⍵)[i]
+          shape[x] = ⍵.shape[i]
           stride[x] = ⍵.stride[i]
       for u in shape when !u? then rankError()
       new A ⍵.data, shape, stride, ⍵.offset
@@ -41,4 +41,4 @@ addVocabulary
       # ...                         3 15  7 19  11 23)
       # ⍉⍬                ←→ ⍬
       # ⍉''               ←→ ''
-      new A ⍵.data, reversed(⍴ ⍵), reversed(⍵.stride), ⍵.offset
+      new A ⍵.data, reversed(⍵.shape), reversed(⍵.stride), ⍵.offset

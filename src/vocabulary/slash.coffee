@@ -21,9 +21,9 @@ addVocabulary
       assert typeof g is 'undefined'
       assert(typeof axis0 is 'undefined' or axis0 instanceof A)
       (⍵, ⍺) ->
-        if !⍴⍴ ⍵ then ⍵ = new A [⍵.unwrap()]
-        axis = if axis0? then axis0.toInt() else ⍴⍴(⍵) - 1
-        if !(0 <= axis < ⍴⍴ ⍵) then rankError()
+        if !⍵.shape.length then ⍵ = new A [⍵.unwrap()]
+        axis = if axis0? then axis0.toInt() else ⍵.shape.length - 1
+        if !(0 <= axis < ⍵.shape.length) then rankError()
 
         if ⍺
           isNWise = true
@@ -32,10 +32,10 @@ addVocabulary
             isBackwards = true
             n = -n
         else
-          n = ⍴(⍵)[axis]
+          n = ⍵.shape[axis]
 
-        shape = ⍴(⍵)[..]
-        shape[axis] = ⍴(⍵)[axis] - n + 1
+        shape = ⍵.shape[..]
+        shape[axis] = ⍵.shape[axis] - n + 1
         rShape = shape
         if isNWise
           if shape[axis] is 0 then return new A [], rShape
@@ -46,7 +46,7 @@ addVocabulary
 
         if ⍵.empty()
           if (z = f.identity)?
-            assert !⍴⍴ z
+            assert !z.shape.length
             return new A z.data, rShape, repeat([0], rShape.length), z.offset
           else
             domainError()
@@ -69,7 +69,7 @@ addVocabulary
               y = ⍵.data[p + i * ⍵.stride[axis]]
               y = if y instanceof A then y else A.scalar y
               x = f x, y
-          if !⍴⍴ x then x = x.unwrap()
+          if !x.shape.length then x = x.unwrap()
           data.push x
           a = indices.length - 1
           while a >= 0 and indices[a] + 1 is shape[a]
@@ -103,15 +103,15 @@ addVocabulary
       # 2 ¯1 2/[1]3 1⍴7 8 9       ←→ 3 5⍴7 7 0 7 7 8 8 0 8 8 9 9 0 9 9
       # 2 ¯1 2/[1]3 1⍴'abc'       ←→ 3 5⍴'aa aabb bbcc cc'
       # 2 ¯2 2/7                  ←→ 7 7 0 0 7 7
-      if !⍴⍴ ⍵ then ⍵ = new A [⍵.unwrap()]
-      axis = if axis then axis.toInt 0, ⍴⍴ ⍵ else ⍴⍴(⍵) - 1
-      if ⍴⍴(⍺) > 1 then rankError()
+      if !⍵.shape.length then ⍵ = new A [⍵.unwrap()]
+      axis = if axis then axis.toInt 0, ⍵.shape.length else ⍵.shape.length - 1
+      if ⍺.shape.length > 1 then rankError()
       a = ⍺.toArray()
-      n = ⍴(⍵)[axis]
+      n = ⍵.shape[axis]
       if a.length is 1 then a = repeat a, n
       if n !in [1, a.length] then lengthError()
 
-      shape = ⍴(⍵)[..]
+      shape = ⍵.shape[..]
       shape[axis] = 0
       b = []
       for x, i in a

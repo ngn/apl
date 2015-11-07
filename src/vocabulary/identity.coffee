@@ -10,5 +10,5 @@ addVocabulary
     assert typeof f is 'function'
     assert x instanceof A
     if !x.isSingleton() then rankError()
-    if ⍴⍴ x then x = A.scalar x.unwrap()
+    if x.shape.length then x = A.scalar x.unwrap()
     withIdentity x, (⍵, ⍺, axis) -> f ⍵, ⍺, axis

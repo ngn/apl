@@ -10,15 +10,15 @@ addVocabulary
       # 2 3⍴⍬     ←→ 2 3⍴0
       # 2 3⍴⍳7    ←→ 2 3⍴0 1 2 3 4 5
       # ⍴1e9⍴0    ←→ ,1e9
-      if ⍴⍴(⍺) > 1 then rankError()
+      if ⍺.shape.length > 1 then rankError()
       a = ⍺.toArray()
       for x in a when !isInt x, 0 then domainError()
       n = prod a
       if !n
         new A [], a
-      else if (a.length >= ⍴⍴ ⍵) and arrayEquals ⍴(⍵), a[a.length - (⍴⍴ ⍵)...]
+      else if (a.length >= ⍵.shape.length) and arrayEquals ⍵.shape, a[a.length - ⍵.shape.length...]
         # If ⍺ is only prepending axes to ⍴⍵, we can reuse the .data array
-        new A ⍵.data, a, repeat([0], a.length - ⍴⍴ ⍵).concat(⍵.stride), ⍵.offset
+        new A ⍵.data, a, repeat([0], a.length - ⍵.shape.length).concat(⍵.stride), ⍵.offset
       else
         data = []
         try
@@ -42,4 +42,4 @@ addVocabulary
       # ⍴'a'     ←→ 0⍴0
       # ⍴'ab'    ←→ 1⍴2
       # ⍴2 3 4⍴0 ←→ 2 3 4
-      new A ⍴ ⍵
+      new A ⍵.shape

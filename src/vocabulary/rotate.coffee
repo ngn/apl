@@ -10,13 +10,13 @@ addVocabulary
       # 0⌽1 2 3 4                 ←→ 1 2 3 4
       # 0⌽1234                    ←→ 1234
       # 5⌽⍬                       ←→ ⍬
-      axis = if !axis then ⍴⍴(⍵) - 1 else axis.unwrap()
+      axis = if !axis then ⍵.shape.length - 1 else axis.unwrap()
       if !isInt axis then domainError()
-      if ⍴⍴(⍵) and !(0 <= axis < ⍴⍴ ⍵) then indexError()
+      if ⍵.shape.length and !(0 <= axis < ⍵.shape.length) then indexError()
       step = ⍺.unwrap()
       if !isInt step then domainError()
       if !step then return ⍵
-      n = ⍴(⍵)[axis]
+      n = ⍵.shape[axis]
       step = (n + (step % n)) % n # force % to handle negatives properly
       if ⍵.empty() or step is 0 then return ⍵
       data = []
@@ -43,14 +43,14 @@ addVocabulary
         if !axis.isSingleton() then lengthError()
         axis = axis.unwrap()
         if !isInt axis then domainError()
-        if !(0 <= axis < ⍴⍴ ⍵) then indexError()
+        if !(0 <= axis < ⍵.shape.length) then indexError()
       else
-        axis = [⍴⍴(⍵) - 1]
-      if ⍴⍴(⍵) is 0 then return ⍵
+        axis = [⍵.shape.length - 1]
+      if ⍵.shape.length is 0 then return ⍵
       stride = ⍵.stride[..]
       stride[axis] = -stride[axis]
-      offset = ⍵.offset + (⍴(⍵)[axis] - 1) * ⍵.stride[axis]
-      new A ⍵.data, ⍴(⍵), stride, offset
+      offset = ⍵.offset + (⍵.shape[axis] - 1) * ⍵.stride[axis]
+      new A ⍵.data, ⍵.shape, stride, offset
 
   # ⊖1 2 3 4 5 6                 ←→ 6 5 4 3 2 1
   # ⊖(1 2) (3 4) (5 6)           ←→ (5 6)(3 4)(1 2)

@@ -15,10 +15,10 @@ addVocabulary
       # 123 123⍳123                             ←→ 0
       # ⍬⍳123 234                               ←→ 0 0
       # 123 234⍳⍬                               ←→ ⍬
-      if ⍴⍴(⍺) isnt 1 then rankError()
+      if ⍺.shape.length isnt 1 then rankError()
       ⍵.map (x) ->
         try
-          rank = ⍴ ⍺
+          rank = ⍺.shape
           each ⍺, (y, indices) ->
             if match x, y
               rank = indices
@@ -39,7 +39,7 @@ addVocabulary
       # ...              (1 2 0)(1 2 1)(1 2 2)(1 2 3))
       # ⍴⍳2 3 4 ←→ 2 3 4
       # ⍳¯1 !!! DOMAIN ERROR
-      if ⍴⍴(⍵) > 1 then rankError()
+      if ⍵.shape.length > 1 then rankError()
       a = ⍵.toArray()
       for d in a when !isInt d, 0 then domainError()
       n = prod a
