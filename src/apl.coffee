@@ -9,7 +9,13 @@ macro withAlphaAndOmega (f) ->
     '⍺': macro.codeToNode -> alpha
     '⍵': macro.codeToNode -> omega
 
-macro include (f) -> macro.fileToNode "src/#{macro.nodeToVal f}.coffee"
+macro include (f) ->
+  fs = macro.require 'fs'
+  if fs.existsSync "src/#{macro.nodeToVal f}.js"
+    macro.jsToNode fs.readFileSync "src/#{macro.nodeToVal f}.js", 'utf8'
+  else
+    macro.fileToNode "src/#{macro.nodeToVal f}.coffee"
+
 include 'helpers'
 include 'errors'
 include 'array'

@@ -1,4 +1,3 @@
-`
 // complexify(x)
 // * if x is real, it's converted to a complex instance with imaginary part 0
 // * if x is already complex, it's preserved
@@ -110,4 +109,3 @@ Z.gcd=function(x,y){
   }
 }
 Z.lcm=function(x,y){var p=Z.multiply(x,y);return iszero(p)?p:Z.divide(p,Z.gcd(x,y))}
-`

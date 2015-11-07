@@ -1,4 +1,3 @@
-`
 // The parser builds an AST from a list of tokens.
 //
 // A node in the AST is a JavaScript array whose first item is a character
@@ -107,4 +106,3 @@ function parse(aplCode,opts){
   // 'hello'} !!! SYNTAX ERROR
   var r=parseBody();demand('$');return r
 }
-`

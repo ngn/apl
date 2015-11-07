@@ -1,4 +1,3 @@
-`
 function assert(x){if(!x)throw Error('assertion failed')}
 function isInt(x,start,end){return x===~~x&&(start==null||start<=x&&(end==null||x<end))}
 function prod(a){var r=1;for(var i=0;i<a.length;i++)r*=a[i];return r}
@@ -39,4 +38,3 @@ function reversed(a){
 String.prototype.includes=String.prototype.includes||function(){
   'use strict';return String.prototype.indexOf.apply(this,arguments)!==-1
 }
-`

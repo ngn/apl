@@ -1,4 +1,3 @@
-`
 function aplError(name,m,o){ // m:message, o:options
   m=m||''
   if(o&&o.aplCode&&o.offset!=null){
@@ -16,4 +15,3 @@ function   rankError(m,o){aplError(  'RANK ERROR',m,o)}
 function  indexError(m,o){aplError( 'INDEX ERROR',m,o)}
 function  nonceError(m,o){aplError( 'NONCE ERROR',m,o)}
 function  valueError(m,o){aplError( 'VALUE ERROR',m,o)}
-`

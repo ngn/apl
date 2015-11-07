@@ -1,4 +1,3 @@
-`
 var LDC=1,VEC=2,GET=3,SET=4,MON=5,DYA=6,LAM=7,RET=8,POP=9,SPL=10,JEQ=11,EMB=12,CON=13
 
 function Proc(code,addr,size,env){this.code=code;this.addr=addr;this.size=size;this.env=env}
@@ -82,4 +81,3 @@ function vm(o){
     }
   }
 }
-`
