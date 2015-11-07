@@ -1,29 +1,19 @@
-aplError = (name, message = '', opts) ->
-  assert typeof name is 'string'
-  assert typeof message is 'string'
-  if opts?
-    {aplCode, offset, file} = opts
-    if aplCode? and offset?
-      assert typeof aplCode is 'string'
-      assert typeof offset is 'number'
-      assert typeof file in ['string', 'undefined']
-      a = aplCode[...offset].split '\n'
-      line = a.length
-      col = 1 + (a[a.length - 1] or '').length
-      message += """
-        \n#{file or '-'}:#{line}:#{col}
-        #{aplCode.split('\n')[line - 1]}
-        #{repeat '_', col - 1}^
-      """
-  e = Error message
-  e.name = name
-  for k, v of opts then e[k] = v
+`
+function aplError(name,m,o){ // m:message, o:options
+  m=m||''
+  if(o&&o.aplCode&&o.offset!=null){
+    var a=o.aplCode.slice(0,o.offset).split('\n')
+    var l=a.length,c=1+(a[a.length-1]||'').length // line and column
+    m+='\n'+(o.file||'-')+':'+l+':'+c+o.aplCode.split('\n')[l-1]+'_'.repeat(c-1)+'^'
+  }
+  var e=Error(m);e.name=name;for(var k in o)e[k]=o[k]
   throw e
-
-syntaxError = (a...) -> aplError 'SYNTAX ERROR', a...
-domainError = (a...) -> aplError 'DOMAIN ERROR', a...
-lengthError = (a...) -> aplError 'LENGTH ERROR', a...
-rankError   = (a...) -> aplError 'RANK ERROR',   a...
-indexError  = (a...) -> aplError 'INDEX ERROR',  a...
-nonceError  = (a...) -> aplError 'NONCE ERROR',  a...
-valueError  = (a...) -> aplError 'VALUE ERROR',  a...
+}
+function syntaxError(m,o){aplError('SYNTAX ERROR',m,o)}
+function domainError(m,o){aplError('DOMAIN ERROR',m,o)}
+function lengthError(m,o){aplError('LENGTH ERROR',m,o)}
+function   rankError(m,o){aplError(  'RANK ERROR',m,o)}
+function  indexError(m,o){aplError( 'INDEX ERROR',m,o)}
+function  nonceError(m,o){aplError( 'NONCE ERROR',m,o)}
+function  valueError(m,o){aplError( 'VALUE ERROR',m,o)}
+`

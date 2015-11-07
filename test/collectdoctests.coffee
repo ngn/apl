@@ -14,10 +14,10 @@ visit = (d) ->
       i = 0
       while i < lines.length
         line = lines[i++]
-        while i < lines.length and (m = lines[i].match(/^ *[#⍝] *\.\.\.(.*)$/))
+        while i < lines.length and (m = lines[i].match(/^ *(?:#|⍝|\/\/) *\.\.\.(.*)$/))
           line += '\n' + m[1]
           i++
-        if m = line.match /^ *[#⍝] ([^]*)(←→|!!!)([^]+)$/
+        if m = line.match /^ *(?:#|⍝|\/\/) ([^]*)(←→|!!!)([^]+)$/
           tests.push [trim(m[1]), trim(m[2]), trim(m[3])]
   return
 

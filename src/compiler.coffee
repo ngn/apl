@@ -1,344 +1,332 @@
-[NOUN, VERB, ADVERB, CONJUNCTION] = [1..4]
-
-exec = (aplCode, opts = {}) ->
-  ast = parse aplCode, opts
-  code = compileAST ast, opts
-  env = [prelude.env[0][..]]
-  for k, v of ast.vars then env[0][v.slot] = opts.ctx[k]
-  result = vm {code, env}
-  for k, v of ast.vars
-    x = opts.ctx[k] = env[0][v.slot]
-    if v.category is ADVERB then x.isAdverb = true
-    if v.category is CONJUNCTION then x.isConjunction = true
-  result
-
-repr = (x) ->
-  if x is null or typeof x in ['string', 'number', 'boolean'] then JSON.stringify x
-  else if x instanceof Array then "[#{(for y in x then repr y).join ','}]"
-  else if x.repr then x.repr()
-  else "{#{(for k, v of x then "#{repr k}:#{repr v}").join ','}}"
-
-compileAST = (ast, opts = {}) ->
-  ast.scopeDepth = 0
-  ast.nSlots = prelude.nSlots
-  ast.vars = Object.create prelude.vars
-  opts.ctx ?= Object.create vocabulary
-  for key, value of opts.ctx when !ast.vars[key]
-    ast.vars[key] = varInfo = category: NOUN, slot: ast.nSlots++, scopeDepth: ast.scopeDepth
-    if typeof value is 'function' or value instanceof Proc
-      varInfo.category = if value.isAdverb then ADVERB else if value.isConjunction then CONJUNCTION else VERB
-      if /^[gs]et_.*/.test key then ast.vars[key[4..]] = category: NOUN
-
-  err = (node, message) ->
-    syntaxError message, file: opts.file, offset: node.offset, aplCode: opts.aplCode
-
-  assert VERB < ADVERB < CONJUNCTION # we are relying on this ordering below
-  (categorizeLambdas = (node) ->
-    switch node[0]
-      when 'B', ':', '←', '[', '{', '.', '⍬'
-        r = VERB
-        for i in [1...node.length] by 1 when node[i] then r = Math.max r, categorizeLambdas node[i]
-        if node[0] is '{' then (node.category = r; VERB) else r
-      when 'S', 'N', 'J' then 0
-      when 'X'
-        switch node[1]
-          when '⍺⍺', '⍶', '∇∇' then ADVERB
-          when '⍵⍵', '⍹' then CONJUNCTION
-          else VERB
-      else assert 0
-  ) ast
-
-  queue = [ast] # accumulates "body" nodes which we encounter on our way
-  while queue.length
-    {vars} = scopeNode = queue.shift()
-
-    visit = (node) ->
-      node.scopeNode = scopeNode
-      switch node[0]
-        when ':' then r = visit node[1]; visit node[2]; r
-        when '←' then visitLHS node[1], visit node[2]
-        when 'X'
-          name = node[1]
-          if (v = vars["get_#{name}"])?.category is VERB
-            NOUN
-          else
-            # x ⋄ x←0 !!! VALUE ERROR
-            vars[name]?.category or
-              valueError "Symbol '#{name}' is referenced before assignment.",
-                file: opts.file, offset: node.offset, aplCode: opts.aplCode
-        when '{'
-          for i in [1...node.length] by 1
-            queue.push extend (body = node[i]),
-              scopeNode: scopeNode
-              scopeDepth: d = scopeNode.scopeDepth + 1 + (node.category isnt VERB)
-              nSlots: 4
-              vars: v = extend Object.create(vars),
-                '⍵': slot: 0, scopeDepth: d, category: NOUN
-                '∇': slot: 1, scopeDepth: d, category: VERB
-                '⍺': slot: 2, scopeDepth: d, category: NOUN
-                # slot 3 is reserved for a "base pointer"
-                '⍫':          scopeDepth: d, category: VERB
-            if node.category is CONJUNCTION
-              v['⍵⍵'] = v['⍹'] = slot: 0, scopeDepth: d - 1, category: VERB
-              v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: CONJUNCTION
-              v['⍺⍺'] = v['⍶'] = slot: 2, scopeDepth: d - 1, category: VERB
-            else if node.category is ADVERB
-              v['⍺⍺'] = v['⍶'] = slot: 0, scopeDepth: d - 1, category: VERB
-              v['∇∇'] =          slot: 1, scopeDepth: d - 1, category: ADVERB
-          node.category ? VERB
-        when 'S', 'N', 'J', '⍬' then NOUN
-        when '['
-          for i in [2...node.length] by 1 when node[i] and visit(node[i]) isnt NOUN then err node, 'Indices must be nouns.'
-          visit node[1]
-        when '.'
-          a = node[1..]
-          h = Array a.length
-          for i in [a.length - 1..0] by -1 then h[i] = visit a[i]
-          # Form vectors from sequences of data
-          i = 0
-          while i < a.length - 1
-            if h[i] is h[i + 1] is NOUN
-              j = i + 2
-              while j < a.length and h[j] is NOUN then j++
-              a[i...j] = [['V'].concat a[i...j]]
-              h[i...j] = NOUN
-            else
+`
+var NOUN=1,VERB=2,ADVERB=3,CONJUNCTION=4
+function exec(aplCode,o){
+  o=o||{}
+  var ast=parse(aplCode,o),code=compileAST(ast,o),env=[prelude.env[0].slice(0)]
+  for(var k in ast.vars)env[0][ast.vars[k].slot]=o.ctx[k]
+  var r=vm({code:code,env:env})
+  for(var k in ast.vars){
+    var v=ast.vars[k],x=o.ctx[k]=env[0][v.slot]
+    if(v.category===ADVERB)x.isAdverb=1
+    if(v.category===CONJUNCTION)x.isConjunction=1
+  }
+  return r
+}
+function repr(x){
+  return x===null||['string','number','boolean'].indexOf(typeof x)>=0?JSON.stringify(x):
+         x instanceof Array?'['+x.map(repr).join(',')+']':
+         x.repr?x.repr():
+         '{'+Object.keys(x).map(function(k){return repr(k)+':'+repr(x[k])}).join(',')+'}'
+}
+function compileAST(ast,o){
+  o=o||{}
+  ast.scopeDepth=0
+  ast.nSlots=prelude.nSlots
+  ast.vars=Object.create(prelude.vars)
+  o.ctx=o.ctx||Object.create(vocabulary)
+  for(var key in o.ctx)if(!ast.vars[key]){
+    var value=o.ctx[key]
+    var varInfo=ast.vars[key]={category:NOUN,slot:ast.nSlots++,scopeDepth:ast.scopeDepth}
+    if(typeof value==='function'||value instanceof Proc){
+      varInfo.category=value.isAdverb?ADVERB:value.isConjunction?CONJUNCTION:VERB
+      if(/^[gs]et_.*/.test(key))ast.vars[key.slice(4)]={category:NOUN}
+    }
+  }
+  function err(node,message){syntaxError({message:message,file:o.file,offset:node.offset,aplCode:o.aplCode})}
+  assert(VERB<ADVERB&&ADVERB<CONJUNCTION)//we are relying on this ordering below
+  function categorizeLambdas(node){
+    switch(node[0]){
+      case'B':case':':case'←':case'[':case'{':case'.':case'⍬':
+        var r=VERB;for(var i=1;i<node.length;i++)if(node[i])r=Math.max(r,categorizeLambdas(node[i]))
+        if(node[0]==='{'){node.category=r;return VERB}else{return r}
+      case'S':case'N':case'J':return 0
+      case'X':var s=node[1];return s==='⍺⍺'||s==='⍶'||s==='∇∇'?ADVERB:s==='⍵⍵'||s==='⍹'?CONJUNCTION:VERB
+      default:assert(0)
+    }
+  }
+  categorizeLambdas(ast)
+  var queue=[ast] // accumulates"body"nodes we encounter on the way
+  while(queue.length){
+    var scopeNode=queue.shift(),vars=scopeNode.vars
+    function visit(node){
+      node.scopeNode=scopeNode
+      switch(node[0]){
+        case':':var r=visit(node[1]);visit(node[2]);return r
+        case'←':return visitLHS(node[1],visit(node[2]))
+        case'X':
+          var name=node[1],v=vars['get_'+name],r
+          if(v&&v.category===VERB){
+            return NOUN
+          }else{
+            // x ⋄ x←0 !!! VALUE ERROR
+            return vars[name]&&vars[name].category||
+              valueError('Symbol '+name+' is referenced before assignment.',
+                {file:o.file,offset:node.offset,aplCode:o.aplCode})
+          }
+        case'{':
+          for(var i=1;i<node.length;i++){
+            var d,v
+            queue.push(extend(node[i],{
+              scopeNode:scopeNode,
+              scopeDepth:d=scopeNode.scopeDepth+1+(node.category!==VERB),
+              nSlots:4,
+              vars:v=extend(Object.create(vars),{
+                '⍵':{slot:0,scopeDepth:d,category:NOUN},
+                '∇':{slot:1,scopeDepth:d,category:VERB},
+                '⍺':{slot:2,scopeDepth:d,category:NOUN},
+                // slot 3 is reserved for a "base pointer"
+                '⍫':{       scopeDepth:d,category:VERB}
+              })
+            }))
+            if(node.category===CONJUNCTION){
+              v['⍵⍵']=v['⍹']={slot:0,scopeDepth:d-1,category:VERB}
+              v['∇∇']=       {slot:1,scopeDepth:d-1,category:CONJUNCTION}
+              v['⍺⍺']=v['⍶']={slot:2,scopeDepth:d-1,category:VERB}
+            }else if(node.category===ADVERB){
+              v['⍺⍺']=v['⍶']={slot:0,scopeDepth:d-1,category:VERB}
+              v['∇∇']=       {slot:1,scopeDepth:d-1,category:ADVERB}
+            }
+          }
+          return node.category||VERB
+        case'S':case'N':case'J':case'⍬':return NOUN
+        case'[':
+          for(var i=2;i<node.length;i++)if(node[i]&&visit(node[i])!==NOUN)err(node,'Indices must be nouns.')
+          return visit(node[1])
+        case'.':
+          var a=node.slice(1),h=Array(a.length)
+          for(var i=a.length-1;i>=0;i--)h[i]=visit(a[i])
+          // Form vectors from sequences of data
+          var i=0
+          while(i<a.length-1){
+            if(h[i]===NOUN&&h[i+1]===NOUN){
+              var j=i+2;while(j<a.length&&h[j]===NOUN)j++
+              a.splice(i,j-i,['V'].concat(a.slice(i,j)))
+              h.splice(i,j-i,NOUN)
+            }else{
               i++
-          # Apply conjunctions and postfix adverbs
-          # ⌽¨⍣3⊢(1 2)3(4 5 6) ←→ (2 1)3(6 5 4)
-          i = 0
-          while i < a.length
-            if h[i] is VERB and i + 1 < a.length and h[i + 1] is ADVERB
-              a[i...i + 2] = [['A'].concat a[i...i + 2]]
-              h[i...i + 2] = VERB
-            else if h[i] in [NOUN, VERB, CONJUNCTION] and i + 2 < a.length and h[i + 1] is CONJUNCTION and h[i + 2] in [NOUN, VERB]
-              # allow conjunction-conjunction-something to accommodate ∘.f syntax
-              a[i...i + 3] = [['C'].concat a[i...i + 3]]
-              h[i...i + 3] = VERB
-            else
+            }
+          }
+          // Apply adverbs and conjunctions
+          // ⌽¨⍣3⊢(1 2)3(4 5 6) ←→ (2 1)3(6 5 4)
+          var i=0
+          while(i < a.length){
+            if(h[i]===VERB&&i+1<a.length&&h[i+1]===ADVERB){
+              a.splice(i,2,['A'].concat(a.slice(i,i+2)))
+              h.splice(i,2,VERB)
+            }else if((h[i]===NOUN||h[i]===VERB||h[i]===CONJUNCTION)&&i+2<a.length&&h[i+1]===CONJUNCTION&&(h[i+2]===NOUN||h[i+2]===VERB)){
+              // allow conjunction-conjunction-something to accommodate ∘.f syntax
+              a.splice(i,3,['C'].concat(a.slice(i,i+3)))
+              h.splice(i,3,VERB)
+            }else{
               i++
-          # Hooks
-          if h.length is 2 and h[0] isnt NOUN and h[1] isnt NOUN
-            a = [['H'].concat a]
-            h = [VERB]
-          # Forks
-          if h.length >= 3 and h.length % 2 is 1 and all(for x in h then x isnt NOUN)
-            a = [['F'].concat a]
-            h = [VERB]
-          if h[h.length - 1] isnt NOUN
-            if h.length > 1 then err a[h.length - 1], 'Trailing function in expression'
-          else
-            # Apply monadic and dyadic functions
-            while h.length > 1
-              if h.length is 2 or h[h.length - 3] isnt NOUN
-                a[-2..] = [['M'].concat a[-2..]]
-                h[-2..] = NOUN
-              else
-                a[-3..] = [['D'].concat a[-3..]]
-                h[-3..] = NOUN
-          node[..] = a[0]
-          extend node, a[0]
-          h[0]
-        else
-          assert 0
+            }
+          }
+          // Hooks
+          if(h.length===2&&h[0]!==NOUN&&h[1]!==NOUN){a=[['H'].concat(a)];h=[VERB]}
+          // Forks
+          if(h.length>=3&&h.length%2&&h.indexOf(NOUN)<0){a=[['F'].concat(a)];h=[VERB]}
+          if(h[h.length-1]!==NOUN){
+            if(h.length>1)err(a[h.length-1],'Trailing function in expression')
+          }else{
+            // Apply monadic and dyadic functions
+            while(h.length>1){
+              if(h.length===2||h[h.length-3]!==NOUN){
+                a.splice(-2,9e9,['M'].concat(a.slice(-2)))
+                h.splice(-2,9e9,NOUN)
+              }else{
+                a.splice(-3,9e9,['D'].concat(a.slice(-3)))
+                h.splice(-3,9e9,NOUN)
+              }
+            }
+          }
+          node.splice(0,9e9,a[0])
+          extend(node,a[0])
+          return h[0]
+      }
+      assert(0)
+    }
+    function visitLHS(node,rhsCategory){
+      node.scopeNode=scopeNode
+      switch(node[0]){
+        case'X':
+          var name=node[1];if(name==='∇'||name==='⍫')err(node,'Assignment to '+name+' is not allowed.')
+          if(vars[name]){
+            if(vars[name].category!==rhsCategory){
+              err(node,'Inconsistent usage of symbol '+name+', it is assigned both nouns and verbs.')
+            }
+          }else{
+            vars[name]={scopeDepth:scopeNode.scopeDepth,slot:scopeNode.nSlots++,category:rhsCategory}
+          }
+          break
+        case'.':
+          rhsCategory===NOUN||err(node,'Strand assignment can be used only for nouns.')
+          for(var i=1;i<node.length;i++)visitLHS(node[i],rhsCategory)
+          break
+        case'[':
+          rhsCategory===NOUN||err(node,'Indexed assignment can be used only for nouns.')
+          visitLHS(node[1],rhsCategory);for(var i=2;i<node.length;i++)node[i]&&visit(node[i])
+          break
+        default:
+          err(node,'Invalid LHS node type: '+JSON.stringify(node[0]))
+      }
+      return rhsCategory
+    }
+    for(var i=1;i<scopeNode.length;i++)visit(scopeNode[i])
+  }
+  function render(node){
+    switch(node[0]){
+      case'B':
+        if(node.length===1){
+          // {}0 ←→ ⍬
+          return[LDC,A.zilde,RET]
+        }else{
+          var a=[];for(var i=1;i<node.length;i++){a.push.apply(a,render(node[i]));a.push(POP)}
+          a[a.length-1]=RET
+          return a
+        }
+      case':':var x=render(node[1]),y=render(node[2]);return x.concat(JEQ,y.length+2,POP,y,RET)
+      case'←':
+        // A←5     ←→ 5
+        // A×A←2 5 ←→ 4 25
+        return render(node[2]).concat(renderLHS(node[1]))
+      case'X':
+        // r←3 ⋄ get_c←{2×○r} ⋄ get_S←{○r*2}
+        // ... before←.01×⌊100×r c S
+        // ... r←r+1
+        // ... after←.01×⌊100×r c S
+        // ... before after ←→ (3 18.84 28.27)(4 25.13 50.26)
+        // {⍺}0 !!! VALUE ERROR
+        // {x}0 ⋄ x←0 !!! VALUE ERROR
+        // {⍫1⋄2}⍬ ←→ 1
+        // c←{} ⋄ x←{c←⍫⋄1}⍬ ⋄ {x=1:c 2⋄x}⍬ ←→ 2
+        var s=node[1],vars=node.scopeNode.vars,v
+        return s==='⍫'?[CON]:
+               (v=vars['get_'+s])&&v.category===VERB?[LDC,A.zero,GET,v.scopeDepth,v.slot,MON]:
+                 [GET, vars[s].scopeDepth, vars[s].slot]
+      case'{':
+        // {1 + 1} 1                    ←→ 2
+        // {⍵=0:1 ⋄ 2×∇⍵-1} 5           ←→ 32 # two to the power of
+        // {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8 ←→ 34 # Fibonacci sequence
+        // ⊂{⍺⍺ ⍺⍺ ⍵}'hello'            ←→ ⊂⊂'hello'
+        // ⊂{⍺⍺ ⍵⍵ ⍵}⌽'hello'           ←→ ⊂'olleh'
+        // ⊂{⍶⍶⍵}'hello'                ←→ ⊂⊂'hello'
+        // ⊂{⍶⍹⍵}⌽'hello'               ←→ ⊂'olleh'
+        // +{⍵⍶⍵}10 20 30               ←→ 20 40 60
+        // f←{⍵⍶⍵} ⋄ +f 10 20 30        ←→ 20 40 60
+        // twice←{⍶⍶⍵} ⋄ *twice 2       ←→ 1618.1779919126539
+        // f←{-⍵;⍺×⍵} ⋄ (f 5)(3 f 5)    ←→ ¯5 15
+        // f←{;} ⋄ (f 5)(3 f 5)         ←→ ⍬⍬
+        // ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ *²2          ←→ 1618.1779919126539
+        // ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ 3*²2         ←→ 19683
+        // H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ +H÷ 2        ←→ 2.5
+        // H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ 7 +H÷ 2      ←→ 7.5
+        // {;;}                         !!!
+        var x=render(node[1])
+        var lx=[LAM,x.length].concat(x)
+        if(node.length===2){
+          f=lx
+        }else if(node.length===3){
+          var y=render(node[2]),ly=[LAM,y.length].concat(y),v=node.scopeNode.vars['⍠']
+          f=ly.concat(GET,v.scopeDepth,v.slot,lx,DYA)
+        }else{
+          err(node)
+        }
+        return node.category===VERB?f:[LAM,f.length+1].concat(f,RET)
+      case'S':
+        // ⍴''     ←→ ,0
+        // ⍴'x'    ←→ ⍬
+        // ⍴'xx'   ←→ ,2
+        // ⍴'a''b' ←→ ,3
+        // ⍴"a""b" ←→ ,3
+        // ⍴'a""b' ←→ ,4
+        // ⍴'''a'  ←→ ,2
+        // ⍴'a'''  ←→ ,2
+        // ''''    ←→ "'"
+        // ⍴"\f\t\n\r\u1234\xff" ←→ ,18
+        // "a      !!!
+        var d=node[1][0] // the delimiter: " or '
+        var s=node[1].slice(1,-1).replace(RegExp(d+d,'g'),d)
+        return[LDC,new A(s,s.length===1?[]:[s.length])]
+      case'N':
+        // ∞ ←→ ¯
+        // ¯∞ ←→ ¯¯
+        // ¯∞j¯∞ ←→ ¯¯j¯¯
+        // ∞∞ ←→ ¯ ¯
+        // ∞¯ ←→ ¯ ¯
+        var a=node[1].replace(/[¯∞]/g,'-').split(/j/i).map(function(x){
+          return x==='-'?Infinity:x==='--'?-Infinity:x.match(/^-?0x/i)?parseInt(x,16):parseFloat(x)
+        })
+        var v=a[1]?new Z(a[0],a[1]):a[0]
+        return[LDC,new A([v],[])]
+      case'J':
+        // 123 + «456 + 789» ←→ 1368
+        var f=Function('return function(_w,_a){return('+node[1].replace(/^«|»$/g,'')+')}')()
+        return[EMB,function(_w,_a){return aplify(f(_w,_a))}]
+      case'[':
+        // ⍴ x[⍋x←6?40] ←→ ,6
+        var v=node.scopeNode.vars._index,axes=[],a=[],c
+        for(var i=2;i<node.length;i++)if(c=node[i]){axes.push(i-2);a.push.apply(a,render(c))}
+        a.push(VEC,axes.length,LDC,new A(axes),VEC,2,GET,v.scopeDepth,v.slot)
+        a.push.apply(a,render(node[1]))
+        a.push(DYA)
+        return a
+      case'V':
+        var fragments=[],areAllConst=1
+        for(var i=1;i<node.length;i++){
+          var f=render(node[i]);fragments.push(f);if(f.length!==2||f[0]!==LDC)areAllConst=0
+        }
+        return areAllConst?[LDC,new A(fragments.map(function(f){return f[1].isSimple()?f[1].unwrap():f[1]}))]
+                         :[].concat.apply([],fragments).concat([VEC,node.length-1])
+      case'⍬':return[LDC,A.zilde]
+      case'M':return render(node[2]).concat(render(node[1]),MON)
+      case'A':return render(node[1]).concat(render(node[2]),MON)
+      case'D':case'C':return render(node[3]).concat(render(node[2]),render(node[1]),DYA)
+      case'H':
+        var v=node.scopeNode.vars._hook
+        return render(node[2]).concat(GET,v.scopeDepth,v.slot,render(node[1]),DYA)
+      case'F':
+        var u=node.scopeNode.vars._hook
+        var v=node.scopeNode.vars._fork1
+        var w=node.scopeNode.vars._fork2
+        var i=node.length-1
+        var r=render(node[i--])
+        while(i>=2)r=r.concat(GET,v.scopeDepth,v.slot,render(node[i--]),DYA,
+                              GET,w.scopeDepth,w.slot,render(node[i--]),DYA)
+        return i?r.concat(render(node[1]),GET,u.scopeDepth,u.slot,DYA):r
+      default:assert(0)
+    }
+  }
+  function renderLHS(node){
+    switch(node[0]){
+      case'X':
+        var name=node[1],vars=node.scopeNode.vars,v=vars['set_'+name]
+        return v&&v.category===VERB?[GET,v.scopeDepth,v.slot,MON]:[SET,vars[name].scopeDepth,vars[name].slot]
+      case'.': // strand assignment
+        // (a b) ← 1 2 ⋄ a           ←→ 1
+        // (a b) ← 1 2 ⋄ b           ←→ 2
+        // (a b) ← +                 !!!
+        // (a b c) ← 3 4 5 ⋄ a b c   ←→ 3 4 5
+        // (a b c) ← 6     ⋄ a b c   ←→ 6 6 6
+        // (a b c) ← 7 8   ⋄ a b c   !!!
+        // ((a b)c)←3(4 5) ⋄ a b c   ←→ 3 3 (4 5)
+        var n=node.length-1,a=[SPL,n]
+        for(var i=1;i<node.length;i++){a.push.apply(a,renderLHS(node[i]));a.push(POP)}
+        return a
+      case'[': // indexed assignment
+        var axes=[],a=[],v=node.scopeNode.vars._substitute
+        for(var i=2;i<node.length;i++)if(node[i]){axes.push(i-2);a.push.apply(a,render(node[i]))}
+        a.push(VEC,axes.length)
+        a.push.apply(a,render(node[1]))
+        a.push(LDC,new A(axes),VEC,4,GET,v.scopeDepth,v.slot,MON)
+        a.push.apply(a,renderLHS(node[1]))
+        return a
+    }
+    assert(0)
+  }
+  return render(ast)
+}
 
-    visitLHS = (node, rhsCategory) ->
-      node.scopeNode = scopeNode
-      switch node[0]
-        when 'X'
-          name = node[1]
-          if name in '∇⍫' then err node, "Assignment to #{name} is not allowed."
-          if vars[name]
-            if vars[name].category isnt rhsCategory
-              err node, "Inconsistent usage of symbol '#{name}', it is assigned both nouns and verbs."
-          else
-            vars[name] = scopeDepth: scopeNode.scopeDepth, slot: scopeNode.nSlots++, category: rhsCategory
-        when '.'
-          rhsCategory is NOUN or err node, 'Strand assignment can be used only for nouns.'
-          for i in [1...node.length] by 1 then visitLHS node[i], rhsCategory
-        when '['
-          rhsCategory is NOUN or err node, 'Index assignment can be used only for nouns.'
-          visitLHS node[1], rhsCategory
-          for i in [2...node.length] by 1 when c = node[i] then visit c
-        else
-          err node, "Invalid LHS node type: #{JSON.stringify node[0]}"
-      rhsCategory
-
-    for i in [1...scopeNode.length] by 1 then visit scopeNode[i]
-
-  render = (node) ->
-    switch node[0]
-      when 'B'
-        if node.length is 1
-          # {}0 ←→ ⍬
-          [LDC, A.zilde, RET]
-        else
-          a = []
-          for i in [1...node.length] by 1 then a.push render(node[i])...; a.push POP
-          a[a.length - 1] = RET
-          a
-      when ':'
-        x = render node[1]
-        y = render node[2]
-        x.concat JEQ, y.length + 2, POP, y, RET
-      when '←'
-        # A←5     ←→ 5
-        # A×A←2 5 ←→ 4 25
-        render(node[2]).concat renderLHS node[1]
-      when 'X'
-        # r←3 ⋄ get_c←{2×○r} ⋄ get_S←{○r*2}
-        # ... before←.01×⌊100×r c S
-        # ... r←r+1
-        # ... after←.01×⌊100×r c S
-        # ... before after ←→ (3 18.84 28.27)(4 25.13 50.26)
-        # {⍺}0 !!! VALUE ERROR
-        # {x}0 ⋄ x←0 !!! VALUE ERROR
-        # {⍫1⋄2}⍬ ←→ 1
-        # c←{} ⋄ x←{c←⍫⋄1}⍬ ⋄ {x=1:c 2⋄x}⍬ ←→ 2
-        name = node[1]
-        {vars} = node.scopeNode
-        if name is '⍫'
-          [CON]
-        else if (v = vars["get_#{name}"])?.category is VERB
-          [LDC, A.zero, GET, v.scopeDepth, v.slot, MON]
-        else
-          v = vars[name]
-          [GET, v.scopeDepth, v.slot]
-      when '{'
-        # {1 + 1} 1                    ←→ 2
-        # {⍵=0:1 ⋄ 2×∇⍵-1} 5           ←→ 32 # two to the power of
-        # {⍵<2 : 1 ⋄ (∇⍵-1)+(∇⍵-2) } 8 ←→ 34 # Fibonacci sequence
-        # ⊂{⍺⍺ ⍺⍺ ⍵}'hello'            ←→ ⊂⊂'hello'
-        # ⊂{⍺⍺ ⍵⍵ ⍵}⌽'hello'           ←→ ⊂'olleh'
-        # ⊂{⍶⍶⍵}'hello'                ←→ ⊂⊂'hello'
-        # ⊂{⍶⍹⍵}⌽'hello'               ←→ ⊂'olleh'
-        # +{⍵⍶⍵}10 20 30               ←→ 20 40 60
-        # f←{⍵⍶⍵} ⋄ +f 10 20 30        ←→ 20 40 60
-        # twice←{⍶⍶⍵} ⋄ *twice 2       ←→ 1618.1779919126539
-        # f←{-⍵;⍺×⍵} ⋄ (f 5)(3 f 5)    ←→ ¯5 15
-        # f←{;} ⋄ (f 5)(3 f 5)         ←→ ⍬⍬
-        # ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ *²2          ←→ 1618.1779919126539
-        # ²←{⍶⍶⍵;⍺⍶⍺⍶⍵} ⋄ 3*²2         ←→ 19683
-        # H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ +H÷ 2        ←→ 2.5
-        # H←{⍵⍶⍹⍵;⍺⍶⍹⍵} ⋄ 7 +H÷ 2      ←→ 7.5
-        # {;;}                         !!!
-        x = render node[1]
-        lx = [LAM, x.length].concat x
-        f = switch node.length
-          when 2 then lx
-          when 3
-            y = render node[2]
-            ly = [LAM, y.length].concat y
-            v = node.scopeNode.vars['⍠']
-            ly.concat GET, v.scopeDepth, v.slot, lx, DYA
-          else err node
-        if node.category isnt VERB then [LAM, f.length + 1].concat f, RET else f
-      when 'S'
-        #   ⍴''     ←→ ,0
-        #   ⍴'x'    ←→ ⍬
-        #   ⍴'xx'   ←→ ,2
-        #   ⍴'a''b' ←→ ,3
-        #   ⍴"a""b" ←→ ,3
-        #   ⍴'a""b' ←→ ,4
-        #   ⍴'''a'  ←→ ,2
-        #   ⍴'a'''  ←→ ,2
-        #   ''''    ←→ "'"
-        #   ⍴"\f\t\n\r\u1234\xff" ←→ ,18
-        #   "a      !!!
-        d = node[1][0] # the delimiter: '"' or "'"
-        s = node[1][1...-1].replace ///#{d + d}///g, d
-        [LDC, new A s, if s.length is 1 then []]
-      when 'N'
-        # ∞ ←→ ¯
-        # ¯∞ ←→ ¯¯
-        # ¯∞j¯∞ ←→ ¯¯j¯¯
-        # ∞∞ ←→ ¯ ¯
-        # ∞¯ ←→ ¯ ¯
-        a = for x in node[1].replace(/[¯∞]/g, '-').split /j/i
-              if x is '-' then Infinity
-              else if x is '--' then -Infinity
-              else if x.match /^-?0x/i then parseInt x, 16
-              else parseFloat x
-        v = if a[1] then new Z(a[0], a[1]) else a[0]
-        [LDC, new A [v], []]
-      when 'J'
-        # 123 + «456 + 789» ←→ 1368
-        f = do Function "return function(_w,_a){return(#{node[1].replace /^«|»$/g, ''})};"
-        [EMB, (_w, _a) -> aplify f _w, _a]
-      when '['
-        # ⍴ x[⍋x←6?40] ←→ ,6
-        v = node.scopeNode.vars._index
-        axes = []
-        a = []
-        for i in [2...node.length] by 1 when c = node[i] then axes.push i - 2; a.push render(c)...
-        a.push VEC, axes.length, LDC, new A(axes), VEC, 2, GET, v.scopeDepth, v.slot
-        a.push render(node[1])...
-        a.push DYA
-        a
-      when 'V'
-        fragments = for i in [1...node.length] by 1 then render node[i]
-        if all(for f in fragments then f.length is 2 and f[0] is LDC)
-          [LDC, new A(for f in fragments then (if (x = f[1]).isSimple() then x.unwrap() else x))]
-        else
-          [].concat fragments..., VEC, node.length - 1
-      when '⍬' then [LDC, A.zilde]
-      when 'M' then render(node[2]).concat render(node[1]), MON
-      when 'A' then render(node[1]).concat render(node[2]), MON
-      when 'D', 'C' then render(node[3]).concat render(node[2]), render(node[1]), DYA
-      when 'H'
-        v = node.scopeNode.vars._hook
-        render(node[2]).concat GET, v.scopeDepth, v.slot, render(node[1]), DYA
-      when 'F'
-        u = node.scopeNode.vars._hook
-        v = node.scopeNode.vars._fork1
-        w = node.scopeNode.vars._fork2
-        i = node.length - 1
-        r = render node[i--]
-        while i >= 2
-          r = r.concat(
-            GET, v.scopeDepth, v.slot, render(node[i--]), DYA,
-            GET, w.scopeDepth, w.slot, render(node[i--]), DYA
-          )
-        if i then r.concat render(node[1]), GET, u.scopeDepth, u.slot, DYA else r
-      else assert 0
-
-  renderLHS = (node) ->
-    switch node[0]
-      when 'X'
-        name = node[1]
-        {vars} = node.scopeNode
-        if (v = vars["set_#{name}"])?.category is VERB
-          [GET, v.scopeDepth, v.slot, MON]
-        else
-          v = vars[name]
-          [SET, v.scopeDepth, v.slot]
-      when '.' # strand assignment
-        # (a b) ← 1 2 ⋄ a           ←→ 1
-        # (a b) ← 1 2 ⋄ b           ←→ 2
-        # (a b) ← +                 !!!
-        # (a b c) ← 3 4 5 ⋄ a b c   ←→ 3 4 5
-        # (a b c) ← 6     ⋄ a b c   ←→ 6 6 6
-        # (a b c) ← 7 8   ⋄ a b c   !!!
-        # ((a b)c)←3(4 5) ⋄ a b c   ←→ 3 3 (4 5)
-        n = node.length - 1
-        a = [SPL, n]
-        for i in [1...node.length] by 1 then a.push renderLHS(node[i])...; a.push POP
-        a
-      when '[' # index assignment
-        v = node.scopeNode.vars._substitute
-        axes = []
-        a = []
-        for i in [2...node.length] by 1 when c = node[i] then axes.push i - 2; a.push render(c)...
-        a.push VEC, axes.length
-        a.push render(node[1])...
-        a.push LDC, new A(axes), VEC, 4, GET, v.scopeDepth, v.slot, MON
-        a.push renderLHS(node[1])...
-        a
-      else
-        assert 0
-
-  render ast
-
+`
 prelude = do ->
   {code, nSlots, vars} = macro ->
     fs = macro.require 'fs'
@@ -352,10 +340,13 @@ prelude = do ->
   for k, v of vars then vocabulary[k] = env[0][v.slot]
   {nSlots, vars, env}
 
-aplify = (x) ->
-  if typeof x is 'string' then (if x.length is 1 then A.scalar x else new A x)
-  else if typeof x is 'number' then A.scalar x
-  else if x instanceof Array
-    new A(for y in x then (y = aplify y; if ⍴⍴ y then y else y.unwrap()))
-  else if x instanceof A then x
-  else aplError 'Cannot aplify object ' + x
+rhoRho=(x)->⍴⍴ y
+`
+function aplify(x){
+  if(typeof x==='string')return x.length===1?A.scalar(x):new A(x)
+  if(typeof x==='number')return A.scalar(x)
+  if(x instanceof Array)return new A(x.map(function(y){y=aplify(y);return rhoRho(y)?y:y.unwrap()}))
+  if(x instanceof A)return x
+  aplError('Cannot aplify object:'+x)
+}
+`
