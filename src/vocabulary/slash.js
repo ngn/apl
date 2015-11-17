@@ -1,8 +1,8 @@
+var reduce
 addVocabulary({
-  '⌿': adverb (om, al, axis ) -> return reduce(om, al, axis||A.zero)
-  '/': reduce = adverb (om, al, axis) ->
-    if typeof om is 'function'
-      `
+  '⌿':adverb(function(om,al,axis){return reduce(om,al,axis||A.zero)}),
+  '/':reduce=adverb(function(om,al,axis){
+    if(typeof om==='function'){
       // +/3                    ←→ 3
       // +/3 5 8                ←→ 16
       // ⌈/82 66 93 13          ←→ 93
@@ -21,9 +21,7 @@ addVocabulary({
       assert(typeof f==='function')
       assert(typeof g==='undefined')
       assert(typeof axis0==='undefined'||axis0 instanceof A)
-      `
-      (om, al) ->
-        `
+      return function(om, al){
         if(!om.shape.length)om=new A([om.unwrap()])
         axis=axis0?axis0.toInt():om.shape.length-1
         0<=axis&&axis<om.shape.length||rankError()
@@ -66,11 +64,9 @@ addVocabulary({
           if(a<0)break
           p+=om.stride[a];indices[a]++
         }
-        `
-        new A data, rShape
-
-    else
-      `
+        return new A(data,rShape)
+      }
+    }else{
       // 0 1 0 1/'abcd'                   ←→ 'bd'
       // 1 1 1 1 0/12 14 16 18 20         ←→ 12 14 16 18
       // m←45 60 33 50 66 19 ⋄ (m≥50)/m   ←→ 60 50 66
@@ -93,9 +89,7 @@ addVocabulary({
       // 2 ¯1 2/[1]3 1⍴'abc'       ←→ 3 5⍴'aa aabb bbcc cc'
       // 2 ¯2 2/7                  ←→ 7 7 0 0 7 7
       om.shape.length||(om=new A([om.unwrap()]))
-      `
-      axis = if axis then axis.toInt(0, om.shape.length) else om.shape.length - 1
-      `
+      axis=axis?axis.toInt(0,om.shape.length):om.shape.length-1
       al.shape.length<=1||rankError()
       var a=al.toArray(),n=om.shape[axis]
       if(a.length===1)a=repeat(a,n)
@@ -112,28 +106,21 @@ addVocabulary({
       if(n===1)for(var i=0;i<b.length;i++)b[i]=b[i]==null?b[i]:0
 
       var data=[]
-      `
-      if shape[axis] isnt 0 and !om.empty()
-        `
-        var filler=om.getPrototype()
-        `
-        p = om.offset
-        indices = repeat [0], shape.length
-        loop
-          x =
-            if b[indices[axis]]?
-              om.data[p + b[indices[axis]] * om.stride[axis]]
-            else
-              filler
-          data.push x
-
-          i = shape.length - 1
-          while i >= 0 and indices[i] + 1 is shape[i]
-            if i isnt axis then p -= om.stride[i] * indices[i]
-            indices[i--] = 0
-          if i < 0 then break
-          if i isnt axis then p += om.stride[i]
+      if(shape[axis]&&!om.empty()){
+        var filler=om.getPrototype(),p=om.offset,indices=repeat([0],shape.length)
+        while(1){
+          data.push(b[indices[axis]]==null?filler:om.data[p+b[indices[axis]]*om.stride[axis]])
+          var i=shape.length-1
+          while(i>=0&&indices[i]+1===shape[i]){
+            if(i!==axis)p-=om.stride[i]*indices[i]
+            indices[i--]=0
+          }
+          if(i<0)break
+          if(i!==axis)p+=om.stride[i]
           indices[i]++
-
+        }
+      }
       return new A(data,shape)
+    }
+  })
 })

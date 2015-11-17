@@ -1,4 +1,3 @@
-`
 var NOUN=1,VERB=2,ADVERB=3,CONJUNCTION=4
 function exec(aplCode,o){
   o=o||{}
@@ -325,21 +324,12 @@ function compileAST(ast,o){
   }
   return render(ast)
 }
-
-`
-prelude = do ->
-  {code, nSlots, vars} = macro ->
-    fs = macro.require 'fs'
-    {parse, compileAST, repr} = macro.require "#{process.cwd()}/old-apl"
-    ast = parse fs.readFileSync "#{process.cwd()}/src/prelude.apl", 'utf8'
-    code = compileAST ast
-    macro.jsToNode repr code: code, nSlots: ast.nSlots, vars: ast.vars
-  env = [[]]
-  for k, v of vars then env[0][v.slot] = vocabulary[k]
-  vm {code, env}
-  for k, v of vars then vocabulary[k] = env[0][v.slot]
-  {nSlots, vars, env}
-`
+;(function(){
+  var env=prelude.env=[[]]
+  for(var k in prelude.vars)env[0][prelude.vars[k].slot]=vocabulary[k]
+  vm({code:prelude.code,env:env})
+  for(var k in prelude.vars)vocabulary[k]=env[0][prelude.vars[k].slot]
+}())
 function aplify(x){
   if(typeof x==='string')return x.length===1?A.scalar(x):new A(x)
   if(typeof x==='number')return A.scalar(x)
@@ -347,4 +337,3 @@ function aplify(x){
   if(x instanceof A)return x
   aplError('Cannot aplify object:'+x)
 }
-`

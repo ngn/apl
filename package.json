@@ -8,8 +8,5 @@
   "scripts": {
     "start": "./lib/apl.js"
   },
-  "main": "./lib/apl.js",
-  "devDependencies": {
-    "coffee-script": "git+https://github.com/paiq/blackcoffee#4e1403ec30"
-  }
+  "main": "./lib/apl.js"
 }

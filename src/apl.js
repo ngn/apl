@@ -1,60 +1,3 @@
-macro ->
-  @tmpCounter = 0
-  @tmp = -> "t#{@tmpCounter++}"
-  return
-
-macro include (f) ->
-  fs = macro.require 'fs'
-  if fs.existsSync "src/#{macro.nodeToVal f}.js"
-    macro.jsToNode fs.readFileSync "src/#{macro.nodeToVal f}.js", 'utf8'
-  else
-    macro.fileToNode "src/#{macro.nodeToVal f}.coffee"
-
-include 'helpers'
-include 'errors'
-include 'array'
-include 'complex'
-include 'vm'
-include 'lexer'
-include 'parser'
-include 'vocabulary/vhelpers'
-include 'vocabulary/arithmetic'
-include 'vocabulary/backslash'
-include 'vocabulary/circle'
-include 'vocabulary/comma'
-include 'vocabulary/comparisons'
-include 'vocabulary/compose'
-include 'vocabulary/cupcap'
-include 'vocabulary/decode'
-include 'vocabulary/dot'
-include 'vocabulary/each'
-include 'vocabulary/encode'
-include 'vocabulary/epsilon'
-include 'vocabulary/exclamation'
-include 'vocabulary/execute'
-include 'vocabulary/find'
-include 'vocabulary/floorceil'
-include 'vocabulary/fork'
-include 'vocabulary/format'
-include 'vocabulary/grade'
-include 'vocabulary/identity'
-include 'vocabulary/iota'
-include 'vocabulary/leftshoe'
-include 'vocabulary/logic'
-include 'vocabulary/poweroperator'
-include 'vocabulary/quad'
-include 'vocabulary/question'
-include 'vocabulary/raise'
-include 'vocabulary/rho'
-include 'vocabulary/rotate'
-include 'vocabulary/slash'
-include 'vocabulary/squish'
-include 'vocabulary/take'
-include 'vocabulary/transpose'
-include 'vocabulary/variant'
-include 'compiler'
-
-`
 var apl=this.apl=function(aplCode,opts){return(apl.ws(opts))(aplCode)}
 extend(apl,{format:format,approx:approx,parse:parse,compileAST:compileAST,repr:repr})
 apl.ws=function(opts){
@@ -74,7 +17,7 @@ function readline(prompt,f){
   }
   rl.setPrompt(prompt);rl.prompt()
 }
-if(module!=null){
+if(typeof module!=='undefined'){
   module.exports=apl
   if(module===require.main)(function(){
     var usage='Usage: apl.js [options] [filename.apl]\n'+
@@ -118,4 +61,3 @@ if(module!=null){
     }
   }())
 }
-`
