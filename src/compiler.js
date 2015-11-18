@@ -1,13 +1,13 @@
-var NOUN=1,VERB=2,ADVERB=3,CONJUNCTION=4
-function exec(aplCode,o){
+var NOUN=1,VERB=2,ADV=3,CONJ=4
+function exec(s,o){ // s:APL code, o:options
   o=o||{}
-  var ast=parse(aplCode,o),code=compileAST(ast,o),env=[prelude.env[0].slice(0)]
+  var ast=parse(s,o),code=compileAST(ast,o),env=[prelude.env[0].slice(0)]
   for(var k in ast.vars)env[0][ast.vars[k].slot]=o.ctx[k]
   var r=vm({code:code,env:env})
   for(var k in ast.vars){
     var v=ast.vars[k],x=o.ctx[k]=env[0][v.slot]
-    if(v.category===ADVERB)x.isAdverb=1
-    if(v.category===CONJUNCTION)x.isConjunction=1
+    if(v.category===ADV)x.adv=1
+    if(v.category===CONJ)x.conj=1
   }
   return r
 }
@@ -27,19 +27,19 @@ function compileAST(ast,o){
     var value=o.ctx[key]
     var varInfo=ast.vars[key]={category:NOUN,slot:ast.nSlots++,scopeDepth:ast.scopeDepth}
     if(typeof value==='function'||value instanceof Proc){
-      varInfo.category=value.isAdverb?ADVERB:value.isConjunction?CONJUNCTION:VERB
+      varInfo.category=value.adv?ADV:value.conj?CONJ:VERB
       if(/^[gs]et_.*/.test(key))ast.vars[key.slice(4)]={category:NOUN}
     }
   }
   function err(node,message){syntaxError({message:message,file:o.file,offset:node.offset,aplCode:o.aplCode})}
-  assert(VERB<ADVERB&&ADVERB<CONJUNCTION)//we are relying on this ordering below
+  assert(VERB<ADV&&ADV<CONJ)//we are relying on this ordering below
   function categorizeLambdas(node){
     switch(node[0]){
       case'B':case':':case'←':case'[':case'{':case'.':case'⍬':
         var r=VERB;for(var i=1;i<node.length;i++)if(node[i])r=Math.max(r,categorizeLambdas(node[i]))
         if(node[0]==='{'){node.category=r;return VERB}else{return r}
       case'S':case'N':case'J':return 0
-      case'X':var s=node[1];return s==='⍺⍺'||s==='⍶'||s==='∇∇'?ADVERB:s==='⍵⍵'||s==='⍹'?CONJUNCTION:VERB
+      case'X':var s=node[1];return s==='⍺⍺'||s==='⍶'||s==='∇∇'?ADV:s==='⍵⍵'||s==='⍹'?CONJ:VERB
       default:assert(0)
     }
   }
@@ -77,13 +77,13 @@ function compileAST(ast,o){
                 '⍫':{       scopeDepth:d,category:VERB}
               })
             }))
-            if(node.category===CONJUNCTION){
+            if(node.category===CONJ){
               v['⍵⍵']=v['⍹']={slot:0,scopeDepth:d-1,category:VERB}
-              v['∇∇']=       {slot:1,scopeDepth:d-1,category:CONJUNCTION}
+              v['∇∇']=       {slot:1,scopeDepth:d-1,category:CONJ}
               v['⍺⍺']=v['⍶']={slot:2,scopeDepth:d-1,category:VERB}
-            }else if(node.category===ADVERB){
+            }else if(node.category===ADV){
               v['⍺⍺']=v['⍶']={slot:0,scopeDepth:d-1,category:VERB}
-              v['∇∇']=       {slot:1,scopeDepth:d-1,category:ADVERB}
+              v['∇∇']=       {slot:1,scopeDepth:d-1,category:ADV}
             }
           }
           return node.category||VERB
@@ -109,10 +109,10 @@ function compileAST(ast,o){
           // ⌽¨⍣3⊢(1 2)3(4 5 6) ←→ (2 1)3(6 5 4)
           var i=0
           while(i < a.length){
-            if(h[i]===VERB&&i+1<a.length&&h[i+1]===ADVERB){
+            if(h[i]===VERB&&i+1<a.length&&h[i+1]===ADV){
               a.splice(i,2,['A'].concat(a.slice(i,i+2)))
               h.splice(i,2,VERB)
-            }else if((h[i]===NOUN||h[i]===VERB||h[i]===CONJUNCTION)&&i+2<a.length&&h[i+1]===CONJUNCTION&&(h[i+2]===NOUN||h[i+2]===VERB)){
+            }else if((h[i]===NOUN||h[i]===VERB||h[i]===CONJ)&&i+2<a.length&&h[i+1]===CONJ&&(h[i+2]===NOUN||h[i+2]===VERB)){
               // allow conjunction-conjunction-something to accommodate ∘.f syntax
               a.splice(i,3,['C'].concat(a.slice(i,i+3)))
               h.splice(i,3,VERB)

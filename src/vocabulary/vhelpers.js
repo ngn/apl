@@ -92,6 +92,6 @@ function getAxisList(axes,rank){
   }
 }
 function withIdentity(x,f){f.identity=x instanceof A?x:A.scalar(x);return f}
-function adverb     (f){f.isAdverb     =1;return f}
-function conjunction(f){f.isConjunction=1;return f}
-function cps        (f){f.cps          =1;return f}
+function adverb     (f){f.adv =1;return f}
+function conjunction(f){f.conj=1;return f}
+function cps        (f){f.cps =1;return f}
