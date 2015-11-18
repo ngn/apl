@@ -29,7 +29,6 @@ if [ ! -e $f -o "$(find src -newer $f | wc -l)" -ne 0 ]; then
     src/array.js                    \
     src/complex.js                  \
     src/vm.js                       \
-    src/lexer.js                    \
     src/parser.js                   \
     src/vocabulary/vhelpers.js      \
     src/vocabulary/arithmetic.js    \
