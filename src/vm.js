@@ -40,7 +40,7 @@ function vm(o){
           if(w instanceof Proc)w=w.toFunction()
           if(a instanceof Proc)a=a.toFunction()
           if(f.cps){
-            f(w,a,undefined,function(r){stack.push(r);vm({code,env,stack,pc})})
+            f(w,a,undefined,function(r){stack.push(r);vm({code:code,env:env,stack:stack,pc:pc})})
             return
           }else{
             stack.push(f(w,a))
