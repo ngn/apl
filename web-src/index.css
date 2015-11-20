@@ -1,102 +1,26 @@
-body {
-    width: 1000px;
-    margin: 10px auto;
-    font-family: "APL385 Unicode", monospace;
+body{width:1000px;margin:10px auto;font-family:"APL385 Unicode",monospace}
+textarea,input,h1{font-family:"APL385 Unicode",monospace}
+a{padding:1px 1px;margin:1px 0;text-decoration:none;color:#008}
+a:hover{background-color:#fd8}
+#linkToMobile{float:right}
+#permalink{float:right}
+#code{font-size:large;vertical-align:bottom;height:200px;width:100%}
+#go{float:right;width:100px;font-size:48px;background-color:#acf;border-color:#acf;border-radius:4px;cursor:pointer}
+#result{margin-top:20px;white-space:pre}
+#result.error{color:red}
+.ui-keyboard{
+  position:fixed!important;top:auto!important;bottom:0!important;left:50%!important;right:auto!important;
+  margin-left:-15em!important;background-color:#ccc;border-top-left-radius:6px;border-top-right-radius:6px;
+  border:solid #aaa 1px;border-width:1px 1px 0 1px
 }
-
-textarea, input, h1 {
-    font-family: "APL385 Unicode", monospace;
+.ui-keyboard-button{
+  background-color:#eee;font-family:"APL385 Unicode",monospace;font-size:large;border-radius:6px;border-style:solid;
+  border-width:2px;border-color:#ccc #aaa #aaa #ccc
 }
-
-a {
-    padding: 1px 1px;
-    margin: 1px 0;
-    text-decoration: none;
-    color: #008;
+.ui-state-hover{border-color:#cc8!important}
+.ui-keyboard-space{min-width:16em!important;width:auto!important}
+.ui-keyboard-shift,.ui-keyboard-alt{background-color:#fd8}
+.ui-keyboard-shift.ui-state-active,.ui-keyboard-alt.ui-state-active{
+  background-color:#db6;border-color: #ccc #aaa #aaa #ccc
 }
-
-a:hover {
-    background-color: #fd8;
-}
-
-#linkToMobile {
-    float: right;
-}
-
-#permalink {
-    float: right;
-}
-
-#code {
-    font-size: large;
-    vertical-align: bottom;
-    height: 200px;
-    width: 100%;
-}
-
-#go {
-    float: right;
-    width: 100px;
-    font-size: 48px;
-    background-color: #acf;
-    border-color: #acf;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-#result {
-    margin-top: 20px;
-    white-space: pre;
-}
-
-#result.error {
-    color: red;
-}
-
-.ui-keyboard {
-    position: fixed !important;
-    top: auto !important;
-    bottom: 0 !important;
-    left: 50% !important;
-    right: auto !important;
-    margin-left: -15em !important;
-    background-color: #ccc;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border: solid #aaa 1px;
-    border-width: 1px 1px 0 1px;
-}
-
-.ui-keyboard-button {
-    background-color: #eee;
-    font-family: "APL385 Unicode", monospace;
-    font-size: large;
-    border-radius: 6px;
-    border-style: solid;
-    border-width: 2px;
-    border-color: #ccc #aaa #aaa #ccc;
-}
-
-.ui-state-hover {
-    border-color: #cc8 !important;
-}
-
-.ui-keyboard-space {
-    min-width: 16em !important;
-    width: auto !important;
-}
-
-.ui-keyboard-shift, .ui-keyboard-alt {
-    background-color: #fd8;
-}
-
-.ui-keyboard-shift.ui-state-active, .ui-keyboard-alt.ui-state-active {
-    background-color: #db6;
-    border-color: #ccc #aaa #aaa #ccc;
-}
-
-.ui-keyboard-exec {
-    background-color: #acf !important;
-    min-width: 4em !important;
-    width: auto !important;
-}
+.ui-keyboard-exec{background-color:#acf!important;min-width:4em!important;width:auto!important}

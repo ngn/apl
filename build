@@ -1,46 +1,81 @@
 #!/bin/bash
 set -e
-cd $(dirname "$0")
-coffee=node_modules/.bin/coffee
+cd "$(dirname "$0")"
 
-if [ ! -x $coffee ]; then
-    npm install
-fi
-
-cp_uv() {
-	if [[ $1 -nt $2 ]]; then
-		cp -v "$1" "$2"
-	fi
-}
+if [ ! -e node_modules ]; then npm install; fi
+cp_uv() { if [[ $1 -nt $2 ]]; then cp -v "$1" "$2"; fi }
 
 # xcat INPUTFILES OUTPUTFILE
 # Concatenates INPUTFILES into OUTPUTFILE only if at least one of them is newer than OUTPUTFILE
 xcat() { [ -e $2 ] && [ -z "$(find $1 -newer $2)" ] || ( echo "$1 -> $2" && cat $1 >$2 ); }
 
-# xcoffee COFFEEFILE OUTPUTDIR
-# Compiles COFFEEFILE only if newer than the corresponding .js file in OUTPUTDIR
-xcoffee() { if [ $1 -nt $2/`basename $1 .coffee`.js ]; then echo "Compiling $1"; $coffee -o $2 -bc $1; fi; }
-
 # Build lib/apl.js
 f=lib/apl.js
-if [ ! -e $f ] || [ -n "$(find src \( -name '*.coffee' -o -name '*.apl' \) -newer $f)" ]; then
-    echo "Building $f"
-    mkdir -p lib
-    echo '//usr/bin/env node "$0" $@ ; exit $?' >$f
-    $coffee -cp src/apl.coffee >>$f
-    chmod +x $f
+if [ ! -e $f -o "$(find src -newer $f | wc -l)" -ne 0 ]; then
+  echo "Building $f"
+  mkdir -p lib
+  echo '//usr/bin/env node "$0" $@;exit $?' >$f
+  cat src/{helpers,errors,array}.js >>$f
+  node >>$f <<.
+    var old=require('./old-apl')
+    var ast=old.parse(require('fs').readFileSync('src/prelude.apl','utf8'))
+    var code=old.compileAST(ast) // creates ast.vars as a side effect
+    var vars={};for(var k in ast.vars)vars[k]=ast.vars[k] // flatten prototype chain
+    process.stdout.write('var prelude='+old.repr({code:code,nSlots:ast.nSlots,vars:vars})+';\\n')
+.
+  cat                               \
+    src/helpers.js                  \
+    src/errors.js                   \
+    src/array.js                    \
+    src/complex.js                  \
+    src/vm.js                       \
+    src/parser.js                   \
+    src/vocabulary/vhelpers.js      \
+    src/vocabulary/arithmetic.js    \
+    src/vocabulary/backslash.js     \
+    src/vocabulary/circle.js        \
+    src/vocabulary/comma.js         \
+    src/vocabulary/comparisons.js   \
+    src/vocabulary/compose.js       \
+    src/vocabulary/cupcap.js        \
+    src/vocabulary/decode.js        \
+    src/vocabulary/dot.js           \
+    src/vocabulary/each.js          \
+    src/vocabulary/encode.js        \
+    src/vocabulary/epsilon.js       \
+    src/vocabulary/exclamation.js   \
+    src/vocabulary/execute.js       \
+    src/vocabulary/find.js          \
+    src/vocabulary/floorceil.js     \
+    src/vocabulary/fork.js          \
+    src/vocabulary/format.js        \
+    src/vocabulary/grade.js         \
+    src/vocabulary/identity.js      \
+    src/vocabulary/iota.js          \
+    src/vocabulary/leftshoe.js      \
+    src/vocabulary/logic.js         \
+    src/vocabulary/poweroperator.js \
+    src/vocabulary/quad.js          \
+    src/vocabulary/question.js      \
+    src/vocabulary/raise.js         \
+    src/vocabulary/rho.js           \
+    src/vocabulary/rotate.js        \
+    src/vocabulary/slash.js         \
+    src/vocabulary/squish.js        \
+    src/vocabulary/take.js          \
+    src/vocabulary/transpose.js     \
+    src/vocabulary/variant.js       \
+    src/compiler.js                 \
+    src/apl.js                      \
+    >>$f
+  chmod +x $f
 fi
 
 # Build web demo
 mkdir -p web web-tmp
-xcoffee web-src/index.coffee web-tmp
 cp_uv web-src/index.html web/index.html
 cp_uv web-src/tipsy.gif  web/tipsy.gif
-xcoffee web-src/examples-gen.coffee web-tmp
-i=web-tmp/examples-gen.js ; o=web-tmp/examples.js ; [ $i -nt $o ] && echo "Building $o" && node $i
-xcoffee test/collectdoctests.coffee test
-xcoffee test/rundoctest.coffee      test
-xcoffee test/rundoctests.coffee     test
+o=web-tmp/examples.js; echo "Building $o"; web-src/examples-gen.js
 o=web/all.js
 if [ ! -e $o ] || [ -n "$(find src web-src web-tmp test lib -newer $o)" ]; then
     echo "Building $o"
@@ -52,7 +87,7 @@ if [ ! -e $o ] || [ -n "$(find src web-src web-tmp test lib -newer $o)" ]; then
             web-src/jquery.keyboard.extension-typing.js \
             web-src/jquery.tipsy.js                     \
             web-tmp/examples.js                         \
-            web-tmp/index.js                            \
+            web-src/index.js                            \
             test/rundoctest.js
         echo -n 'var aplTests = '
         node test/collectdoctests.js
@@ -62,16 +97,15 @@ xcat 'web-src/index.css web-src/keyboard.css web-src/tipsy.css' web/all.css
 
 # Build mobile demo
 mkdir -p m/images m-tmp
-xcoffee m-src/index.coffee m-tmp
 cp_uv m-src/index.html        m/index.html
 cp_uv m-src/images/cursor.png m/images/cursor.png
-xcat 'lib/apl.js web-src/jquery.min.js m-tmp/index.js' m/all.js
+xcat 'lib/apl.js web-src/jquery.min.js m-src/index.js' m/all.js
 xcat m-src/index.css m/all.css
 
 # Test
 
 echo 'Running doctests'
-node test/collectdoctests.js | node test/rundoctests.js
+test/collectdoctests.js | test/rundoctests.js
 
 echo 'Running example tests'
 examples/test
