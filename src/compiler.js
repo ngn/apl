@@ -120,8 +120,8 @@ function compileAST(ast,o){
               i++
             }
           }
-          // Hooks
-          if(h.length===2&&h[0]!==NOUN&&h[1]!==NOUN){a=[['H'].concat(a)];h=[VERB]}
+          // Atops
+          if(h.length===2&&h[0]!==NOUN&&h[1]!==NOUN){a=[['T'].concat(a)];h=[VERB]}
           // Forks
           if(h.length>=3&&h.length%2&&h.indexOf(NOUN)<0){a=[['F'].concat(a)];h=[VERB]}
           if(h[h.length-1]!==NOUN){
@@ -280,11 +280,11 @@ function compileAST(ast,o){
       case'M':return render(node[2]).concat(render(node[1]),MON)
       case'A':return render(node[1]).concat(render(node[2]),MON)
       case'D':case'C':return render(node[3]).concat(render(node[2]),render(node[1]),DYA)
-      case'H':
-        var v=node.scopeNode.vars._hook
+      case'T':
+        var v=node.scopeNode.vars._atop
         return render(node[2]).concat(GET,v.scopeDepth,v.slot,render(node[1]),DYA)
       case'F':
-        var u=node.scopeNode.vars._hook
+        var u=node.scopeNode.vars._atop
         var v=node.scopeNode.vars._fork1
         var w=node.scopeNode.vars._fork2
         var i=node.length-1

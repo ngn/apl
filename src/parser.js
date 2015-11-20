@@ -45,7 +45,7 @@ function parse(s,o){ // s:APL source code, o:options
   //   'D'  dyadic      1+2
   //   'A'  adverb      +/
   //   'C'  conjunction +.×
-  //   'H'  hook        +÷
+  //   'T'  atop        +÷
   //   'F'  fork        +÷⍴
   var i=1,token=tokens[0] // single-token lookahead
 

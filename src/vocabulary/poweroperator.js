@@ -3,7 +3,7 @@ addVocabulary({
   // ({⍵+1}⍣0) 3 ←→ 3
   // (⍴⍣3)2 2⍴⍳4 ←→ ,1
   // 'a'(,⍣3)'b' ←→ 'aaab'
-  // 1(+÷)⍣=1    ←→ 1.618033988749895
+  // 1{⍺+÷⍵}⍣=1 ←→ 1.618033988749895
   // c←0 ⋄ 5⍣{c←c+1}0 ⋄ c ←→ 5
   '⍣':conjunction(function(g,f){
     if(f instanceof A&&typeof g==='function'){var h=f;f=g;g=h}else{assert(typeof f==='function')}

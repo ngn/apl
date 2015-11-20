@@ -20,7 +20,7 @@ Runs on [NodeJS](http://nodejs.org/) or in a browser<br>
 (See also: [Paul L Jackson's web site](https://plj541.github.io/APL.js/) and [repl.it](http://repl.it/languages/APL))
 
 Supports: most primitives, dfns (`{⍺ ⍵}`), nested arrays, complex numbers
-(`1j2`), infinities (`¯` or `∞`), forks and hooks, strand assignment (`(a b)←c`), index
+(`1j2`), infinities (`¯` or `∞`), forks and atops, strand assignment (`(a b)←c`), index
 assignment (`a[b]←c`), user-defined operators (`{⍺⍺ ⍵⍵}`)
 
 Doesn't support: traditional functions (`∇R←X f Y`), non-zero index origin
